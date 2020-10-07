@@ -335,3 +335,6 @@ docs/_book
 test/
 
 # End of https://www.toptal.com/developers/gitignore/api/node,vue,python,flask,vscode
+
+# Git commit message template file
+.gitmessage
