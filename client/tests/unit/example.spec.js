@@ -1,12 +1,10 @@
 import { shallowMount } from '@vue/test-utils';
-import HelloWorld from '@/components/HelloWorld.vue';
+import SiteTitle from '../../src/components/SiteTitle.vue';
 
-describe('HelloWorld.vue', () => {
-  it('renders props.msg when passed', () => {
-    const msg = 'new message';
-    const wrapper = shallowMount(HelloWorld, {
-      propsData: { msg },
-    });
-    expect(wrapper.text()).toMatch(msg);
+describe('SiteTitle.vue', () => {
+  it('renders the title', () => {
+    const title = 'TheHaloMod';
+    const wrapper = shallowMount(SiteTitle);
+    expect(wrapper.text()).toMatch(title);
   });
 });
