@@ -1,7 +1,8 @@
 <template>
-  <div class="about">
-    <span class="md-display-1">TheHaloMod: The Halo Model Calculator</span>
-    <md-content>TheHaloMod is an app for calculating the cosmological Halo
+  <div class="md-layout md-gutter about">
+    <span class="md-display-1 md-layout-item">TheHaloMod: The Halo Model Calculator</span>
+    <md-content class="md-layout-item md-size-50">
+      TheHaloMod is an app for calculating the cosmological Halo
       Model of Large Scale Structure, written by Steven Murray. It is intended
       to be used for both research and education, and I'd be very happy to hear
       how you're using it!
@@ -20,7 +21,8 @@
 
 <style scoped>
   .about {
-    width: 90vw;
-    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 </style>
