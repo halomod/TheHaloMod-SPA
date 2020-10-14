@@ -6,8 +6,8 @@
           <img src="./assets/thm_logo.png">
         </md-avatar>
         <h3 class="md-title" style="flex: 1">The Halo Mod</h3>
-        <md-button> <router-link to="/">Home</router-link></md-button>
-        <md-button class="md-primary"><router-link to="/about">About</router-link></md-button>
+          <router-link to="/"><md-button class="md-primary">Home</md-button></router-link>
+          <router-link to="/about"><md-button class="md-primary">About</md-button></router-link>
       </md-toolbar>
     </div>
     <router-view/>

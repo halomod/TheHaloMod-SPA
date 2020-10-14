@@ -25,4 +25,8 @@
     flex-direction: column;
     align-items: center;
   }
+
+  .md-layout-item {
+
+  }
 </style>
