@@ -1,0 +1,13 @@
+matrix: 
+  include:
+    - language: python
+      python: 
+        - '3.8'
+      os: linux
+      dist: xenial
+      script:
+        - cd server 
+        - pip3 install -r requirements.txt
+        - flake8 halomod
+        - python -m pytest
+        - cd ..

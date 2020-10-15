@@ -1,0 +1,14 @@
+matrix: 
+  include:
+  - language: node_js
+    node_js:
+      - 14
+    cache: 
+    directories:
+      - client/node_modules
+    script: 
+      - cd client
+      - npm install
+      - npm run lint
+      - npm run test:unit
+      - cd ..
