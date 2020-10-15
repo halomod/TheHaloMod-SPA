@@ -1,8 +1,8 @@
 ## How to Start Server
-sh run.sh --dev
+```sh run.sh --dev```
 
 ## How to Run Tests
-sh run.sh --test
+```sh run.sh --test```
 
 ## How to run lint
-sh run.sh --lint
+```sh run.sh --lint```
