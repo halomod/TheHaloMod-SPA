@@ -8,7 +8,7 @@ $ pip install -r requirements.txt
 ## How to Start Server
 
 ```sh
-$ export FLASK_APP=halomod
+$ export FLASK_APP=halomod_app
 $ export FLASK_ENV=development
 $ flask run
 ```

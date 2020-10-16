@@ -2,7 +2,7 @@ import os
 import tempfile
 import pytest
 
-from halomod import create_app
+from halomod_app import create_app
 
 @pytest.fixture
 def app():
