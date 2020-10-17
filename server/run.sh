@@ -6,7 +6,7 @@ for arg in "$@"
 do
     case $arg in
         "--lint" )
-          flake8 halomod_app;;
+          flake8 tests halomod_app;;
         "--test" )
           python -m pytest;;
         "--dev" )
