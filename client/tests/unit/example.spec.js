@@ -1,10 +1,11 @@
 import { shallowMount } from '@vue/test-utils';
-import SiteTitle from '../../src/components/SiteTitle.vue';
+import About from '../../src/views/About.vue';
 
-describe('SiteTitle.vue', () => {
+describe('About.vue', () => {
   it('renders the title', () => {
-    const title = 'TheHaloMod';
-    const wrapper = shallowMount(SiteTitle);
-    expect(wrapper.text()).toMatch(title);
+    const titleText = 'TheHaloMod';
+    const wrapper = shallowMount(About);
+    const title = wrapper.find('h1');
+    expect(title.text()).toBe(titleText);
   });
 });
