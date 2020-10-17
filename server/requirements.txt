@@ -8,7 +8,7 @@ colorama==0.4.4
 colossus==1.2.17
 commonmark==0.9.1
 cycler==0.10.0
-dataclasses==0.7
+dataclasses==0.6
 deprecation==2.1.0
 flake8==3.8.4
 Flask==1.1.2
