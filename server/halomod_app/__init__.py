@@ -2,6 +2,8 @@ from flask import Flask, jsonify, request
 from . import utils
 import base64
 from halomod import TracerHaloModel
+import json
+
 
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
@@ -12,10 +14,13 @@ def create_app(test_config=None):
 
     @app.route('/create', methods=["POST"])
     def create():
-        #model_dict = request.get_json()["model"]
-        model = {"MODEL": utils.hmf_driver()}
-        buf, errors = utils.create_canvas(model, "dndm", utils.KEYMAP["dndm"], "png")
-        encoding = base64.b64encode(buf.getvalue())
-        return jsonify({"image": str(encoding)})
+        parameters = request.get_json()["params"]
+        label = request.get_json()["label"]
+        model = utils.hmf_driver(**parameters)
+        models = {label: model}
+        buf, errors = utils.create_canvas(models, "dndm", utils.KEYMAP["dndm"], "png")
+        with open('figure.png', 'w+b') as f:
+            f.write(buf.getvalue())
+        return ""
 
     return app

@@ -1,19 +1,8 @@
-## Common Setup
-```sh
-$ python3 -m venv env
-$ source env/bin/activate
-$ pip install -r requirements.txt
-```
-
 ## How to Start Server
-
-```sh
-$ export FLASK_APP=halomod_app
-$ export FLASK_ENV=development
-$ flask run
-```
+```sh run.sh --dev```
 
 ## How to Run Tests
-```sh
-$ python -m pytest
-```
+```sh run.sh --test```
+
+## How to run lint
+```sh run.sh --lint```
