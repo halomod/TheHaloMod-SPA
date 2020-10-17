@@ -1,6 +1,8 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-import { MdButton, MdContent, MdTabs } from 'vue-material/dist/components';
+import {
+  MdButton, MdContent, MdTabs, MdToolbar, MdAvatar, MdElevation,
+} from 'vue-material/dist/components';
 import Home from '../views/Home.vue';
 import 'vue-material/dist/vue-material.min.css';
 import 'vue-material/dist/theme/default.css';
@@ -8,6 +10,9 @@ import 'vue-material/dist/theme/default.css';
 Vue.use(MdButton);
 Vue.use(MdContent);
 Vue.use(MdTabs);
+Vue.use(MdToolbar);
+Vue.use(MdAvatar);
+Vue.use(MdElevation);
 
 Vue.use(VueRouter);
 
