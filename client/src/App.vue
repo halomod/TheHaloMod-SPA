@@ -1,14 +1,7 @@
 <template>
   <div id="app">
     <div id="nav">
-      <md-toolbar class="md-primary" md-elevation="1">
-        <md-avatar>
-          <img src="./assets/thm_logo.png">
-        </md-avatar>
-        <h3 class="md-title" style="flex: 1">The Halo Mod</h3>
-          <router-link to="/"><md-button class="md-primary">Home</md-button></router-link>
-          <router-link to="/about"><md-button class="md-primary">About</md-button></router-link>
-      </md-toolbar>
+      <Navbar/>
     </div>
     <router-view/>
   </div>
@@ -32,3 +25,14 @@
   color: white;
 }
 </style>
+
+<script>
+
+import Navbar from './views/Navbar.vue';
+
+export default {
+  components: {
+    Navbar,
+  },
+};
+</script>
