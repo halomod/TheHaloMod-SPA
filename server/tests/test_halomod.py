@@ -17,8 +17,10 @@ def test_plot(client, plot_payload):
     json_response = response.json
     assert "figure" in json_response
     decoded_image = base64.b64decode(json_response['figure'])
+
+    # For now this outputs an image to test what is being returned
     with open("Output.png", "w") as png_file:
-        png_file.write(json_response['figure'])
+        png_file.write(decoded_image)
     print(imghdr.what(None, h=decoded_image))
     assert True is False
 

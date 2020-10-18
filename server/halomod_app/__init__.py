@@ -31,7 +31,8 @@ def create_app(test_config=None):
         for label, string_model in string_models.items():
             models[label] = pickle.loads(codecs.decode(string_model.encode(), "base64"))
         img_type = request_json["image_type"]
-        buf, errors = utils.create_canvas(models, fig_type, utils.KEYMAP[fig_type], img_type)
+        buf, errors = utils.create_canvas(
+            models, fig_type, utils.KEYMAP[fig_type], img_type)
         encoding = base64.b64encode(buf.getvalue())
         return jsonify({"figure": str(encoding)})
 
