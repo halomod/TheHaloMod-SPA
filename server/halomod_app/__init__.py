@@ -3,6 +3,9 @@ from . import utils
 import base64
 from halomod import TracerHaloModel
 import json
+import pickle
+import codecs
+
 
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
@@ -16,11 +19,9 @@ def create_app(test_config=None):
         parameters = request.get_json()["params"]
         label = request.get_json()["label"]
         model = utils.hmf_driver(**parameters)
-        models = {label: model}
-        buf, errors = utils.create_canvas(models, "dndm", utils.KEYMAP["dndm"], "png")
-        with open('figure.png', 'w+b') as f:
-            f.write(buf.getvalue())
-        return ""
+        model_serialized = codecs.encode(pickle.dumps(model), "base64").decode()
+        # model_deserialized = pickle.loads(codecs.decode(model_serialized.encode(), "base64"))
+        return jsonify({label: model_serialized})
 
     @app.route('/plot', methods=["POST"])
     def plot():
