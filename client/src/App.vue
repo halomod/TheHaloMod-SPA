@@ -1,8 +1,14 @@
 <template>
   <div id="app">
     <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
+      <md-toolbar class="md-primary" md-elevation="1">
+        <md-avatar>
+          <img src="./assets/thm_logo.png">
+        </md-avatar>
+        <h3 class="md-title" style="flex: 1">The Halo Mod</h3>
+          <router-link to="/"><md-button class="md-primary">Home</md-button></router-link>
+          <router-link to="/about"><md-button class="md-primary">About</md-button></router-link>
+      </md-toolbar>
     </div>
     <router-view/>
   </div>
@@ -12,12 +18,9 @@
 #app {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
 }
 
 #nav {
-  padding: 30px;
 }
 
 #nav a {
@@ -26,6 +29,6 @@
 }
 
 #nav a.router-link-exact-active {
-  color: #42b983;
+  color: white;
 }
 </style>
