@@ -4,6 +4,9 @@ matrix:
       python: 
         - '3.8'
       os: linux
+      addons:
+        apt_packages:
+          - gfortran
       dist: xenial
       script:
         - cd server 
