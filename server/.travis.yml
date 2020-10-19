@@ -6,7 +6,7 @@ matrix:
       os: linux
       addons:
         apt_packages:
-          - gfortran
+          - gfortran-8
       dist: xenial
       script:
         - cd server 
