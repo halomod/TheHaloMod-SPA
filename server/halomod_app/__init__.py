@@ -33,6 +33,11 @@ def create_app(test_config=None):
         img_type = request_json["image_type"]
         buf, errors = utils.create_canvas(
             models, fig_type, utils.KEYMAP[fig_type], img_type)
-        encoding = codecs.encode(buf.getvalue(), "base64")
-        return jsonify({"figure": str(encoding)})
+
+        # Encoding
+        png_base64_bytes = base64.b64encode(buf.getvalue())
+        base64_png = png_base64_bytes.decode('ascii')
+        # Done Encoding
+
+        return jsonify({"figure": base64_png})
     return app
