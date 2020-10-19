@@ -5,8 +5,10 @@ matrix:
         - '3.8'
       os: linux
       addons:
+        apt:
+          update: true
         apt_packages:
-          - gfortran-8
+          - gfortran
       dist: xenial
       script:
         - cd server 
