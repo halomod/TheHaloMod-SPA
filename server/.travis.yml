@@ -5,9 +5,19 @@ matrix:
         - '3.8'
       os: linux
       dist: xenial
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - gfortran-8
+      before_script:
+        - mkdir -p gfortran-symlinks
+        - ln -s /usr/bin/gfortran-8 gfortran-symlinks/gfortran
+        - export PATH=$PWD/gfortran-symlinks:$PATH
       script:
         - cd server 
         - pip3 install -r requirements.txt
-        - flake8 halomod
+        - flake8 tests halomod_app
         - python -m pytest
         - cd ..
