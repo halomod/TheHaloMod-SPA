@@ -7,7 +7,6 @@ matrix:
       dist: xenial
       script:
         - cd server 
-        - pip3 install -r requirements.txt
-        - flake8 halomod
-        - python -m pytest
+        - sh run.sh --test
+        - sh run.sh --lint
         - cd ..
