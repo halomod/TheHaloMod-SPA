@@ -1,5 +1,13 @@
 import { shallowMount } from '@vue/test-utils';
+import Navbar from '../../src/components/Navbar.vue';
 import About from '../../src/views/About.vue';
+
+describe('Navbar', () => {
+  it('renders a md-toolbar', () => {
+    const wrapper = shallowMount(Navbar);
+    expect(wrapper.contains('md-toolbar')).toBe(true);
+  });
+});
 
 describe('About.vue', () => {
   it('renders the title', () => {
