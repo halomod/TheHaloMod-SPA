@@ -1,5 +1,7 @@
 matrix: 
   include:
+    if: branch = "dev" OR branch = "main"
+    type: pull_request
     - language: python
       python: 
         - '3.8'

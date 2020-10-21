@@ -1,6 +1,8 @@
 matrix: 
   include:
-  - language: node_js
+    if: branch = dev OR branch = main
+    type: pull_request
+    - language: node_js
     node_js:
       - 14
     cache: 
