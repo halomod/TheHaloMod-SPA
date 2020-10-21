@@ -4,8 +4,8 @@ matrix:
     node_js:
       - 14
     cache: 
-    directories:
-      - client/node_modules
+      directories:
+        - client/node_modules
     script: 
       - cd client
       - npm install
