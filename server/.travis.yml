@@ -10,6 +10,7 @@ matrix:
         apt_packages:
           - gfortran
       dist: xenial
+      cache: pip
       addons:
         apt:
           sources:
