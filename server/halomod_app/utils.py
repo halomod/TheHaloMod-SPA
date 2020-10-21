@@ -10,6 +10,8 @@ from matplotlib.backends.backend_pdf import FigureCanvasPdf
 from matplotlib.backends.backend_svg import FigureCanvasSVG
 from matplotlib.figure import Figure
 import re
+import codecs
+import pickle
 
 
 logger = logging.getLogger(__name__)
@@ -350,3 +352,11 @@ def camel_to_words(word: str) -> str:
     if len(word.split(" ")) == n:
         return word.replace(" ", "")
     return word
+
+
+def serialize_model(model) -> str:
+    return codecs.encode(pickle.dumps(model), "base64").decode()
+
+
+def deserialize_model(serialized_model):
+    return pickle.loads(codecs.decode(serialized_model.encode(), "base64"))

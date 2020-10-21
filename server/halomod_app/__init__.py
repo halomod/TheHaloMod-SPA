@@ -5,6 +5,7 @@ from halomod import TracerHaloModel
 import json
 import pickle
 import codecs
+import time
 
 
 def create_app(test_config=None):
@@ -19,8 +20,7 @@ def create_app(test_config=None):
         parameters = request.get_json()["params"]
         label = request.get_json()["label"]
         model = utils.hmf_driver(**parameters)
-        model_serialized = codecs.encode(pickle.dumps(model), "base64").decode()
-        return jsonify({label: model_serialized})
+        return jsonify({label: utils.serialize_model(model)})
 
     @app.route('/plot', methods=["POST"])
     def plot():
@@ -29,15 +29,21 @@ def create_app(test_config=None):
         string_models = request_json["models"]
         models = dict()
         for label, string_model in string_models.items():
-            models[label] = pickle.loads(codecs.decode(string_model.encode(), "base64"))
+            models[label] = utils.deserialize_model(string_model)
         img_type = request_json["image_type"]
         buf, errors = utils.create_canvas(
             models, fig_type, utils.KEYMAP[fig_type], img_type)
+        for key in models:
+            models[key] = utils.serialize_model(models[key])
 
         # Encoding
         png_base64_bytes = base64.b64encode(buf.getvalue())
         base64_png = png_base64_bytes.decode('ascii')
         # Done Encoding
 
-        return jsonify({"figure": base64_png})
+        response = {}
+        response["figure"] = base64_png
+        response["models"] = models
+
+        return jsonify(response)
     return app
