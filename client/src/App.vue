@@ -13,9 +13,6 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-#nav {
-}
-
 #nav a {
   font-weight: bold;
   color: #2c3e50;
