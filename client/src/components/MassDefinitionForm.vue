@@ -56,7 +56,7 @@ export default {
 </script>
 
 <style lang='css' scoped>
-.md-field {
+.md-layout-item {
   max-width: 75%;
   margin-left: auto;
   margin-right: auto;

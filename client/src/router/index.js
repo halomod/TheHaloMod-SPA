@@ -1,22 +1,9 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-/* import {
-  MdButton, MdContent, MdTabs, MdToolbar, MdAvatar, MdElevation, MdField,
-} from 'vue-material/dist/components'; */
-// Need to import the entire VueMaterial for MdSelect to work see this issue:
-// https://github.com/vuematerial/vue-material/issues/1974
 import VueMaterial from 'vue-material';
 import Home from '../views/Home.vue';
 import 'vue-material/dist/vue-material.min.css';
 import 'vue-material/dist/theme/default.css';
-
-/* Vue.use(MdButton);
-Vue.use(MdContent);
-Vue.use(MdTabs);
-Vue.use(MdToolbar);
-Vue.use(MdAvatar);
-Vue.use(MdElevation);
-Vue.use(MdField); */
 
 Vue.use(VueMaterial);
 Vue.use(VueRouter);
