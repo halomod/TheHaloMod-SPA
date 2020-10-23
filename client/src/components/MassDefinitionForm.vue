@@ -44,6 +44,14 @@ export default {
     massDefinitionChoices,
     selectedMassDefinition: Object.keys(massDefinitionChoices)[0], // Sets the default value
   }),
+  computed: {
+    mdef_model: {
+      // getter
+      get() {
+        return this.selectedMassDefinition;
+      },
+    },
+  },
 };
 </script>
 
