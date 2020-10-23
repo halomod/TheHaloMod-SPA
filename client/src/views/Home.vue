@@ -1,14 +1,16 @@
 <template>
   <div class="home">
+    <MassDefinitionForm/>
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
+import MassDefinitionForm from '../components/MassDefinitionForm.vue';
 
 export default {
   name: 'Home',
   components: {
+    MassDefinitionForm,
   },
 };
 </script>
