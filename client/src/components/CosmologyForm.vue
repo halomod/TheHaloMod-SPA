@@ -1,8 +1,34 @@
 <template>
-  <md-field>
-    <label>Number</label>
-    <md-input v-model="number" type="number"></md-input>
-  </md-field>
+  <div>
+    <md-field>
+      <label for="cosmologyChoices">Cosmology</label>
+      <md-select v-model="cosmologyChoice" id="cosmologyChoices">
+        <md-option
+          v-for="choice in cosmologyChoices"
+          :key="choice"
+          :value="choice"
+        >
+          {{choice}}
+        </md-option>
+        <md-option value="test">
+          Test
+        </md-option>
+      </md-select>
+    </md-field>
+
+    <md-field>
+      <label>H<sub>0</sub></label>
+      <md-input v-model="h_0" type="number"></md-input>
+    </md-field>
+    <md-field>
+      <label>&#937;<sub>b</sub></label>
+      <md-input v-model="omega_b" type="number"></md-input>
+    </md-field>
+    <md-field>
+      <label>&#937;<sub>m</sub></label>
+      <md-input v-model="omega_m" type="number"></md-input>
+    </md-field>
+  </div>
 </template>
 
 <script>
@@ -44,10 +70,22 @@
         ),
     )
  */
+
+const cosmologyChoices = [
+  'Planck15',
+  'Planck13',
+  'WMAP9',
+  'WMAP7',
+  'WMAP5',
+];
 export default {
   name: 'CosmologyForm',
   data: () => ({
-    number: null,
+    h_0: 0.2,
+    omega_b: 0.3,
+    omega_m: 0.4,
+    cosmologyChoices,
+    cosmologyChoice: cosmologyChoices[0],
   }),
 };
 </script>
