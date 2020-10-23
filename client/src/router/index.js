@@ -1,20 +1,32 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import {
-  MdButton, MdContent, MdTabs, MdToolbar, MdAvatar, MdElevation,
+  MdButton,
+  MdContent,
+  MdTabs,
+  MdToolbar,
+  MdAvatar,
+  MdElevation,
+  MdDrawer,
+  MdList,
+  MdApp,
 } from 'vue-material/dist/components';
-import Home from '../views/Home.vue';
 import 'vue-material/dist/vue-material.min.css';
 import 'vue-material/dist/theme/default.css';
 
+import Home from '../views/Home.vue';
+
+// Vue.use(VueMaterial);
+Vue.use(VueRouter);
 Vue.use(MdButton);
 Vue.use(MdContent);
 Vue.use(MdTabs);
 Vue.use(MdToolbar);
 Vue.use(MdAvatar);
 Vue.use(MdElevation);
-
-Vue.use(VueRouter);
+Vue.use(MdDrawer);
+Vue.use(MdList);
+Vue.use(MdApp);
 
 const routes = [
   {
