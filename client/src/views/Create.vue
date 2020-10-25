@@ -5,18 +5,20 @@
       class="md-primary"
       md-fixed
     >
-      <md-list v-for="({ component },index) in forms" :key="index">
+      <!-- TODO: remove index from id when there are more than 1 form -->
+      <md-list v-for="(form, index) in forms" :key="index">
           <md-list-item>
             <span class="md-list-item-text">
-              <router-link v-bind:to="`#${component.name}-${index}`">
-                {{component.name}}
+              <router-link v-bind:to="`#${form.name}-${index}`">
+                {{form.name}}
               </router-link>
             </span>
           </md-list-item>
         </md-list>
     </md-app-drawer>
-    <md-app-content v-for="({component}, index) in forms" :key="index">
-      <component v-bind:is="component" v-bind:id="`${component.name}-${index}`"/>
+    <!-- TODO: remove index from id when there are more than 1 form -->
+    <md-app-content v-for="(form, index) in forms" :key="index">
+      <component v-bind:is="form" v-bind:id="`${form.name}-${index}`"/>
     </md-app-content>
   </md-app>
 </template>
@@ -32,10 +34,12 @@ export default {
   },
   data() {
     return {
+      // Add forms to this list, and remove the example form.
+      // make sure you have a "name" property. That is used for the menu.
       forms: [
-        { component: ExampleForm },
-        { component: ExampleForm },
-        { component: ExampleForm },
+        ExampleForm,
+        ExampleForm,
+        ExampleForm,
       ],
     };
   },
