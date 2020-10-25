@@ -1,13 +1,12 @@
 <template>
   <div class="content">
-    {{id}}
+    exampleform
   </div>
 </template>
 
 <script>
 export default {
   name: 'exampleform',
-  props: ['id'],
 };
 </script>
 
