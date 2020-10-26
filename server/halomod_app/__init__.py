@@ -5,10 +5,13 @@ from halomod import TracerHaloModel
 import json
 import pickle
 import codecs
+import hmf
+from flask_cors import CORS
 
 
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
+    CORS(app)
 
     @app.route('/')
     def home():
@@ -40,4 +43,9 @@ def create_app(test_config=None):
         # Done Encoding
 
         return jsonify({"figure": base64_png})
+
+    @app.route('/constants', methods=["GET"])
+    def constants():
+        return jsonify(hmf)
+
     return app
