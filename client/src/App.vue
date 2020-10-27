@@ -24,8 +24,14 @@
 </style>
 
 <script>
-
 import Navbar from './components/Navbar.vue';
+
+// CHANGE ME TO ACTUAL HOST LOCATION
+fetch('http://localhost:5000/constants', {
+  credentials: 'include',
+}).then((data) => {
+  console.log(data);
+});
 
 export default {
   components: {
