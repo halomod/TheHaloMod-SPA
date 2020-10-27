@@ -13,7 +13,8 @@ import jsonpickle
 default_model = TracerHaloModel.get_all_parameter_defaults()
 
 # Turn the default model into a JSON object
-default_model_json = jsonpickle.encode(default_model, unpicklable=False)
+default_model_string = jsonpickle.encode(default_model, unpicklable=False)
+default_model_json = json.loads(default_model_string)
 
 
 def create_app(test_config=None):
@@ -52,8 +53,8 @@ def create_app(test_config=None):
 
     @app.route('/constants', methods=["GET"])
     def constants():
-        return jsonify({'test': 'other thing'})
+        return jsonify(default_model_json)
 
-    CORS(app)
+    CORS(app, send_wildcard=True)
 
     return app
