@@ -11,13 +11,14 @@ import {
   MdList,
   MdApp,
 } from 'vue-material/dist/components';
+import VueObserveVisibility from 'vue-observe-visibility';
 import 'vue-material/dist/vue-material.min.css';
 import 'vue-material/dist/theme/default.css';
 
 import Home from '../views/Home.vue';
 
-// Vue.use(VueMaterial);
 Vue.use(VueRouter);
+Vue.use(VueObserveVisibility);
 Vue.use(MdButton);
 Vue.use(MdContent);
 Vue.use(MdTabs);

@@ -1,5 +1,5 @@
 <template>
-  <md-app md-mode="fixed">
+  <md-app id="create" md-mode="fixed">
     <md-app-drawer
       md-permanent="full"
       class="md-primary"
@@ -17,19 +17,25 @@
         </md-list>
     </md-app-drawer>
     <!-- TODO: remove index from id when there are more than 1 form -->
-    <md-app-content v-for="(form, index) in forms" :key="index">
-      <component v-bind:is="form" v-bind:id="`${form.name}-${index}`"/>
+    <md-app-content>
+      <div v-for="(form, index) in forms" :key="index">
+        <FormWrapper v-bind:id="`${form.name}-${index}`">
+          <component v-bind:is="form"/>
+        </FormWrapper>
+      </div>
     </md-app-content>
   </md-app>
 </template>
 
 <script>
 // @ is an alias to /src
+import FormWrapper from '@/components/FormWrapper.vue';
 import ExampleForm from '@/components/ExampleForm.vue';
 
 export default {
   name: 'Create',
   components: {
+    FormWrapper,
     ExampleForm,
   },
   data() {
@@ -47,7 +53,7 @@ export default {
 </script>
 
 <style scoped>
-  .md-app {
+  #create {
     height: 80vh;
   }
 </style>
