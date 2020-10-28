@@ -1,7 +1,8 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import {
-  MdButton, MdContent, MdTabs, MdToolbar, MdAvatar, MdElevation,
+  MdButton, MdContent, MdTabs, MdToolbar, MdAvatar, MdElevation, MdField, MdMenu,
+  MdList,
 } from 'vue-material/dist/components';
 import Home from '../views/Home.vue';
 import 'vue-material/dist/vue-material.min.css';
@@ -13,6 +14,9 @@ Vue.use(MdTabs);
 Vue.use(MdToolbar);
 Vue.use(MdAvatar);
 Vue.use(MdElevation);
+Vue.use(MdField);
+Vue.use(MdMenu);
+Vue.use(MdList);
 
 Vue.use(VueRouter);
 

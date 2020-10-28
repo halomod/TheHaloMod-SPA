@@ -5,7 +5,15 @@ from halomod import TracerHaloModel
 import json
 import pickle
 import codecs
-import time
+import hmf
+from flask_cors import CORS
+import jsonpickle
+
+# Get default values
+default_model = TracerHaloModel.get_all_parameter_defaults()
+
+# Turn the default model into a JSON object
+default_model_json = jsonpickle.encode(default_model, unpicklable=False)
 
 
 def create_app(test_config=None):
@@ -50,14 +58,12 @@ def create_app(test_config=None):
         png_base64_bytes = base64.b64encode(buf.getvalue())
         base64_png = png_base64_bytes.decode('ascii')
 
-        # serializes updated models post-calculation (to preserve cached results for future calculations)
-        for key in models:
-            models[key] = utils.serialize_model(models[key])
+        return jsonify({"figure": base64_png})
 
-        response = {}
-        response["figure"] = base64_png
-        response["models"] = models
+    @app.route('/constants', methods=["GET"])
+    def constants():
+        return jsonify({'test': 'other thing'})
 
-        # returns {"models": <update_serialized_models>, "figure": <serialized_figure>}
-        return jsonify(response)
+    CORS(app)
+
     return app

@@ -1,14 +1,16 @@
 <template>
   <div class="home">
+    <CosmologyForm/>
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
+import CosmologyForm from '../components/CosmologyForm.vue';
 
 export default {
   name: 'Home',
   components: {
+    CosmologyForm,
   },
 };
 </script>
