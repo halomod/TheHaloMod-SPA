@@ -53,31 +53,37 @@ export default {
   },
   methods: {
     toggleHighlight(bool, form, index) {
-      const formcpy = { ...form };
+      const f = form;
       if (!bool) {
-        formcpy.highlight = false;
+        f.highlight = false;
         if (index + 1 < this.forms.length) {
           if (index === 0) {
-            this.forms[index + 1].highlight = true;
+            this.handleTopForm(this.forms[index + 1], index + 1);
           } else if (index - 1 >= 0 && !this.forms[index - 1].isVisible) {
-            this.forms[index + 1].highlight = true;
+            this.handleTopForm(this.forms[index + 1], index + 1);
           }
         }
       } else if (bool) {
         if (index - 1 >= 0) {
           if (!this.forms[index - 1].isVisible) {
-            formcpy.highlight = true;
+            this.handleTopForm(f, index);
           }
         } else {
-          formcpy.highlight = true;
+          this.handleTopForm(f, index);
         }
         if (index + 1 < this.forms.length) {
           this.forms[index + 1].highlight = false;
         }
       }
-      formcpy.isVisible = bool;
-      this.forms[index] = formcpy;
+      f.isVisible = bool;
+      this.forms[index] = f;
       this.$forceUpdate();
+    },
+    handleTopForm(form, index, prefix = '/create') {
+      const f = form;
+      f.highlight = true;
+      // TODO: remove index from id
+      window.history.replaceState({}, '', `${prefix}#${form.component.name}-${index}`);
     },
   },
 };
