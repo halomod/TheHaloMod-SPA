@@ -16,6 +16,36 @@ default_model = TracerHaloModel.get_all_parameter_defaults()
 default_model_string = jsonpickle.encode(default_model, unpicklable=False)
 default_model_json = json.loads(default_model_string)
 
+# Build the defaults
+hmf_defaults = {
+    "cosmo": {}
+}
+
+cosmo_choices = [
+    "Planck15",
+    "Planck13",
+    "WMAP9",
+    "WMAP7",
+    "WMAP5"
+]
+
+# Build the cosmo defaults
+for choice in cosmo_choices:
+    hmf_defaults.cosmo[choice] = {
+        "h0": hmf.cosmo[choice].H0.value,
+        "Ob0": hmf.cosmo[choice].Ob0,
+        "Om0": hmf.cosmo[choice].Om0
+    }
+
+some_value = str(hmf.cosmo.Planck15.H0.value)
+
+print(some_value)
+print('testing')
+
+
+cosmo_model_string = jsonpickle.encode(hmf.cosmo.Planck13, unpicklable=False)
+cosmo_model_json = json.loads(cosmo_model_string)
+
 
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
@@ -53,7 +83,10 @@ def create_app(test_config=None):
 
     @app.route('/constants', methods=["GET"])
     def constants():
-        return jsonify(default_model_json)
+        return jsonify({
+            "defaultModel": default_model_json,
+            "constantsFromHMF": hmf_defaults
+        })
 
     CORS(app, send_wildcard=True)
 
