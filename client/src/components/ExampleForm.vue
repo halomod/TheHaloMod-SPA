@@ -12,6 +12,6 @@ export default {
 
 <style scoped>
 .content {
-  height: 50vh;
+  height: 80vh;
 }
 </style>
