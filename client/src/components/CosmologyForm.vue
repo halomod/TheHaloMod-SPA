@@ -13,31 +13,18 @@
       </md-select>
     </md-field>
 
-<!--
-    <md-field v-for="(input, inputName) in inputs" :key="inputName">
-      <div v-html="input.html"/>
-      <md-input
-        v-model="input.currentValue"
-        type="number"
-        :step="input.step"
-        :min="input.min"
-        :max="input.max"
-      />
-      <span class="md-error">There is an error</span>
-    </md-field>
-    -->
-
     <FormNumberField
       v-for="(input, inputName) in inputs"
       :labelHtml="input.html"
       :key="inputName"
       :step="input.step"
-      :currentValue="input.currentValue"
+      :currentValue="cosmoValues[inputName]"
       :min="input.min"
       :max="input.max"
       :setCurrentValue="createSetCurrentValueFunc(inputName)"
     />
-    <p>The current value of h0 is {{inputs.h_0.currentValue}}</p>
+    <p>The current value of cosmo.h_0 is {{cosmoValues.h_0}}</p>
+    <p>The current value of hmfDefaults is {{hmfDefaults}}</p>
   </div>
 </template>
 
@@ -81,13 +68,6 @@ import FormNumberField from './FormNumberField.vue';
         ),
     )
  */
-
-/**
- * Creates an error message based on the minimum and maximum value.
- */
-function createErrorMessage(minVal, maxVal) {
-  return `Please enter a value between ${minVal} and ${maxVal}`;
-}
 const cosmologyChoices = [
   'Planck15',
   'Planck13',
@@ -95,35 +75,35 @@ const cosmologyChoices = [
   'WMAP7',
   'WMAP5',
 ];
-const inputs = {
-  h_0: {
-    html: '<label>H<sub>0</sub></label>',
-    currentValue: 11,
-    min: 10,
-    max: 500,
-    step: 1,
-  },
-  omega_b: {
-    html: '<label>&#937;<sub>b</sub></label>',
-    currentValue: 0.009,
-    min: 0.005,
-    max: 0.65,
-    step: 0.001,
-  },
-  omega_m: {
-    html: '<label>&#937;<sub>m</sub></label>',
-    currentValue: 0.3,
-    min: 0.02,
-    max: 2,
-    step: 0.01,
-  },
-};
 export default {
   name: 'CosmologyForm',
+  props: {
+    hmfDefaults: Object,
+    cosmoValues: Object,
+    setCosmo: Function,
+  },
   data: () => ({
-    inputs,
+    inputs: {
+      h0: {
+        html: '<label>H<sub>0</sub></label>',
+        min: 10,
+        max: 500,
+        step: 1,
+      },
+      Ob0: {
+        html: '<label>&#937;<sub>b</sub></label>',
+        min: 0.005,
+        max: 0.65,
+        step: 0.001,
+      },
+      Om0: {
+        html: '<label>&#937;<sub>m</sub></label>',
+        min: 0.02,
+        max: 2,
+        step: 0.01,
+      },
+    },
     cosmologyChoices,
-    createErrorMessage,
     cosmologyChoice: cosmologyChoices[0],
   }),
   components: {
@@ -132,7 +112,11 @@ export default {
   methods: {
     createSetCurrentValueFunc(inputType) {
       return (newValue) => {
-        this.inputs[inputType].currentValue = newValue;
+        // Set the new value temporarily
+        this.cosmoValues[inputType] = newValue;
+
+        // Set the value for good.
+        this.setCosmo(this.cosmoValues);
       };
     },
   },
