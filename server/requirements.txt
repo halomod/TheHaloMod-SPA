@@ -23,6 +23,7 @@ iniconfig==1.0.1
 isort==5.6.4
 itsdangerous==1.1.0
 Jinja2==2.11.2
+jsonpickle==1.4.1
 kiwisolver==1.2.0
 lazy-object-proxy==1.4.3
 MarkupSafe==1.1.1
