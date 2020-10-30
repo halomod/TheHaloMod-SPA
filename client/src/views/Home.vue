@@ -28,6 +28,7 @@ export default {
     },
     hmfDefaults: null,
     defaultModel: null,
+    baseServerURL: 'http://localhost:5000',
   }),
   components: {
     CosmologyForm,
@@ -50,8 +51,7 @@ export default {
     },
   },
   created() {
-    // CHANGE TO ENV VARIABLE FOR HOST LOCATION
-    fetch('http://localhost:5000/constants').then((data) => data.json()).then((json) => {
+    fetch(`${this.baseServerURL}/constants`).then((data) => data.json()).then((json) => {
       this.hmfDefaults = json.constantsFromHMF;
       this.defaultModel = json.defaultModel;
       debug('modelData.cosmo is currently: ', this.modelData.cosmo);
