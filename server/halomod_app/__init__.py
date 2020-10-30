@@ -99,6 +99,10 @@ def create_app(test_config=None):
 
     @app.route('/constants', methods=["GET"])
     def constants():
+        """
+        Returns a json representation that holds the two sets of constants
+        at the moment.
+        """
         return jsonify({
             "defaultModel": default_model_json,
             "constantsFromHMF": hmf_defaults

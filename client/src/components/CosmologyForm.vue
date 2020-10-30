@@ -23,7 +23,8 @@
       :max="input.max"
       :setCurrentValue="createSetCurrentValueFunc(inputName)"
     />
-    <p>The current value of cosmo.h_0 is {{cosmoValues.h_0}}</p>
+    <p>The current value of cosmoValues is {{cosmoValues}}</p>
+    <p>The current value of cosmoValues.h0 is {{cosmoValues.h0}}</p>
     <p>The current value of hmfDefaults is {{hmfDefaults}}</p>
   </div>
 </template>

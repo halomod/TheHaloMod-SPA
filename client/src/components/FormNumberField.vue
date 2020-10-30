@@ -1,4 +1,5 @@
 <template>
+  <div>
   <md-field :class="fieldClass">
     <div v-html="labelHtml"/>
     <md-input
@@ -11,6 +12,9 @@
     />
     <span class="md-error">{{errorStr}}</span>
   </md-field>
+  <p>The inputStr is: {{inputStr}}</p>
+  <p>The currentValue is: {{currentValue}}</p>
+  </div>
 </template>
 
 <script>
@@ -34,6 +38,13 @@ export default {
       return {
         'md-invalid': this.inputIsInvalid,
       };
+    },
+  },
+  watch: {
+    currentValue() {
+      if (this.currentValue !== this.inputStr) {
+        this.inputStr = this.currentValue;
+      }
     },
   },
   methods: {
