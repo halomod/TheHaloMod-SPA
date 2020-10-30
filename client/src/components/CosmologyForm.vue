@@ -23,52 +23,12 @@
       :max="input.max"
       :setCurrentValue="createSetCurrentValueFunc(inputName)"
     />
-    <p>The current value of cosmoValues is {{cosmoValues}}</p>
-    <p>The current value of cosmoValues.h0 is {{cosmoValues.h0}}</p>
-    <p>The current value of hmfDefaults is {{hmfDefaults}}</p>
   </div>
 </template>
 
 <script>
 import FormNumberField from './FormNumberField.vue';
-/**
- * The code from the form is below
- * choices = [
-        ("Planck15", "Planck15"),
-        ("Planck13", "Planck13"),
-        ("WMAP9", "WMAP9"),
-        ("WMAP7", "WMAP7"),
-        ("WMAP5", "WMAP5"),
-    ]
 
-    label = "Cosmology"
-    _initial = "Planck15"
-    module = hmf.cosmo
-
-    add_fields = dict(
-        H0=forms.FloatField(
-            label=mark_safe("H<sub>0</sub>"),
-            initial=str(hmf.cosmo.Planck15.H0.value),
-            min_value=10,
-            max_value=500.0,
-            localize=True,
-        ),
-        Ob0=forms.FloatField(
-            label=mark_safe("&#937<sub>b</sub>"),
-            initial=str(hmf.cosmo.Planck15.Ob0),
-            min_value=0.005,
-            max_value=0.65,
-            localize=True,
-        ),
-        Om0=forms.FloatField(
-            label=mark_safe("&#937<sub>m</sub>"),
-            initial=str(hmf.cosmo.Planck15.Om0),
-            min_value=0.02,
-            max_value=2.0,
-            localize=True,
-        ),
-    )
- */
 const cosmologyChoices = [
   'Planck15',
   'Planck13',
@@ -119,6 +79,22 @@ export default {
         // Set the value for good.
         this.setCosmo(this.cosmoValues);
       };
+    },
+    doSomething(value) {
+      console.log(value);
+    },
+  },
+  watch: {
+    /**
+     * Watches for changes in the choice of cosmology. When a new choice is
+     * made, then all the defaults are copied over.
+     */
+    cosmologyChoice() {
+      const newCosmoObject = {};
+      Object.keys(this.cosmoValues).forEach((key) => {
+        newCosmoObject[key] = this.hmfDefaults.cosmo[this.cosmologyChoice][key];
+      });
+      this.setCosmo(newCosmoObject);
     },
   },
 };

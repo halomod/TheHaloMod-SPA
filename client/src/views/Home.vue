@@ -5,7 +5,6 @@
       :setCosmo="createSetFormFunction('cosmo')"
       :cosmoValues="modelData.cosmo"
     />
-    <p>The modelData is: {{JSON.stringify(modelData, null, 2)}}</p>
   </div>
 </template>
 
@@ -15,7 +14,7 @@ import CosmologyForm from '../components/CosmologyForm.vue';
 
 const debug = Debug('Home.vue');
 // Enable or disble debugging 🙂
-debug.disabled = false;
+debug.enabled = false;
 
 export default {
   name: 'Home',
@@ -55,15 +54,18 @@ export default {
     fetch('http://localhost:5000/constants').then((data) => data.json()).then((json) => {
       this.hmfDefaults = json.constantsFromHMF;
       this.defaultModel = json.defaultModel;
-      console.log('modelData.cosmo is currently: ', this.modelData.cosmo);
-      console.log('json.constantsFromHMF.cosmo is currently: ', json.constantsFromHMF.cosmo);
+      debug('modelData.cosmo is currently: ', this.modelData.cosmo);
+      debug('json.constantsFromHMF.cosmo is currently: ', json.constantsFromHMF.cosmo);
 
+      /* Set the default values for cosmo. This is done in this way so that
+      * the observers are held. If the entire object is changed, it seems
+      * that the observers are removed. This can be done in a similar way
+      * for other deafult values. */
       Object.keys(this.modelData.cosmo).forEach((key) => {
         this.modelData.cosmo[key] = json.constantsFromHMF.cosmo.Planck15[key];
       });
 
-      // this.modelData.cosmo = json.constantsFromHMF.cosmo.Planck15;
-      console.log('modelData.cosmo is now: ', this.modelData.cosmo);
+      debug('modelData.cosmo is now: ', this.modelData.cosmo);
     });
   },
 };

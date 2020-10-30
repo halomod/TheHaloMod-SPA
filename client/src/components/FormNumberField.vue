@@ -12,8 +12,6 @@
     />
     <span class="md-error">{{errorStr}}</span>
   </md-field>
-  <p>The inputStr is: {{inputStr}}</p>
-  <p>The currentValue is: {{currentValue}}</p>
   </div>
 </template>
 
