@@ -5,22 +5,18 @@
       class="md-primary"
       md-fixed
     >
-      <!-- TODO: remove index from id when there are more than 1 form -->
       <md-list v-for="(form, index) in forms" :key="index">
-        <router-link v-bind:to="`#${form.component.name}-${index}`">
-          <md-list-item>
-            <!-- replace highlight with styles -->
-            {{form.highlight}}
-            {{form.component.name}}
-          </md-list-item>
-        </router-link>
+        <md-list-item
+          :class="{'router-link-active': form.highlight}"
+          v-bind:to="`#${form.component.name}`">
+          {{form.component.name}}
+        </md-list-item>
       </md-list>
     </md-app-drawer>
-    <!-- TODO: remove index from id when there are more than 1 form -->
     <md-app-content>
       <div v-for="(form, index) in forms" :key="index">
         <FormWrapper
-          v-bind:id="`${form.component.name}-${index}`"
+          v-bind:id="`${form.component.name}`"
           @toggle-highlight="(bool) => toggleHighlight(bool, form, index)">
           <component v-bind:is="form.component"/>
         </FormWrapper>
@@ -33,6 +29,8 @@
 // @ is an alias to /src
 import FormWrapper from '@/components/FormWrapper.vue';
 import ExampleForm from '@/components/ExampleForm.vue';
+import ExampleForm1 from '@/components/ExampleForm1.vue';
+import ExampleForm2 from '@/components/ExampleForm2.vue';
 
 export default {
   name: 'Create',
@@ -46,8 +44,8 @@ export default {
       // make sure you have a "name" property. That is used for the menu.
       forms: [
         { component: ExampleForm, highlight: false, isVisible: false },
-        { component: ExampleForm, highlight: false, isVisible: false },
-        { component: ExampleForm, highlight: false, isVisible: false },
+        { component: ExampleForm1, highlight: false, isVisible: false },
+        { component: ExampleForm2, highlight: false, isVisible: false },
       ],
     };
   },
@@ -82,8 +80,7 @@ export default {
     handleTopForm(form, index, prefix = '/create') {
       const f = form;
       f.highlight = true;
-      // TODO: remove index from id
-      window.history.replaceState({}, '', `${prefix}#${form.component.name}-${index}`);
+      window.history.replaceState({}, '', `${prefix}#${form.component.name}`);
     },
   },
 };
@@ -92,5 +89,5 @@ export default {
 <style scoped>
   #create {
     height: 80vh;
-  }
+  };
 </style>
