@@ -7,6 +7,8 @@ import {
   MdToolbar,
   MdAvatar,
   MdElevation,
+  MdField,
+  MdMenu,
   MdDrawer,
   MdList,
   MdApp,
@@ -25,8 +27,10 @@ Vue.use(MdTabs);
 Vue.use(MdToolbar);
 Vue.use(MdAvatar);
 Vue.use(MdElevation);
-Vue.use(MdDrawer);
+Vue.use(MdField);
+Vue.use(MdMenu);
 Vue.use(MdList);
+Vue.use(MdDrawer);
 Vue.use(MdApp);
 
 const routes = [
