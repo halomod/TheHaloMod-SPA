@@ -6,7 +6,6 @@
         v-model="transferChoice"
         id="transferChoices"
         name="transferChoice"
-        v-on:change="doSomething"
       >
         <md-option
           v-for="(value, key) in transferChoices"
@@ -28,6 +27,10 @@
         :setCurrentValue="createSetCurrentValueFunc(transferModel, inputName)"
       />
     </div>
+
+    <md-checkbox v-model="takahashiChoice">
+      Use Takahashi (2012) nonlinear P(k)?
+    </md-checkbox>
 
   </div>
 </template>
@@ -55,6 +58,7 @@ export default {
   data: () => ({
     transferChoices,
     transferChoice: '',
+    takahashiChoice: false,
   }),
   components: {
     FormNumberField,
@@ -76,13 +80,13 @@ export default {
         this.setTransferParams(this.transferParams);
       };
     },
-    doSomething() {
-      console.log('Did something');
-    },
   },
   watch: {
     transferChoice() {
       this.setTransferModel(this.transferChoice);
+    },
+    takahashiChoice() {
+      this.setTakahashi(this.takahashiChoice);
     },
   },
 };
