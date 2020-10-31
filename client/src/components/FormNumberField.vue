@@ -52,7 +52,8 @@ export default {
         const parsedNum = Number.parseFloat(value);
 
         // Determine if the number is within bounds
-        if (parsedNum <= this.max && parsedNum >= this.min) {
+        if ((this.max === null || this.min === null)
+        || (parsedNum <= this.max && parsedNum >= this.min)) {
           this.setCurrentValue(Number.parseFloat(value));
           this.inputIsInvalid = false;
         } else {
