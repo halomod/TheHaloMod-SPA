@@ -5,12 +5,22 @@
       :setCosmo="createParamsSetFunction('cosmo_params')"
       :cosmoValues="params.cosmo_params"
     />
+    <TransferForm
+      :setTakahashi="createParamsSetFunction('takahashi')"
+      :setTransferModel="createParamsSetFunction('transfer_model')"
+      :setTransferParams="createParamsSetFunction('transfer_params')"
+      :transferParams="params.transfer_params"
+      :takahashi="params.takahashi"
+      :transferModel="params.transfer_model"
+    />
   </div>
 </template>
 
 <script>
 import Debug from 'debug';
 import CosmologyForm from '../components/CosmologyForm.vue';
+import TransferForm from '../components/TransferForm.vue';
+import constants from '../constants/backend_constants';
 
 const debug = Debug('Home.vue');
 // Enable or disble debugging 🙂
@@ -27,28 +37,12 @@ export default {
         Ob0: 0,
         Om0: 0,
       },
-      transfer: {
-        FromArray: {
-          k: null,
-          T: null,
-        },
-        EH_BAO: {},
-        EH_NoBAO: {},
-        BBKS: {
-          a: 2.34,
-          b: 3.89,
-          c: 16.1,
-          d: 5.47,
-          e: 6.71,
-        },
-        BondEfs: {
-          a: 37.1,
-          b: 21.1,
-          c: 10.8,
-          nu: 1.12,
-        },
-        EH: {},
+      transfer_params: {
+        BBKS: constants.TransferComponent_params.BBKS,
+        BondEfs: constants.TransferComponent_params.BondEfs,
       },
+      takahashi: true,
+      transfer_model: 'CAMB',
     },
     hmfDefaults: null,
     defaultModel: null,
@@ -56,21 +50,22 @@ export default {
   }),
   components: {
     CosmologyForm,
+    TransferForm,
   },
   methods: {
     /**
      * Creates a form data editor for the `params` part of the data for the
-     * Home component. So this will create a function that can set any object
-     * below the `params` part of the params data structure.
+     * Home component. So this will create a function that can set any value
+     * for a key below the `params` part of the params data structure.
      *
-     * @param {String} objectName the name of the object to create the set
+     * @param {String} keyName the name of the key to create the set
      * function for
-     * @returns {(value: Object) => null} the function that will set the form
+     * @returns {(value: any) => null} the function that will set the form
      * value to what is provided
      */
-    createParamsSetFunction(objectName) {
-      return (newObj) => {
-        this.params[objectName] = newObj;
+    createParamsSetFunction(keyName) {
+      return (newVal) => {
+        this.params[keyName] = newVal;
       };
     },
   },
