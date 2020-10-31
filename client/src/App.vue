@@ -12,22 +12,9 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-
-#nav {
-}
-
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-#nav a.router-link-exact-active {
-  color: white;
-}
 </style>
 
 <script>
-
 import Navbar from './components/Navbar.vue';
 
 export default {
