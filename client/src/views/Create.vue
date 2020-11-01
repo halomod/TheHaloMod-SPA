@@ -8,7 +8,7 @@
       <md-list v-for="(form, index) in forms" :key="index">
         <md-list-item
           :class="{'router-link-active': form.highlight}"
-          v-bind:to="`#${form.component.name}`">
+          v-bind:to="`#${form.component.id}`">
           {{form.component.name}}
         </md-list-item>
       </md-list>
@@ -16,7 +16,8 @@
     <md-app-content>
       <div v-for="(form, index) in forms" :key="index">
         <FormWrapper
-          v-bind:id="`${form.component.name}`"
+          :name="form.component.name"
+          v-bind:id="`${form.component.id}`"
           @toggle-highlight="(bool) => toggleHighlight(bool, form, index)">
           <component v-bind:is="form.component"/>
         </FormWrapper>
@@ -28,22 +29,23 @@
 <script>
 // @ is an alias to /src
 import FormWrapper from '@/components/FormWrapper.vue';
-import ExampleForm from '@/components/ExampleForm.vue';
 import ExampleForm1 from '@/components/ExampleForm1.vue';
 import ExampleForm2 from '@/components/ExampleForm2.vue';
+import HaloExclusion from '../components/HaloExclusion.vue';
 
 export default {
   name: 'Create',
   components: {
     FormWrapper,
-    ExampleForm,
+    ExampleForm1,
+    ExampleForm2,
   },
   data() {
     return {
       // Add forms to this list, and remove the example form.
       // make sure you have a "name" property. That is used for the menu.
       forms: [
-        { component: ExampleForm, highlight: false, isVisible: false },
+        { component: HaloExclusion, highlight: false, isVisible: false },
         { component: ExampleForm1, highlight: false, isVisible: false },
         { component: ExampleForm2, highlight: false, isVisible: false },
       ],
@@ -80,7 +82,7 @@ export default {
     handleTopForm(form, index, prefix = '/create') {
       const f = form;
       f.highlight = true;
-      window.history.replaceState({}, '', `${prefix}#${form.component.name}`);
+      window.history.replaceState({}, '', `${prefix}#${form.component.id}`);
     },
   },
 };

@@ -7,6 +7,7 @@
 <script>
 export default {
   name: 'exampleform',
+  id: 'exampleform',
 };
 </script>
 

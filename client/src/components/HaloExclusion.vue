@@ -16,6 +16,7 @@
 <script>
 export default {
   name: 'Halo Exclusion',
+  id: 'halo-exclusion',
   data() {
     return {
       selection: 'no-exclusion',

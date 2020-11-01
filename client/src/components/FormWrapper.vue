@@ -1,6 +1,7 @@
 <template>
   <div class="wrapper">
     <div v-observe-visibility="visibilityChanged">
+      <h2 class="md-title">{{name}}</h2>
       <slot/>
     </div>
   </div>
@@ -9,6 +10,7 @@
 <script>
 export default {
   name: 'formWrapper',
+  props: ['name'],
   methods: {
     visibilityChanged(isVisible) {
       this.$emit('toggle-highlight', isVisible);
