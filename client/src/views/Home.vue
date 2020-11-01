@@ -13,6 +13,14 @@
       :takahashi="params.takahashi"
       :transferModel="params.transfer_model"
     />
+    <FilterForm
+      :filterModel="params.filter_model"
+      :setFilterModel="createParamsSetFunction('filter_model')"
+      :deltaC="params.delta_c"
+      :setDeltaC="createParamsSetFunction('delta_c')"
+      :filterParams="params.filter_params"
+      :setFilterParams="createParamsSetFunction('filter_params')"
+    />
   </div>
 </template>
 
@@ -20,11 +28,12 @@
 import Debug from 'debug';
 import CosmologyForm from '../components/CosmologyForm.vue';
 import TransferForm from '../components/TransferForm.vue';
+import FilterForm from '../components/FilterForm.vue';
 import constants from '../constants/backend_constants';
 
 const debug = Debug('Home.vue');
 // Enable or disble debugging 🙂
-debug.enabled = true;
+debug.enabled = false;
 
 export default {
   name: 'Home',
@@ -43,6 +52,16 @@ export default {
       },
       takahashi: true,
       transfer_model: 'CAMB',
+      filter_model: constants.filter_model,
+      filter_params: {
+        SharpK: {
+          c: 2,
+        },
+        SharpKEllipsoid: {
+          c: 2.5,
+        },
+      },
+      delta_c: constants.delta_c,
     },
     hmfDefaults: null,
     defaultModel: null,
@@ -51,6 +70,7 @@ export default {
   components: {
     CosmologyForm,
     TransferForm,
+    FilterForm,
   },
   methods: {
     /**
@@ -78,7 +98,7 @@ export default {
       /* Set the default values for cosmo. This is done in this way so that
       * the observers are held. If the entire object is changed, it seems
       * that the observers are removed. This can be done in a similar way
-      * for other deafult values. */
+      * for other default values. */
       const cosmoModel = this.params.cosmo_model;
       Object.keys(this.params.cosmo_params).forEach((key) => {
         this.params.cosmo_params[key] = json.constantsFromHMF.cosmo[cosmoModel][key];
