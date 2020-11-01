@@ -12,10 +12,10 @@
 </template>
 
 <script>
+import Debug from 'debug';
 import MassDefinitionForm from '../components/MassDefinitionForm.vue';
 import GrowthForm from '../components/GrowthForm.vue';
 import HaloModelForm from '../components/HaloModelForm.vue';
-import Debug from 'debug';
 import CosmologyForm from '../components/CosmologyForm.vue';
 
 const debug = Debug('Home.vue');
