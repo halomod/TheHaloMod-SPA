@@ -5,12 +5,14 @@
       :setCosmo="createSetFormFunction('cosmo')"
       :cosmoValues="modelData.cosmo"
     />
+    <BiasForm/>
   </div>
 </template>
 
 <script>
 import Debug from 'debug';
 import CosmologyForm from '../components/CosmologyForm.vue';
+import BiasForm from '../components/BiasForm.vue';
 
 const debug = Debug('Home.vue');
 // Enable or disble debugging 🙂
@@ -32,6 +34,7 @@ export default {
   }),
   components: {
     CosmologyForm,
+    BiasForm,
   },
   methods: {
     /**
