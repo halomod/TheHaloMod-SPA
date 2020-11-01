@@ -8,7 +8,6 @@
           <md-field>
             <label for='log_r_range'>Scale Range (log10)</label>
             <!-- TODO Add slider-->
-            
           </md-field>
         </div>
         <div class='md-layout-item'>
@@ -26,9 +25,9 @@
 </template>
 
 <script>
-const defaultValues = {
-  // default values
-};
+// const defaultValues = {
+// default values
+// };
 
 // Objects used in the html
 export default {
