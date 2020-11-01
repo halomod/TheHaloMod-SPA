@@ -9,14 +9,14 @@
         <md-list-item
           :class="{'router-link-active': form.highlight}"
           v-bind:to="`#${form.component.id}`">
-          {{form.component.name}}
+          {{form.component.title}}
         </md-list-item>
       </md-list>
     </md-app-drawer>
     <md-app-content>
       <div v-for="(form, index) in forms" :key="index">
         <FormWrapper
-          :name="form.component.name"
+          :name="form.component.title"
           v-bind:id="`${form.component.id}`"
           @toggle-highlight="(bool) => toggleHighlight(bool, form, index)">
           <component v-bind:is="form.component"/>
