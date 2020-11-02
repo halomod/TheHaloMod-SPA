@@ -34,6 +34,8 @@ import InputField from './InputField.vue';
 // Objects used in the html
 export default {
   name: 'HaloModelForm',
+  title: 'Halo Model',
+  id: 'halo-model',
   components: {
     InputField,
   },
@@ -108,13 +110,3 @@ export default {
   },
 };
 </script>
-
-<style lang='css' scoped>
-.md-layout-item {
-  max-width: 75%;
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: 5px;
-  margin-bottom: 5px;
-}
-</style>

@@ -51,6 +51,8 @@ const filterChoices = {
 };
 export default {
   name: 'FilterForm',
+  title: 'Filter',
+  id: 'Filter',
   props: {
     deltaC: Number,
     setDeltaC: Function,

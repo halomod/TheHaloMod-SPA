@@ -47,6 +47,8 @@ const transferChoices = {
 };
 export default {
   name: 'TransferForm',
+  title: 'Transfer',
+  id: 'tranfser',
   props: {
     transferParams: Object,
     setTransferParams: Function,
