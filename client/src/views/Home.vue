@@ -1,5 +1,9 @@
 <template>
   <div class="home">
+    <HaloModelForm
+      :hmfDefaults="hmfDefaults"
+      :setForm="createParamsSetFunction('haloModel')"
+      :formValues="params.haloModel"/>
     <CosmologyForm
       :hmfDefaults="hmfDefaults"
       :setCosmo="createParamsSetFunction('cosmo_params')"
@@ -32,6 +36,7 @@
 
 <script>
 import Debug from 'debug';
+import HaloModelForm from '../components/HaloModelForm.vue';
 import CosmologyForm from '../components/CosmologyForm.vue';
 import TransferForm from '../components/TransferForm.vue';
 import HaloProfileForm from '../components/HaloProfileForm.vue';
@@ -52,6 +57,14 @@ export default {
         H0: 0,
         Ob0: 0,
         Om0: 0,
+      },
+      haloModel: {
+        log_r_range: 0,
+        rnum: 0,
+        log_k_range: 0,
+        hm_dlog10k: 0,
+        hc_spectrum: '',
+        force_1halo_turnover: 0,
       },
       transfer_params: {
         BBKS: constants.TransferComponent_params.BBKS,
@@ -85,6 +98,7 @@ export default {
     baseServerURL: 'http://localhost:5000',
   }),
   components: {
+    HaloModelForm,
     CosmologyForm,
     TransferForm,
     HaloProfileForm,

@@ -10,6 +10,7 @@ matrix:
         apt_packages:
           - gfortran
       dist: xenial
+      cache: pip
       addons:
         apt:
           sources:
@@ -22,7 +23,6 @@ matrix:
         - export PATH=$PWD/gfortran-symlinks:$PATH
       script:
         - cd server 
-        - pip3 install -r requirements.txt
-        - flake8 tests halomod_app
-        - python -m pytest
+        - sh run.sh --lint --ci
+        - sh run.sh --test --ci
         - cd ..
