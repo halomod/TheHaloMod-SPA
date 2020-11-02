@@ -19,6 +19,14 @@
       :haloProfileParams="params.halo_profile_params"
       :setHaloProfileParams="createParamsSetFunction('halo_profile_params')"
     />
+    <FilterForm
+      :filterModel="params.filter_model"
+      :setFilterModel="createParamsSetFunction('filter_model')"
+      :deltaC="params.delta_c"
+      :setDeltaC="createParamsSetFunction('delta_c')"
+      :filterParams="params.filter_params"
+      :setFilterParams="createParamsSetFunction('filter_params')"
+    />
   </div>
 </template>
 
@@ -27,6 +35,7 @@ import Debug from 'debug';
 import CosmologyForm from '../components/CosmologyForm.vue';
 import TransferForm from '../components/TransferForm.vue';
 import HaloProfileForm from '../components/HaloProfileForm.vue';
+import FilterForm from '../components/FilterForm.vue';
 import constants from '../constants/backend_constants';
 
 const debug = Debug('Home.vue');
@@ -60,6 +69,16 @@ export default {
           use_interp: constants.Profile_params.Einasto.use_interp,
         },
       },
+      filter_model: constants.filter_model,
+      filter_params: {
+        SharpK: {
+          c: 2,
+        },
+        SharpKEllipsoid: {
+          c: 2.5,
+        },
+      },
+      delta_c: constants.delta_c,
     },
     hmfDefaults: null,
     defaultModel: null,
@@ -69,6 +88,7 @@ export default {
     CosmologyForm,
     TransferForm,
     HaloProfileForm,
+    FilterForm,
   },
   methods: {
     /**
@@ -96,7 +116,7 @@ export default {
       /* Set the default values for cosmo. This is done in this way so that
       * the observers are held. If the entire object is changed, it seems
       * that the observers are removed. This can be done in a similar way
-      * for other deafult values. */
+      * for other default values. */
       const cosmoModel = this.params.cosmo_model;
       Object.keys(this.params.cosmo_params).forEach((key) => {
         this.params.cosmo_params[key] = json.constantsFromHMF.cosmo[cosmoModel][key];
