@@ -1,15 +1,19 @@
 <template>
   <md-field :class="fieldClass">
+    <!-- for sliders this adds the value under the slider -->
     <div v-if="inputType == 'range'">
       <label>{{label}}</label>
       <span class="md-helper-text">{{value}}</span>
     </div>
+    <!-- no label for a checkbox -->
     <div v-if="inputType == 'checkbox'">
     </div>
+    <!-- everything else gets a normal label -->
     <div v-else>
       <label>{{label}}</label>
     </div>
 
+    <!-- this defines a material design checkbox -->
     <div v-if="inputType == 'checkbox'">
       <md-checkbox
       :value="inputStr"
@@ -19,6 +23,7 @@
       :id="inputName"
       />{{label}}
     </div>
+    <!-- this is a dropdown menu -->
     <div v-else-if="inputType == 'option'">
       <md-select
       :value="inputStr"
@@ -27,7 +32,7 @@
       v-model="value"
       :id="inputName"
       md-dense
-      >
+      > <!-- load the given options -->
         <md-option
           v-for='(name, value) in options'
           :key='value'
@@ -36,6 +41,7 @@
         >
       </md-select>
     </div>
+    <!-- everything else like regular input boxes -->
     <div v-else>
       <md-input
       :value="inputStr"
@@ -48,6 +54,7 @@
       v-model="value"
       />
     </div>
+    <!-- will only display error when md-invalid is set to true -->
     <span class="md-error">{{ errorStr }}</span>
   </md-field>
 </template>
@@ -88,10 +95,7 @@ export default {
   },
   methods: {
     handleInput(value) {
-      if (typeof value === 'string' || value instanceof String) {
-        this.inputIsInvalid = false;
-        this.setCurrentValue(value);
-      } else if (!Number.isNaN(value)) {
+      if (!Number.isNaN(value)) {
       // Determine if the value is a number
         const parsedNum = Number.parseFloat(value);
 

@@ -1,14 +1,15 @@
 <template>
+  <!-- These 2 divs are import to maintain a material design layout -->
+  <!-- This div starts a flexable container -->
   <div class="md-layout md-gutter">
+    <!-- This marks an item in the previous container -->
     <div class="md-layout-item">
       <md-subheader>Halo Model</md-subheader>
       <md-divider></md-divider>
+      <!-- This div starts a new flex container with the HaloMod form inputs -->
       <div class="md-layout md-gutter">
         <!-- Here is where its repeating to load the input -->
         <div v-for="(input, inputName) in inputs" :key="input.id" class="md-layout-item">
-          <!--<md-field :class="validationClass">-->
-            <!--<label :for="inputName">{{ input.label }}</label>-->
-            <!--<md-input v-model="input.value" :id="inputName" v-on:input="handleInput"/>-->
             <InputField
             :key="inputName"
             :label="input.label"
@@ -21,8 +22,6 @@
             :options="input.options"
             :setCurrentValue="createSetCurrentValueFunc(inputName)"
             />
-            <!--<span class="md-error">Please input a valid number</span>-->
-          <!--</md-field>-->
         </div>
       </div>
     </div>
@@ -106,14 +105,6 @@ export default {
         this.setForm(this.formValues);
       };
     },
-    // works for scientific notation, negative number, and decimals
-    // Valid: 1, 1.0, -2.0e-8, etc
-    // Invalid: -1e1.0, -e00001, etc
-    isNotNum(num) {
-      return (
-        num.replace(/-?(?:0|[1-9]\d*)(?:\.\d*)?(?:[eE][+-]?\d+)?/g, '') !== ''
-      );
-    },
   },
 };
 </script>
@@ -125,11 +116,5 @@ export default {
   margin-right: auto;
   margin-top: 5px;
   margin-bottom: 5px;
-}
-.range-selector {
-  padding: 5px;
-}
-.range-input1 {
-  padding: 5px;
 }
 </style>
