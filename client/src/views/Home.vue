@@ -2,7 +2,10 @@
   <div class="home">
     <MassDefinitionForm/>
     <GrowthForm/>
-    <HaloModelForm/>
+    <HaloModelForm
+      :hmfDefaults="hmfDefaults"
+      :setForm="createSetFormFunction('haloModel')"
+      :formValues="modelData.haloModel"/>
     <CosmologyForm
       :hmfDefaults="hmfDefaults"
       :setCosmo="createSetFormFunction('cosmo')"
@@ -30,6 +33,14 @@ export default {
         h0: 0,
         Ob0: 0,
         Om0: 0,
+      },
+      haloModel: {
+        log_r_range: 0,
+        rnum: 0,
+        log_k_range: 0,
+        hm_dlog10k: 0,
+        hc_spectrum: '',
+        force_1halo_turnover: 0,
       },
     },
     hmfDefaults: null,
