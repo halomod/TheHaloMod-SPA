@@ -13,6 +13,12 @@
       :takahashi="params.takahashi"
       :transferModel="params.transfer_model"
     />
+    <HaloProfileForm
+      :haloProfileModel="params.halo_profile_model"
+      :setHaloProfileModel="createParamsSetFunction('halo_profile_model')"
+      :haloProfileParams="params.halo_profile_params"
+      :setHaloProfileParams="createParamsSetFunction('halo_profile_params')"
+    />
     <FilterForm
       :filterModel="params.filter_model"
       :setFilterModel="createParamsSetFunction('filter_model')"
@@ -28,6 +34,7 @@
 import Debug from 'debug';
 import CosmologyForm from '../components/CosmologyForm.vue';
 import TransferForm from '../components/TransferForm.vue';
+import HaloProfileForm from '../components/HaloProfileForm.vue';
 import FilterForm from '../components/FilterForm.vue';
 import constants from '../constants/backend_constants';
 
@@ -52,6 +59,16 @@ export default {
       },
       takahashi: true,
       transfer_model: 'CAMB',
+      halo_profile_model: constants.halo_profile_model,
+      halo_profile_params: {
+        GeneralizedNFW: {
+          alpha: constants.Profile_params.GeneralizedNFW.alpha,
+        },
+        Einasto: {
+          alpha: constants.Profile_params.Einasto.alpha,
+          use_interp: constants.Profile_params.Einasto.use_interp,
+        },
+      },
       filter_model: constants.filter_model,
       filter_params: {
         SharpK: {
@@ -70,6 +87,7 @@ export default {
   components: {
     CosmologyForm,
     TransferForm,
+    HaloProfileForm,
     FilterForm,
   },
   methods: {
