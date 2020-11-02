@@ -12,26 +12,10 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-#nav a.router-link-exact-active {
-  color: white;
-}
 </style>
 
 <script>
 import Navbar from './components/Navbar.vue';
-
-// CHANGE ME TO ACTUAL HOST LOCATION
-fetch('http://localhost:5000/constants', {
-  credentials: 'include',
-}).then((data) => {
-  console.log(data);
-});
 
 export default {
   components: {
