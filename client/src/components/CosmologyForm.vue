@@ -45,7 +45,7 @@ export default {
   },
   data: () => ({
     inputs: {
-      h0: {
+      H0: {
         html: '<label>H<sub>0</sub></label>',
         min: 10,
         max: 500,
