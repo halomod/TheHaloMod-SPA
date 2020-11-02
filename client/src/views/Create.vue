@@ -31,12 +31,14 @@ import FormWrapper from '@/components/FormWrapper.vue';
 import ExampleForm from '@/components/ExampleForm.vue';
 import ExampleForm1 from '@/components/ExampleForm1.vue';
 import ExampleForm2 from '@/components/ExampleForm2.vue';
+import CosmologyForm from '@/components/CosmologyForm.vue';
 
 export default {
   name: 'Create',
   components: {
     FormWrapper,
     ExampleForm,
+    CosmologyForm,
   },
   data() {
     return {
@@ -46,6 +48,7 @@ export default {
         { component: ExampleForm, highlight: false, isVisible: false },
         { component: ExampleForm1, highlight: false, isVisible: false },
         { component: ExampleForm2, highlight: false, isVisible: false },
+        { component: CosmologyForm, highlight: false, isVisible: false },
       ],
     };
   },
