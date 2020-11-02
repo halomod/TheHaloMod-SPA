@@ -51,6 +51,13 @@ export default {
       if (!Number.isNaN(value)) {
         const parsedNum = Number.parseFloat(value);
 
+        // Determine if there are min and max bounds
+        if (this.max === undefined || this.min === undefined) {
+          this.setCurrentValue(Number.parseFloat(value));
+          this.inputIsInvalid = false;
+          return;
+        }
+
         // Determine if the number is within bounds
         if (parsedNum <= this.max && parsedNum >= this.min) {
           this.setCurrentValue(Number.parseFloat(value));

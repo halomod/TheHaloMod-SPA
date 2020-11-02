@@ -29,25 +29,23 @@
 <script>
 // @ is an alias to /src
 import FormWrapper from '@/components/FormWrapper.vue';
-import ExampleForm1 from '@/components/ExampleForm1.vue';
-import ExampleForm2 from '@/components/ExampleForm2.vue';
 import HaloExclusion from '../components/HaloExclusion.vue';
+import CosmologyForm from '@/components/CosmologyForm.vue';
 
 export default {
   name: 'Create',
   components: {
     FormWrapper,
-    ExampleForm1,
-    ExampleForm2,
+    CosmologyForm,
+    HaloExclusion,
   },
   data() {
     return {
       // Add forms to this list, and remove the example form.
       // make sure you have a "name" property. That is used for the menu.
       forms: [
+        { component: CosmologyForm, highlight: false, isVisible: false },
         { component: HaloExclusion, highlight: false, isVisible: false },
-        { component: ExampleForm1, highlight: false, isVisible: false },
-        { component: ExampleForm2, highlight: false, isVisible: false },
       ],
     };
   },
