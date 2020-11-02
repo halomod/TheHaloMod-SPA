@@ -19,7 +19,7 @@
           :name="form.component.title"
           v-bind:id="`${form.component.id}`"
           @toggle-highlight="(bool) => toggleHighlight(bool, form, index)">
-          <component v-bind:is="form.component"/>
+          <component v-bind:is="form.component" v-bind="form.props"/>
         </FormWrapper>
       </div>
     </md-app-content>
@@ -28,28 +28,121 @@
 
 <script>
 // @ is an alias to /src
+import Debug from 'debug';
 import FormWrapper from '@/components/FormWrapper.vue';
-import HaloExclusion from '../components/HaloExclusion.vue';
 import CosmologyForm from '@/components/CosmologyForm.vue';
+import TransferForm from '@/components/TransferForm.vue';
+import FilterForm from '@/components/FilterForm.vue';
+import HaloExclusion from '@/components/HaloExclusion.vue';
+import HaloProfileForm from '@/components/HaloProfileForm.vue';
+import constants from '@/constants/backend_constants';
+import baseURL from '@/env';
+
+const debug = Debug('Create.vue');
 
 export default {
   name: 'Create',
   components: {
     FormWrapper,
     CosmologyForm,
+    TransferForm,
+    FilterForm,
     HaloExclusion,
+    HaloProfileForm,
   },
   data() {
     return {
-      // Add forms to this list, and remove the example form.
-      // make sure you have a "name" property. That is used for the menu.
-      forms: [
-        { component: CosmologyForm, highlight: false, isVisible: false },
-        { component: HaloExclusion, highlight: false, isVisible: false },
-      ],
+      forms: null,
+      params: {
+        cosmo_model: 'Planck15',
+        cosmo_params: {
+          H0: 0,
+          Ob0: 0,
+          Om0: 0,
+        },
+        transfer_params: {
+          BBKS: constants.TransferComponent_params.BBKS,
+          BondEfs: constants.TransferComponent_params.BondEfs,
+        },
+        takahashi: true,
+        transfer_model: 'CAMB',
+        halo_profile_model: constants.halo_profile_model,
+        halo_profile_params: {
+          GeneralizedNFW: {
+            alpha: constants.Profile_params.GeneralizedNFW.alpha,
+          },
+          Einasto: {
+            alpha: constants.Profile_params.Einasto.alpha,
+            use_interp: constants.Profile_params.Einasto.use_interp,
+          },
+        },
+        filter_model: constants.filter_model,
+        filter_params: {
+          SharpK: {
+            c: 2,
+          },
+          SharpKEllipsoid: {
+            c: 2.5,
+          },
+        },
+        delta_c: constants.delta_c,
+      },
+      hmfDefaults: null,
+      defaultModel: null,
     };
   },
   methods: {
+    createForms() {
+      // Add forms to this list, and remove the example form.
+      // make sure you have a "title" and "id" property.
+      this.forms = [
+        {
+          component: CosmologyForm,
+          props: {
+            hmfDefaults: this.hmfDefaults,
+            setCosmo: this.createParamsSetFunction('cosmo_params'),
+            cosmoValues: this.params.cosmo_params,
+          },
+        },
+        {
+          component: TransferForm,
+          props: {
+            setTakahashi: this.createParamsSetFunction('takahashi'),
+            setTransferModel: this.createParamsSetFunction('transfer_model'),
+            setTransferParams: this.createParamsSetFunction('transfer_params'),
+            transferParams: this.params.transfer_params,
+            takahashi: this.params.takahashi,
+            transferModel: this.params.transfer_model,
+          },
+        },
+        {
+          component: FilterForm,
+          props: {
+            filterModel: this.params.filter_model,
+            setFilterModel: this.createParamsSetFunction('filter_model'),
+            deltaC: this.params.delta_c,
+            setDeltaC: this.createParamsSetFunction('delta_c'),
+            filterParams: this.params.filter_params,
+            setFilterParams: this.createParamsSetFunction('filter_params'),
+          },
+        },
+        {
+          component: HaloProfileForm,
+          props: {
+            haloProfileModel: this.params.halo_profile_model,
+            setHaloProfileModel: this.createParamsSetFunction('halo_profile_model'),
+            haloProfileParams: this.params.halo_profile_params,
+            setHaloProfileParams: this.createParamsSetFunction('halo_profile_params'),
+          },
+        },
+        { component: HaloExclusion },
+      ];
+      this.forms.forEach((item) => {
+        const i = item;
+        i.highlight = false;
+        i.isVisible = false;
+      });
+    },
     toggleHighlight(bool, form, index) {
       const f = form;
       if (!bool) {
@@ -82,6 +175,29 @@ export default {
       f.highlight = true;
       window.history.replaceState({}, '', `${prefix}#${form.component.id}`);
     },
+    createParamsSetFunction(keyName) {
+      return (newVal) => {
+        this.params[keyName] = newVal;
+      };
+    },
+  },
+  created() {
+    fetch(`${baseURL}/constants`).then((data) => data.json()).then((json) => {
+      this.hmfDefaults = json.constantsFromHMF;
+      this.defaultModel = json.defaultModel;
+      debug('json.constantsFromHMF.cosmo is currently: ', json.constantsFromHMF.cosmo);
+
+      /* Set the default values for cosmo. This is done in this way so that
+      * the observers are held. If the entire object is changed, it seems
+      * that the observers are removed. This can be done in a similar way
+      * for other default values. */
+      const cosmoModel = this.params.cosmo_model;
+      Object.keys(this.params.cosmo_params).forEach((key) => {
+        this.params.cosmo_params[key] = json.constantsFromHMF.cosmo[cosmoModel][key];
+      });
+      this.createForms();
+      debug('params is now: ', this.params);
+    });
   },
 };
 </script>

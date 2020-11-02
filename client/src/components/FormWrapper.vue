@@ -22,5 +22,6 @@ export default {
 <style scoped>
 .wrapper {
   margin: 10px;
+  margin-bottom: 10vh;
 }
 </style>

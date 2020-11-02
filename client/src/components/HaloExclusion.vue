@@ -25,9 +25,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-  .halo-exclusion {
-    margin: 10vh;
-  };
-</style>

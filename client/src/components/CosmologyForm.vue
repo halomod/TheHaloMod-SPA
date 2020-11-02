@@ -38,6 +38,8 @@ const cosmologyChoices = [
 ];
 export default {
   name: 'CosmologyForm',
+  title: 'Cosmology',
+  id: 'cosmology',
   props: {
     hmfDefaults: Object,
     cosmoValues: Object,
