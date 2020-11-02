@@ -13,6 +13,12 @@
       :takahashi="params.takahashi"
       :transferModel="params.transfer_model"
     />
+    <HaloProfileForm
+      :haloProfileModel="params.halo_profile_model"
+      :setHaloProfileModel="createParamsSetFunction('halo_profile_model')"
+      :haloProfileParams="params.halo_profile_params"
+      :setHaloProfileParams="createParamsSetFunction('halo_profile_params')"
+    />
   </div>
 </template>
 
@@ -20,11 +26,12 @@
 import Debug from 'debug';
 import CosmologyForm from '../components/CosmologyForm.vue';
 import TransferForm from '../components/TransferForm.vue';
+import HaloProfileForm from '../components/HaloProfileForm.vue';
 import constants from '../constants/backend_constants';
 
 const debug = Debug('Home.vue');
 // Enable or disble debugging 🙂
-debug.enabled = true;
+debug.enabled = false;
 
 export default {
   name: 'Home',
@@ -43,6 +50,16 @@ export default {
       },
       takahashi: true,
       transfer_model: 'CAMB',
+      halo_profile_model: constants.halo_profile_model,
+      halo_profile_params: {
+        GeneralizedNFW: {
+          alpha: constants.Profile_params.GeneralizedNFW.alpha,
+        },
+        Einasto: {
+          alpha: constants.Profile_params.Einasto.alpha,
+          use_interp: constants.Profile_params.Einasto.use_interp,
+        },
+      },
     },
     hmfDefaults: null,
     defaultModel: null,
@@ -51,6 +68,7 @@ export default {
   components: {
     CosmologyForm,
     TransferForm,
+    HaloProfileForm,
   },
   methods: {
     /**
