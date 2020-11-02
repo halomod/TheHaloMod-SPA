@@ -34,6 +34,8 @@ import InputField from './InputField.vue';
 // Objects used in the html
 export default {
   name: 'HaloModelForm',
+  title: 'Halo Model',
+  id: 'halo-model',
   components: {
     InputField,
   },

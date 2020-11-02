@@ -35,6 +35,7 @@ import TransferForm from '@/components/TransferForm.vue';
 import FilterForm from '@/components/FilterForm.vue';
 import HaloExclusion from '@/components/HaloExclusion.vue';
 import HaloProfileForm from '@/components/HaloProfileForm.vue';
+import HaloModelForm from '@/components/HaloModelForm.vue';
 import constants from '@/constants/backend_constants';
 import baseURL from '@/env';
 
@@ -59,6 +60,14 @@ export default {
           H0: 0,
           Ob0: 0,
           Om0: 0,
+        },
+        haloModel: {
+          log_r_range: 0,
+          rnum: 0,
+          log_k_range: 0,
+          hm_dlog10k: 0,
+          hc_spectrum: '',
+          force_1halo_turnover: 0,
         },
         transfer_params: {
           BBKS: constants.TransferComponent_params.BBKS,
@@ -124,6 +133,14 @@ export default {
             setDeltaC: this.createParamsSetFunction('delta_c'),
             filterParams: this.params.filter_params,
             setFilterParams: this.createParamsSetFunction('filter_params'),
+          },
+        },
+        {
+          component: HaloModelForm,
+          props: {
+            hmfDefaults: this.hmfDefaults,
+            setForm: this.createParamsSetFunction('haloModel'),
+            formValues: this.params.haloModel,
           },
         },
         {
