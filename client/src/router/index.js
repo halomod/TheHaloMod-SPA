@@ -12,6 +12,7 @@ import {
   MdDrawer,
   MdList,
   MdApp,
+  MdCheckbox,
 } from 'vue-material/dist/components';
 import VueObserveVisibility from 'vue-observe-visibility';
 import 'vue-material/dist/vue-material.min.css';
@@ -32,6 +33,7 @@ Vue.use(MdMenu);
 Vue.use(MdList);
 Vue.use(MdDrawer);
 Vue.use(MdApp);
+Vue.use(MdCheckbox);
 
 const routes = [
   {
