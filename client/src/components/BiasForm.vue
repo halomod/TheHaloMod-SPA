@@ -11,11 +11,12 @@
         </md-option>
       </md-select>
     </md-field>
-    <doublefield
+    <double-field
       v-for="(value, param) in model.bias_params"
       :value="value"
       :key="param"
       :param="param"
+      range=false
       :placeholder="String(defaults[param])"
       v-model="model.bias_params[param]"/>
   </form>
@@ -23,7 +24,7 @@
 
 <script>
 import BACKEND_CONSTANTS from '../constants/backend_constants';
-import doublefield from './double-field.vue';
+import DoubleField from './DoubleField.vue';
 
 const biasChoices = {
   'Tinker (2010)': 'Tinker10',
@@ -53,7 +54,10 @@ export default {
     defaults: biasParams.Tinker10,
   }),
   components: {
-    doublefield,
+    DoubleField,
+  },
+  updated() {
+    console.log(this.model);
   },
   methods: {
     updateOptions() {

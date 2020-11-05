@@ -5,7 +5,8 @@
       :setCosmo="createSetFormFunction('cosmo')"
       :cosmoValues="modelData.cosmo"
     />
-    <BiasForm/>
+    <bias-form/>
+    <tracer-concentration-form/>
   </div>
 </template>
 
@@ -13,6 +14,7 @@
 import Debug from 'debug';
 import CosmologyForm from '../components/CosmologyForm.vue';
 import BiasForm from '../components/BiasForm.vue';
+import TracerConcentrationForm from '../components/TracerConcentration.vue';
 
 const debug = Debug('Home.vue');
 // Enable or disble debugging 🙂
@@ -31,10 +33,12 @@ export default {
     hmfDefaults: null,
     defaultModel: null,
     baseServerURL: 'http://localhost:5000',
+
   }),
   components: {
     CosmologyForm,
     BiasForm,
+    TracerConcentrationForm,
   },
   methods: {
     /**
