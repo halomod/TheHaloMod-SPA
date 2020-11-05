@@ -6,8 +6,7 @@
       :formValues="params.haloModel"/>
     <CosmologyForm
       :hmfDefaults="hmfDefaults"
-      :setCosmo="createParamsSetFunction('cosmo_params')"
-      :cosmoValues="params.cosmo_params"
+      v-model="params.cosmo_params"
     />
     <TransferForm
       :setTakahashi="createParamsSetFunction('takahashi')"
@@ -52,11 +51,13 @@ export default {
   // TODO: Make the data at the app level and learn how to pass this to routes
   data: () => ({
     params: {
-      cosmo_model: 'Planck15',
-      cosmo_params: {
-        H0: 0,
-        Ob0: 0,
-        Om0: 0,
+      cosmoData: {
+        cosmo_model: 'Planck15',
+        cosmo_params: {
+          H0: 0,
+          Ob0: 0,
+          Om0: 0,
+        },
       },
       haloModel: {
         log_r_range: 0,

@@ -43,7 +43,10 @@ export default {
   props: {
     hmfDefaults: Object,
     cosmoValues: Object,
-    setCosmo: Function,
+  },
+  model: {
+    prop: 'cosmoValues',
+    event: 'updateCosmo',
   },
   data: () => ({
     inputs: {
@@ -79,11 +82,9 @@ export default {
         this.cosmoValues[inputType] = newValue;
 
         // Set the value for good.
-        this.setCosmo(this.cosmoValues);
+        this.$emit('updateCosmo', this.cosmoValues);
+        // this.setCosmo(this.cosmoValues);
       };
-    },
-    doSomething(value) {
-      console.log(value);
     },
   },
   watch: {
@@ -96,7 +97,7 @@ export default {
       Object.keys(this.cosmoValues).forEach((key) => {
         newCosmoObject[key] = this.hmfDefaults.cosmo[this.cosmologyChoice][key];
       });
-      this.setCosmo(newCosmoObject);
+      this.$emit('updateCosmo', this.cosmoValues);
     },
   },
 };
