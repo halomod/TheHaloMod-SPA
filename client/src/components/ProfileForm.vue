@@ -1,7 +1,7 @@
 <template>
     <div>
         <md-field>
-            <label for="tracerProfileChoices">Tracer Profile</label>
+            <label for="profileChoices">Tracer Profile</label>
             <md-select v-model="tracerChoice" id="tracerProfileChoices"  name="tracerProfile">
                 <md-option
                     v-for="choice in tracerProfileChoices"
@@ -27,8 +27,9 @@
 </template>
 
 <script>
+import BACKEND_CONSTANTS from '../constants/backend_constants';
 
-const tracerProfileChoices = [
+const profileChoices = [
   'NFW 1997',
   'Hernquist',
   'Moore',
@@ -37,20 +38,28 @@ const tracerProfileChoices = [
   'Cored NFW',
 ];
 
+const profileParams = BACKEND_CONSTANTS.Profile_params;
+
 export default {
-  name: 'TracerProfileForm',
-  props: {
-    tracerParams: Object,
-    setTracerParams: Function,
-    tracerProfile: String,
-    setTracerProfile: Function,
-  },
+  name: 'ProfileForm',
   data: () => ({
-    tracerProfileChoices,
-    tracerChoice: tracerProfileChoices[0],
+    profileChoices,
+    model: {
+      profile_model: tracerProfileChoices[0],
+      profile_params: profileParams.NFW,
+    },
+    defaults: profileParms.NFW,
   }),
-  mounted() {
-    this.tracerChoice = this.tracerProfile;
-  }
+  methods: {
+    updateOptions() {
+      const params = profileParams;
+      this.model.profile_params = null;
+
+      this.$nextTick(function() {
+        this.model.profile_params = params[this.model.profile_model];
+        this.defaults = profileParams[this.model.profile_model];
+      });
+    },
+  },
 };
 </script>
