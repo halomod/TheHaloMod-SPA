@@ -19,7 +19,7 @@
           :name="form.component.title"
           v-bind:id="`${form.component.id}`"
           @toggle-highlight="(bool) => toggleHighlight(bool, form, index)">
-          <component v-bind:is="form.component" v-bind="form.props"/>
+          <component v-bind:is="form.component" v-bind="form.props" v-model="form.model"/>
         </FormWrapper>
       </div>
     </md-app-content>
@@ -53,6 +53,7 @@ export default {
   },
   data() {
     return {
+      payload: Object.assign(constants),
       forms: null,
       params: {
         cosmo_model: 'Planck15',
@@ -104,7 +105,7 @@ export default {
     createForms() {
       // Add forms to this list, and remove the example form.
       // make sure you have a "title" and "id" property.
-      this.forms = [
+      const forms = [
         {
           component: CosmologyForm,
           props: {
@@ -152,13 +153,14 @@ export default {
             setHaloProfileParams: this.createParamsSetFunction('halo_profile_params'),
           },
         },
-        { component: HaloExclusion },
+        { component: HaloExclusion, model: this.payload.exclusion_model },
       ];
-      this.forms.forEach((item) => {
+      forms.forEach((item) => {
         const i = item;
         i.highlight = false;
         i.isVisible = false;
       });
+      this.forms = forms;
     },
     toggleHighlight(bool, form, index) {
       const f = form;
@@ -198,7 +200,7 @@ export default {
       };
     },
   },
-  created() {
+  mounted() {
     fetch(`${baseURL}/constants`).then((data) => data.json()).then((json) => {
       this.hmfDefaults = json.constantsFromHMF;
       this.defaultModel = json.defaultModel;
@@ -212,9 +214,16 @@ export default {
       Object.keys(this.params.cosmo_params).forEach((key) => {
         this.params.cosmo_params[key] = json.constantsFromHMF.cosmo[cosmoModel][key];
       });
-      this.createForms();
       debug('params is now: ', this.params);
     });
+  },
+  created() {
+    this.createForms();
+  },
+  watch: {
+    value() {
+      console.log('///////', this.payload.exclusion_model);
+    },
   },
 };
 </script>
