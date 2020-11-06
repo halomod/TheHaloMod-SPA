@@ -6,7 +6,7 @@
       :formValues="params.haloModel"/>
     <CosmologyForm
       :hmfDefaults="hmfDefaults"
-      v-model="params.cosmo_params"
+      v-model="params.cosmoData"
     />
     <TransferForm
       :setTakahashi="createParamsSetFunction('takahashi')"
@@ -132,9 +132,9 @@ export default {
       * the observers are held. If the entire object is changed, it seems
       * that the observers are removed. This can be done in a similar way
       * for other default values. */
-      const cosmoModel = this.params.cosmo_model;
-      Object.keys(this.params.cosmo_params).forEach((key) => {
-        this.params.cosmo_params[key] = json.constantsFromHMF.cosmo[cosmoModel][key];
+      const cosmoModel = this.params.cosmoData.cosmo_model;
+      Object.keys(this.params.cosmoData.cosmo_params).forEach((key) => {
+        this.params.cosmoData.cosmo_params[key] = json.constantsFromHMF.cosmo[cosmoModel][key];
       });
 
       debug('params is now: ', this.params);

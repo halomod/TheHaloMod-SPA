@@ -13,12 +13,18 @@
       </md-select>
     </md-field>
 
+    <p>cosmoData is {{cosmoData}}</p>
+
+    <FormNumberField
+      :labelHtml="'<label>Something</label>'"
+    />
+
     <FormNumberField
       v-for="(input, inputName) in inputs"
       :labelHtml="input.html"
       :key="inputName"
       :step="input.step"
-      :currentValue="cosmoValues[inputName]"
+      :currentValue="cosmoData.cosmo_params[inputName]"
       :min="input.min"
       :max="input.max"
       :setCurrentValue="createSetCurrentValueFunc(inputName)"
@@ -42,10 +48,24 @@ export default {
   id: 'cosmology',
   props: {
     hmfDefaults: Object,
-    cosmoValues: Object,
+    /**
+     * Has a general form like so:
+     *
+     * ```
+     * cosmoData: {
+        cosmo_model: 'Planck15',
+        cosmo_params: {
+          H0: 0,
+          Ob0: 0,
+          Om0: 0,
+        },
+      },
+     * ```
+     */
+    cosmoData: Object,
   },
   model: {
-    prop: 'cosmoValues',
+    prop: 'cosmoData',
     event: 'updateCosmo',
   },
   data: () => ({
@@ -79,11 +99,10 @@ export default {
     createSetCurrentValueFunc(inputType) {
       return (newValue) => {
         // Set the new value temporarily
-        this.cosmoValues[inputType] = newValue;
+        this.cosmoData.cosmo_params[inputType] = newValue;
 
         // Set the value for good.
-        this.$emit('updateCosmo', this.cosmoValues);
-        // this.setCosmo(this.cosmoValues);
+        this.$emit('updateCosmo', this.cosmoData);
       };
     },
   },
@@ -93,11 +112,11 @@ export default {
      * made, then all the defaults are copied over.
      */
     cosmologyChoice() {
-      const newCosmoObject = {};
-      Object.keys(this.cosmoValues).forEach((key) => {
-        newCosmoObject[key] = this.hmfDefaults.cosmo[this.cosmologyChoice][key];
+      const newCosmoDataObject = { ...this.cosmoData };
+      Object.keys(this.cosmoData.cosmo_params).forEach((key) => {
+        newCosmoDataObject.cosmo_params[key] = this.hmfDefaults.cosmo[this.cosmologyChoice][key];
       });
-      this.$emit('updateCosmo', this.cosmoValues);
+      this.$emit('updateCosmo', this.cosmoData);
     },
   },
 };
