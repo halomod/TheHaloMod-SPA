@@ -36,7 +36,7 @@ cosmo_choices = [
 for choice in cosmo_choices:
     cosmo_model = hmf.cosmo.Cosmology(cosmo_model=getattr(hmf.cosmo, choice))
     hmf_defaults.get('cosmo').setdefault(choice, {
-        "h0": cosmo_model.cosmo.H0.value,
+        "H0": cosmo_model.cosmo.H0.value,
         "Ob0": cosmo_model.cosmo.Ob0,
         "Om0": cosmo_model.cosmo.Om0
     })
