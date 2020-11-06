@@ -2,7 +2,6 @@
   <md-field :class="validationClass">
     <label>{{param}}</label>
     <md-input
-      type="number"
       v-model="my_value"
       :value="my_value"
       v-on:input="$emit('input', $event)"/>
@@ -28,7 +27,7 @@ export default {
   },
   computed: {
     between() { return this.range ? between(this.my_value, this.min, this.max) : true; },
-    numeric() { return numeric(this.value); },
+    numeric() { return numeric(this.my_value); },
     valid() { return this.numeric && this.between; },
     validationClass() { return { 'md-invalid': !this.valid }; },
   },

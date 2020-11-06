@@ -1,5 +1,5 @@
 <template>
-  <bias-form @onChange="modelData.bias = $event"/>
+  <bias-form v-model="modelData.bias"/>
 </template>
 
 <script>
@@ -15,6 +15,14 @@ export default {
       },
     },
   }),
+  watch: {
+    'modelData.bias': {
+      deep: true,
+      handler() {
+        console.log(this.modelData.bias);
+      },
+    },
+  },
   components: {
     BiasForm,
   },

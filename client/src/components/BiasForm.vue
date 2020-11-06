@@ -43,13 +43,18 @@ const biasChoices = {
 
 export default {
   name: 'BiasForm',
-  props: ['bias'],
+  model: {
+    event: 'onChange',
+    prop: 'parent_model',
+  },
+  props: ['parent_model'],
   data() {
     return {
       model: {
         bias_model: 'Tinker10',
         bias_params: BACKEND_CONSTANTS.Bias_params.Tinker10,
       },
+      defaults: { ...BACKEND_CONSTANTS.Bias_params.Tinker10 },
       choices: biasChoices,
     };
   },

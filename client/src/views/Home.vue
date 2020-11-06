@@ -39,11 +39,8 @@
 <script>
 import Debug from 'debug';
 import Top from '../components/top.vue';
-import CosmologyForm from '../components/CosmologyForm.vue';
 import TracerConcentrationForm from '../components/TracerConcentration.vue';
-import BACKEND_CONSTANTS from '../constants/backend_constants';
 import HaloModelForm from '../components/HaloModelForm.vue';
-import CosmologyForm from '../components/CosmologyForm.vue';
 import TransferForm from '../components/TransferForm.vue';
 import HaloProfileForm from '../components/HaloProfileForm.vue';
 import FilterForm from '../components/FilterForm.vue';
@@ -59,8 +56,8 @@ export default {
   data: () => ({
     modelData: {
       bias: {
-        bias_model: 'Tinker10',
-        bias_params: BACKEND_CONSTANTS.Bias_params.Tinker10,
+        bias_model: null,
+        bias_params: null,
       },
       cosmo: {
         h0: 0,
