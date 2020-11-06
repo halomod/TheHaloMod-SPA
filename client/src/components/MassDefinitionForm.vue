@@ -3,32 +3,31 @@
     <div class='md-layout-item'>
       <md-subheader>Mass Definition</md-subheader>
       <md-divider></md-divider>
-      <md-field>
-        <label for='MassDefinition'>Mass Definition*</label>
-        <md-select
-          v-model='selectedMassDefinition'
-          name='MassDefinition'
-          id='MassDefinition'
-          md-dense
-        >
-          <md-option
-            v-for='(name, value) in massDefinitionChoices'
-            :key='value'
-            :value='value'
-            >{{ name }}</md-option
-          >
-          <!--<md-option value='None'>Use native definition of mass function</md-option>
-          <md-option value='SOMean'>Spherical Overdensity wrt mean</md-option>
-          <md-option value='SOCritical'>Spherical Overdensity wrt critical</md-option>
-          <md-option value='SOVirial'>Virial Spherical Overdensity (Bryan and Norman)</md-option>
-          <md-option value='FOF'>Friends-of-Friends</md-option>-->
-        </md-select>
-      </md-field>
+      <div class="md-layout md-gutter">
+        <!-- Here is where its repeating to load the input -->
+        <div v-for="(input, inputName) in inputs" :key="input.id" class="md-layout-item">
+            <InputField2
+            :key="inputName"
+            :label="input.label"
+            :step="input.step"
+            :currentValue="input.value"
+            :min="input.min"
+            :max="input.max"
+            :inputName="inputName"
+            :inputType="input.inputType"
+            :options="input.options"
+            :hidden="input.hidden"
+            v-model="mass_definition"
+            />
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+import InputField2 from './InputField2.vue';
+
 const massDefinitionChoices = {
   None: 'Use native definition of mass function',
   SOMean: 'Spherical Overdensity wrt mean',
@@ -37,20 +36,59 @@ const massDefinitionChoices = {
   FOF: 'Friends-of-Friends',
 };
 
+/*
+  MassDefinition_params: {
+    SphericalOverdensity: {},
+    SOGeneric: {},
+    SOMean: {
+      overdensity: 200,
+    },
+    SOCritical: {
+      overdensity: 200,
+    },
+    SOVirial: {},
+    FOF: {
+      linking_length: 0.2,
+    },
+  },
+*/
 // Objects used in the html
 export default {
   name: 'MassDefinitionForm',
-  data: () => ({
-    massDefinitionChoices,
-    selectedMassDefinition: Object.keys(massDefinitionChoices)[0], // Sets the default value
-  }),
-  computed: {
-    mdef_model: {
-      // getter
-      get() {
-        return this.selectedMassDefinition;
+  title: 'Halo Model',
+  id: 'halo-model',
+  components: {
+    InputField2,
+  },
+  model: {
+    event: 'onChange',
+    prop: 'mass_definition',
+  },
+  props: {
+    mass_definition: Object,
+  },
+  data() {
+    return {
+      inputs: {
+        massDefinition: {
+          label: 'Mass Definition',
+          options: {
+            massDefinitionChoices,
+          },
+          params: this.mass_definition.mass_definition_params,
+          value: Object.keys(massDefinitionChoices)[0],
+          inputType: 'option',
+          hidden: false,
+        },
+        // Put another input here if you need
       },
-    },
+      massDefinitionChoices,
+      selectedMassDefinition: Object.keys(massDefinitionChoices)[0],
+    };
+  },
+  updated() {
+    console.log('MassDef-Updated');
+    this.$emit('onChange', this.mass_definition);
   },
 };
 </script>

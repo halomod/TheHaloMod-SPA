@@ -6,9 +6,7 @@
       :formValues="params.haloModel"
     />
     <MassDefinitionForm
-      :hmfDefaults="hmfDefaults"
-      :setMassDef="createParamsSetFunction('mass_definition')"
-      :massDefValues="params.mass_definition"
+      v-model="params.mass_definition"
     />
     <CosmologyForm
       :hmfDefaults="hmfDefaults"
@@ -43,6 +41,7 @@
 <script>
 import Debug from 'debug';
 import HaloModelForm from '../components/HaloModelForm.vue';
+import MassDefinitionForm from '../components/MassDefinitionForm.vue';
 import CosmologyForm from '../components/CosmologyForm.vue';
 import TransferForm from '../components/TransferForm.vue';
 import HaloProfileForm from '../components/HaloProfileForm.vue';
@@ -63,6 +62,10 @@ export default {
         H0: 0,
         Ob0: 0,
         Om0: 0,
+      },
+      mass_definition: {
+        mass_definition_params: constants.MassDefinition_params,
+        mass_definition_model: null,
       },
       haloModel: {
         log_r_range: 0,
@@ -106,6 +109,7 @@ export default {
   components: {
     HaloModelForm,
     CosmologyForm,
+    MassDefinitionForm,
     TransferForm,
     HaloProfileForm,
     FilterForm,
