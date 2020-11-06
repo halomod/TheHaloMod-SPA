@@ -19,6 +19,17 @@
       :labelHtml="'<label>Something</label>'"
     />
 
+    <InputField
+      v-for="(input, inputName) in inputs"
+      :labelHtml="input.html"
+      :key="inputName"
+      :step="input.step"
+      v-model="cosmoData.cosmo_params[inputName]"
+      :min="input.min"
+      :max="input.max"
+    />
+
+    <!--
     <FormNumberField
       v-for="(input, inputName) in inputs"
       :labelHtml="input.html"
@@ -29,11 +40,13 @@
       :max="input.max"
       :setCurrentValue="createSetCurrentValueFunc(inputName)"
     />
+    -->
   </div>
 </template>
 
 <script>
 import FormNumberField from './FormNumberField.vue';
+import InputField from './InputField.vue';
 
 const cosmologyChoices = [
   'Planck15',
@@ -94,6 +107,7 @@ export default {
   }),
   components: {
     FormNumberField,
+    InputField,
   },
   methods: {
     createSetCurrentValueFunc(inputType) {

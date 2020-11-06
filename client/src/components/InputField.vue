@@ -34,17 +34,20 @@
         v-model="value"
         :id="inputName"
         md-dense
-      > <!-- load the given options -->
+      >
+        <!-- load the given options -->
         <md-option
           v-for='(name, value) in options'
           :key='value'
           :value='value'
-          >{{ name }}</md-option
         >
+          {{ name }}
+        </md-option>
       </md-select>
     </div>
     <!-- everything else like regular input boxes -->
     <div v-else>
+      <div v-html="labelHtml"/>
       <md-input
         :value="inputStr"
         v-on:input="handleInput"
@@ -53,9 +56,9 @@
         :min="min"
         :max="max"
         :class="fieldClass"
-        v-model="value"
       />
     </div>
+
     <!-- will only display error when md-invalid is set to true -->
     <span class="md-error">{{ errorStr }}</span>
   </md-field>
@@ -64,23 +67,35 @@
 <script>
 export default {
   name: 'InputField',
+  model: {
+    prop: 'currentValue',
+    event: 'updateCurrentValue',
+  },
   props: {
     step: Number,
     min: Number,
     max: Number,
     label: String,
+    /**
+     * Used to display the label for a number type field.
+     */
+    labelHtml: String,
     inputName: String,
     /**
-     * This determines what type of input is displayed to the user for the
-     * data for this field.
+     * Determines what type of input is displayed to the user for the
+     * data for this field. This has all the normal input type options of an
+     * `<input/>` HTML element, with the addition of `option`.
      *
      * To see the different type options, see
      * https://www.w3schools.com/tags/att_input_type.asp
      */
     inputType: String,
+    /**
+     * The different options if this is an `option` type. This will create
+     * a drop-down menu.
+     */
     options: Object,
     currentValue: [Number, String],
-    setCurrentValue: Function,
   },
   data: () => ({
     inputIsInvalid: false,
@@ -104,15 +119,13 @@ export default {
   },
   methods: {
     handleInput(value) {
-      if (!Number.isNaN(value)) {
       // Determine if the value is a number
+      if (!Number.isNaN(value)) {
         const parsedNum = Number.parseFloat(value);
-
         if (this.max != null && this.min != null) {
           // Determine if the number is within bounds
           if (parsedNum <= this.max && parsedNum >= this.min) {
-            this.setCurrentValue(Number.parseFloat(value));
-            // this.currentValue = Number.parseFloat(value);
+            this.$emit('updateCurrentValue', Number.parseFloat(value));
             this.inputIsInvalid = false;
           } else {
             this.inputIsInvalid = true;
@@ -130,7 +143,6 @@ export default {
   created() {
     this.value = this.currentValue;
     this.inputStr = this.currentValue;
-    this.setCurrentValue(this.currentValue);
     this.errorStr = `Please enter a number between ${this.min} and`
         + ` ${this.max}`;
   },
