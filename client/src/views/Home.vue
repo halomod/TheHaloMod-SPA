@@ -4,6 +4,10 @@
       :hmfDefaults="hmfDefaults"
       :setForm="createParamsSetFunction('haloModel')"
       :formValues="params.haloModel"/>
+    <GrowthForm
+      :hmfDefaults="hmfDefaults"
+      :setGrowth="createParamsSetFunction('growth_params')"
+      :growthValues="params.growth_params"/>
     <CosmologyForm
       :hmfDefaults="hmfDefaults"
       :setCosmo="createParamsSetFunction('cosmo_params')"
@@ -36,6 +40,7 @@
 
 <script>
 import Debug from 'debug';
+import GrowthForm from '../components/GrowthForm.vue';
 import HaloModelForm from '../components/HaloModelForm.vue';
 import CosmologyForm from '../components/CosmologyForm.vue';
 import TransferForm from '../components/TransferForm.vue';
