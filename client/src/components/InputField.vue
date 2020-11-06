@@ -1,5 +1,6 @@
 <template>
   <md-field :class="fieldClass">
+
     <!-- for sliders this adds the value under the slider -->
     <div v-if="inputType == 'range'">
       <label>{{label}}</label>
@@ -16,22 +17,23 @@
     <!-- this defines a material design checkbox -->
     <div v-if="inputType == 'checkbox'">
       <md-checkbox
-      :value="inputStr"
-      :type="inputType"
-      v-on:input="handleInput"
-      v-model="value"
-      :id="inputName"
-      />{{label}}
+        :value="inputStr"
+        :type="inputType"
+        v-on:input="handleInput"
+        v-model="value"
+        :id="inputName"
+      />
+      {{label}}
     </div>
     <!-- this is a dropdown menu -->
     <div v-else-if="inputType == 'option'">
       <md-select
-      :value="inputStr"
-      v-on:input="handleInput"
-      :type="inputType"
-      v-model="value"
-      :id="inputName"
-      md-dense
+        :value="inputStr"
+        v-on:input="handleInput"
+        :type="inputType"
+        v-model="value"
+        :id="inputName"
+        md-dense
       > <!-- load the given options -->
         <md-option
           v-for='(name, value) in options'
@@ -44,14 +46,14 @@
     <!-- everything else like regular input boxes -->
     <div v-else>
       <md-input
-      :value="inputStr"
-      v-on:input="handleInput"
-      :type="inputType"
-      :step="step"
-      :min="min"
-      :max="max"
-      :class="fieldClass"
-      v-model="value"
+        :value="inputStr"
+        v-on:input="handleInput"
+        :type="inputType"
+        :step="step"
+        :min="min"
+        :max="max"
+        :class="fieldClass"
+        v-model="value"
       />
     </div>
     <!-- will only display error when md-invalid is set to true -->
@@ -68,6 +70,13 @@ export default {
     max: Number,
     label: String,
     inputName: String,
+    /**
+     * This determines what type of input is displayed to the user for the
+     * data for this field.
+     *
+     * To see the different type options, see
+     * https://www.w3schools.com/tags/att_input_type.asp
+     */
     inputType: String,
     options: Object,
     currentValue: [Number, String],
