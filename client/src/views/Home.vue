@@ -3,7 +3,13 @@
     <HaloModelForm
       :hmfDefaults="hmfDefaults"
       :setForm="createParamsSetFunction('haloModel')"
-      :formValues="params.haloModel"/>
+      :formValues="params.haloModel"
+    />
+    <MassDefinitionForm
+      :hmfDefaults="hmfDefaults"
+      :setMassDef="createParamsSetFunction('mass_definition')"
+      :massDefValues="params.mass_definition"
+    />
     <CosmologyForm
       :hmfDefaults="hmfDefaults"
       :setCosmo="createParamsSetFunction('cosmo_params')"
