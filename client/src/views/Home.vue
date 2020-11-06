@@ -32,14 +32,12 @@
       :filterParams="params.filter_params"
       :setFilterParams="createParamsSetFunction('filter_params')"
     />
-    <tracer-concentration-form v-model="modelData.bias_params"/>
   </div>
 </template>
 
 <script>
 import Debug from 'debug';
 import Top from '../components/top.vue';
-import TracerConcentrationForm from '../components/TracerConcentration.vue';
 import HaloModelForm from '../components/HaloModelForm.vue';
 import TransferForm from '../components/TransferForm.vue';
 import HaloProfileForm from '../components/HaloProfileForm.vue';
@@ -114,7 +112,6 @@ export default {
   }),
   components: {
     HaloModelForm,
-    TracerConcentrationForm,
     Top,
     TransferForm,
     HaloProfileForm,
