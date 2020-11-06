@@ -1,20 +1,21 @@
 <template>
   <div class="home">
+    <Top/>
     <CosmologyForm
       :hmfDefaults="hmfDefaults"
       :setCosmo="createSetFormFunction('cosmo')"
       :cosmoValues="modelData.cosmo"
     />
-    <bias-form/>
-    <tracer-concentration-form/>
+    <tracer-concentration-form v-model="modelData.bias_params"/>
   </div>
 </template>
 
 <script>
 import Debug from 'debug';
+import Top from '../components/top.vue';
 import CosmologyForm from '../components/CosmologyForm.vue';
-import BiasForm from '../components/BiasForm.vue';
 import TracerConcentrationForm from '../components/TracerConcentration.vue';
+import BACKEND_CONSTANTS from '../constants/backend_constants';
 
 const debug = Debug('Home.vue');
 // Enable or disble debugging 🙂
@@ -24,6 +25,10 @@ export default {
   name: 'Home',
   data: () => ({
     modelData: {
+      bias: {
+        bias_model: 'Tinker10',
+        bias_params: BACKEND_CONSTANTS.Bias_params.Tinker10,
+      },
       cosmo: {
         h0: 0,
         Ob0: 0,
@@ -37,8 +42,8 @@ export default {
   }),
   components: {
     CosmologyForm,
-    BiasForm,
     TracerConcentrationForm,
+    Top,
   },
   methods: {
     /**

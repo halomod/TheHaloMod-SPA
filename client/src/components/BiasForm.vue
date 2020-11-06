@@ -2,9 +2,9 @@
   <form novalidate>
     <md-field>
       <label>Bias</label>
-      <md-select v-on:md-selected="updateOptions" v-model="model.bias_model">
+      <md-select v-model="model.bias_model">
         <md-option
-          v-for="(value, choice) in biasChoices"
+          v-for="(value, choice) in choices"
           :key="choice"
           :value="value">
           {{choice}}
@@ -23,8 +23,8 @@
 </template>
 
 <script>
-import BACKEND_CONSTANTS from '../constants/backend_constants';
 import DoubleField from './DoubleField.vue';
+import BACKEND_CONSTANTS from '../constants/backend_constants';
 
 const biasChoices = {
   'Tinker (2010)': 'Tinker10',
@@ -41,29 +41,32 @@ const biasChoices = {
   'Tinker (2010) Peak-Background Split': 'Tinker10PBSplit',
 };
 
-const biasParams = BACKEND_CONSTANTS.Bias_params;
-
 export default {
   name: 'BiasForm',
-  data: () => ({
-    biasChoices,
-    model: {
-      bias_model: 'Tinker10',
-      bias_params: biasParams.Tinker10,
-    },
-    defaults: biasParams.Tinker10,
-  }),
-  components: {
-    DoubleField,
+  props: ['bias'],
+  data() {
+    return {
+      model: {
+        bias_model: 'Tinker10',
+        bias_params: BACKEND_CONSTANTS.Bias_params.Tinker10,
+      },
+      choices: biasChoices,
+    };
   },
   updated() {
-    console.log(this.model);
+    this.$emit('onChange', this.model);
   },
-  methods: {
-    updateOptions() {
-      this.model.bias_params = biasParams[this.model.bias_model];
-      this.defaults = biasParams[this.model.bias_model];
+  watch: {
+    'model.bias_model': function updateOptions(val) {
+      this.model.bias_params = null;
+      this.$nextTick(function () {
+        this.model.bias_params = BACKEND_CONSTANTS.Bias_params[val];
+        this.defaults = BACKEND_CONSTANTS.Bias_params[val];
+      });
     },
+  },
+  components: {
+    DoubleField,
   },
 };
 </script>

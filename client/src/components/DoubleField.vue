@@ -1,10 +1,11 @@
 <template>
-  <md-field :class="getValidationClass()">
+  <md-field :class="validationClass">
     <label>{{param}}</label>
     <md-input
+      type="number"
       v-model="my_value"
       :value="my_value"
-      v-on:input="$emit('test', onInput($event))"/>
+      v-on:input="$emit('input', $event)"/>
     <div class="md-error" v-if="!numeric">Value must be a decimal number.</div>
     <div class="md-error" v-else-if="!between">Value must be between {{min}} and {{max}}</div>
   </md-field>
@@ -17,27 +18,19 @@ export default {
   name: 'DoubleField',
   model: {
     prop: 'value',
-    event: 'test',
+    event: 'input',
   },
   props: ['value', 'min', 'max', 'placeholder', 'param', 'range'],
   data() {
     return {
       my_value: this.value,
-      between: this.range ? between(this.value, this.min, this.max) : true,
-      numeric: numeric(this.value),
-      valid: true,
     };
   },
-  methods: {
-    getValidationClass() {
-      return { 'md-invalid': !this.valid };
-    },
-    onInput(value) {
-      this.numeric = numeric(value);
-      this.between = this.range ? between(this.value, this.min, this.max) : true;
-      this.valid = this.numeric && this.between;
-      return value;
-    },
+  computed: {
+    between() { return this.range ? between(this.my_value, this.min, this.max) : true; },
+    numeric() { return numeric(this.value); },
+    valid() { return this.numeric && this.between; },
+    validationClass() { return { 'md-invalid': !this.valid }; },
   },
 };
 </script>
