@@ -13,14 +13,6 @@
       </md-select>
     </md-field>
 
-    <p>cosmoData is {{cosmoData}}</p>
-    <p>cosmoDefaults are {{hmfDefaults.cosmo}}</p>
-    <p>allCosmoData is {{allCosmoData}}</p>
-
-    <FormNumberField
-      :labelHtml="'<label>Something</label>'"
-    />
-
     <InputField
       v-for="(input, inputName) in inputs"
       :labelHtml="input.html"
@@ -31,24 +23,10 @@
       :min="input.min"
       :max="input.max"
     />
-
-    <!--
-    <FormNumberField
-      v-for="(input, inputName) in inputs"
-      :labelHtml="input.html"
-      :key="inputName"
-      :step="input.step"
-      :currentValue="cosmoData.cosmo_params[inputName]"
-      :min="input.min"
-      :max="input.max"
-      :setCurrentValue="createSetCurrentValueFunc(inputName)"
-    />
-    -->
   </div>
 </template>
 
 <script>
-import FormNumberField from './FormNumberField.vue';
 import InputField from './InputField.vue';
 
 export default {
@@ -115,7 +93,6 @@ export default {
     };
   },
   components: {
-    FormNumberField,
     InputField,
   },
   methods: {
