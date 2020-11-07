@@ -37,6 +37,7 @@ import HaloExclusion from '@/components/HaloExclusion.vue';
 import HaloProfileForm from '@/components/HaloProfileForm.vue';
 import HaloModelForm from '@/components/HaloModelForm.vue';
 import constants from '@/constants/backend_constants';
+import payload from '@/constants/thm_payload_create.json';
 import baseURL from '@/env';
 
 const debug = Debug('Create.vue');
@@ -53,7 +54,7 @@ export default {
   },
   data() {
     return {
-      payload: Object.assign(constants),
+      payload: Object.assign(payload),
       forms: null,
       params: {
         cosmo_model: 'Planck15',
@@ -153,7 +154,7 @@ export default {
             setHaloProfileParams: this.createParamsSetFunction('halo_profile_params'),
           },
         },
-        { component: HaloExclusion, model: this.payload.exclusion_model },
+        { component: HaloExclusion, model: this.payload.params.exclusion_model },
       ];
       forms.forEach((item) => {
         const i = item;
@@ -221,8 +222,12 @@ export default {
     this.createForms();
   },
   watch: {
-    value() {
-      console.log('///////', this.payload.exclusion_model);
+    'payload.params': {
+      deep: true,
+      handler(val) {
+        console.log('asdflakfjlajf', val);
+        console.log('///////', this.payload.params);
+      },
     },
   },
 };
