@@ -13,16 +13,6 @@
             </md-select>
         </md-field>
 
-      <div v-if="tracerParams[tracerProfile] !== undefined">
-        <FormNumberField
-          v-for="(input, inputName) in tracerParams[tracerProfile]"
-          :labelHtml="'<label>' + inputName + '</label>'"
-          :key="inputName"
-          :step="1"
-          :currentValue="tracerParams[tracerProfile][inputName]"
-          :setCurrentValue="createSetCurrentValueFunc(tracerProfile, inputName)"
-        />
-      </div>
     </div>
 </template>
 
