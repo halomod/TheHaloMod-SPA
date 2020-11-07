@@ -5,6 +5,7 @@
       :setForm="createParamsSetFunction('haloModel')"
       :formValues="params.haloModel"/>
     <CosmologyForm
+      v-if="hmfDefaults !== null"
       :hmfDefaults="hmfDefaults"
       v-model="params.cosmoData"
     />
