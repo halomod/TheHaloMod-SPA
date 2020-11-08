@@ -154,7 +154,7 @@ export default {
             setHaloProfileParams: this.createParamsSetFunction('halo_profile_params'),
           },
         },
-        { component: HaloExclusion, model: this.payload.params.exclusion_model },
+        { component: HaloExclusion, model: 'payload.params.exclusion_model' },
       ];
       forms.forEach((item) => {
         const i = item;
@@ -220,15 +220,6 @@ export default {
   },
   created() {
     this.createForms();
-  },
-  watch: {
-    'payload.params': {
-      deep: true,
-      handler(val) {
-        console.log('asdflakfjlajf', val);
-        console.log('///////', this.payload.params);
-      },
-    },
   },
 };
 </script>
