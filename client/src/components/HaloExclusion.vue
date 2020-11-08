@@ -2,7 +2,7 @@
   <div class="halo-exclusion">
     <md-field>
       <label for="movie">Halo Exclusion*</label>
-      <md-select v-model="selection">
+      <md-select v-model="model.exclusion_model">
         <div v-for="(value) in values" :key="Object.keys(value)[0]">
           <md-option :value="Object.keys(value)[0]">{{Object.values(value)[0]}}</md-option>
         </div>
@@ -24,7 +24,9 @@ export default {
   },
   data() {
     return {
-      selection: 'NoExclusion',
+      model: {
+        exclusion_model: 'NoExclusion',
+      },
       values: [
         { NoExclusion: 'No Exclusion' },
         { Sphere: 'Spherical Halos' },
@@ -35,9 +37,9 @@ export default {
     };
   },
   watch: {
-    selection: {
+    'model.exclusion_model': {
       handler() {
-        this.$emit('onChange', this.selection);
+        this.$emit('onChange', this.model);
       },
     },
   },
