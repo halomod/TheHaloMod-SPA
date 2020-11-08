@@ -19,12 +19,7 @@
       :setHaloProfileParams="createParamsSetFunction('halo_profile_params')"
     />
     <FilterForm
-      :filterModel="params.filter_model"
-      :setFilterModel="createParamsSetFunction('filter_model')"
-      :deltaC="params.delta_c"
-      :setDeltaC="createParamsSetFunction('delta_c')"
-      :filterParams="params.filter_params"
-      :setFilterParams="createParamsSetFunction('filter_params')"
+      v-model="params.filterData"
     />
   </div>
 </template>
@@ -67,6 +62,18 @@ export default {
         },
         takahashi: true,
       },
+      filterData: {
+        filter_model: constants.filter_model,
+        filter_params: {
+          SharpK: {
+            c: 2,
+          },
+          SharpKEllipsoid: {
+            c: 2.5,
+          },
+        },
+        delta_c: constants.delta_c,
+      },
       haloModel: {
         log_r_range: 0,
         rnum: 0,
@@ -85,16 +92,6 @@ export default {
           use_interp: constants.Profile_params.Einasto.use_interp,
         },
       },
-      filter_model: constants.filter_model,
-      filter_params: {
-        SharpK: {
-          c: 2,
-        },
-        SharpKEllipsoid: {
-          c: 2.5,
-        },
-      },
-      delta_c: constants.delta_c,
     },
     hmfDefaults: null,
     defaultModel: null,

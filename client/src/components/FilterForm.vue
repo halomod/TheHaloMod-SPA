@@ -53,18 +53,22 @@ export default {
   name: 'FilterForm',
   title: 'Filter',
   id: 'Filter',
-  props: {
-    deltaC: Number,
-    setDeltaC: Function,
-    filterModel: String,
-    setFilterModel: Function,
-    filterParams: Object,
-    setFilterParams: Function,
+  model: {
+    prop: 'filterData',
+    event: 'updateFilter',
   },
-  data: () => ({
-    filterChoices,
-    filterChoice: '',
-  }),
+  props: {
+    filterData: {
+      type: Object,
+      required: true,
+    },
+  },
+  data() {
+    return {
+      filterChoices,
+      filterChoice: this.filterData.filter_model,
+    };
+  },
   components: {
     InputField,
   },
@@ -72,19 +76,17 @@ export default {
     createSetCurrentValueFunc(filterType, varName) {
       return (newValue) => {
         // Set the new value temporarily
-        this.filterParams[filterType][varName] = newValue;
+        this.filterData.filter_params[filterType][varName] = newValue;
 
         // Set the value for good.
-        this.setFilterParams(this.filterParams);
+        this.$emit('updateFilter', this.filterData);
       };
     },
   },
-  mounted() {
-    this.filterChoice = this.filterModel;
-  },
   watch: {
-    filterChoice() {
-      this.setFilterModel(this.filterChoice);
+    filterChoice(newChoice) {
+      this.filterData.filter_model = newChoice;
+      this.$emit('updateFilter', this.filterData);
     },
   },
 };
