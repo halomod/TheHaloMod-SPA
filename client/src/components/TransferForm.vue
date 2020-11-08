@@ -17,18 +17,18 @@
       </md-select>
     </md-field>
 
-    <div v-if="transferParams[transferModel] !== undefined">
+    <div v-if="transferData.transfer_params[transferChoice] !== undefined">
       <InputField
-        v-for="(input, inputName) in transferParams[transferModel]"
+        v-for="(input, inputName) in transferData.transfer_params[transferChoice]"
         :labelHtml="'<label>' + inputName + '</label>'"
         :key="inputName"
         :step="1"
-        :currentValue="transferParams[transferModel][inputName]"
-        v-on:updateCurrentValue="createSetCurrentValueFunc(transferModel, inputName)($event)"
+        :currentValue="transferData.transfer_params[transferChoice][inputName]"
+        v-on:updateCurrentValue="createSetCurrentValueFunc(transferChoice, inputName)($event)"
       />
     </div>
 
-    <md-checkbox v-model="takahashiChoice">
+    <md-checkbox v-model="transferData.takahashiChoice">
       Use Takahashi (2012) nonlinear P(k)?
     </md-checkbox>
 
@@ -48,27 +48,30 @@ const transferChoices = {
 export default {
   name: 'TransferForm',
   title: 'Transfer',
-  id: 'tranfser',
-  props: {
-    transferParams: Object,
-    setTransferParams: Function,
-    takahashi: Boolean,
-    setTakahashi: Function,
-    transferModel: String,
-    setTransferModel: Function,
+  id: 'transfer',
+  model: {
+    prop: 'transferData',
+    event: 'updateTransfer',
   },
-  data: () => ({
-    transferChoices,
-    transferChoice: '',
-    takahashiChoice: false,
-  }),
+  props: {
+    transferData: {
+      type: Object,
+      required: true,
+    },
+  },
+  data() {
+    return {
+      transferChoices,
+      transferChoice: this.transferData.transfer_model,
+    };
+  },
   components: {
     InputField,
   },
-  mounted() {
-    this.transferChoice = this.transferModel;
-  },
   methods: {
+    doSomething() {
+      console.log('doing a thang');
+    },
     /**
      * Creates a current value setter for the given transfer type and variable
      * name. This just applies to two transfer types at the moment.
@@ -76,19 +79,17 @@ export default {
     createSetCurrentValueFunc(transferType, varName) {
       return (newValue) => {
         // Set the new value temporarily
-        this.transferParams[transferType][varName] = newValue;
+        this.transferData.transfer_params[transferType][varName] = newValue;
 
         // Set the value for good.
-        this.setTransferParams(this.transferParams);
+        this.$emit('updateTransfer', this.transferData);
       };
     },
   },
   watch: {
-    transferChoice() {
-      this.setTransferModel(this.transferChoice);
-    },
-    takahashiChoice() {
-      this.setTakahashi(this.takahashiChoice);
+    transferChoice(newChoice) {
+      this.transferData.transfer_model = newChoice;
+      this.$emit('updateTransfer', this.transferData);
     },
   },
 };

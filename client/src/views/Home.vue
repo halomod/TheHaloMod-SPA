@@ -10,12 +10,7 @@
       v-model="params.cosmoData"
     />
     <TransferForm
-      :setTakahashi="createParamsSetFunction('takahashi')"
-      :setTransferModel="createParamsSetFunction('transfer_model')"
-      :setTransferParams="createParamsSetFunction('transfer_params')"
-      :transferParams="params.transfer_params"
-      :takahashi="params.takahashi"
-      :transferModel="params.transfer_model"
+      v-model="params.transferData"
     />
     <HaloProfileForm
       :haloProfileModel="params.halo_profile_model"
@@ -60,6 +55,18 @@ export default {
           Om0: 0,
         },
       },
+      transferData: {
+        transfer_model: 'CAMB',
+        /**
+         * It isn't clear where the transfer params are yet in the payload,
+         * so they are stored here for the different types.
+         */
+        transfer_params: {
+          BBKS: constants.TransferComponent_params.BBKS,
+          BondEfs: constants.TransferComponent_params.BondEfs,
+        },
+        takahashi: true,
+      },
       haloModel: {
         log_r_range: 0,
         rnum: 0,
@@ -68,12 +75,6 @@ export default {
         hc_spectrum: '',
         force_1halo_turnover: 0,
       },
-      transfer_params: {
-        BBKS: constants.TransferComponent_params.BBKS,
-        BondEfs: constants.TransferComponent_params.BondEfs,
-      },
-      takahashi: true,
-      transfer_model: 'CAMB',
       halo_profile_model: constants.halo_profile_model,
       halo_profile_params: {
         GeneralizedNFW: {
