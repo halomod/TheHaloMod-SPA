@@ -21,7 +21,6 @@
           @toggle-highlight="(bool) => toggleHighlight(bool, form, index)">
           <component
             :is="form.component"
-            v-bind="form.props"
             v-model="params[form.model]"/>
         </FormWrapper>
       </div>
