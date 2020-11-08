@@ -1,6 +1,5 @@
 <template>
   <div class="home">
-    <Top/>
     <HaloModelForm
       :hmfDefaults="hmfDefaults"
       :setForm="createParamsSetFunction('haloModel')"
@@ -37,7 +36,6 @@
 
 <script>
 import Debug from 'debug';
-import Top from '../components/top.vue';
 import HaloModelForm from '../components/HaloModelForm.vue';
 import TransferForm from '../components/TransferForm.vue';
 import HaloProfileForm from '../components/HaloProfileForm.vue';
@@ -112,7 +110,6 @@ export default {
   }),
   components: {
     HaloModelForm,
-    Top,
     TransferForm,
     HaloProfileForm,
     FilterForm,

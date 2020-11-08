@@ -19,7 +19,7 @@
           :name="form.component.title"
           v-bind:id="`${form.component.id}`"
           @toggle-highlight="(bool) => toggleHighlight(bool, form, index)">
-          <component v-bind:is="form.component" v-bind="form.props"/>
+          <component v-bind:is="form.component" v-bind="form.props" v-model="form.model"/>
         </FormWrapper>
       </div>
     </md-app-content>
@@ -30,6 +30,7 @@
 // @ is an alias to /src
 import Debug from 'debug';
 import FormWrapper from '@/components/FormWrapper.vue';
+import BiasForm from '@/components/BiasForm.vue';
 import CosmologyForm from '@/components/CosmologyForm.vue';
 import TransferForm from '@/components/TransferForm.vue';
 import FilterForm from '@/components/FilterForm.vue';
@@ -50,10 +51,17 @@ export default {
     FilterForm,
     HaloExclusion,
     HaloProfileForm,
+    BiasForm,
   },
   data() {
     return {
       forms: null,
+      model: {
+        bias: {
+          bias_model: null,
+          bias_params: null,
+        },
+      },
       params: {
         cosmo_model: 'Planck15',
         cosmo_params: {
@@ -100,6 +108,14 @@ export default {
       defaultModel: null,
     };
   },
+  watch: {
+    'model.bias': {
+      deep: true,
+      handler() {
+        console.log(this.model.bias);
+      },
+    },
+  },
   methods: {
     createForms() {
       // Add forms to this list, and remove the example form.
@@ -134,6 +150,10 @@ export default {
             filterParams: this.params.filter_params,
             setFilterParams: this.createParamsSetFunction('filter_params'),
           },
+        },
+        {
+          component: BiasForm,
+          model: 'model.bias',
         },
         {
           component: HaloModelForm,
