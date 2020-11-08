@@ -37,6 +37,7 @@
 <script>
 import Debug from 'debug';
 import HaloModelForm from '../components/HaloModelForm.vue';
+import CosmologyForm from '../components/CosmologyForm.vue';
 import TransferForm from '../components/TransferForm.vue';
 import HaloProfileForm from '../components/HaloProfileForm.vue';
 import FilterForm from '../components/FilterForm.vue';
