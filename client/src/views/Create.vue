@@ -33,7 +33,7 @@
 // @ is an alias to /src
 import FormWrapper from '@/components/FormWrapper.vue';
 import HaloExclusion from '@/components/HaloExclusion.vue';
-import Blank from '@/constants/initial_state.json';
+import INITIAL_STATE from '@/constants/initial_state.json';
 
 export default {
   name: 'Create',
@@ -42,7 +42,7 @@ export default {
     HaloExclusion,
   },
   data: () => ({
-    params: Object.assign(Blank),
+    params: null,
     forms: null,
   }),
   methods: {
@@ -96,6 +96,7 @@ export default {
     },
   },
   created() {
+    this.params = this.deepcopy(INITIAL_STATE);
     this.createForms();
   },
 };
