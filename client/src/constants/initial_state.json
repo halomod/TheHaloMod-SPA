@@ -1,0 +1,59 @@
+{
+  "cosmo": {
+    "cosmo_model": null,
+    "cosmo_params": null,
+    "z": null,
+    "n": null,
+    "sigma_8": null
+  },
+  "hmf": {
+    "hmf_model": null,
+    "hmf_params": null,
+    "Mmin": null,
+    "Mmax": null,
+    "dlog10m": null
+  },
+  "hod": {
+    "hod_model": null,
+    "hod_params": null
+  },
+  "bias": {
+    "bias_model": null,
+    "bias_params": null
+  },
+  "halo_concentration": {
+    "halo_concentration_model": null,
+    "halo_concentration_params": null
+  },
+  "tracer_concentration": {
+    "tracer_concentration_model": null,
+    "tracer_concentration_params": null
+  },
+  "growth": {
+    "growth_model": null,
+    "growth_params": null
+  },
+  "filter": {
+    "filter_model": null,
+    "delta_c": null
+  },
+  "mdef": {
+    "mdef_model": null
+  },
+  "transfer": {
+    "transfer_model": null,
+    "lnk_min": null,
+    "lnk_max": null,
+    "dlnk": null,
+    "takahashi": null
+  },
+  "tracer_profile": {
+    "tracer_profile_model": null
+  },
+  "halo_profile": {
+    "halo_profile_model": null
+  },
+  "exclusion": {
+    "exclusion_model": null
+  }
+}

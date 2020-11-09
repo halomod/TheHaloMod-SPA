@@ -13,8 +13,8 @@ import {
   MdList,
   MdApp,
   MdCheckbox,
-  MdDivider,
   MdSubheader,
+  MdDivider,
 } from 'vue-material/dist/components';
 import VueObserveVisibility from 'vue-observe-visibility';
 import 'vue-material/dist/vue-material.min.css';
@@ -36,8 +36,8 @@ Vue.use(MdList);
 Vue.use(MdDrawer);
 Vue.use(MdApp);
 Vue.use(MdCheckbox);
-Vue.use(MdDivider);
 Vue.use(MdSubheader);
+Vue.use(MdDivider);
 
 const routes = [
   {
