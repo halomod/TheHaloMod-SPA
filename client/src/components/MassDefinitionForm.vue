@@ -4,9 +4,21 @@
       <md-subheader>Mass Definition</md-subheader>
       <md-divider></md-divider>
       <div class="md-layout md-gutter">
+        <label>Mass Definition</label>
+        <md-select v-model="massDefinitionChoices" id="massDefinitionChoices" name="massDefinitionChoice">
+          <md-option
+            v-for="choice in massDefinitionChoices"
+            :key="choice"
+            :value="choice"
+          >
+            {{choice}}
+          </md-option>
+        </md-select>
+      </div>
+      <div class="md-layout md-gutter">
         <!-- Here is where its repeating to load the input -->
-        <div v-for="(input, inputName) in inputs" :key="input.id" class="md-layout-item">
-            <InputField2
+        <!--<div v-for="(input, inputName) in inputs" :key="input.id" class="md-layout-item">
+            <InputField
             :key="inputName"
             :label="input.label"
             :step="input.step"
@@ -19,6 +31,16 @@
             :hidden="input.hidden"
             v-model="mass_definition"
             />
+        </div>-->
+        <div class="md-layout-item">
+          <double-field
+            v-for="(value, param) in model.mass_definition_params"
+            :value="value"
+            :key="param"
+            :param="param"
+            range=false
+            :placeholder="String(defaults[param])"
+            v-model="model.mass_definition_params[param]"/>
         </div>
       </div>
     </div>
@@ -26,7 +48,9 @@
 </template>
 
 <script>
-import InputField2 from './InputField2.vue';
+import BACKEND_CONSTANTS from '../constants/backend_constants';
+import InputField from './InputField.vue';
+import DoubleField from './DoubleField.vue';
 
 const massDefinitionChoices = {
   None: 'Use native definition of mass function',
@@ -58,17 +82,22 @@ export default {
   title: 'Halo Model',
   id: 'halo-model',
   components: {
-    InputField2,
+    InputField,
+    DoubleField,
   },
   model: {
     event: 'onChange',
-    prop: 'mass_definition',
+    prop: 'parent_model',
   },
-  props: {
-    mass_definition: Object,
-  },
+  props: ['parent_model'],
   data() {
     return {
+      model: {
+        mass_definition_model: '',
+        mass_definition_params: BACKEND_CONSTANTS.MassDefinition_params.SOGeneric,
+      },
+      defaults: { ...BACKEND_CONSTANTS.MassDefinition_params.SOGeneric },
+      choices: massDefinitionChoices,
       inputs: {
         massDefinition: {
           label: 'Mass Definition',
@@ -82,13 +111,21 @@ export default {
         },
         // Put another input here if you need
       },
-      massDefinitionChoices,
-      selectedMassDefinition: Object.keys(massDefinitionChoices)[0],
     };
   },
   updated() {
     console.log('MassDef-Updated');
     this.$emit('onChange', this.mass_definition);
+  },
+  watch: {
+    'model.mass_definition_model': function updateOptions(val) {
+      this.model.mass_definition_params = null;
+      this.$nextTick(function saveNewOptions() {
+        // TODO change these val to match massDefinitionChoices
+        this.model.mass_definition_params = BACKEND_CONSTANTS.MassDefinition_params[val];
+        this.defaults = BACKEND_CONSTANTS.MassDefinition_params[val];
+      });
+    },
   },
 };
 </script>
