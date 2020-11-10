@@ -30,11 +30,14 @@
 // @ is an alias to /src
 import FormWrapper from '@/components/FormWrapper.vue';
 import BiasForm from '@/components/BiasForm.vue';
-import CosmologyForm from '@/components/CosmologyForm.vue';
-import TransferForm from '@/components/TransferForm.vue';
+// import CosmologyForm from '@/components/CosmologyForm.vue';
+// import TransferForm from '@/components/TransferForm.vue';
 import FilterForm from '@/components/FilterForm.vue';
 import HaloExclusion from '@/components/HaloExclusion.vue';
 import INITIAL_STATE from '@/constants/initial_state.json';
+import HaloProfileForm from '@/components/HaloProfileForm.vue';
+import HaloModelForm from '@/components/HaloModelForm.vue';
+import constants from '@/constants/backend_constants';
 
 export default {
   name: 'Create',
@@ -188,6 +191,11 @@ export default {
       const f = form;
       f.highlight = true;
       window.history.replaceState({}, '', `${prefix}#${form.component.id}`);
+    },
+    createParamsSetFunction(keyName) {
+      return (newVal) => {
+        this.params[keyName] = newVal;
+      };
     },
   },
   created() {
