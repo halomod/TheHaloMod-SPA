@@ -30,7 +30,10 @@
 
 <script>
 // @ is an alias to /src
+import clonedeep from 'lodash.clonedeep';
+
 import FormWrapper from '@/components/FormWrapper.vue';
+import TracerConcentration from '@/components/TracerConcentration.vue';
 import HaloExclusion from '@/components/HaloExclusion.vue';
 import INITIAL_STATE from '@/constants/initial_state.json';
 
@@ -38,6 +41,7 @@ export default {
   name: 'Create',
   components: {
     FormWrapper,
+    TracerConcentration,
     HaloExclusion,
   },
   data: () => ({
@@ -49,6 +53,10 @@ export default {
       // Add forms to this list, and remove the example form.
       // make sure you have a "title" and "id" property.
       const forms = [
+        {
+          component: TracerConcentration,
+          model: 'tracer_concentration',
+        },
         {
           component: HaloExclusion,
           model: 'exclusion',
@@ -95,7 +103,7 @@ export default {
     },
   },
   created() {
-    this.params = this.deepcopy(INITIAL_STATE);
+    this.params = clonedeep(INITIAL_STATE);
     this.createForms();
   },
 };
