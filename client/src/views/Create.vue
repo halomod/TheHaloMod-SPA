@@ -33,6 +33,7 @@
 import FormWrapper from '@/components/FormWrapper.vue';
 import HaloExclusion from '@/components/HaloExclusion.vue';
 import BiasForm from '@/components/BiasForm.vue';
+import HMFForm from '@/components/HMFForm.vue';
 import INITIAL_STATE from '@/constants/initial_state.json';
 
 export default {
@@ -45,6 +46,14 @@ export default {
     params: null,
     forms: null,
   }),
+  watch: {
+    'params.hmf': {
+      deep: true,
+      handler() {
+        console.log(this.params.hmf);
+      },
+    },
+  },
   methods: {
     createForms() {
       // Add forms to this list, and remove the example form.
@@ -57,6 +66,10 @@ export default {
         {
           component: BiasForm,
           model: 'bias',
+        },
+        {
+          component: HMFForm,
+          model: 'hmf',
         },
       ];
       forms.forEach((item) => {
