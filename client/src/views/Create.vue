@@ -46,14 +46,6 @@ export default {
     params: null,
     forms: null,
   }),
-  watch: {
-    'params.hmf': {
-      deep: true,
-      handler() {
-        console.log(this.params.hmf);
-      },
-    },
-  },
   methods: {
     createForms() {
       // Add forms to this list, and remove the example form.
