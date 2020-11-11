@@ -52,7 +52,7 @@ const filterChoices = {
 export default {
   name: 'FilterForm',
   title: 'Filter',
-  id: 'Filter',
+  id: 'filter',
   props: {
     deltaC: Number,
     setDeltaC: Function,
