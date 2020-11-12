@@ -11,14 +11,26 @@
         </md-option>
       </md-select>
     </md-field>
-    <double-field
-      v-for="(value, param) in model.profile_params"
+    <div class="md-layout-item">
+      <div v-for="(value, param) in model.profile_params"
+        :key="param"
+      >
+      <double-field
+      v-if="typeof value === 'number'"
       :value="value"
-      :key="param"
       :param="param"
       range=false
       :placeholder="String(defaults[param])"
       v-model="model.profile_params[param]"/>
+      <md-checkbox
+        v-if="typeof value === 'boolean'"
+        class="md-primary"
+        v-model="model.profile_params[param]"
+      >
+      {{param}}
+      </md-checkbox>
+      </div>
+    </div>
   </form>
 </template>
 
