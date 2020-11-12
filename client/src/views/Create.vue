@@ -35,6 +35,7 @@ import clonedeep from 'lodash.clonedeep';
 import FormWrapper from '@/components/FormWrapper.vue';
 import TracerConcentration from '@/components/TracerConcentration.vue';
 import HaloExclusion from '@/components/HaloExclusion.vue';
+import BiasForm from '@/components/BiasForm.vue';
 import INITIAL_STATE from '@/constants/initial_state.json';
 
 export default {
@@ -60,6 +61,10 @@ export default {
         {
           component: HaloExclusion,
           model: 'exclusion',
+        },
+        {
+          component: BiasForm,
+          model: 'bias',
         },
       ];
       forms.forEach((item) => {

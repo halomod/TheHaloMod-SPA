@@ -42,6 +42,8 @@ const biasChoices = {
 };
 
 export default {
+  title: 'Bias',
+  id: 'bias',
   name: 'BiasForm',
   model: {
     event: 'onChange',
@@ -64,7 +66,7 @@ export default {
   watch: {
     'model.bias_model': function updateOptions(val) {
       this.model.bias_params = null;
-      this.$nextTick(function () {
+      this.$nextTick(function saveNewOptions() {
         this.model.bias_params = BACKEND_CONSTANTS.Bias_params[val];
         this.defaults = BACKEND_CONSTANTS.Bias_params[val];
       });
