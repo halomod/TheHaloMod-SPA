@@ -33,6 +33,7 @@
 import FormWrapper from '@/components/FormWrapper.vue';
 import HaloExclusion from '@/components/HaloExclusion.vue';
 import BiasForm from '@/components/BiasForm.vue';
+import ProfileForm from '@/components/ProfileForm.vue';
 import INITIAL_STATE from '@/constants/initial_state.json';
 
 export default {
@@ -40,6 +41,7 @@ export default {
   components: {
     FormWrapper,
     HaloExclusion,
+    ProfileForm,
   },
   data: () => ({
     params: null,
@@ -57,6 +59,10 @@ export default {
         {
           component: BiasForm,
           model: 'bias',
+        },
+        {
+          component: ProfileForm,
+          model: 'profile',
         },
       ];
       forms.forEach((item) => {
