@@ -34,6 +34,7 @@ import FormWrapper from '@/components/FormWrapper.vue';
 import HaloExclusion from '@/components/HaloExclusion.vue';
 import BiasForm from '@/components/BiasForm.vue';
 import INITIAL_STATE from '@/constants/initial_state.json';
+import CosmologyForm from '../components/CosmologyForm.vue';
 
 export default {
   name: 'Create',
@@ -57,6 +58,10 @@ export default {
         {
           component: BiasForm,
           model: 'bias',
+        },
+        {
+          component: CosmologyForm,
+          model: 'cosmo',
         },
       ];
       forms.forEach((item) => {
