@@ -36,6 +36,33 @@ const BACKEND_CONSTANTS = {
   tracer_profile_model: null,
   tracer_concentration_model: null,
   tracer_density: null,
+  cosmo_params: {
+    Planck13: {
+      H0: 67.77,
+      Ob0: 0.048252,
+      Om0: 0.30712,
+    },
+    Planck15: {
+      H0: 67.74,
+      Ob0: 0.0486,
+      Om0: 0.3075,
+    },
+    WMAP5: {
+      H0: 70.2,
+      Ob0: 0.0459,
+      Om0: 0.277,
+    },
+    WMAP7: {
+      H0: 70.4,
+      Ob0: 0.0455,
+      Om0: 0.272,
+    },
+    WMAP9: {
+      H0: 69.32,
+      Ob0: 0.04628,
+      Om0: 0.2865,
+    },
+  },
   _GrowthFactor_params: {
     GrowthFactor: {
       dlna: 0.01,
