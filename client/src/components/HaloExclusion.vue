@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import { exclusion as EXCLUSION_CONSTANTS } from '@/constants/form_choices.json';
+import CONSTANTS from '@/constants/backend_constants';
 
 export default {
   title: 'Halo Exclusion',
@@ -28,7 +28,7 @@ export default {
       model: {
         exclusion_model: 'NoExclusion',
       },
-      values: EXCLUSION_CONSTANTS.main,
+      values: CONSTANTS.Exculsion_options,
     };
   },
   watch: {

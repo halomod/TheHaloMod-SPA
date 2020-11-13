@@ -3,41 +3,44 @@
     <div class="md-layout-item md-size-50">
       <md-field>
         <label>Tracer Concentration</label>
-        <md-select v-model="model.concentration_select">
-          <div v-for="(value, key) in selection_values" :key="key">
-            <md-option :value="key">{{value}}</md-option>
-          </div>
+        <md-select v-model="model.tracer_concentration_model">
+          <md-option
+            v-for="(value, key) in options"
+            :key="key"
+            :value="key">
+            {{value}}
+          </md-option>
         </md-select>
       </md-field>
     </div>
     <div class="md-layout-item md-size-25">
-      <div
-        v-for="(value, key) in additional_values.fields"
-        :key="key"
-      >
+      <div v-for="(value, key) in model.tracer_concentration_params" :key="key">
+        <md-field v-if="key === 'sample'">
+          <label>{{key}}</label>
+          <md-select v-model="model.tracer_concentration_params.sample">
+            <md-option value="relaxed">relaxed</md-option>
+            <md-option value="full">full</md-option>
+          </md-select>
+        </md-field>
         <DoubleField
-          v-if="additionalFormControl(key)"
-          :param="key"
+          v-model="model.tracer_concentration_params[key]"
+          v-else
           :value="value"
-          v-model="additional_values.fields[key]"
+          :param="key"
+          range=false
+          :placeholder="value"
         />
       </div>
-      <md-field v-if="additionalFormControl('sample')">
-        <label>sample</label>
-        <md-select v-model="additional_values.selection.select">
-          <div v-for="(value, key) in additional_values.selection.values" :key="key">
-            <md-option :value="key">{{value}}</md-option>
-          </div>
-        </md-select>
-      </md-field>
     </div>
   </div>
 </template>
 <script>
 import clonedeep from 'lodash.clonedeep';
 
-import { concentration as CONCENTRATION_CONSTANTS } from '@/constants/form_choices.json';
 import DoubleField from '@/components/DoubleField.vue';
+import CONSTANTS from '@/constants/backend_constants';
+
+const params = clonedeep(CONSTANTS.CMRelation_params);
 
 export default {
   name: 'TracerConcentration',
@@ -52,71 +55,24 @@ export default {
   },
   data() {
     return {
+      options: CONSTANTS.CMRelation_options,
       model: {
-        concentration_select: 'Bullock01',
-      },
-      selection_values: CONCENTRATION_CONSTANTS.main,
-      additional_values: {
-        fields: null,
-        selection: {
-          select: null,
-          values: null,
-        },
+        tracer_concentration_model: 'Bullock01',
+        tracer_concentration_params: params.Bullock01,
       },
     };
   },
-  mounted() {
-    this.additional_values.selection.values = clonedeep(CONCENTRATION_CONSTANTS.additional.sample);
-    this.additional_values.selection.select = CONCENTRATION_CONSTANTS.additional.sample.relaxed;
-    this.additional_values.fields = CONCENTRATION_CONSTANTS.additional;
-    delete CONCENTRATION_CONSTANTS.additional.sample;
-  },
-  methods: {
-    additionalFormControl(form) {
-      switch (this.model.concentration_select) {
-        case ('Bullock01'):
-          return form === 'F' || form === 'K';
-        case ('Bullock01Power'):
-          return form === 'a' || form === 'b' || form === 'c';
-        case ('Duffy08'):
-          return form === 'ms' || form === 'sample';
-        case ('Zehavi11'):
-          return form === 'a' || form === 'b' || form === 'c' || form === 'ms';
-        case ('Ludlow16'):
-          return form === 'f' || form === 'C';
-        case ('Ludlow16Empirical'):
-          return form === 'c0_0' || form === 'c0_z'
-            || form === 'beta_0'
-            || form === 'beta_z'
-            || form === 'gamma1_0'
-            || form === 'gamma1_z'
-            || form === 'gamma2_0'
-            || form === 'gamma2_z';
-        default:
-          return false;
-      }
-    },
-    emit() {
-      this.$emit('onChange', {
-        tracer_concentration_model: this.model.concentration_select,
-        tracer_concentration_params: {
-          ...this.additional_values.fields,
-          sample: this.additional_values.selection.select,
-        },
-      });
-    },
+  created() {
+    this.$emit('onChange', this.model);
   },
   watch: {
-    'model.concentration_select': {
+    model: {
       deep: true,
       handler() {
-        this.emit();
-      },
-    },
-    additional_values: {
-      deep: true,
-      handler() {
-        this.emit();
+        this.model.tracer_concentration_params = params[
+          this.model.tracer_concentration_model
+        ];
+        this.$emit('onChange', this.model);
       },
     },
   },
