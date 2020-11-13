@@ -71,6 +71,8 @@ export default {
         {
           component: HODForm,
           model: 'hod',
+        },
+        {
           component: TracerProfileForm,
           model: 'tracerProfile',
         },
