@@ -1,7 +1,7 @@
 <template>
   <form novalidate>
     <md-field>
-      <label>Profile</label>
+      <label>Tracer Profile</label>
       <md-select v-model="model.profile_model">
         <md-option
           v-for="(value, choice) in choices"
