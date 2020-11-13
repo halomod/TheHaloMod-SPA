@@ -33,6 +33,8 @@
 import FormWrapper from '@/components/FormWrapper.vue';
 import HaloExclusion from '@/components/HaloExclusion.vue';
 import BiasForm from '@/components/BiasForm.vue';
+import HMFForm from '@/components/HMFForm.vue';
+import HODForm from '@/components/HODForm.vue';
 import TracerProfileForm from '@/components/TracerProfileForm.vue';
 import INITIAL_STATE from '@/constants/initial_state.json';
 
@@ -41,6 +43,8 @@ export default {
   components: {
     FormWrapper,
     HaloExclusion,
+    HODForm,
+    BiasForm,
     TracerProfileForm,
   },
   data: () => ({
@@ -61,6 +65,12 @@ export default {
           model: 'bias',
         },
         {
+          component: HMFForm,
+          model: 'hmf',
+        },
+        {
+          component: HODForm,
+          model: 'hod',
           component: TracerProfileForm,
           model: 'tracerProfile',
         },
