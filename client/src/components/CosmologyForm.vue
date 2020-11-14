@@ -1,7 +1,5 @@
 <template>
   <div>
-    <p>cosmoData is currently {{cosmoData}}</p>
-    <p>allCosmoData is currently {{allCosmoData}}</p>
     <md-field>
       <label for="cosmologyChoices">Cosmology</label>
       <md-select v-model="cosmologyChoice" id="cosmologyChoices" name="cosmologyChoice">
@@ -20,7 +18,9 @@
       :htmlParam="input.html"
       :key="inputName"
       :step="input.step"
-      :value="cosmoData.cosmo_params[inputName]"
+      :value="cosmoData.cosmo_params[inputName] !== undefined
+        ? cosmoData.cosmo_params[inputName]
+        : cosmoData[inputName]"
       v-on:input="createSetCurrentValueFunc(inputName)($event)"
       :min="input.min"
       :max="input.max"
@@ -117,8 +117,11 @@ export default {
   methods: {
     createSetCurrentValueFunc(inputType) {
       return (newValue) => {
-        // Set the new value temporarily
-        this.cosmoData.cosmo_params[inputType] = newValue;
+        if (this.cosmoData.cosmo_params[inputType]) {
+          this.cosmoData.cosmo_params[inputType] = newValue;
+        } else {
+          this.cosmoData[inputType] = newValue;
+        }
 
         // Set the value in allCosmoData
         this.allCosmoData[this.cosmoData.cosmo_model][inputType] = newValue;
@@ -141,6 +144,7 @@ export default {
       this.cosmoData.z = this.allCosmoData[newChoice].z;
       this.cosmoData.n = this.allCosmoData[newChoice].n;
       this.cosmoData.sigma_8 = this.allCosmoData[newChoice].sigma_8;
+      console.log(this.cosmoData);
       this.$emit('updateCosmo', this.cosmoData);
     },
   },

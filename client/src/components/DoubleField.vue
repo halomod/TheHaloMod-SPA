@@ -32,5 +32,16 @@ export default {
     valid() { return this.numeric && this.between; },
     validationClass() { return { 'md-invalid': !this.valid }; },
   },
+  watch: {
+    /**
+     * Used for the situation where the value to the input changes without the
+     * user entering a new value directy. Like when a model changes.
+     */
+    value() {
+      if (this.my_value !== this.value) {
+        this.my_value = this.value;
+      }
+    },
+  },
 };
 </script>
