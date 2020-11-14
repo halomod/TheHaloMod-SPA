@@ -67,6 +67,22 @@ export default {
           max: 2,
           step: 0.01,
         },
+        z: {
+          html: 'Redshift',
+          min: 0,
+          max: 1100,
+        },
+        n: {
+          html: 'n<sub>s</sub>',
+          min: -4,
+          max: 3,
+          helpText: 'Spectral Index',
+        },
+        sigma_8: {
+          html: '&#963<sub>8</sub>',
+          min: 0.1,
+          helpText: 'RMS Mass Fluctuations',
+        },
       },
       /**
        * Represents the different selections of the cosmo model and saves the
@@ -82,12 +98,17 @@ export default {
   },
   created() {
     if (this.cosmoData.cosmo_params === null) {
-      const { H0, Ob0, Om0 } = BACKEND_CONSTANTS.cosmo_params.Planck13;
+      const {
+        H0, Ob0, Om0, z, n, sigma_8,
+      } = BACKEND_CONSTANTS.cosmo_params.Planck13;
       this.cosmoData.cosmo_params = {
         H0,
         Ob0,
         Om0,
       };
+      this.cosmoData.z = z;
+      this.cosmoData.n = n;
+      this.cosmoData.sigma_8 = sigma_8;
       this.cosmoData.cosmo_model = 'Planck13';
       this.cosmologyChoice = 'Planck13';
       this.$emit('updateCosmo', this.cosmoData);
@@ -110,13 +131,16 @@ export default {
   watch: {
     /**
      * Watches for changes in the choice of cosmology. When a new choice is
-     * made, then all the stored values are copied over
+     * made, then all the stored values are copied over.
      */
     cosmologyChoice(newChoice) {
       this.cosmoData.cosmo_model = newChoice;
       Object.keys(this.cosmoData.cosmo_params).forEach((param) => {
         this.cosmoData.cosmo_params[param] = this.allCosmoData[newChoice][param];
       });
+      this.cosmoData.z = this.allCosmoData[newChoice].z;
+      this.cosmoData.n = this.allCosmoData[newChoice].n;
+      this.cosmoData.sigma_8 = this.allCosmoData[newChoice].sigma_8;
       this.$emit('updateCosmo', this.cosmoData);
     },
   },

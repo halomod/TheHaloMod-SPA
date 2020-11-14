@@ -13,6 +13,11 @@ module.exports = {
   rules: {
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
+    /**
+     * Turned off because qutie a few variables from the HaloMod library
+     * that use underscores for variable names are used.
+     */
+    'camelcase': 'off'
   },
   overrides: [
     {
