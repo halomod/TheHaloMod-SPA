@@ -144,7 +144,6 @@ export default {
       this.cosmoData.z = this.allCosmoData[newChoice].z;
       this.cosmoData.n = this.allCosmoData[newChoice].n;
       this.cosmoData.sigma_8 = this.allCosmoData[newChoice].sigma_8;
-      console.log(this.cosmoData);
       this.$emit('updateCosmo', this.cosmoData);
     },
   },
