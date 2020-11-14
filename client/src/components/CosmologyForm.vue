@@ -1,5 +1,7 @@
 <template>
   <div>
+    <p>cosmoData is currently {{cosmoData}}</p>
+    <p>allCosmoData is currently {{allCosmoData}}</p>
     <md-field>
       <label for="cosmologyChoices">Cosmology</label>
       <md-select v-model="cosmologyChoice" id="cosmologyChoices" name="cosmologyChoice">
@@ -28,30 +30,13 @@
 
 <script>
 import InputField from './InputField.vue';
+import BACKEND_CONSTANTS from '../constants/backend_constants';
 
 export default {
   name: 'CosmologyForm',
   title: 'Cosmology',
   id: 'cosmology',
   props: {
-    hmfDefaults: {
-      type: Object,
-      required: true,
-    },
-    /**
-     * Has a general form like so:
-     *
-     * ```
-     * cosmoData: {
-        cosmo_model: 'Planck15',
-        cosmo_params: {
-          H0: 0,
-          Ob0: 0,
-          Om0: 0,
-        },
-      },
-     * ```
-     */
     cosmoData: {
       type: Object,
       required: true,
@@ -87,13 +72,26 @@ export default {
        * Represents the different selections of the cosmo model and saves the
        * users' inputs for each.
        */
-      allCosmoData: JSON.parse(JSON.stringify(this.hmfDefaults.cosmo)),
-      cosmologyChoices: Object.keys(this.hmfDefaults.cosmo),
+      allCosmoData: JSON.parse(JSON.stringify(BACKEND_CONSTANTS.cosmo_params)),
+      cosmologyChoices: Object.keys(BACKEND_CONSTANTS.cosmo_params),
       cosmologyChoice: this.cosmoData.cosmo_model,
     };
   },
   components: {
     InputField,
+  },
+  created() {
+    if (this.cosmoData.cosmo_params === null) {
+      const { H0, Ob0, Om0 } = BACKEND_CONSTANTS.cosmo_params.Planck13;
+      this.cosmoData.cosmo_params = {
+        H0,
+        Ob0,
+        Om0,
+      };
+      this.cosmoData.cosmo_model = 'Planck13';
+      this.cosmologyChoice = 'Planck13';
+      this.$emit('updateCosmo', this.cosmoData);
+    }
   },
   methods: {
     createSetCurrentValueFunc(inputType) {

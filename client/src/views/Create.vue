@@ -64,16 +64,16 @@ export default {
           model: 'bias',
         },
         {
-          component: CosmologyForm,
-          model: 'cosmo',
-        },
-        {
           component: HMFForm,
           model: 'hmf',
         },
         {
           component: HODForm,
           model: 'hod',
+        },
+        {
+          component: CosmologyForm,
+          model: 'cosmo',
         },
       ];
       forms.forEach((item) => {
