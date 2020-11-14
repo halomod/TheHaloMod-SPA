@@ -65,6 +65,11 @@
 </template>
 
 <script>
+import Debug from 'debug';
+
+const debug = Debug('InputField.vue');
+debug.enabled = true;
+
 export default {
   name: 'InputField',
   model: {
@@ -119,6 +124,7 @@ export default {
   },
   methods: {
     handleInput(value) {
+      debug('Entered handleInput method');
       // Determine if the value is a number
       if (!Number.isNaN(value)) {
         const parsedNum = Number.parseFloat(value);
@@ -128,8 +134,12 @@ export default {
             this.$emit('updateCurrentValue', Number.parseFloat(value));
             this.inputIsInvalid = false;
           } else {
+            debug('The input was not between the min and max value');
             this.inputIsInvalid = true;
           }
+        } else {
+          this.$emit('updateCurrentValue', Number.parseFloat(value));
+          this.inputIsInvalid = false;
         }
       } else {
         this.inputIsInvalid = true;

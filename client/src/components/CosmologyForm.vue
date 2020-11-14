@@ -15,13 +15,13 @@
       </md-select>
     </md-field>
 
-    <InputField
+    <DoubleField
       v-for="(input, inputName) in inputs"
-      :labelHtml="input.html"
+      :htmlParam="input.html"
       :key="inputName"
       :step="input.step"
-      :currentValue="cosmoData.cosmo_params[inputName]"
-      v-on:updateCurrentValue="createSetCurrentValueFunc(inputName)($event)"
+      :value="cosmoData.cosmo_params[inputName]"
+      v-on:input="createSetCurrentValueFunc(inputName)($event)"
       :min="input.min"
       :max="input.max"
     />
@@ -29,8 +29,8 @@
 </template>
 
 <script>
-import InputField from './InputField.vue';
 import BACKEND_CONSTANTS from '../constants/backend_constants';
+import DoubleField from './DoubleField.vue';
 
 export default {
   name: 'CosmologyForm',
@@ -50,19 +50,19 @@ export default {
     return {
       inputs: {
         H0: {
-          html: '<label>H<sub>0</sub></label>',
+          html: 'H<sub>0</sub>',
           min: 10,
           max: 500,
           step: 1,
         },
         Ob0: {
-          html: '<label>&#937;<sub>b</sub></label>',
+          html: '&#937;<sub>b</sub>',
           min: 0.005,
           max: 0.65,
           step: 0.001,
         },
         Om0: {
-          html: '<label>&#937;<sub>m</sub></label>',
+          html: '&#937;<sub>m</sub>',
           min: 0.02,
           max: 2,
           step: 0.01,
@@ -78,7 +78,7 @@ export default {
     };
   },
   components: {
-    InputField,
+    DoubleField,
   },
   created() {
     if (this.cosmoData.cosmo_params === null) {
