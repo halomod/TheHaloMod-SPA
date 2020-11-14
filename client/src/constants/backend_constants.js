@@ -430,12 +430,8 @@ const BACKEND_CONSTANTS = {
       a: 9,
       b: -0.13,
       c: 1,
-      ms: null,
     },
     Duffy08: {
-      a: null,
-      b: null,
-      c: null,
       ms: 2000000000000,
       sample: 'relaxed',
     },
@@ -473,6 +469,14 @@ const BACKEND_CONSTANTS = {
       gamma2_0: 0.317,
       gamma2_z: -0.893,
     },
+  },
+  CMRelation_options: {
+    Bullock01: 'Bullock (2001) Physical Form',
+    Bullock01Power: 'Bullock (2001) Power-Law',
+    Duffy08: 'Duffy (2008) Power-Law',
+    Zehavi11: 'Zehavi (2011) Power-Law',
+    Ludlow16: 'Ludlow (2016)',
+    Ludlow16Empirical: 'Ludlow (2016) Empirical',
   },
   HOD_params: {
     Zehavi05: {
@@ -542,6 +546,13 @@ const BACKEND_CONSTANTS = {
       M_min: 11,
       sigma_A: 0,
     },
+  },
+  Exculsion_options: {
+    NoExclusion: 'No Exclusion',
+    Sphere: 'Spherical Halos',
+    DblSphere_: 'Spherical Overlapping Halos',
+    DblEllipsoid_: 'Ellipsoidal Halos',
+    NgMatched_: 'Density-Matched (Tinker 2005)',
   },
   Exclusion_params: {
     NoExclusion: {},
