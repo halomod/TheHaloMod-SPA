@@ -14,6 +14,7 @@
       </md-list>
     </md-app-drawer>
     <md-app-content>
+      <submit-button :model="params"/>
       <div v-for="(form, index) in forms" :key="index">
         <FormWrapper
           :name="form.component.title"
@@ -36,6 +37,7 @@ import BiasForm from '@/components/BiasForm.vue';
 import HMFForm from '@/components/HMFForm.vue';
 import HODForm from '@/components/HODForm.vue';
 import INITIAL_STATE from '@/constants/initial_state.json';
+import SubmitButton from '@/components/SubmitButton.vue';
 
 export default {
   name: 'Create',
@@ -44,6 +46,7 @@ export default {
     HaloExclusion,
     HODForm,
     BiasForm,
+    SubmitButton,
   },
   data: () => ({
     params: null,
