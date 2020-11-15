@@ -4,16 +4,20 @@
       <md-content style="width: 1028px; height: 750px">
         <img v-if="image !== null" :src="image" style="width: 100%; margin: auto"/>
         <div v-else
-          style="display: flex; justify-content: center; height: 100%; align-tems: center;">
-        <md-progress-spinner
-          :md-diameter="100"
-          :md-stroke="10"
-          md-mode="indeterminate"
-          style="margin: 24px;"/>
+          style="display: grid; height: 100%">
+          <md-progress-spinner
+            :md-diameter="100"
+            :md-stroke="10"
+            md-mode="indeterminate"
+            style="margin: auto;"/>
         </div>
       </md-content>
     </md-dialog>
-    <md-button class="md-primary md-raised" @click="createObject">
+    <md-button
+      v-if="!showDialog"
+      style="position: fixed; bottom: 15px; right: 15px; z-index: 10;"
+      class="md-primary md-raised"
+      @click="createObject">
       Calculate
     </md-button>
   </div>
@@ -24,7 +28,7 @@ import baseurl from '../env';
 
 export default {
   name: 'SubmitButton',
-  props: ['model'],
+  props: ['model', 'meta'],
   data() {
     return {
       showDialog: false,
@@ -40,29 +44,32 @@ export default {
         dict = { ...dict, ...value };
       }
       /* eslint-enable */
-      console.log(dict);
       return dict;
     },
   },
   methods: {
     createObject() {
       const params = this.payload;
+      /* creates model on server */
       this.$http.post(`${baseurl}/create`, {
         params: { ...params },
-        label: 'New Model',
+        label: this.meta.model_name,
       }).then((response) => {
-        this.object = response.data['New Model'];
+        /* saves serialized object locally */
+        this.object = response.data[this.meta.model_name];
         this.getFigure();
       });
     },
     getFigure() {
       this.image = null;
       this.showDialog = true;
+      /* gets figure from server */
       this.$http.post(`${baseurl}/plot`, {
-        fig_type: 'dndm',
+        fig_type: this.meta.fig_type,
         image_type: 'png',
-        models: { 'New Model': this.object },
+        models: { [this.meta.model_name]: this.object },
       }).then((response) => {
+        /* saves image src as string */
         this.image = `data:image/png;base64,${response.data.figure}`;
       });
     },
