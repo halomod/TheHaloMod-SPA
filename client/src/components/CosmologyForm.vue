@@ -90,7 +90,7 @@ export default {
        */
       allCosmoData: JSON.parse(JSON.stringify(BACKEND_CONSTANTS.cosmo_params)),
       cosmologyChoices: Object.keys(BACKEND_CONSTANTS.cosmo_params),
-      cosmologyChoice: this.cosmoData.cosmo_model,
+      cosmologyChoice: 'Planck13',
     };
   },
   components: {
@@ -98,20 +98,11 @@ export default {
   },
   created() {
     if (this.cosmoData.cosmo_params === null) {
-      const {
-        H0, Ob0, Om0, z, n, sigma_8,
-      } = BACKEND_CONSTANTS.cosmo_params.Planck13;
-      this.cosmoData.cosmo_params = {
-        H0,
-        Ob0,
-        Om0,
+      const newCosmoObj = {
+        ...BACKEND_CONSTANTS.cosmo_params.Planck13,
+        cosmo_model: this.cosmologyChoice,
       };
-      this.cosmoData.z = z;
-      this.cosmoData.n = n;
-      this.cosmoData.sigma_8 = sigma_8;
-      this.cosmoData.cosmo_model = 'Planck13';
-      this.cosmologyChoice = 'Planck13';
-      this.$emit('updateCosmo', this.cosmoData);
+      this.$emit('updateCosmo', newCosmoObj);
     }
   },
   methods: {
@@ -119,14 +110,12 @@ export default {
       return (newValue) => {
         if (this.cosmoData.cosmo_params[inputType]) {
           this.cosmoData.cosmo_params[inputType] = newValue;
+          this.allCosmoData[this.cosmoData.cosmo_model].cosmo_params[inputType] = newValue;
         } else {
           this.cosmoData[inputType] = newValue;
+          this.allCosmoData[this.cosmoData.cosmo_model][inputType] = newValue;
         }
 
-        // Set the value in allCosmoData
-        this.allCosmoData[this.cosmoData.cosmo_model][inputType] = newValue;
-
-        // Set the value for good.
         this.$emit('updateCosmo', this.cosmoData);
       };
     },
@@ -137,14 +126,11 @@ export default {
      * made, then all the stored values are copied over.
      */
     cosmologyChoice(newChoice) {
-      this.cosmoData.cosmo_model = newChoice;
-      Object.keys(this.cosmoData.cosmo_params).forEach((param) => {
-        this.cosmoData.cosmo_params[param] = this.allCosmoData[newChoice][param];
-      });
-      this.cosmoData.z = this.allCosmoData[newChoice].z;
-      this.cosmoData.n = this.allCosmoData[newChoice].n;
-      this.cosmoData.sigma_8 = this.allCosmoData[newChoice].sigma_8;
-      this.$emit('updateCosmo', this.cosmoData);
+      const newCosmoObj = {
+        ...this.allCosmoData[newChoice],
+        cosmo_model: newChoice,
+      };
+      this.$emit('updateCosmo', newCosmoObj);
     },
   },
 };
