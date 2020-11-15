@@ -74,7 +74,7 @@ export default {
         },
         {
           component: TracerProfileForm,
-          model: 'tracerProfile',
+          model: 'tracer_profile',
         },
       ];
       forms.forEach((item) => {

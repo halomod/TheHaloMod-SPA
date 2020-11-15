@@ -15,13 +15,6 @@
       <div v-for="(value, param) in model.profile_params"
         :key="param"
       >
-      <double-field
-        v-if="typeof value === 'number'"
-        :value="value"
-        :param="param"
-        range=false
-        :placeholder="String(defaults[param])"
-        v-model="model.profile_params[param]"/>
       <md-checkbox
         v-if="typeof value === 'boolean'"
         class="md-primary"
@@ -29,6 +22,14 @@
       >
         {{param}}
       </md-checkbox>
+      <double-field
+        v-else
+        :value="value"
+        :param="param"
+        range=false
+        :placeholder="String(defaults[param])"
+        v-model="model.profile_params[param]"/>
+
       </div>
     </div>
   </form>
