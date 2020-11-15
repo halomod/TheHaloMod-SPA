@@ -14,12 +14,17 @@
       </md-list>
     </md-app-drawer>
     <md-app-content>
+      <submit-button :model="params" :meta="model_metadata"/>
       <div v-for="(form, index) in forms" :key="index">
         <FormWrapper
           :name="form.component.title"
           v-bind:id="`${form.component.id}`"
           @toggle-highlight="(bool) => toggleHighlight(bool, form, index)">
-          <component
+          <component v-if="form.isMeta"
+            :is="form.component"
+            v-model="model_metadata"
+          />
+          <component v-else
             :is="form.component"
             v-model="params[form.model]"/>
         </FormWrapper>
@@ -39,6 +44,8 @@ import BiasForm from '@/components/BiasForm.vue';
 import HMFForm from '@/components/HMFForm.vue';
 import HODForm from '@/components/HODForm.vue';
 import INITIAL_STATE from '@/constants/initial_state.json';
+import SubmitButton from '@/components/SubmitButton.vue';
+import ModelMetadataForm from '@/components/ModelMetadataForm.vue';
 import CosmologyForm from '../components/CosmologyForm.vue';
 
 export default {
@@ -49,16 +56,25 @@ export default {
     HaloExclusion,
     HODForm,
     BiasForm,
+    SubmitButton,
   },
   data: () => ({
     params: null,
     forms: null,
+    model_metadata: {
+      model_name: 'Model',
+      fig_type: 'dndm',
+    },
   }),
   methods: {
     createForms() {
       // Add forms to this list, and remove the example form.
       // make sure you have a "title" and "id" property.
       const forms = [
+        {
+          component: ModelMetadataForm,
+          isMeta: true,
+        },
         {
           component: TracerConcentration,
           model: 'tracer_concentration',
