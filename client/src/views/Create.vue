@@ -46,7 +46,8 @@ import HODForm from '@/components/HODForm.vue';
 import INITIAL_STATE from '@/constants/initial_state.json';
 import SubmitButton from '@/components/SubmitButton.vue';
 import ModelMetadataForm from '@/components/ModelMetadataForm.vue';
-import CosmologyForm from '../components/CosmologyForm.vue';
+import CosmologyForm from '@/components/CosmologyForm.vue';
+import MassDefinitionForm from '@/components/MassDefinitionForm.vue';
 
 export default {
   name: 'Create',
@@ -56,6 +57,7 @@ export default {
     HaloExclusion,
     HODForm,
     BiasForm,
+    MassDefinitionForm,
     SubmitButton,
   },
   data: () => ({
@@ -74,6 +76,10 @@ export default {
         {
           component: ModelMetadataForm,
           isMeta: true,
+        },
+        {
+          component: MassDefinitionForm,
+          model: 'mass_definition',
         },
         {
           component: TracerConcentration,
@@ -155,5 +161,9 @@ export default {
 <style scoped>
   #create {
     height: 80vh;
-  };
+  }
+  .md-drawer {
+    width: 230px;
+    max-width: calc(100vw - 125px);
+  }
 </style>

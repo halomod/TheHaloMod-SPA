@@ -17,7 +17,7 @@ module.exports = {
      * Turned off because quite a few variables from the HaloMod library
      * that use underscores for variable names are used.
      */
-    'camelcase': 'off'
+    camelcase: 'off',
   },
   overrides: [
     {
