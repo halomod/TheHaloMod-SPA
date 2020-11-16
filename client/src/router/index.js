@@ -85,7 +85,7 @@ const router = new VueRouter({
       } catch (err) {
         console.warn(err);
       }
-    } if (savedPosition) {
+    } else if (savedPosition) {
       return savedPosition;
     }
     return { x: 0, y: 0 };
