@@ -1,27 +1,42 @@
 <template>
   <div class="halo-exclusion">
     <md-field>
-      <label for="movie">Halo Exclusion*</label>
-      <md-select v-model="selection">
-        <md-option value="no-exclusion">No Exclusion</md-option>
-        <md-option value="spherical-halos">Spherical Halos</md-option>
-        <md-option value="spherical-overlapping-halos">Spherical Overlapping Halos</md-option>
-        <md-option value="ellipsoidal-halos">Ellipsoidal Halos</md-option>
-        <md-option value="density-matched">Density-Matched (Tinker 2005)</md-option>
+      <label>Halo Exclusion*</label>
+      <md-select v-model="model.exclusion_model">
+        <div v-for="(value, key) in values" :key="key">
+          <md-option :value="key">{{value}}</md-option>
+        </div>
       </md-select>
     </md-field>
   </div>
 </template>
 
 <script>
+import CONSTANTS from '@/constants/backend_constants';
+
 export default {
   title: 'Halo Exclusion',
   name: 'HaloExclusion',
   id: 'halo-exclusion',
+  props: ['parent_model'],
+  model: {
+    event: 'onChange',
+    prop: 'parent_model',
+  },
   data() {
     return {
-      selection: 'no-exclusion',
+      model: {
+        exclusion_model: 'NoExclusion',
+      },
+      values: CONSTANTS.Exculsion_options,
     };
+  },
+  watch: {
+    'model.exclusion_model': {
+      handler() {
+        this.$emit('onChange', this.model);
+      },
+    },
   },
 };
 </script>

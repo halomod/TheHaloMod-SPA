@@ -36,6 +36,58 @@ const BACKEND_CONSTANTS = {
   tracer_profile_model: null,
   tracer_concentration_model: null,
   tracer_density: null,
+  cosmo_params: {
+    Planck13: {
+      cosmo_params: {
+        H0: 67.77,
+        Ob0: 0.048252,
+        Om0: 0.30712,
+      },
+      z: 0.0,
+      n: 0.9619,
+      sigma_8: 0.8347,
+    },
+    Planck15: {
+      cosmo_params: {
+        H0: 67.74,
+        Ob0: 0.0486,
+        Om0: 0.3075,
+      },
+      z: 0.0,
+      n: 0.965,
+      sigma_8: 0.802,
+    },
+    WMAP5: {
+      cosmo_params: {
+        H0: 70.2,
+        Ob0: 0.0459,
+        Om0: 0.277,
+      },
+      z: 0.0,
+      n: 0.962,
+      sigma_8: 0.817,
+    },
+    WMAP7: {
+      cosmo_params: {
+        H0: 70.4,
+        Ob0: 0.0455,
+        Om0: 0.272,
+      },
+      z: 0.0,
+      n: 0.967,
+      sigma_8: 0.81,
+    },
+    WMAP9: {
+      cosmo_params: {
+        H0: 69.32,
+        Ob0: 0.04628,
+        Om0: 0.2865,
+      },
+      z: 0.0,
+      n: 0.9646,
+      sigma_8: 0.817,
+    },
+  },
   _GrowthFactor_params: {
     GrowthFactor: {
       dlna: 0.01,
@@ -430,12 +482,8 @@ const BACKEND_CONSTANTS = {
       a: 9,
       b: -0.13,
       c: 1,
-      ms: null,
     },
     Duffy08: {
-      a: null,
-      b: null,
-      c: null,
       ms: 2000000000000,
       sample: 'relaxed',
     },
@@ -473,6 +521,14 @@ const BACKEND_CONSTANTS = {
       gamma2_0: 0.317,
       gamma2_z: -0.893,
     },
+  },
+  CMRelation_options: {
+    Bullock01: 'Bullock (2001) Physical Form',
+    Bullock01Power: 'Bullock (2001) Power-Law',
+    Duffy08: 'Duffy (2008) Power-Law',
+    Zehavi11: 'Zehavi (2011) Power-Law',
+    Ludlow16: 'Ludlow (2016)',
+    Ludlow16Empirical: 'Ludlow (2016) Empirical',
   },
   HOD_params: {
     Zehavi05: {
@@ -542,6 +598,13 @@ const BACKEND_CONSTANTS = {
       M_min: 11,
       sigma_A: 0,
     },
+  },
+  Exculsion_options: {
+    NoExclusion: 'No Exclusion',
+    Sphere: 'Spherical Halos',
+    DblSphere_: 'Spherical Overlapping Halos',
+    DblEllipsoid_: 'Ellipsoidal Halos',
+    NgMatched_: 'Density-Matched (Tinker 2005)',
   },
   Exclusion_params: {
     NoExclusion: {},
