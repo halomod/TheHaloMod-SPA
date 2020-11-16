@@ -53,9 +53,9 @@ export default {
     return {
       model: {
         growth_model: 'GrowthFactor',
-        growth_params: BACKEND_CONSTANTS.GrowthFactor_params.GrowthFactor,
+        growth_params: BACKEND_CONSTANTS._GrowthFactor_params.GrowthFactor,
       },
-      defaults: { ...BACKEND_CONSTANTS.GrowthFactor_params.GrowthFactor },
+      defaults: { ...BACKEND_CONSTANTS._GrowthFactor_params.GrowthFactor },
       choices: growthChoices,
     };
   },
@@ -66,8 +66,8 @@ export default {
     'model.growth_model': function updateOptions(val) {
       this.model.growth_params = null;
       this.$nextTick(function saveNewOptions() {
-        this.model.growth_params = BACKEND_CONSTANTS.GrowthFactor_params[val];
-        this.defaults = BACKEND_CONSTANTS.GrowthFactor_params[val];
+        this.model.growth_params = BACKEND_CONSTANTS._GrowthFactor_params[val];
+        this.defaults = BACKEND_CONSTANTS._GrowthFactor_params[val];
       });
     },
   },
