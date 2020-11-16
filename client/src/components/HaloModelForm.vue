@@ -26,7 +26,8 @@
           :inputName="inputName"
           :inputType="input.inputType"
           :options="input.options"
-          :setCurrentValue="createSetCurrentValueFunc(inputName)"
+          :setCurrentValue="null"
+          v-model="model.halo_model_params"
         />
       </div>
     </div>
@@ -34,6 +35,7 @@
 </template>
 
 <script>
+import BACKEND_CONSTANTS from '../constants/backend_constants';
 import InputField from './InputField.vue';
 
 const haloModelChoices = {
@@ -61,57 +63,13 @@ export default {
       choices: haloModelChoices,
       model: {
         halo_model: 'linear',
-        halo_model_params: {
-          log_r_range: {
-            label: 'Scale Range (log10)',
-            min: -3.0,
-            max: 3.0,
-            value: -2,
-            inputType: 'range',
-            step: 0.05,
-          },
-          rnum: {
-            label: 'Number of r bins',
-            min: 5.0,
-            max: 100,
-            value: 5,
-            inputType: 'number',
-          },
-          log_k_range: {
-            label: 'Wavenumber Range (log10)',
-            min: -3.0,
-            max: 100.0,
-            value: 3,
-            inputType: 'range',
-            step: 0.05,
-          },
-          hm_dlog10k: {
-            label: 'Halo Model k bin size',
-            min: 0.01,
-            max: 1.0,
-            value: 0.05,
-            inputType: 'number',
-            step: 0.01,
-          },
-          force_1halo_turnover: {
-            label: 'Force 1-halo turnover?',
-            value: 1,
-            inputType: 'checkbox',
-          },
-        },
+        halo_model_params: BACKEND_CONSTANTS.halo_model_params,
       },
       defaults: { },
     };
   },
-  methods: {
-    createSetCurrentValueFunc(inputType1) {
-      return (newValue) => {
-        // Set the new value temporarily
-        this.formValues[inputType1] = newValue;
-        // Set the value for good.
-        this.setForm(this.formValues);
-      };
-    },
+  updated() {
+    this.$emit('onChange', this.model);
   },
 };
 </script>
