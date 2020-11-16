@@ -14,12 +14,19 @@
       </md-list>
     </md-app-drawer>
     <md-app-content>
+      <submit-button :model="params" :meta="model_metadata"/>
       <div v-for="(form, index) in forms" :key="index">
         <FormWrapper
           :name="form.component.title"
           v-bind:id="`${form.component.id}`"
           @toggle-highlight="(bool) => toggleHighlight(bool, form, index)">
-          <component v-bind:is="form.component" v-bind="form.props" v-model="form.model"/>
+          <component v-if="form.isMeta"
+            :is="form.component"
+            v-model="model_metadata"
+          />
+          <component v-else
+            :is="form.component"
+            v-model="params[form.model]"/>
         </FormWrapper>
       </div>
     </md-app-content>
@@ -28,130 +35,65 @@
 
 <script>
 // @ is an alias to /src
+import clonedeep from 'lodash.clonedeep';
+
 import FormWrapper from '@/components/FormWrapper.vue';
-import BiasForm from '@/components/BiasForm.vue';
-// import CosmologyForm from '@/components/CosmologyForm.vue';
-// import TransferForm from '@/components/TransferForm.vue';
-import FilterForm from '@/components/FilterForm.vue';
+import TracerConcentration from '@/components/TracerConcentration.vue';
 import HaloExclusion from '@/components/HaloExclusion.vue';
+import BiasForm from '@/components/BiasForm.vue';
+import HMFForm from '@/components/HMFForm.vue';
+import HODForm from '@/components/HODForm.vue';
 import INITIAL_STATE from '@/constants/initial_state.json';
-import HaloProfileForm from '@/components/HaloProfileForm.vue';
-import HaloModelForm from '@/components/HaloModelForm.vue';
-import constants from '@/constants/backend_constants';
+import SubmitButton from '@/components/SubmitButton.vue';
+import ModelMetadataForm from '@/components/ModelMetadataForm.vue';
 
 export default {
   name: 'Create',
   components: {
     FormWrapper,
+    TracerConcentration,
     HaloExclusion,
-    HaloProfileForm,
+    HODForm,
     BiasForm,
+    SubmitButton,
   },
-  data() {
-    return {
-      forms: null,
-      model: {
-        bias: {
-          bias_model: null,
-          bias_params: null,
-        },
-      },
-      params: {
-        cosmo_model: 'Planck15',
-        cosmo_params: {
-          H0: 0,
-          Ob0: 0,
-          Om0: 0,
-        },
-        haloModel: {
-          log_r_range: 0,
-          rnum: 0,
-          log_k_range: 0,
-          hm_dlog10k: 0,
-          hc_spectrum: '',
-          force_1halo_turnover: 0,
-        },
-        transfer_params: {
-          BBKS: constants.TransferComponent_params.BBKS,
-          BondEfs: constants.TransferComponent_params.BondEfs,
-        },
-        takahashi: true,
-        transfer_model: 'CAMB',
-        halo_profile_model: constants.halo_profile_model,
-        halo_profile_params: {
-          GeneralizedNFW: {
-            alpha: constants.Profile_params.GeneralizedNFW.alpha,
-          },
-          Einasto: {
-            alpha: constants.Profile_params.Einasto.alpha,
-            use_interp: constants.Profile_params.Einasto.use_interp,
-          },
-        },
-        filter_model: constants.filter_model,
-        filter_params: {
-          SharpK: {
-            c: 2,
-          },
-          SharpKEllipsoid: {
-            c: 2.5,
-          },
-        },
-        delta_c: constants.delta_c,
-      },
-      hmfDefaults: null,
-      defaultModel: null,
-    };
-  },
-  watch: {
-    'model.bias': {
-      deep: true,
-      handler() {
-        console.log(this.model.bias);
-      },
+  data: () => ({
+    params: null,
+    forms: null,
+    model_metadata: {
+      model_name: 'Model',
+      fig_type: 'dndm',
     },
-  },
+  }),
   methods: {
     createForms() {
       // Add forms to this list, and remove the example form.
       // make sure you have a "title" and "id" property.
       const forms = [
         {
+          component: ModelMetadataForm,
+          isMeta: true,
+        },
+        {
+          component: TracerConcentration,
+          model: 'tracer_concentration',
+        },
+        {
           component: HaloExclusion,
           model: 'exclusion',
         },
         {
-          component: FilterForm,
-          props: {
-            filterModel: this.params.filter_model,
-            setFilterModel: this.createParamsSetFunction('filter_model'),
-            deltaC: this.params.delta_c,
-            setDeltaC: this.createParamsSetFunction('delta_c'),
-            filterParams: this.params.filter_params,
-            setFilterParams: this.createParamsSetFunction('filter_params'),
-          },
-        },
-        {
           component: BiasForm,
-          model: 'model.bias',
+          model: 'bias',
         },
         {
-          component: HaloModelForm,
-          props: {
-            hmfDefaults: this.hmfDefaults,
-            setForm: this.createParamsSetFunction('haloModel'),
-            formValues: this.params.haloModel,
-          },
+          component: HMFForm,
+          model: 'hmf',
         },
         {
-          component: HaloProfileForm,
-          props: {
-            haloProfileModel: this.params.halo_profile_model,
-            setHaloProfileModel: this.createParamsSetFunction('halo_profile_model'),
-            haloProfileParams: this.params.halo_profile_params,
-            setHaloProfileParams: this.createParamsSetFunction('halo_profile_params'),
-          },
+          component: HODForm,
+          model: 'hod',
         },
-        { component: HaloExclusion },
       ];
       forms.forEach((item) => {
         const i = item;
@@ -199,7 +141,7 @@ export default {
     },
   },
   created() {
-    this.params = this.deepcopy(INITIAL_STATE);
+    this.params = clonedeep(INITIAL_STATE);
     this.createForms();
   },
 };

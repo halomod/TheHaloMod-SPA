@@ -1,15 +1,10 @@
 import Vue from 'vue';
+import axios from 'axios';
 import App from './App.vue';
 import router from './router';
-import deepcopy from './utils/deepcopy';
 
 Vue.config.productionTip = false;
-
-Vue.mixin({
-  methods: {
-    deepcopy,
-  },
-});
+Vue.prototype.$http = axios;
 
 new Vue({
   router,
