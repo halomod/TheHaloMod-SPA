@@ -66,7 +66,7 @@ export default {
     };
   },
   updated() {
-    this.$emit('onChange', this.mass_definition);
+    this.$emit('onChange', this.model);
   },
   watch: {
     'model.mass_definition_model': function updateOptions(val) {
