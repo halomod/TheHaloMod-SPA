@@ -18,30 +18,30 @@
     </md-field>
 
     <div v-if="filterParams[filterModel] !== undefined">
-      <FormNumberField
+      <InputField
         v-for="(input, inputName) in filterParams[filterModel]"
         :labelHtml="'<label>' + inputName + '</label>'"
         :key="inputName"
         :step="1"
         :currentValue="filterParams[filterModel][inputName]"
-        :setCurrentValue="createSetCurrentValueFunc(filterModel, inputName)"
+        v-on:updateCurrentValue="createSetCurrentValueFunc(filterModel, inputName)($event)"
       />
     </div>
 
-    <FormNumberField
+    <InputField
       :labelHtml="'<label>&#948;<sub>c</sub></label>'"
       :step=".1"
       :min="1"
       :max="3"
       :currentValue="deltaC"
-      :setCurrentValue="setDeltaC"
+      v-on:updateCurrentValue="setDeltaC($event)"
     />
 
   </div>
 </template>
 
 <script>
-import FormNumberField from './FormNumberField.vue';
+import InputField from './InputField.vue';
 
 const filterChoices = {
   TopHat: 'Top-hat',
@@ -66,7 +66,7 @@ export default {
     filterChoice: '',
   }),
   components: {
-    FormNumberField,
+    InputField,
   },
   methods: {
     createSetCurrentValueFunc(filterType, varName) {

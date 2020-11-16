@@ -8,18 +8,24 @@
       <md-list v-for="(form, index) in forms" :key="index">
         <md-list-item
           :class="{'router-link-active': form.highlight}"
-          v-bind:to="`#${form.component.id}`">
-          {{form.component.title}}
+          v-bind:to="`#${form.props ? form.props.id : form.component.id}`">
+          {{form.props ? form.props.title : form.component.title}}
         </md-list-item>
       </md-list>
     </md-app-drawer>
     <md-app-content>
+      <submit-button :model="params" :meta="model_metadata"/>
       <div v-for="(form, index) in forms" :key="index">
         <FormWrapper
-          :name="form.component.title"
-          v-bind:id="`${form.component.id}`"
+          :name="form.props ? form.props.title : form.component.title"
+          v-bind:id="`${form.props ? form.props.id : form.component.id}`"
           @toggle-highlight="(bool) => toggleHighlight(bool, form, index)">
-          <component
+          <component v-if="form.isMeta"
+            :is="form.component"
+            v-model="model_metadata"
+          />
+          <component v-else
+            v-bind="form.props"
             :is="form.component"
             v-model="params[form.model]"/>
         </FormWrapper>
@@ -30,32 +36,66 @@
 
 <script>
 // @ is an alias to /src
+import clonedeep from 'lodash.clonedeep';
+
 import FormWrapper from '@/components/FormWrapper.vue';
+import Concentration from '@/components/Concentration.vue';
 import HaloExclusion from '@/components/HaloExclusion.vue';
 import BiasForm from '@/components/BiasForm.vue';
 import HMFForm from '@/components/HMFForm.vue';
 import HODForm from '@/components/HODForm.vue';
 import TracerProfileForm from '@/components/TracerProfileForm.vue';
 import INITIAL_STATE from '@/constants/initial_state.json';
+import SubmitButton from '@/components/SubmitButton.vue';
+import ModelMetadataForm from '@/components/ModelMetadataForm.vue';
+import CosmologyForm from '../components/CosmologyForm.vue';
 
 export default {
   name: 'Create',
   components: {
     FormWrapper,
+    Concentration,
     HaloExclusion,
     HODForm,
     BiasForm,
     TracerProfileForm,
+    SubmitButton,
   },
   data: () => ({
     params: null,
     forms: null,
+    model_metadata: {
+      model_name: 'Model',
+      fig_type: 'dndm',
+    },
   }),
   methods: {
     createForms() {
       // Add forms to this list, and remove the example form.
       // make sure you have a "title" and "id" property.
       const forms = [
+        {
+          component: ModelMetadataForm,
+          isMeta: true,
+        },
+        {
+          component: Concentration,
+          model: 'halo_concentration',
+          props: {
+            title: 'Halo Concentration',
+            id: 'halo-concentration',
+            defaultModel: 'Duffy08',
+          },
+        },
+        {
+          component: Concentration,
+          model: 'tracer_concentration',
+          props: {
+            title: 'Tracer Concentration',
+            id: 'tracer-concentration',
+            defaultModel: 'Bullock01',
+          },
+        },
         {
           component: HaloExclusion,
           model: 'exclusion',
@@ -76,6 +116,10 @@ export default {
           component: TracerProfileForm,
           model: 'tracer_profile',
         },
+        {
+          component: CosmologyForm,
+          model: 'cosmo',
+        },
       ];
       forms.forEach((item) => {
         const i = item;
@@ -83,6 +127,7 @@ export default {
         i.isVisible = false;
       });
       this.forms = forms;
+      this.$forceUpdate();
     },
     toggleHighlight(bool, form, index) {
       const f = form;
@@ -114,11 +159,11 @@ export default {
     handleTopForm(form, index, prefix = '/create') {
       const f = form;
       f.highlight = true;
-      window.history.replaceState({}, '', `${prefix}#${form.component.id}`);
+      window.history.replaceState({}, '', `${prefix}#${form.props ? form.props.id : form.component.id}`);
     },
   },
   created() {
-    this.params = this.deepcopy(INITIAL_STATE);
+    this.params = clonedeep(INITIAL_STATE);
     this.createForms();
   },
 };

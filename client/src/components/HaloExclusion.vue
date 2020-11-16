@@ -1,10 +1,10 @@
 <template>
   <div class="halo-exclusion">
     <md-field>
-      <label for="movie">Halo Exclusion*</label>
+      <label>Halo Exclusion*</label>
       <md-select v-model="model.exclusion_model">
-        <div v-for="(value) in values" :key="Object.keys(value)[0]">
-          <md-option :value="Object.keys(value)[0]">{{Object.values(value)[0]}}</md-option>
+        <div v-for="(value, key) in values" :key="key">
+          <md-option :value="key">{{value}}</md-option>
         </div>
       </md-select>
     </md-field>
@@ -12,6 +12,7 @@
 </template>
 
 <script>
+import CONSTANTS from '@/constants/backend_constants';
 
 export default {
   title: 'Halo Exclusion',
@@ -27,13 +28,7 @@ export default {
       model: {
         exclusion_model: 'NoExclusion',
       },
-      values: [
-        { NoExclusion: 'No Exclusion' },
-        { Sphere: 'Spherical Halos' },
-        { DblSphere_: 'Spherical Overlapping Halos' },
-        { DblEllipsoid_: 'Ellipsoidal Halos' },
-        { NgMatched_: 'Density-Matched (Tinker 2005)' },
-      ],
+      values: CONSTANTS.Exculsion_options,
     };
   },
   watch: {
