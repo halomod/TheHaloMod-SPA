@@ -47,6 +47,7 @@ import HODForm from '@/components/HODForm.vue';
 import INITIAL_STATE from '@/constants/initial_state.json';
 import SubmitButton from '@/components/SubmitButton.vue';
 import ModelMetadataForm from '@/components/ModelMetadataForm.vue';
+import GrowthForm from '@/components/GrowthForm.vue';
 import CosmologyForm from '../components/CosmologyForm.vue';
 
 export default {
@@ -57,6 +58,7 @@ export default {
     HaloExclusion,
     HODForm,
     BiasForm,
+    GrowthForm,
     SubmitButton,
   },
   data: () => ({
@@ -113,6 +115,10 @@ export default {
         {
           component: CosmologyForm,
           model: 'cosmo',
+        },
+        {
+          component: GrowthForm,
+          model: 'growth',
         },
       ];
       forms.forEach((item) => {
