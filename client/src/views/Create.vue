@@ -46,6 +46,7 @@ import HODForm from '@/components/HODForm.vue';
 import INITIAL_STATE from '@/constants/initial_state.json';
 import SubmitButton from '@/components/SubmitButton.vue';
 import ModelMetadataForm from '@/components/ModelMetadataForm.vue';
+import CosmologyForm from '../components/CosmologyForm.vue';
 
 export default {
   name: 'Create',
@@ -93,6 +94,10 @@ export default {
         {
           component: HODForm,
           model: 'hod',
+        },
+        {
+          component: CosmologyForm,
+          model: 'cosmo',
         },
       ];
       forms.forEach((item) => {

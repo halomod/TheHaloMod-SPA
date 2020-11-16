@@ -18,13 +18,13 @@
     </md-field>
 
     <div v-if="transferParams[transferModel] !== undefined">
-      <FormNumberField
+      <InputField
         v-for="(input, inputName) in transferParams[transferModel]"
         :labelHtml="'<label>' + inputName + '</label>'"
         :key="inputName"
         :step="1"
         :currentValue="transferParams[transferModel][inputName]"
-        :setCurrentValue="createSetCurrentValueFunc(transferModel, inputName)"
+        v-on:updateCurrentValue="createSetCurrentValueFunc(transferModel, inputName)($event)"
       />
     </div>
 
@@ -36,7 +36,7 @@
 </template>
 
 <script>
-import FormNumberField from './FormNumberField.vue';
+import InputField from './InputField.vue';
 
 const transferChoices = {
   CAMB: 'CAMB',
@@ -63,7 +63,7 @@ export default {
     takahashiChoice: false,
   }),
   components: {
-    FormNumberField,
+    InputField,
   },
   mounted() {
     this.transferChoice = this.transferModel;
