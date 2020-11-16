@@ -43,12 +43,12 @@ import CONSTANTS from '@/constants/backend_constants';
 const params = clonedeep(CONSTANTS.CMRelation_params);
 
 export default {
-  name: 'TracerConcentration',
-  title: 'Tracer Concentration',
-  id: 'tracer-concentration',
+  name: 'concentration',
+  id: 'concentration',
   components: {
     DoubleField,
   },
+  props: ['defaultModel'],
   model: {
     event: 'onChange',
     prop: 'parent_model',
@@ -57,13 +57,16 @@ export default {
     return {
       options: CONSTANTS.CMRelation_options,
       model: {
-        tracer_concentration_model: 'Bullock01',
-        tracer_concentration_params: params.Bullock01,
+        tracer_concentration_model: this.defaultModel,
+        tracer_concentration_params: params[this.defaultModel],
       },
     };
   },
   created() {
+    console.log(this.default);
     this.$emit('onChange', this.model);
+    // this.model.tracer_concentration_model = this.defaultModel;
+    // this.model.tracer_concentration_params = params[this.defaultModel];
   },
   watch: {
     model: {

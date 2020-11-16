@@ -8,8 +8,8 @@
       <md-list v-for="(form, index) in forms" :key="index">
         <md-list-item
           :class="{'router-link-active': form.highlight}"
-          v-bind:to="`#${form.component.id}`">
-          {{form.component.title}}
+          v-bind:to="`#${form.props ? form.props.id : form.component.id}`">
+          {{form.props ? form.props.title : form.component.title}}
         </md-list-item>
       </md-list>
     </md-app-drawer>
@@ -17,14 +17,15 @@
       <submit-button :model="params" :meta="model_metadata"/>
       <div v-for="(form, index) in forms" :key="index">
         <FormWrapper
-          :name="form.component.title"
-          v-bind:id="`${form.component.id}`"
+          :name="form.props ? form.props.title : form.component.title"
+          v-bind:id="`${form.props ? form.props.id : form.component.id}`"
           @toggle-highlight="(bool) => toggleHighlight(bool, form, index)">
           <component v-if="form.isMeta"
             :is="form.component"
             v-model="model_metadata"
           />
           <component v-else
+            v-bind="form.props"
             :is="form.component"
             v-model="params[form.model]"/>
         </FormWrapper>
@@ -38,7 +39,7 @@
 import clonedeep from 'lodash.clonedeep';
 
 import FormWrapper from '@/components/FormWrapper.vue';
-import TracerConcentration from '@/components/TracerConcentration.vue';
+import Concentration from '@/components/Concentration.vue';
 import HaloExclusion from '@/components/HaloExclusion.vue';
 import BiasForm from '@/components/BiasForm.vue';
 import HMFForm from '@/components/HMFForm.vue';
@@ -48,16 +49,18 @@ import SubmitButton from '@/components/SubmitButton.vue';
 import ModelMetadataForm from '@/components/ModelMetadataForm.vue';
 import CosmologyForm from '@/components/CosmologyForm.vue';
 import MassDefinitionForm from '@/components/MassDefinitionForm.vue';
+import GrowthForm from '@/components/GrowthForm.vue';
 
 export default {
   name: 'Create',
   components: {
     FormWrapper,
-    TracerConcentration,
+    Concentration,
     HaloExclusion,
     HODForm,
     BiasForm,
     MassDefinitionForm,
+    GrowthForm,
     SubmitButton,
   },
   data: () => ({
@@ -82,8 +85,13 @@ export default {
           model: 'mass_definition',
         },
         {
-          component: TracerConcentration,
-          model: 'tracer_concentration',
+          component: Concentration,
+          model: 'halo_concentration',
+          props: {
+            title: 'Halo Concentration',
+            id: 'halo-concentration',
+            defaultModel: 'Duffy08',
+          },
         },
         {
           component: HaloExclusion,
@@ -105,6 +113,10 @@ export default {
           component: CosmologyForm,
           model: 'cosmo',
         },
+        {
+          component: GrowthForm,
+          model: 'growth',
+        },
       ];
       forms.forEach((item) => {
         const i = item;
@@ -112,6 +124,7 @@ export default {
         i.isVisible = false;
       });
       this.forms = forms;
+      this.$forceUpdate();
     },
     toggleHighlight(bool, form, index) {
       const f = form;
@@ -143,7 +156,7 @@ export default {
     handleTopForm(form, index, prefix = '/create') {
       const f = form;
       f.highlight = true;
-      window.history.replaceState({}, '', `${prefix}#${form.component.id}`);
+      window.history.replaceState({}, '', `${prefix}#${form.props ? form.props.id : form.component.id}`);
     },
     createParamsSetFunction(keyName) {
       return (newVal) => {
