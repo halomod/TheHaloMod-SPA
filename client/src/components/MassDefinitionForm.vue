@@ -5,7 +5,8 @@
       <md-divider></md-divider>
       <div class="md-layout md-gutter">
         <label>Mass Definition</label>
-        <md-select v-model="massDefinitionChoices" id="massDefinitionChoices" name="massDefinitionChoice">
+        <md-select v-model="massDefinitionChoices" 
+        id="massDefinitionChoices" name="massDefinitionChoice">
           <md-option
             v-for="choice in massDefinitionChoices"
             :key="choice"
@@ -49,7 +50,6 @@
 
 <script>
 import BACKEND_CONSTANTS from '../constants/backend_constants';
-import InputField from './InputField.vue';
 import DoubleField from './DoubleField.vue';
 
 const massDefinitionChoices = {
