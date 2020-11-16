@@ -99,7 +99,6 @@ export default {
   methods: {
     createSetCurrentValueFunc(inputType1) {
       return (newValue) => {
-        console.log(inputType1);
         // Set the new value temporarily
         this.formValues[inputType1] = newValue;
 
