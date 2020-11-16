@@ -14,12 +14,17 @@
       </md-list>
     </md-app-drawer>
     <md-app-content>
+      <submit-button :model="params" :meta="model_metadata"/>
       <div v-for="(form, index) in forms" :key="index">
         <FormWrapper
           :name="form.props ? form.props.title : form.component.title"
           v-bind:id="`${form.props ? form.props.id : form.component.id}`"
           @toggle-highlight="(bool) => toggleHighlight(bool, form, index)">
-          <component
+          <component v-if="form.isMeta"
+            :is="form.component"
+            v-model="model_metadata"
+          />
+          <component v-else
             v-bind="form.props"
             :is="form.component"
             v-model="params[form.model]"/>
@@ -40,6 +45,9 @@ import BiasForm from '@/components/BiasForm.vue';
 import HMFForm from '@/components/HMFForm.vue';
 import HODForm from '@/components/HODForm.vue';
 import INITIAL_STATE from '@/constants/initial_state.json';
+import SubmitButton from '@/components/SubmitButton.vue';
+import ModelMetadataForm from '@/components/ModelMetadataForm.vue';
+import CosmologyForm from '../components/CosmologyForm.vue';
 
 export default {
   name: 'Create',
@@ -49,16 +57,25 @@ export default {
     HaloExclusion,
     HODForm,
     BiasForm,
+    SubmitButton,
   },
   data: () => ({
     params: null,
     forms: null,
+    model_metadata: {
+      model_name: 'Model',
+      fig_type: 'dndm',
+    },
   }),
   methods: {
     createForms() {
       // Add forms to this list, and remove the example form.
       // make sure you have a "title" and "id" property.
       const forms = [
+        {
+          component: ModelMetadataForm,
+          isMeta: true,
+        },
         {
           component: Concentration,
           model: 'halo_concentration',
@@ -92,6 +109,10 @@ export default {
         {
           component: HODForm,
           model: 'hod',
+        },
+        {
+          component: CosmologyForm,
+          model: 'cosmo',
         },
       ];
       forms.forEach((item) => {

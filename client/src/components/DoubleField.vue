@@ -1,6 +1,7 @@
 <template>
   <md-field :class="validationClass">
-    <label>{{param}}</label>
+    <label v-if="htmlParam !== undefined" v-html="htmlParam"/>
+    <label v-else>{{param}}</label>
     <md-input
       v-model="my_value"
       :value="my_value"
@@ -19,7 +20,7 @@ export default {
     prop: 'value',
     event: 'input',
   },
-  props: ['value', 'min', 'max', 'placeholder', 'param', 'range'],
+  props: ['value', 'min', 'max', 'htmlParam', 'placeholder', 'param', 'range'],
   data() {
     return {
       my_value: this.value,
@@ -30,6 +31,17 @@ export default {
     numeric() { return numeric(this.my_value); },
     valid() { return this.numeric && this.between; },
     validationClass() { return { 'md-invalid': !this.valid }; },
+  },
+  watch: {
+    /**
+     * Used for the situation where the value to the input changes without the
+     * user entering a new value directy. Like when a model changes.
+     */
+    value() {
+      if (this.my_value !== this.value) {
+        this.my_value = this.value;
+      }
+    },
   },
 };
 </script>

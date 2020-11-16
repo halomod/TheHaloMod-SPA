@@ -15,6 +15,9 @@ import {
   MdCheckbox,
   MdSubheader,
   MdDivider,
+  MdDialog,
+  MdProgress,
+  MdCard,
 } from 'vue-material/dist/components';
 import VueObserveVisibility from 'vue-observe-visibility';
 import 'vue-material/dist/vue-material.min.css';
@@ -38,6 +41,9 @@ Vue.use(MdApp);
 Vue.use(MdCheckbox);
 Vue.use(MdSubheader);
 Vue.use(MdDivider);
+Vue.use(MdDialog);
+Vue.use(MdProgress);
+Vue.use(MdCard);
 
 const routes = [
   {

@@ -23,11 +23,11 @@
         :key="inputName"
       >
         <div v-if="typeof input === 'number'">
-          <FormNumberField
+          <InputField
             :labelHtml="'<label>' + inputName + '</label>'"
             :step="1"
             :currentValue="haloProfileParams[haloProfileModel][inputName]"
-            :setCurrentValue="createSetCurrentValueFunc(haloProfileModel, inputName)"
+            v-on:updateCurrentValue="createSetCurrentValueFunc(haloProfileModel, inputName)"
           />
         </div>
         <div v-if="typeof input === 'boolean'">
@@ -42,7 +42,7 @@
 </template>
 
 <script>
-import FormNumberField from './FormNumberField.vue';
+import InputField from './InputField.vue';
 
 const haloProfileChoices = {
   NFW: 'NFW (1997)',
@@ -68,7 +68,7 @@ export default {
     useInterpChoice: false,
   }),
   components: {
-    FormNumberField,
+    InputField,
   },
   mounted() {
     this.haloProfileChoice = this.haloProfileModel;
