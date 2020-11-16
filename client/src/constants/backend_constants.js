@@ -88,7 +88,7 @@ const BACKEND_CONSTANTS = {
       sigma_8: 0.817,
     },
   },
-  _GrowthFactor_params: {
+  GrowthFactor_params: {
     GrowthFactor: {
       dlna: 0.01,
       amin: 1e-8,
