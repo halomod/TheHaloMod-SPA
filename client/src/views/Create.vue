@@ -47,6 +47,7 @@ import INITIAL_STATE from '@/constants/initial_state.json';
 import SubmitButton from '@/components/SubmitButton.vue';
 import ModelMetadataForm from '@/components/ModelMetadataForm.vue';
 import CosmologyForm from '../components/CosmologyForm.vue';
+import HaloModelForm from '../components/HaloModelForm.vue';
 
 export default {
   name: 'Create',
@@ -57,6 +58,7 @@ export default {
     HODForm,
     BiasForm,
     SubmitButton,
+    HaloModelForm,
   },
   data: () => ({
     params: null,
@@ -98,6 +100,10 @@ export default {
         {
           component: CosmologyForm,
           model: 'cosmo',
+        },
+        {
+          component: HaloModelForm,
+          model: 'halo_model',
         },
       ];
       forms.forEach((item) => {
