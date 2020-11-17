@@ -8,18 +8,26 @@
       <md-list v-for="(form, index) in forms" :key="index">
         <md-list-item
           :class="{'router-link-active': form.highlight}"
-          v-bind:to="`#${form.component.id}`">
-          {{form.component.title}}
+          v-bind:to="`#${form.props ? form.props.id : form.component.id}`">
+          {{form.props ? form.props.title : form.component.title}}
         </md-list-item>
       </md-list>
     </md-app-drawer>
     <md-app-content>
+      <submit-button :model="params" :meta="model_metadata"/>
       <div v-for="(form, index) in forms" :key="index">
         <FormWrapper
-          :name="form.component.title"
-          v-bind:id="`${form.component.id}`"
+          :name="form.props ? form.props.title : form.component.title"
+          v-bind:id="`${form.props ? form.props.id : form.component.id}`"
           @toggle-highlight="(bool) => toggleHighlight(bool, form, index)">
-          <component v-bind:is="form.component" v-bind="form.props"/>
+          <component v-if="form.isMeta"
+            :is="form.component"
+            v-model="model_metadata"
+          />
+          <component v-else
+            v-bind="form.props"
+            :is="form.component"
+            v-model="params[form.model]"/>
         </FormWrapper>
       </div>
     </md-app-content>
@@ -28,137 +36,101 @@
 
 <script>
 // @ is an alias to /src
-import Debug from 'debug';
-import FormWrapper from '@/components/FormWrapper.vue';
-import CosmologyForm from '@/components/CosmologyForm.vue';
-import TransferForm from '@/components/TransferForm.vue';
-import FilterForm from '@/components/FilterForm.vue';
-import HaloExclusion from '@/components/HaloExclusion.vue';
-import HaloProfileForm from '@/components/HaloProfileForm.vue';
-import HaloModelForm from '@/components/HaloModelForm.vue';
-import constants from '@/constants/backend_constants';
-import baseURL from '@/env';
+import clonedeep from 'lodash.clonedeep';
 
-const debug = Debug('Create.vue');
+import FormWrapper from '@/components/FormWrapper.vue';
+import Concentration from '@/components/Concentration.vue';
+import HaloExclusion from '@/components/HaloExclusion.vue';
+import BiasForm from '@/components/BiasForm.vue';
+import HMFForm from '@/components/HMFForm.vue';
+import HODForm from '@/components/HODForm.vue';
+import INITIAL_STATE from '@/constants/initial_state.json';
+import SubmitButton from '@/components/SubmitButton.vue';
+import ModelMetadataForm from '@/components/ModelMetadataForm.vue';
+import CosmologyForm from '@/components/CosmologyForm.vue';
+import MassDefinitionForm from '@/components/MassDefinitionForm.vue';
+import GrowthForm from '@/components/GrowthForm.vue';
+import HaloModelForm from '@/components/HaloModelForm.vue';
 
 export default {
   name: 'Create',
   components: {
     FormWrapper,
-    CosmologyForm,
-    TransferForm,
-    FilterForm,
+    Concentration,
     HaloExclusion,
-    HaloProfileForm,
+    HODForm,
+    BiasForm,
+    MassDefinitionForm,
+    GrowthForm,
+    SubmitButton,
+    HaloModelForm,
   },
-  data() {
-    return {
-      forms: null,
-      params: {
-        cosmo_model: 'Planck15',
-        cosmo_params: {
-          H0: 0,
-          Ob0: 0,
-          Om0: 0,
-        },
-        haloModel: {
-          log_r_range: 0,
-          rnum: 0,
-          log_k_range: 0,
-          hm_dlog10k: 0,
-          hc_spectrum: '',
-          force_1halo_turnover: 0,
-        },
-        transfer_params: {
-          BBKS: constants.TransferComponent_params.BBKS,
-          BondEfs: constants.TransferComponent_params.BondEfs,
-        },
-        takahashi: true,
-        transfer_model: 'CAMB',
-        halo_profile_model: constants.halo_profile_model,
-        halo_profile_params: {
-          GeneralizedNFW: {
-            alpha: constants.Profile_params.GeneralizedNFW.alpha,
-          },
-          Einasto: {
-            alpha: constants.Profile_params.Einasto.alpha,
-            use_interp: constants.Profile_params.Einasto.use_interp,
-          },
-        },
-        filter_model: constants.filter_model,
-        filter_params: {
-          SharpK: {
-            c: 2,
-          },
-          SharpKEllipsoid: {
-            c: 2.5,
-          },
-        },
-        delta_c: constants.delta_c,
-      },
-      hmfDefaults: null,
-      defaultModel: null,
-    };
-  },
+  data: () => ({
+    params: null,
+    forms: null,
+    model_metadata: {
+      model_name: 'Model',
+      fig_type: 'dndm',
+    },
+  }),
   methods: {
     createForms() {
       // Add forms to this list, and remove the example form.
       // make sure you have a "title" and "id" property.
-      this.forms = [
+      const forms = [
+        {
+          component: ModelMetadataForm,
+          isMeta: true,
+        },
+        {
+          component: MassDefinitionForm,
+          model: 'mass_definition',
+        },
+        {
+          component: Concentration,
+          model: 'halo_concentration',
+          props: {
+            title: 'Halo Concentration',
+            id: 'halo-concentration',
+            defaultModel: 'Duffy08',
+          },
+        },
+        {
+          component: HaloExclusion,
+          model: 'exclusion',
+        },
+        {
+          component: BiasForm,
+          model: 'bias',
+        },
+        {
+          component: HMFForm,
+          model: 'hmf',
+        },
+        {
+          component: HODForm,
+          model: 'hod',
+        },
         {
           component: CosmologyForm,
-          props: {
-            hmfDefaults: this.hmfDefaults,
-            setCosmo: this.createParamsSetFunction('cosmo_params'),
-            cosmoValues: this.params.cosmo_params,
-          },
-        },
-        {
-          component: TransferForm,
-          props: {
-            setTakahashi: this.createParamsSetFunction('takahashi'),
-            setTransferModel: this.createParamsSetFunction('transfer_model'),
-            setTransferParams: this.createParamsSetFunction('transfer_params'),
-            transferParams: this.params.transfer_params,
-            takahashi: this.params.takahashi,
-            transferModel: this.params.transfer_model,
-          },
-        },
-        {
-          component: FilterForm,
-          props: {
-            filterModel: this.params.filter_model,
-            setFilterModel: this.createParamsSetFunction('filter_model'),
-            deltaC: this.params.delta_c,
-            setDeltaC: this.createParamsSetFunction('delta_c'),
-            filterParams: this.params.filter_params,
-            setFilterParams: this.createParamsSetFunction('filter_params'),
-          },
+          model: 'cosmo',
         },
         {
           component: HaloModelForm,
-          props: {
-            hmfDefaults: this.hmfDefaults,
-            setForm: this.createParamsSetFunction('haloModel'),
-            formValues: this.params.haloModel,
-          },
+          model: 'halo_model',
         },
         {
-          component: HaloProfileForm,
-          props: {
-            haloProfileModel: this.params.halo_profile_model,
-            setHaloProfileModel: this.createParamsSetFunction('halo_profile_model'),
-            haloProfileParams: this.params.halo_profile_params,
-            setHaloProfileParams: this.createParamsSetFunction('halo_profile_params'),
-          },
+          component: GrowthForm,
+          model: 'growth',
         },
-        { component: HaloExclusion },
       ];
-      this.forms.forEach((item) => {
+      forms.forEach((item) => {
         const i = item;
         i.highlight = false;
         i.isVisible = false;
       });
+      this.forms = forms;
+      this.$forceUpdate();
     },
     toggleHighlight(bool, form, index) {
       const f = form;
@@ -190,7 +162,7 @@ export default {
     handleTopForm(form, index, prefix = '/create') {
       const f = form;
       f.highlight = true;
-      window.history.replaceState({}, '', `${prefix}#${form.component.id}`);
+      window.history.replaceState({}, '', `${prefix}#${form.props ? form.props.id : form.component.id}`);
     },
     createParamsSetFunction(keyName) {
       return (newVal) => {
@@ -199,22 +171,8 @@ export default {
     },
   },
   created() {
-    fetch(`${baseURL}/constants`).then((data) => data.json()).then((json) => {
-      this.hmfDefaults = json.constantsFromHMF;
-      this.defaultModel = json.defaultModel;
-      debug('json.constantsFromHMF.cosmo is currently: ', json.constantsFromHMF.cosmo);
-
-      /* Set the default values for cosmo. This is done in this way so that
-      * the observers are held. If the entire object is changed, it seems
-      * that the observers are removed. This can be done in a similar way
-      * for other default values. */
-      const cosmoModel = this.params.cosmo_model;
-      Object.keys(this.params.cosmo_params).forEach((key) => {
-        this.params.cosmo_params[key] = json.constantsFromHMF.cosmo[cosmoModel][key];
-      });
-      this.createForms();
-      debug('params is now: ', this.params);
-    });
+    this.params = clonedeep(INITIAL_STATE);
+    this.createForms();
   },
 };
 </script>
@@ -222,5 +180,9 @@ export default {
 <style scoped>
   #create {
     height: 80vh;
-  };
+  }
+  .md-drawer {
+    width: 230px;
+    max-width: calc(100vw - 125px);
+  }
 </style>

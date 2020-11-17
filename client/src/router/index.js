@@ -13,6 +13,11 @@ import {
   MdList,
   MdApp,
   MdCheckbox,
+  MdSubheader,
+  MdDivider,
+  MdDialog,
+  MdProgress,
+  MdCard,
 } from 'vue-material/dist/components';
 import VueObserveVisibility from 'vue-observe-visibility';
 import 'vue-material/dist/vue-material.min.css';
@@ -34,6 +39,11 @@ Vue.use(MdList);
 Vue.use(MdDrawer);
 Vue.use(MdApp);
 Vue.use(MdCheckbox);
+Vue.use(MdSubheader);
+Vue.use(MdDivider);
+Vue.use(MdDialog);
+Vue.use(MdProgress);
+Vue.use(MdCard);
 
 const routes = [
   {
@@ -75,7 +85,7 @@ const router = new VueRouter({
       } catch (err) {
         console.warn(err);
       }
-    } if (savedPosition) {
+    } else if (savedPosition) {
       return savedPosition;
     }
     return { x: 0, y: 0 };

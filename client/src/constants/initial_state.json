@@ -1,0 +1,119 @@
+{
+  "cosmo": {
+    "cosmo_model":"Planck15",
+    "cosmo_params":{
+       "H0":67.74,
+       "Ob0":0.0486,
+       "Om0":0.3075
+    },
+    "z":0.0,
+    "n":0.9668,
+    "sigma_8":0.8159
+  },
+  "hmf": {
+    "hmf_model":"Tinker08",
+    "hmf_params":{
+       "A_200":0.1858659,
+       "A_300":0.1995973,
+       "A_400":0.2115659,
+       "A_600":0.2184113,
+       "A_800":0.2480968,
+       "A_1200":0.2546053,
+       "A_1600":0.26,
+       "A_2400":0.26,
+       "A_3200":0.26,
+       "a_200":1.466904,
+       "a_300":1.521782,
+       "a_400":1.559186,
+       "a_600":1.614585,
+       "a_800":1.869936,
+       "a_1200":2.128056,
+       "a_1600":2.301275,
+       "a_2400":2.529241,
+       "a_3200":2.661983,
+       "b_200":2.571104,
+       "b_300":2.254217,
+       "b_400":2.048674,
+       "b_600":1.869559,
+       "b_800":1.588649,
+       "b_1200":1.507134,
+       "b_1600":1.464374,
+       "b_2400":1.436827,
+       "b_3200":1.40521,
+       "c_200":1.193958,
+       "c_300":1.270316,
+       "c_400":1.335191,
+       "c_600":1.446266,
+       "c_800":1.581345,
+       "c_1200":1.79505,
+       "c_1600":1.965613,
+       "c_2400":2.237466,
+       "c_3200":2.439729,
+       "A_exp":0.14,
+       "a_exp":0.06
+    },
+    "Mmin":0.0,
+    "Mmax":18.0,
+    "dlog10m":0.01
+  },
+  "hod": {
+    "hod_model":"Zehavi05",
+    "hod_params":{
+       "M_min":11.6222,
+       "M_1":12.851,
+       "alpha":1.049
+    }
+  },
+  "bias": {
+    "bias_model":"Tinker10",
+    "bias_params":{
+       "B":0.183,
+       "b":1.5,
+       "c":2.4
+    }
+  },
+  "halo_concentration": {
+    "halo_concentration_model":"Duffy08",
+    "halo_concentration_params":{
+       "ms":2000000000000.0,
+       "sample":"relaxed"
+    }
+  },
+  "tracer_concentration": {
+    "tracer_concentration_model":"Bullock01",
+    "tracer_concentration_params":{
+       "F":0.01,
+       "K":3.4
+    }
+  },
+  "growth": {
+    "growth_model":"GrowthFactor",
+    "growth_params":{
+       "dlna":0.01,
+       "amin":1e-08
+    }
+  },
+  "filter": {
+    "filter_model":"TopHat",
+    "delta_c":1.686
+  },
+  "mdef": {
+    "mdef_model":"None"
+  },
+  "transfer": {
+    "transfer_model":"CAMB",
+    "lnk_min":-18.42585,
+    "lnk_max":9.87415,
+    "dlnk":0.05,
+    "takahashi":true
+  },
+  "tracer_profile": {
+    "tracer_profile_model":"NFW"
+  },
+  "halo_profile": {
+    "halo_profile_model":"NFW"
+  },
+  "exclusion": {
+    "exclusion_model":"NoExclusion"
+  }
+}
