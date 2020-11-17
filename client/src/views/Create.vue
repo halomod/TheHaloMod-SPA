@@ -47,8 +47,9 @@ import HODForm from '@/components/HODForm.vue';
 import INITIAL_STATE from '@/constants/initial_state.json';
 import SubmitButton from '@/components/SubmitButton.vue';
 import ModelMetadataForm from '@/components/ModelMetadataForm.vue';
+import CosmologyForm from '@/components/CosmologyForm.vue';
+import MassDefinitionForm from '@/components/MassDefinitionForm.vue';
 import GrowthForm from '@/components/GrowthForm.vue';
-import CosmologyForm from '../components/CosmologyForm.vue';
 
 export default {
   name: 'Create',
@@ -58,6 +59,7 @@ export default {
     HaloExclusion,
     HODForm,
     BiasForm,
+    MassDefinitionForm,
     GrowthForm,
     SubmitButton,
   },
@@ -79,21 +81,16 @@ export default {
           isMeta: true,
         },
         {
+          component: MassDefinitionForm,
+          model: 'mass_definition',
+        },
+        {
           component: Concentration,
           model: 'halo_concentration',
           props: {
             title: 'Halo Concentration',
             id: 'halo-concentration',
             defaultModel: 'Duffy08',
-          },
-        },
-        {
-          component: Concentration,
-          model: 'tracer_concentration',
-          props: {
-            title: 'Tracer Concentration',
-            id: 'tracer-concentration',
-            defaultModel: 'Bullock01',
           },
         },
         {
@@ -161,6 +158,11 @@ export default {
       f.highlight = true;
       window.history.replaceState({}, '', `${prefix}#${form.props ? form.props.id : form.component.id}`);
     },
+    createParamsSetFunction(keyName) {
+      return (newVal) => {
+        this.params[keyName] = newVal;
+      };
+    },
   },
   created() {
     this.params = clonedeep(INITIAL_STATE);
@@ -172,5 +174,9 @@ export default {
 <style scoped>
   #create {
     height: 80vh;
-  };
+  }
+  .md-drawer {
+    width: 230px;
+    max-width: calc(100vw - 125px);
+  }
 </style>
