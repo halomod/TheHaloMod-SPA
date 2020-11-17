@@ -50,6 +50,7 @@ import ModelMetadataForm from '@/components/ModelMetadataForm.vue';
 import CosmologyForm from '@/components/CosmologyForm.vue';
 import MassDefinitionForm from '@/components/MassDefinitionForm.vue';
 import GrowthForm from '@/components/GrowthForm.vue';
+import HaloModelForm from '@/components/HaloModelForm.vue';
 
 export default {
   name: 'Create',
@@ -62,6 +63,7 @@ export default {
     MassDefinitionForm,
     GrowthForm,
     SubmitButton,
+    HaloModelForm,
   },
   data: () => ({
     params: null,
@@ -112,6 +114,10 @@ export default {
         {
           component: CosmologyForm,
           model: 'cosmo',
+        },
+        {
+          component: HaloModelForm,
+          model: 'halo_model',
         },
         {
           component: GrowthForm,
