@@ -1,5 +1,9 @@
 <template>
   <div>
+    <p>allTransferData is {{allTransferData}}</p>
+    <p>transferData is {{transferData}}</p>
+    <p>transferData is {{doSomething()}}</p>
+    <p>
     <md-field>
       <label for="transferChoices">Transfer Model</label>
       <md-select
@@ -17,16 +21,22 @@
       </md-select>
     </md-field>
 
-    <div v-if="transferData.transfer_params[transferChoice] !== undefined">
+    <div v-if="Object.keys(allTransferData[transferChoice]).length !== 0 &&
+      transferChoice !=='CAMB'">
       <InputField
-        v-for="(input, inputName) in transferData.transfer_params[transferChoice]"
+        v-for="(input, inputName) in allTransferData[transferChoice]"
         :labelHtml="'<label>' + inputName + '</label>'"
         :key="inputName"
         :step="1"
-        :currentValue="transferData.transfer_params[transferChoice][inputName]"
+        :currentValue="allTransferData[transferChoice][inputName]"
         v-on:updateCurrentValue="createSetCurrentValueFunc(transferChoice, inputName)($event)"
       />
     </div>
+
+    <DoubleField
+      :param="'lnk_min'"
+      :v-model="transferData.lnk_min"
+    />
 
     <md-checkbox v-model="transferData.takahashiChoice">
       Use Takahashi (2012) nonlinear P(k)?
@@ -37,6 +47,8 @@
 
 <script>
 import InputField from './InputField.vue';
+import DoubleField from './DoubleField.vue';
+import BACKEND_CONSTANTS from '../constants/backend_constants';
 
 const transferChoices = {
   CAMB: 'CAMB',
@@ -63,15 +75,16 @@ export default {
     return {
       transferChoices,
       transferChoice: this.transferData.transfer_model,
+      allTransferData: {
+        ...BACKEND_CONSTANTS.TransferComponent_params,
+      },
     };
   },
   components: {
     InputField,
+    DoubleField,
   },
   methods: {
-    doSomething() {
-      console.log('doing a thang');
-    },
     /**
      * Creates a current value setter for the given transfer type and variable
      * name. This just applies to two transfer types at the moment.
@@ -79,18 +92,27 @@ export default {
     createSetCurrentValueFunc(transferType, varName) {
       return (newValue) => {
         // Set the new value temporarily
-        this.transferData.transfer_params[transferType][varName] = newValue;
+        this.allTransferData[transferType][varName] = newValue;
+        this.transferData[varName] = newValue;
 
         // Set the value for good.
         this.$emit('updateTransfer', this.transferData);
       };
     },
+    doSomething() {
+      console.log('rendered');
+    },
   },
   watch: {
     transferChoice(newChoice) {
       this.transferData.transfer_model = newChoice;
+      this.transferData = {
+        ...this.transferData,
+        ...this.allTransferData[newChoice],
+      };
       this.$emit('updateTransfer', this.transferData);
     },
+
   },
 };
 </script>
