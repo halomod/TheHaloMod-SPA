@@ -48,7 +48,10 @@ import Profile from '@/components/Profile.vue';
 import INITIAL_STATE from '@/constants/initial_state.json';
 import SubmitButton from '@/components/SubmitButton.vue';
 import ModelMetadataForm from '@/components/ModelMetadataForm.vue';
-import CosmologyForm from '../components/CosmologyForm.vue';
+import CosmologyForm from '@/components/CosmologyForm.vue';
+import MassDefinitionForm from '@/components/MassDefinitionForm.vue';
+import GrowthForm from '@/components/GrowthForm.vue';
+import HaloModelForm from '@/components/HaloModelForm.vue';
 
 export default {
   name: 'Create',
@@ -59,7 +62,10 @@ export default {
     HODForm,
     BiasForm,
     Profile,
+    MassDefinitionForm,
+    GrowthForm,
     SubmitButton,
+    HaloModelForm,
   },
   data: () => ({
     params: null,
@@ -79,13 +85,8 @@ export default {
           isMeta: true,
         },
         {
-          component: Concentration,
-          model: 'halo_concentration',
-          props: {
-            title: 'Halo Concentration',
-            id: 'halo-concentration',
-            defaultModel: 'Duffy08',
-          },
+          component: MassDefinitionForm,
+          model: 'mass_definition',
         },
         {
           component: Concentration,
@@ -94,6 +95,15 @@ export default {
             title: 'Tracer Concentration',
             id: 'tracer-concentration',
             defaultModel: 'Bullock01',
+          },
+        },
+        {
+          component: Concentration,
+          model: 'halo_concentration',
+          props: {
+            title: 'Halo Concentration',
+            id: 'halo-concentration',
+            defaultModel: 'Duffy08',
           },
         },
         {
@@ -131,6 +141,14 @@ export default {
         {
           component: CosmologyForm,
           model: 'cosmo',
+        },
+        {
+          component: HaloModelForm,
+          model: 'halo_model',
+        },
+        {
+          component: GrowthForm,
+          model: 'growth',
         },
       ];
       forms.forEach((item) => {
@@ -173,6 +191,11 @@ export default {
       f.highlight = true;
       window.history.replaceState({}, '', `${prefix}#${form.props ? form.props.id : form.component.id}`);
     },
+    createParamsSetFunction(keyName) {
+      return (newVal) => {
+        this.params[keyName] = newVal;
+      };
+    },
   },
   created() {
     this.params = clonedeep(INITIAL_STATE);
@@ -184,5 +207,9 @@ export default {
 <style scoped>
   #create {
     height: 80vh;
-  };
+  }
+  .md-drawer {
+    width: 230px;
+    max-width: calc(100vw - 125px);
+  }
 </style>
