@@ -21,11 +21,11 @@ def client(app):
 
 @pytest.fixture
 def plot_payload():
-    with open('halomod_app/thm_payload_plot.json') as json_file:
+    with open('tests/thm_payload_plot.json') as json_file:
         return json.load(json_file)
 
 
 @pytest.fixture
 def create_payload():
-    with open('halomod_app/thm_payload_create.json') as json_file:
+    with open('tests/thm_payload_create.json') as json_file:
         return json.load(json_file)

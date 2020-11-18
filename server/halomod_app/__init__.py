@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, session
 from . import utils
 import base64
 from halomod import TracerHaloModel
@@ -9,10 +9,18 @@ import hmf
 from flask_cors import CORS
 import jsonpickle
 import time
+import redis
+from flask_session import Session
+
+sess = Session()
 
 
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
+    app.config.from_object('config.Config')
+
+    CORS(app, send_wildcard=True)  # enable CORS
+    sess.init_app(app)  # enable Sessions
 
     @app.route('/')
     def home():
@@ -27,8 +35,42 @@ def create_app(test_config=None):
         # unpacks parameters and passes into hmf_driver class (see utils)
         model = utils.hmf_driver(**parameters)
 
+        # session["models"]["label"] = model
+
         # returns {<model_name>: <serialized_model>}
         return jsonify({label: utils.serialize_model(model)})
+
+    @app.route('/getNames', methods=["GET"])
+    def getNames():
+        # return keys of session["models"]
+        return "List of Model Names"
+
+    @app.route('/getPlotData', methods=["GET"])
+    def getPlotData():
+        # if json.models : loop through list else do all automatically
+        # get data associated with json.figtype for each model
+        # then send back in dict
+        return "JSON w/ relevant model data"
+
+    @app.route('/clone', methods=["POST"])
+    def clone():
+        # get model with name json.modelName
+        # clone it
+        # add to session.models w/ json.newName
+        return "Success message"
+
+    @app.route('/update', methods=["POST"])
+    def update():
+        # get model with name json.modelName
+        # use it w/ hmf driver to generate new model
+        # save in session
+        return "Success message"
+
+    @app.route('/delete', methods=["POST"])
+    def delete():
+        # get model with name json.modelName
+        # remove it from session
+        return "Success message"
 
     @app.route('/plot', methods=["POST"])
     def plot():
@@ -65,7 +107,5 @@ def create_app(test_config=None):
         return jsonify(response)
 
         return jsonify({"figure": base64_png})
-
-    CORS(app, send_wildcard=True)
 
     return app
