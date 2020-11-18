@@ -73,7 +73,7 @@ debug.enabled = false;
 export default {
   name: 'InputField',
   model: {
-    prop: 'currentValue',
+    // prop: 'currentValue',
     event: 'updateCurrentValue',
   },
   props: {

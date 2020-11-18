@@ -13,13 +13,15 @@
       </md-select>
     </md-field>
 
-    <InputField
+    <DoubleField
       v-for="(input, inputName) in inputs"
-      :labelHtml="input.html"
+      :htmlParam="input.html"
       :key="inputName"
       :step="input.step"
-      :currentValue="cosmoData.cosmo_params[inputName]"
-      v-on:updateCurrentValue="createSetCurrentValueFunc(inputName)($event)"
+      :value="cosmoData.cosmo_params[inputName] !== undefined
+        ? cosmoData.cosmo_params[inputName]
+        : cosmoData[inputName]"
+      v-on:input="createSetCurrentValueFunc(inputName)($event)"
       :min="input.min"
       :max="input.max"
     />
@@ -27,31 +29,14 @@
 </template>
 
 <script>
-import InputField from './InputField.vue';
+import BACKEND_CONSTANTS from '../constants/backend_constants';
+import DoubleField from './DoubleField.vue';
 
 export default {
   name: 'CosmologyForm',
   title: 'Cosmology',
   id: 'cosmology',
   props: {
-    hmfDefaults: {
-      type: Object,
-      required: true,
-    },
-    /**
-     * Has a general form like so:
-     *
-     * ```
-     * cosmoData: {
-        cosmo_model: 'Planck15',
-        cosmo_params: {
-          H0: 0,
-          Ob0: 0,
-          Om0: 0,
-        },
-      },
-     * ```
-     */
     cosmoData: {
       type: Object,
       required: true,
@@ -65,46 +50,72 @@ export default {
     return {
       inputs: {
         H0: {
-          html: '<label>H<sub>0</sub></label>',
+          html: 'H<sub>0</sub>',
           min: 10,
           max: 500,
           step: 1,
         },
         Ob0: {
-          html: '<label>&#937;<sub>b</sub></label>',
+          html: '&#937;<sub>b</sub>',
           min: 0.005,
           max: 0.65,
           step: 0.001,
         },
         Om0: {
-          html: '<label>&#937;<sub>m</sub></label>',
+          html: '&#937;<sub>m</sub>',
           min: 0.02,
           max: 2,
           step: 0.01,
+        },
+        z: {
+          html: 'Redshift',
+          min: 0,
+          max: 1100,
+        },
+        n: {
+          html: 'n<sub>s</sub>',
+          min: -4,
+          max: 3,
+          helpText: 'Spectral Index',
+        },
+        sigma_8: {
+          html: '&#963<sub>8</sub>',
+          min: 0.1,
+          helpText: 'RMS Mass Fluctuations',
         },
       },
       /**
        * Represents the different selections of the cosmo model and saves the
        * users' inputs for each.
        */
-      allCosmoData: JSON.parse(JSON.stringify(this.hmfDefaults.cosmo)),
-      cosmologyChoices: Object.keys(this.hmfDefaults.cosmo),
-      cosmologyChoice: this.cosmoData.cosmo_model,
+      allCosmoData: JSON.parse(JSON.stringify(BACKEND_CONSTANTS.cosmo_params)),
+      cosmologyChoices: Object.keys(BACKEND_CONSTANTS.cosmo_params),
+      cosmologyChoice: 'Planck13',
     };
   },
   components: {
-    InputField,
+    DoubleField,
+  },
+  created() {
+    if (this.cosmoData.cosmo_params === null) {
+      const newCosmoObj = {
+        ...BACKEND_CONSTANTS.cosmo_params.Planck13,
+        cosmo_model: this.cosmologyChoice,
+      };
+      this.$emit('updateCosmo', newCosmoObj);
+    }
   },
   methods: {
     createSetCurrentValueFunc(inputType) {
       return (newValue) => {
-        // Set the new value temporarily
-        this.cosmoData.cosmo_params[inputType] = newValue;
+        if (this.cosmoData.cosmo_params[inputType]) {
+          this.cosmoData.cosmo_params[inputType] = newValue;
+          this.allCosmoData[this.cosmoData.cosmo_model].cosmo_params[inputType] = newValue;
+        } else {
+          this.cosmoData[inputType] = newValue;
+          this.allCosmoData[this.cosmoData.cosmo_model][inputType] = newValue;
+        }
 
-        // Set the value in allCosmoData
-        this.allCosmoData[this.cosmoData.cosmo_model][inputType] = newValue;
-
-        // Set the value for good.
         this.$emit('updateCosmo', this.cosmoData);
       };
     },
@@ -112,14 +123,14 @@ export default {
   watch: {
     /**
      * Watches for changes in the choice of cosmology. When a new choice is
-     * made, then all the stored values are copied over
+     * made, then all the stored values are copied over.
      */
     cosmologyChoice(newChoice) {
-      this.cosmoData.cosmo_model = newChoice;
-      Object.keys(this.cosmoData.cosmo_params).forEach((param) => {
-        this.cosmoData.cosmo_params[param] = this.allCosmoData[newChoice][param];
-      });
-      this.$emit('updateCosmo', this.cosmoData);
+      const newCosmoObj = {
+        ...this.allCosmoData[newChoice],
+        cosmo_model: newChoice,
+      };
+      this.$emit('updateCosmo', newCosmoObj);
     },
   },
 };

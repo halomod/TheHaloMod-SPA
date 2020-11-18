@@ -98,6 +98,7 @@
       },
       "halo_profile_model":"NFW",
       "tracer_profile_model":"NFW",
-      "exclusion_model":"NoExclusion"},
+      "exclusion_model":"NoExclusion"
+   },
    "label": "THE_BEST_MODEL_EVER"
 }

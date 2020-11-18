@@ -1,0 +1,113 @@
+<template>
+  <form novalidate>
+    <double-field
+      param="Mass Range Min (log10)"
+      v-model="model.Mmin"
+      :value="model.Mmin"
+      :placeholder="core_defaults.Mmin"
+      range=true min=0 max=20 />
+    <double-field
+      param="Mass Range Max (log10)"
+      v-model="model.Mmax"
+      :value="model.Mmax"
+      :placeholder="core_defaults.Mmax"
+      range=true min=0 max=20 />
+    <double-field
+      param="Mass resolution (log10)"
+      v-model="model.dlog10m"
+      :value="model.dlog10m"
+      :placeholder="core_defaults.dlog10m"
+      range=true min=0.005 max=1 />
+    <md-field>
+      <label>HMF</label>
+      <md-select v-model="model.hmf_model">
+        <md-option
+          v-for="(value, choice) in choices"
+          :key="choice"
+          :value="value">
+          {{choice}}
+        </md-option>
+      </md-select>
+    </md-field>
+    <double-field
+      v-for="(value, param) in model.hmf_params"
+      :value="value"
+      :key="param"
+      :param="param"
+      range=false
+      :placeholder="String(param_defaults[param])"
+      v-model="model.hmf_params[param]"/>
+  </form>
+</template>
+
+<script>
+import DoubleField from './DoubleField.vue';
+import BACKEND_CONSTANTS from '../constants/backend_constants';
+
+const hmfChoices = {
+  'Press-Schechter (1974)': 'PS',
+  'Sheth-Mo-Tormen (2001)': 'SMT',
+  'Jenkins (2001)': 'Jenkins',
+  'Reed (2003)': 'Reed03',
+  'Warren (2006)': 'Warren',
+  'Reed (2007)': 'Reed07',
+  'Peaock (2007)': 'Peacock',
+  'Tinker (2008)': 'Tinker08',
+  'Crocce (2010)': 'Crocce',
+  'Courtin (2010)': 'Courtin',
+  'Tinker (2010)': 'Tinker10',
+  'Bhattacharya (2011)': 'Bhattacharya',
+  'Angulo (2012)': 'Angulo',
+  'Angulo (Subhaloes) (2012)': 'AnguloBound',
+  'Watson (FoF Universal) (2012)': 'Watson_FoF',
+  'Watson (Redshift Dependent) (2012)': 'Watson',
+  'Behroozi (Tinker Extension to High-z) (2013)': 'Behroozi',
+  'Pillepich (2010)': 'Pillepich',
+  'Manera (2010)': 'Manera',
+  'Ishiyama (2015)': 'Ishiyama',
+};
+
+export default {
+  title: 'HMF',
+  id: 'hmf',
+  name: 'HMFForm',
+  model: {
+    event: 'onChange',
+    prop: 'parent_model',
+  },
+  props: ['parent_model'],
+  data() {
+    return {
+      model: {
+        Mmin: BACKEND_CONSTANTS.Mmin,
+        Mmax: BACKEND_CONSTANTS.Mmax,
+        dlog10m: BACKEND_CONSTANTS.dlog10m,
+        hmf_model: 'Tinker08',
+        hmf_params: BACKEND_CONSTANTS.FittingFunction_params.Tinker08,
+      },
+      core_defaults: {
+        Mmin: BACKEND_CONSTANTS.Mmin,
+        Mmax: BACKEND_CONSTANTS.Mmax,
+        dlog10m: BACKEND_CONSTANTS.dlog10m,
+      },
+      param_defaults: { ...BACKEND_CONSTANTS.FittingFunction_params.Tinker08 },
+      choices: hmfChoices,
+    };
+  },
+  updated() {
+    this.$emit('onChange', this.model);
+  },
+  watch: {
+    'model.hmf_model': function updateOptions(val) {
+      this.model.hmf_params = null;
+      this.$nextTick(function saveNewOptions() {
+        this.model.hmf_params = BACKEND_CONSTANTS.FittingFunction_params[val];
+        this.param_defaults = BACKEND_CONSTANTS.FittingFunction_params[val];
+      });
+    },
+  },
+  components: {
+    DoubleField,
+  },
+};
+</script>
