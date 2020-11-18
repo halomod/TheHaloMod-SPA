@@ -2,8 +2,6 @@
   <div>
     <p>allTransferData is {{allTransferData}}</p>
     <p>transferData is {{transferData}}</p>
-    <p>transferData is {{doSomething()}}</p>
-    <p>
     <md-field>
       <label for="transferChoices">Transfer Model</label>
       <md-select
@@ -35,7 +33,15 @@
 
     <DoubleField
       :param="'lnk_min'"
-      :v-model="transferData.lnk_min"
+      v-model="transferData.lnk_min"
+    />
+    <DoubleField
+      :param="'lnk_max'"
+      v-model="transferData.lnk_max"
+    />
+    <DoubleField
+      :param="'dlnk'"
+      v-model="transferData.dlnk"
     />
 
     <md-checkbox v-model="transferData.takahashiChoice">
