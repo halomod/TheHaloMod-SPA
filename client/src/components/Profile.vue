@@ -1,7 +1,7 @@
 <template>
   <form novalidate>
     <md-field>
-      <label>Tracer Profile</label>
+      <label>{{title}}</label>
       <md-select v-model="model.profile_model">
         <md-option
           v-for="(value, choice) in choices"
@@ -51,21 +51,20 @@ const profileChoices = {
 const profileParams = BACKEND_CONSTANTS.Profile_params;
 
 export default {
-  title: 'Tracer Profile',
-  id: 'tracerProfile',
-  name: 'TracerProfileForm',
+  id: 'profile',
+  name: 'profile',
   model: {
     event: 'onChange',
     prop: 'parent_model',
   },
-  props: ['parent_model'],
+  props: ['parent_model', 'title'],
   data: () => ({
     profileChoices,
     model: {
-      profile_model: profileChoices[0],
+      profile_model: profileChoices['NFW (1997)'],
       profile_params: profileParams.NFW,
     },
-    defaults: { ...BACKEND_CONSTANTS.Profile_params.NFW },
+    defaults: BACKEND_CONSTANTS.Profile_params.NFW,
     choices: profileChoices,
   }),
   updated() {
