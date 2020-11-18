@@ -90,6 +90,15 @@ export default {
         },
         {
           component: Concentration,
+          model: 'tracer_concentration',
+          props: {
+            title: 'Tracer Concentration',
+            id: 'tracer-concentration',
+            defaultModel: 'Bullock01',
+          },
+        },
+        {
+          component: Concentration,
           model: 'halo_concentration',
           props: {
             title: 'Halo Concentration',
