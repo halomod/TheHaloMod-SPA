@@ -1,6 +1,5 @@
 <template>
   <div>
-    <p>{{doSomething(1)}}</p>
     <md-field>
       <label for="filterChoices">Filter Model</label>
       <md-select
@@ -17,26 +16,22 @@
         </md-option>
       </md-select>
     </md-field>
-    <p>{{doSomething(2)}}</p>
     <div v-if="Object.keys(allFilterData[filterChoice]).length !== 0">
-      <p>{{doSomething('2.1')}}</p>
       <DoubleField
         v-for="(input, inputName) in filterData.filter_params"
         :key="inputName"
         :param="inputName"
         :value="input"
-        v-on:input="createSetParamValueFunc(filterChoice)($event)"
+        v-on:input="createSetParamValueFunc(filterChoice, inputName)($event)"
       />
     </div>
-    <p>{{doSomething(3)}}</p>
     <DoubleField
-      :labelHtml="'&#948;<sub>c</sub>'"
+      :htmlParam="'&#948;<sub>c</sub>'"
       :min="1"
       :max="3"
-      :value="deltaC"
-      v-on:input="createSetValueFunc(deltaC)($event)"
+      :value="filterData.delta_c"
+      v-on:input="createSetValueFunc('delta_c')($event)"
     />
-    <p>{{doSomething(4)}}</p>
   </div>
 </template>
 
@@ -66,7 +61,7 @@ export default {
   },
   data() {
     return {
-      allFilterData: BACKEND_CONSTANTS.filter_params,
+      allFilterData: BACKEND_CONSTANTS.Filter_params,
       filterChoices,
       filterChoice: BACKEND_CONSTANTS.filter_model,
     };
@@ -94,18 +89,13 @@ export default {
         this.$emit('updateFilter', this.filterData);
       };
     },
-    doSomething(val) {
-      console.log(`rendered ${val}`);
-    },
   },
   watch: {
     filterChoice(newChoice) {
       // If the new choice doesn't have extra params
-      if (Object.keys(this.allFilterData[newChoice]) === 0) {
-        // Remove the params
+      if (Object.keys(this.allFilterData[newChoice]).length === 0) {
         delete this.filterData.filter_params;
       } else {
-        // Add the params in
         this.filterData.filter_params = this.allFilterData[newChoice];
       }
       this.filterData.filter_model = newChoice;
