@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, session
+from flask import Flask, url_for, redirect, jsonify, request, session
 from . import utils
 import base64
 from halomod import TracerHaloModel
@@ -19,73 +19,197 @@ def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_object('config.Config')
 
-    CORS(app, send_wildcard=True)  # enable CORS
+    CORS(app, origins="http://localhost:8080", supports_credentials=True)  # enable CORS
     sess.init_app(app)  # enable Sessions
+
+    # Helper function that abstracts logic for getting names of all models
+    # associated with the function
+    def get_model_names():
+        if 'models' in session:
+            models = pickle.loads(session.get('models'))
+        else:
+            models = {}
+        return list(models.keys())
 
     @app.route('/')
     def home():
         return jsonify({"start": 'This is the HaloModApp'})
 
+    # This endpoint handles the creation of models and saving the created model to
+    # the session
+    #
+    # expects: {"params": <dictionary of params>, "label": <model_name>}
+    # outputs: {"model_names": <list_of_model_names_in_session>}
     @app.route('/create', methods=["POST"])
     def create():
-        # expects json of format {"params": <dictionary of params>, "label": <model_name>}
-        parameters = request.get_json()["params"]
+
+        params = request.get_json()["params"]
         label = request.get_json()["label"]
 
-        # unpacks parameters and passes into hmf_driver class (see utils)
-        model = utils.hmf_driver(**parameters)
+        models = None
+        if 'models' in session:
+            models = pickle.loads(session.get('models'))
+        else:
+            models = {}
 
-        # session["models"]["label"] = model
+        models[label] = utils.hmf_driver(**params)  # creates model from params
+        session["models"] = pickle.dumps(models)  # writes updated model dict to session
 
-        # returns {<model_name>: <serialized_model>}
-        return jsonify({label: utils.serialize_model(model)})
+        return jsonify({"model_names": get_model_names()})  # returns new list of model names
 
-    @app.route('/getNames', methods=["GET"])
-    def getNames():
-        # return keys of session["models"]
-        return "List of Model Names"
+    # This endpoint returns the names of all the models associated with the current
+    # session
+    #
+    # expects: None
+    # outputs: {"model_names": <list_of_model_names_in_session>}
+    @app.route('/get_names', methods=["GET"])
+    def get_names():
+        res = {"model_names": get_model_names()}
+        return jsonify(res)  # returns list of model names
 
-    @app.route('/getPlotData', methods=["GET"])
-    def getPlotData():
-        # if json.models : loop through list else do all automatically
-        # get data associated with json.figtype for each model
-        # then send back in dict
-        return "JSON w/ relevant model data"
+    # This endpoint returns plot data required for front-end plotting from session data
+    #
+    # expects: {"fig_type": <choice_from_KEYMAP>, (OPTIONAL) "model_names": <array_of_model_names_to_consider> }
+    # outputs: {"plot_details":
+    #             {"xlab": <str_xlabel>, "ylab": <str_ylabel>, "yscale": <str_yscale>},
+    #          "plot_data": {
+    #              <model_label>: {"xs": <array_of_xs>, "ys": <array_of_ys>},
+    #              ...
+    #           }}
+    @app.route('/get_plot_data', methods=["GET"])
+    def get_plot_data():
 
-    @app.route('/clone', methods=["POST"])
-    def clone():
-        # get model with name json.modelName
-        # clone it
-        # add to session.models w/ json.newName
-        return "Success message"
-
-    @app.route('/update', methods=["POST"])
-    def update():
-        # get model with name json.modelName
-        # use it w/ hmf driver to generate new model
-        # save in session
-        return "Success message"
-
-    @app.route('/delete', methods=["POST"])
-    def delete():
-        # get model with name json.modelName
-        # remove it from session
-        return "Success message"
-
-    @app.route('/plot', methods=["POST"])
-    def plot():
-        # expects json of format {"fig_type": <fig_type> (see utils.KEYMAP for options),
-        #                         "models": <dict with (label, serialized_model) pairs>,
-        #                         "image type": <format of returned image> (png, svg, etc...)}
         request_json = request.get_json()
         fig_type = request_json["fig_type"]
-        string_models = request_json["models"]
-        img_type = request_json["image_type"]
 
-        # deserializes each model in model dictionary and builds a new dict with (label, TracerHaloModel) pairs
-        models = dict()
-        for label, string_model in string_models.items():
-            models[label] = utils.deserialize_model(string_model)
+        # below gets correct x attr key ( pulled from create_canvas in utils )
+        for x, label in utils.XLABELS.items():
+            if utils.KEYMAP[fig_type]["xlab"] == label:
+                break
+
+        x_param = x
+        y_param = fig_type
+
+        models = None
+        res = {"plot_data": {}}
+        if 'models' in session:
+            models = pickle.loads(session.get("models"))
+        else:
+            models = {}
+
+        # if model_names in json use those else use all
+        names = request_json["model_names"] if "model_names" in request_json else list(models.keys())
+
+        for name in names:
+            model = models[name]  # gets model with label <name>
+            data = {}
+            try:
+                ys = getattr(model, y_param)  # gets y array
+                xs = getattr(model, x_param)  # gets x array
+                mask = ys > 1e-40 * ys.max()  # creates mask as seen in create_canvas in utils
+                data["ys"] = list(ys[mask])  # apply mask and save ys into data dict
+                data["xs"] = list(xs[mask])  # apply mask and save xs into data dict
+            except Exception as e:
+                print(f"Error encountered getting {fig_type} for model {name}")
+                print(e)
+
+            res["plot_data"][name] = data  # put data in response object
+
+        res["plot_details"] = utils.KEYMAP[fig_type]  # put figure metadata into response
+
+        session["models"] = pickle.dumps(models)  # save post-calculation models to session to take advantage of compute
+
+        return jsonify(res)
+
+    # This endpoint clones a model based on name and adds the new model to the session
+    #
+    # expects: {"model_name": <model_name_to_clone>, "new_model_name": <name_for_new_model>}
+    # outputs: {"model_names": <list_of_model_names_in_session>}
+    @app.route('/clone', methods=["POST"])
+    def clone():
+
+        request_json = request.get_json()
+        name = request_json["model_name"]
+        new_name = request_json["new_model_name"]
+
+        models = None
+        if 'models' in session:
+            models = pickle.loads(session["models"])
+        else:
+            models = {}
+
+        if name in models:
+            models[new_name] = models[name].clone()
+
+        session["models"] = pickle.dumps(models)
+
+        res = {"model_names": get_model_names()}
+        return jsonify(res)
+
+    # This endpoint updates a model based on name & params and updates the session
+    #
+    # expects: {"model_name": <model_name_to_update>, "params": <dictionary of params>}
+    # outputs: {"model_names": <list_of_model_names_in_session>}
+    @app.route('/update', methods=["POST"])
+    def update():
+
+        request_json = request.get_json()
+        name = request_json["model_name"]
+        params = request_json["params"]
+
+        models = None
+        if 'models' in session:
+            models = pickle.loads(session["models"])
+        else:
+            models = {}
+
+        if name in models:
+            models[name] = utils.hmf_driver(previous=models[name], **params)
+
+        session["models"] = pickle.dumps(models)
+
+        res = {"model_names": get_model_names()}
+        return jsonify(res)
+
+    # This endpoint deletes a model based on name and updates the session
+    #
+    # expects: {"model_name": <model_name_to_update>}
+    # outputs: {"model_names": <list_of_model_names_in_session>}
+    @app.route('/delete', methods=["POST"])
+    def delete():
+        request_json = request.get_json()
+        name = request_json["model_name"]
+
+        models = None
+        if 'models' in session:
+            models = pickle.loads(session["models"])
+        else:
+            models = {}
+
+        if name in models:
+            del models[name]
+
+        session["models"] = pickle.dumps(models)
+
+        res = {"model_names": get_model_names()}
+        return jsonify(res)
+
+    # Generates a figure using session data & matplotlib rendering and
+    # returns it to client
+    #
+    # expects: {"fig_type": <fig_type> (see utils.KEYMAP for options),
+    #           "image type": <format of returned image> (png, svg, etc...)}
+    # outputs {"figure": <b64_serialized_figure>}
+    @app.route('/plot', methods=["POST"])
+    def plot():
+        request_json = request.get_json()
+        fig_type = request_json["fig_type"]
+        img_type = request_json["img_type"]
+
+        if 'models' in session:
+            models = pickle.loads(session["models"])
+        else:
+            models = {}
 
         # generates figure/plot
         buf, errors = utils.create_canvas(
@@ -95,17 +219,12 @@ def create_app(test_config=None):
         png_base64_bytes = base64.b64encode(buf.getvalue())
         base64_png = png_base64_bytes.decode('ascii')
 
-        # serializes updated models post-calculation (to preserve cached results for future calculations)
-        for key in models:
-            models[key] = utils.serialize_model(models[key])
+        # save post-calculation models to session
+        session["models"] = pickle.dumps(models)
 
         response = {}
         response["figure"] = base64_png
-        response["models"] = models
 
-        # returns {"models": <update_serialized_models>, "figure": <serialized_figure>}
         return jsonify(response)
-
-        return jsonify({"figure": base64_png})
 
     return app

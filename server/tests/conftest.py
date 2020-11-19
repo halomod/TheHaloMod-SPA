@@ -2,7 +2,6 @@ import os
 import tempfile
 import pytest
 import json
-
 from halomod_app import create_app
 
 
@@ -10,6 +9,7 @@ from halomod_app import create_app
 def app():
     """Create and configure a new app instance for each test."""
     app = create_app({"TESTING": True})
+    app.config['SECRET_KEY'] = 'sekrit!'
     yield app
 
 

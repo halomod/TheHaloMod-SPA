@@ -32,7 +32,6 @@ export default {
   data() {
     return {
       showDialog: false,
-      object: null,
       image: null,
     };
   },
@@ -54,9 +53,7 @@ export default {
       this.$http.post(`${baseurl}/create`, {
         params: { ...params },
         label: this.meta.model_name,
-      }).then((response) => {
-        /* saves serialized object locally */
-        this.object = response.data[this.meta.model_name];
+      }).then(() => {
         this.getFigure();
       });
     },
@@ -66,8 +63,7 @@ export default {
       /* gets figure from server */
       this.$http.post(`${baseurl}/plot`, {
         fig_type: this.meta.fig_type,
-        image_type: 'png',
-        models: { [this.meta.model_name]: this.object },
+        img_type: 'png',
       }).then((response) => {
         /* saves image src as string */
         this.image = `data:image/png;base64,${response.data.figure}`;
