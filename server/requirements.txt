@@ -88,7 +88,6 @@ mpmath==1.1.0
 numpy==1.19.2
 packaging==20.4
 Pillow==8.0.0
-pkg-resources==0.0.0
 pluggy==0.13.1
 py==1.9.0
 pycodestyle==2.6.0
