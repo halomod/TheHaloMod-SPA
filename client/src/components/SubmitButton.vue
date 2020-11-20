@@ -24,7 +24,8 @@
 </template>
 
 <script>
-import baseurl from '../env';
+import baseurl from '@/env';
+import { put, getAll } from '@/utils/idb';
 
 export default {
   name: 'SubmitButton',
@@ -48,17 +49,25 @@ export default {
     },
   },
   methods: {
-    createObject() {
-      const params = this.payload;
+    async createObject() {
+      // const params = this.payload;
       /* creates model on server */
-      this.$http.post(`${baseurl}/create`, {
-        params: { ...params },
-        label: this.meta.model_name,
-      }).then((response) => {
+      try {
+        // const { data } = this.$http.post(`${baseurl}/create`, {
+        //   params: { ...params },
+        //   label: this.meta.model_name,
+        // });
+        await Promise.all([
+          // data,
+          put(this.meta.model_name, this.model),
+        ]);
+        console.log('///////', await getAll());
         /* saves serialized object locally */
-        this.object = response.data[this.meta.model_name];
-        this.getFigure();
-      });
+        // this.object = data[this.meta.model_name];
+        // this.getFigure();
+      } catch (e) {
+        console.error(e);
+      }
     },
     getFigure() {
       this.image = null;
