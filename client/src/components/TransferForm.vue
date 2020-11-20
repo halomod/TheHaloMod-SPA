@@ -1,7 +1,5 @@
 <template>
   <div>
-    <p>allTransferData is {{allTransferData}}</p>
-    <p>transferData is {{transferData}}</p>
     <md-field>
       <label for="transferChoices">Transfer Model</label>
       <md-select
@@ -34,13 +32,17 @@
     <DoubleField
       :param="'lnk_min'"
       v-model="transferData.lnk_min"
+      :min="Math.log(1 * Math.pow(10, -10))"
     />
     <DoubleField
       :param="'lnk_max'"
       v-model="transferData.lnk_max"
+      :max="Math.log(2 * Math.pow(10, 6))"
     />
     <DoubleField
       :param="'dlnk'"
+      :min="0.005"
+      :max="0.5"
       v-model="transferData.dlnk"
     />
 
@@ -104,9 +106,6 @@ export default {
         // Set the value for good.
         this.$emit('updateTransfer', this.transferData);
       };
-    },
-    doSomething() {
-      console.log('rendered');
     },
   },
   watch: {
