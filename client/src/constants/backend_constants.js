@@ -37,42 +37,11 @@ const BACKEND_CONSTANTS = {
   tracer_concentration_model: null,
   tracer_density: null,
   halo_model_params: {
-    log_r_range: {
-      label: 'Scale Range (log10)',
-      min: -3.0,
-      max: 3.0,
-      value: -2,
-      inputType: 'range',
-      step: 0.05,
-    },
-    rnum: {
-      label: 'Number of r bins',
-      min: 5.0,
-      max: 100,
-      value: 5,
-      inputType: 'number',
-    },
-    log_k_range: {
-      label: 'Wavenumber Range (log10)',
-      min: -3.0,
-      max: 100.0,
-      value: 3,
-      inputType: 'range',
-      step: 0.05,
-    },
-    hm_dlog10k: {
-      label: 'Halo Model k bin size',
-      min: 0.01,
-      max: 1.0,
-      value: 0.05,
-      inputType: 'number',
-      step: 0.01,
-    },
-    force_1halo_turnover: {
-      label: 'Force 1-halo turnover?',
-      value: 1,
-      inputType: 'checkbox',
-    },
+    log_r_range: -2,
+    rnum: 5,
+    log_k_range: 3,
+    hm_dlog10k: 0.05,
+    force_1halo_turnover: 1,
   },
   cosmo_params: {
     Planck13: {
