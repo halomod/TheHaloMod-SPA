@@ -64,6 +64,16 @@
        "alpha":1.049
     }
   },
+  "halo": {
+    "rmin":0.01,
+    "rmax":125.89254117941675,
+    "rnum":100,
+    "hm_logk_min":-2.0,
+    "hm_logk_max":2.0,
+    "hm_dlog10k":0.05,
+    "hc_spectrum":"nonlinear",
+    "force_1halo_turnover":true
+  },
   "bias": {
     "bias_model":"Tinker10",
     "bias_params":{

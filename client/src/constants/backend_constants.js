@@ -37,11 +37,14 @@ const BACKEND_CONSTANTS = {
   tracer_concentration_model: null,
   tracer_density: null,
   halo_model_params: {
-    log_r_range: -2,
-    rnum: 5,
-    log_k_range: 3,
+    rmin: -2,
+    rmax: 2.1,
+    rnum: 100,
+    hm_logk_min: -2.0,
+    hm_logk_max: 2.0,
     hm_dlog10k: 0.05,
-    force_1halo_turnover: 1,
+    hc_spectrum: 'nonlinear',
+    force_1halo_turnover: true,
   },
   cosmo_params: {
     Planck13: {

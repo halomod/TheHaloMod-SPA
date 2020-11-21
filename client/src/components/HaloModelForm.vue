@@ -4,7 +4,7 @@
       <div class="md-layout-item">
         <md-field>
           <label>Halo Centre Spectrum</label>
-          <md-select v-model="model.halo_model" md-dense>
+          <md-select v-model="model.hc_spectrum" md-dense>
             <md-option
               v-for="(value, choice) in choices"
               :key="choice"
@@ -15,8 +15,8 @@
         </md-field>
       </div>
       <div v-for="(input, inputName) in haloModelDefaultModel"
-      :key="input.id" class="md-layout-item">
-        <InputField
+        :key="input.id" class="md-layout-item">
+        <InputField v-if="inputName === 'force_1halo_turnover'"
           :key="inputName"
           :label="input.label"
           :step="input.step"
@@ -27,8 +27,18 @@
           :inputType="input.inputType"
           :options="input.options"
           :setCurrentValue="null"
-          v-model="model.halo_model_params[inputName]"
+          v-model="model[inputName]"
         />
+        <double-field v-else
+          :key="inputName"
+          :label="input.label"
+          :step="input.step"
+          :value="input.value"
+          :min="input.min"
+          :max="input.max"
+          range=true
+          v-model="model[inputName]"
+          />
       </div>
     </div>
   </form>
@@ -36,6 +46,7 @@
 
 <script>
 import BACKEND_CONSTANTS from '../constants/backend_constants';
+import DoubleField from './DoubleField.vue';
 import InputField from './InputField.vue';
 
 const haloModelChoices = {
@@ -46,12 +57,18 @@ const haloModelChoices = {
 };
 
 const haloModelDefaultModel = {
-  log_r_range: {
-    label: 'Scale Range (log10)',
+  rmin: {
+    label: 'Scale Min (log10)',
     min: -3.0,
     max: 3.0,
     value: -2,
-    inputType: 'range',
+    step: 0.05,
+  },
+  rmax: {
+    label: 'Scale Max (log10)',
+    min: -3.0,
+    max: 3.0,
+    value: 2.1,
     step: 0.05,
   },
   rnum: {
@@ -61,12 +78,18 @@ const haloModelDefaultModel = {
     value: 5,
     inputType: 'number',
   },
-  log_k_range: {
-    label: 'Wavenumber Range (log10)',
+  hm_logk_min: {
+    label: 'Wavenumber Min (log10)',
     min: -3.0,
     max: 100.0,
-    value: 3,
-    inputType: 'range',
+    value: -2,
+    step: 0.05,
+  },
+  hm_logk_max: {
+    label: 'Wavenumber Max (log10)',
+    min: -3.0,
+    max: 100.0,
+    value: 2,
     step: 0.05,
   },
   hm_dlog10k: {
@@ -74,7 +97,6 @@ const haloModelDefaultModel = {
     min: 0.01,
     max: 1.0,
     value: 0.05,
-    inputType: 'number',
     step: 0.01,
   },
   force_1halo_turnover: {
@@ -91,6 +113,7 @@ export default {
   id: 'halo_model',
   components: {
     InputField,
+    DoubleField,
   },
   props: ['parent_model'],
   model: {
@@ -101,8 +124,8 @@ export default {
     return {
       choices: haloModelChoices,
       model: {
-        halo_model: 'linear',
-        halo_model_params: { ...BACKEND_CONSTANTS.halo_model_params },
+        hc_spectrum: 'linear',
+        ...BACKEND_CONSTANTS.halo_model_params,
       },
       haloModelDefaultModel,
     };
