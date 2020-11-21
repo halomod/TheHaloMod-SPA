@@ -99,23 +99,23 @@ export default {
      */
     createSetCurrentValueFunc(transferType, varName) {
       return (newValue) => {
-        // Set the new value temporarily
         this.allTransferData[transferType][varName] = newValue;
-        this.transferData[varName] = newValue;
-
-        // Set the value for good.
-        this.$emit('updateTransfer', this.transferData);
+        const newTransferObj = {
+          ...this.transferData,
+        };
+        newTransferObj[varName] = newValue;
+        this.$emit('updateTransfer', newTransferObj);
       };
     },
   },
   watch: {
     transferChoice(newChoice) {
-      this.transferData.transfer_model = newChoice;
-      this.transferData = {
+      const newTransferObj = {
         ...this.transferData,
         ...this.allTransferData[newChoice],
+        transfer_model: newChoice,
       };
-      this.$emit('updateTransfer', this.transferData);
+      this.$emit('updateTransfer', newTransferObj);
     },
 
   },
