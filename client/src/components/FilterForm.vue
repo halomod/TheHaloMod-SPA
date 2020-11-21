@@ -72,12 +72,15 @@ export default {
   methods: {
     createSetParamValueFunc(filterType, varName) {
       return (newValue) => {
-        // Set the new value temporarily
-        this.filterData.filter_params[varName] = newValue;
+        const newFilterObj = {
+          ...this.filterData,
+          filter_params: {
+            ...this.filterData.filter_params,
+          },
+        };
+        newFilterObj.filter_params[varName] = newValue;
         this.allFilterData[filterType][varName] = newValue;
-
-        // Set the value for good.
-        this.$emit('updateFilter', this.filterData);
+        this.$emit('updateFilter', newFilterObj);
       };
     },
     /**
@@ -85,21 +88,27 @@ export default {
      */
     createSetValueFunc(varName) {
       return (newValue) => {
-        this.filterData[varName] = newValue;
-        this.$emit('updateFilter', this.filterData);
+        const newFilterObj = {
+          ...this.filterData,
+        };
+        newFilterObj[varName] = newValue;
+        this.$emit('updateFilter', newFilterObj);
       };
     },
   },
   watch: {
     filterChoice(newChoice) {
+      const newFilterObj = {
+        ...this.filterData,
+      };
       // If the new choice doesn't have extra params
       if (Object.keys(this.allFilterData[newChoice]).length === 0) {
-        delete this.filterData.filter_params;
+        delete newFilterObj.filter_params;
       } else {
-        this.filterData.filter_params = this.allFilterData[newChoice];
+        newFilterObj.filter_params = this.allFilterData[newChoice];
       }
-      this.filterData.filter_model = newChoice;
-      this.$emit('updateFilter', this.filterData);
+      newFilterObj.filter_model = newChoice;
+      this.$emit('updateFilter', newFilterObj);
     },
   },
 };
