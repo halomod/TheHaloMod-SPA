@@ -56,56 +56,6 @@ const haloModelChoices = {
   'filtered non-linear': 'filtered_n1',
 };
 
-const haloModelDefaultModel = {
-  rmin: {
-    label: 'Scale Min (log10)',
-    min: -3.0,
-    max: 3.0,
-    value: -2,
-    step: 0.05,
-  },
-  rmax: {
-    label: 'Scale Max (log10)',
-    min: -3.0,
-    max: 3.0,
-    value: 2.1,
-    step: 0.05,
-  },
-  rnum: {
-    label: 'Number of r bins',
-    min: 5.0,
-    max: 100,
-    value: 5,
-    inputType: 'number',
-  },
-  hm_logk_min: {
-    label: 'Wavenumber Min (log10)',
-    min: -3.0,
-    max: 100.0,
-    value: -2,
-    step: 0.05,
-  },
-  hm_logk_max: {
-    label: 'Wavenumber Max (log10)',
-    min: -3.0,
-    max: 100.0,
-    value: 2,
-    step: 0.05,
-  },
-  hm_dlog10k: {
-    label: 'Halo Model k bin size',
-    min: 0.01,
-    max: 1.0,
-    value: 0.05,
-    step: 0.01,
-  },
-  force_1halo_turnover: {
-    label: 'Force 1-halo turnover?',
-    value: 1,
-    inputType: 'checkbox',
-  },
-};
-
 // Objects used in the html
 export default {
   name: 'HaloModelForm',
@@ -127,7 +77,7 @@ export default {
         hc_spectrum: 'linear',
         ...BACKEND_CONSTANTS.halo_model_params,
       },
-      haloModelDefaultModel,
+      haloModelDefaultModel: BACKEND_CONSTANTS.halo_model_options,
     };
   },
   updated() {
