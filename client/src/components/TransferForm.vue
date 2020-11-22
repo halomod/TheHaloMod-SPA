@@ -117,11 +117,9 @@ export default {
       };
       this.$emit('updateTransfer', newTransferObj);
     },
-
   },
 };
 </script>
 
 <style>
-
 </style>
