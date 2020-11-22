@@ -32,7 +32,6 @@ export default {
   data() {
     return {
       showDialog: false,
-      object: null,
       image: null,
     };
   },
@@ -52,12 +51,11 @@ export default {
       const params = this.payload;
       /* creates model on server */
       try {
-        const { data } = await this.$http.post(`${baseurl}/create`, {
+        await this.$http.post(`${baseurl}/create`, {
           params: { ...params },
           label: this.meta.model_name,
         });
         /* saves serialized object locally */
-        this.object = data[this.meta.model_name];
         this.getFigure();
       } catch (e) {
         console.error(e);
@@ -70,8 +68,7 @@ export default {
       try {
         const { data } = await this.$http.post(`${baseurl}/plot`, {
           fig_type: this.meta.fig_type,
-          image_type: 'png',
-          models: { [this.meta.model_name]: this.object },
+          img_type: 'png',
         });
         /* saves image src as string */
         this.image = `data:image/png;base64,${data.figure}`;

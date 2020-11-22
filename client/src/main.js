@@ -5,6 +5,7 @@ import router from './router';
 import IDB from './utils/IDB';
 
 Vue.config.productionTip = false;
+axios.defaults.withCredentials = true;
 Vue.prototype.$http = axios;
 
 Vue.prototype.$db = new IDB();

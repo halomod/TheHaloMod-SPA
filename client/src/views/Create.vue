@@ -44,6 +44,7 @@ import HaloExclusion from '@/components/HaloExclusion.vue';
 import BiasForm from '@/components/BiasForm.vue';
 import HMFForm from '@/components/HMFForm.vue';
 import HODForm from '@/components/HODForm.vue';
+import Profile from '@/components/Profile.vue';
 import INITIAL_STATE from '@/constants/initial_state.json';
 import SubmitButton from '@/components/SubmitButton.vue';
 import ModelMetadataForm from '@/components/ModelMetadataForm.vue';
@@ -60,6 +61,7 @@ export default {
     HaloExclusion,
     HODForm,
     BiasForm,
+    Profile,
     MassDefinitionForm,
     GrowthForm,
     SubmitButton,
@@ -121,13 +123,29 @@ export default {
           model: 'hod',
         },
         {
+          component: Profile,
+          model: 'tracer_profile',
+          props: {
+            title: 'Tracer Profile',
+            id: 'tracer_profile',
+          },
+        },
+        {
+          component: Profile,
+          model: 'halo_profile',
+          props: {
+            title: 'Halo Profile',
+            id: 'Halo_profile',
+          },
+        },
+        {
           component: CosmologyForm,
           model: 'cosmo',
         },
-        {
-          component: HaloModelForm,
-          model: 'halo_model',
-        },
+        // {
+        //   component: HaloModelForm,
+        //   model: 'halo_model',
+        // },
         {
           component: GrowthForm,
           model: 'growth',
