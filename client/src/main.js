@@ -2,12 +2,12 @@ import Vue from 'vue';
 import axios from 'axios';
 import App from './App.vue';
 import router from './router';
-import { init } from './utils/idb';
+import IDB from './utils/IDB';
 
 Vue.config.productionTip = false;
 Vue.prototype.$http = axios;
 
-init();
+Vue.prototype.$db = new IDB();
 
 new Vue({
   router,

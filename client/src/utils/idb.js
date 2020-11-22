@@ -1,39 +1,59 @@
-import { openDB } from 'idb';
+import {
+  openDB,
+  // deleteDB,
+} from 'idb';
 
-let db = null;
+const NAME = 'models';
+export default class IDB {
+  db = null;
 
-const checks = {
-  dbIsNull: () => {
-    console.error('DB uninitialized');
-  },
-};
+  constructor() {
+    this.init();
+  }
 
-export const init = async () => {
-  db = await openDB('models', 1, {
-    upgrade(d) {
-      d.createObjectStore('model');
-    },
-  });
-};
+  init = async () => {
+    if (this.db) return;
+    this.db = openDB('models', 1, {
+      upgrade(d) {
+        d.createObjectStore(NAME);
+      },
+    });
+  };
 
-export const get = () => {
-  if (!db) return checks.dbIsNull();
-};
+  check = async () => {
+    if (!this.db) throw new Error('DB uninitialized');
+    this.db = await this.db;
+  };
 
-export const put = async (key, value) => {
-  if (!db) return checks.dbIsNull();
-  await db.put('model', value, key);
-};
+  get = async (key) => {
+    await this.check();
+    return this.db.get(NAME, key);
+  };
 
-export const getAll = async () => {
-  if (!db) return checks.dbIsNull();
-  return db.getAll('model');
-};
+  put = async (key, value) => {
+    await this.check();
+    return this.db.put(NAME, value, key);
+  };
 
-export const deleteEntry = () => {
-  if (!db) return checks.dbIsNull();
-};
+  getAll = async () => {
+    await this.check();
+    return this.db.getAll(NAME);
+  };
 
-export const deleteAll = () => {
-  if (!db) return checks.dbIsNull();
-};
+  keys = async () => {
+    await this.check();
+    return this.db.getAllKeys(NAME);
+  }
+
+  delete = async (key) => {
+    await this.check();
+    return this.db.delete(NAME, key);
+  }
+
+  // future implementation to clear db,
+  // may not be working correcly
+  // deleteAll = async () => {
+  //   await this.check();
+  //   return deleteDB(NAME);
+  // };
+}
