@@ -57,3 +57,4 @@ export default class IDB {
   //   return deleteDB(NAME);
   // };
 }
+
