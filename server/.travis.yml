@@ -11,6 +11,8 @@ matrix:
           - gfortran
       dist: xenial
       cache: pip
+      services:
+        - redis-server
       addons:
         apt:
           sources:
