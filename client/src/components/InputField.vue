@@ -68,7 +68,7 @@
 import Debug from 'debug';
 
 const debug = Debug('InputField.vue');
-debug.enabled = true;
+debug.enabled = false;
 
 export default {
   name: 'InputField',
@@ -142,6 +142,7 @@ export default {
           this.inputIsInvalid = false;
         }
       } else {
+        debug('The input was not a number');
         this.inputIsInvalid = true;
       }
     },
