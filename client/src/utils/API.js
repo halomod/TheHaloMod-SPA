@@ -1,10 +1,10 @@
 import axios from 'axios';
 import baseurl from '@/env';
+import IDB from './IDB';
 
+axios.defaults.withCredentials = true;
 export default class API {
-  constructor(db) {
-    this.db = db;
-  }
+  db = new IDB();
 
   /**
    * Gets plot from server
