@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import baseurl from '@/env';
+// import baseurl from '@/env';
 
 export default {
   name: 'SubmitButton',
@@ -48,38 +48,11 @@ export default {
   },
   methods: {
     async createObject() {
-      const params = this.payload;
-      /* creates model on server */
-      try {
-        await this.$http.post(`${baseurl}/create`, {
-          params: { ...params },
-          label: this.meta.model_name,
-        });
-        /* saves serialized object locally */
-        this.getFigure();
-      } catch (e) {
-        console.error(e);
-      }
-    },
-    async getFigure() {
       this.image = null;
       this.showDialog = true;
-      /* gets figure from server */
-      try {
-        const { data } = await this.$http.post(`${baseurl}/plot`, {
-          fig_type: this.meta.fig_type,
-          img_type: 'png',
-        });
-        /* saves image src as string */
-        this.image = `data:image/png;base64,${data.figure}`;
-        await this.$db.put(this.meta.model_name, {
-          name: this.meta.model_name,
-          image: `data:image/png;base64,${data.figure}`,
-          model: this.model,
-        });
-      } catch (e) {
-        console.error(e);
-      }
+      await this.$http.createObject(this.model, this.meta.model_name);
+      // should redirect to home. Image should be requested when at home component
+      this.image = await this.$http.getPlot(this.meta.fig_type);
     },
   },
 };
