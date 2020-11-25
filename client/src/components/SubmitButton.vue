@@ -17,7 +17,7 @@
       v-if="!showDialog"
       style="position: fixed; bottom: 15px; right: 15px; z-index: 10;"
       class="md-primary md-raised"
-      @click="createObject">
+      @click="createModel">
       Calculate
     </md-button>
   </div>
@@ -45,12 +45,12 @@ export default {
     },
   },
   methods: {
-    async createObject() {
+    async createModel() {
       this.image = null;
       this.showDialog = true;
-      await this.$http.createObject(this.model, this.meta.model_name);
+      await this.$store.createModel(this.model, this.meta.model_name);
       // should redirect to home. Image should be requested when at home component
-      this.image = await this.$http.getPlot(this.meta.fig_type);
+      this.image = await this.$store.getPlot(this.meta.fig_type);
     },
   },
 };

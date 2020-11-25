@@ -1,13 +1,10 @@
 import Vue from 'vue';
 import App from './App.vue';
 import router from './router';
-import API from './utils/API';
-import IDB from './utils/IDB';
+import Store from './utils/Store';
 
 Vue.config.productionTip = false;
-const db = new IDB();
-Vue.prototype.$db = db;
-Vue.prototype.$http = new API(db);
+Vue.prototype.$store = new Store();
 
 new Vue({
   router,
