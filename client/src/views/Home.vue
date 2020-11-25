@@ -12,7 +12,7 @@ export default {
   data: () => ({}),
   async created() {
     try {
-      console.log(await this.$db.delete('Model'));
+      console.log(await this.$db.keys());
     } catch (e) {
       console.log(e);
     }
