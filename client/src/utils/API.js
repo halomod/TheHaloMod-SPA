@@ -9,6 +9,7 @@ export default class API {
   /**
    * Gets plot from server
    * @param {String} fig_type, type of figure to be requested from server
+   * @return {String} image data base64 string, or null if request fails
    */
   getPlot = async (fig_type) => {
     try {
@@ -19,6 +20,7 @@ export default class API {
       return `data:image/png;base64,${data.figure}`;
     } catch (error) {
       console.error(error);
+      return null;
       // better error messaging here
     }
   }
@@ -47,6 +49,7 @@ export default class API {
       });
     } catch (error) {
       console.error(error);
+      // better error messaging here
     }
   }
 }
