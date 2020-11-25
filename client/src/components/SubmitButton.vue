@@ -50,7 +50,7 @@ export default {
       this.showDialog = true;
       await this.$store.createModel(this.model, this.meta.model_name);
       // should redirect to home. Image should be requested when at home component
-      this.image = await this.$store.getPlot(this.meta.fig_type);
+      this.image = await this.$store.createPlot(this.meta.fig_type);
     },
   },
 };

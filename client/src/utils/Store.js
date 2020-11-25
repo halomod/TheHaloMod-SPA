@@ -5,21 +5,22 @@ import IDB from './IDB';
 
 axios.defaults.withCredentials = true;
 export default class API {
-  model = {};
-
-  keys = [];
-
-  plot = '';
-
-  db = new IDB();
-
   constructor() {
+    this.models = {};
+    this.keys = [];
+    // future change: create new idb to store all plots
+    this.plot = '';
+    this.db = new IDB();
     this.init();
-    // get plot(s) from idb
   }
 
   init = async () => {
-    this.model = await this.db.getAll();
+    const [models, keys] = await Promise.all([
+      this.db.getAll(),
+      this.db.keys(),
+    ]);
+    this.models = models;
+    this.keys = keys;
   }
 
   /**
@@ -100,7 +101,7 @@ export default class API {
    * @param {String} label
    * @returns {Object} A copy of the target model, or null
    */
-  getModel = (name) => clonedeep(this.model[name])
+  getModel = (name) => clonedeep(this.models[name])
 
   /**
    * gets all keys
@@ -119,7 +120,7 @@ export default class API {
       name,
       model,
     });
-    this.model[name] = model;
+    this.models[name] = model;
     this.keys = this.db.keys();
   }
 }
