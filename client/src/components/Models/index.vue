@@ -11,28 +11,40 @@
           <md-button class="md-primary">New Model</md-button>
         </div>
       </div>
-      <p>
-        paragraph
-      </p>
-
-      <div class="md-toolbar-row">
-        Testing this out
-      </div>
+      <md-list class="full-width">
+        <Model
+          v-for="model in models"
+          :key="model.id"
+          :name="model.name"
+        />
+      </md-list>
     </md-toolbar>
   </div>
 </template>
 
 <script>
+import Model from './Model';
+
 export default {
   name: 'Models',
+  props: {
+    models: {
+      type: Object,
+    },
+  },
   data() {
     return {
       stuff: 'something',
     };
   },
+  components: {
+    Model,
+  },
 };
 </script>
 
 <style>
-
+  .full-width {
+    width: 100%;
+  }
 </style>
