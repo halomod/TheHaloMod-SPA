@@ -1,26 +1,43 @@
 import axios from 'axios';
 import clonedeep from 'lodash.clonedeep';
 import baseurl from '@/env';
-import IDB from './IDB';
+import {
+  set,
+  keys,
+  del,
+  get,
+} from 'idb-keyval';
 
 axios.defaults.withCredentials = true;
 export default class API {
   constructor() {
-    this.models = {};
-    this.keys = [];
-    // future change: create new idb to store all plots
     this.plot = '';
-    this.db = new IDB();
     this.init();
   }
 
+  /**
+   * initializes cache
+   */
   init = async () => {
-    const [models, keys] = await Promise.all([
-      this.db.getAll(),
-      this.db.keys(),
-    ]);
-    this.models = models;
-    this.keys = keys;
+    const k = await keys();
+    this.models = new Map();
+    k.forEach((key) => {
+      this.models.set(key, get(key));
+    });
+    await Promise.all(this.models);
+  }
+
+  /**
+   * Flattens model to make request params
+   * @param {Object} model model to flatten
+   * @returns {Object} flattened params
+   */
+  flatten = (model) => {
+    const params = {};
+    Object.values(model).forEach((value) => {
+      Object.assign(params, value);
+    });
+    return params;
   }
 
   /**
@@ -28,7 +45,7 @@ export default class API {
    * @param {String} fig_type, type of figure to be requested from server
    * @return {String} image data base64 string, or null if request fails
    */
-  createPlot = async (fig_type) => {
+  createPlot = async (fig_type = 'dndm') => {
     // may need to call createModel on all items before getting plot
     try {
       const { data } = await axios.post(`${baseurl}/plot`, {
@@ -36,9 +53,10 @@ export default class API {
         img_type: 'png',
       });
       this.plot = `data:image/png;base64,${data.figure}`;
+      return this.plot;
     } catch (error) {
       console.error(error);
-      // better error messaging here
+      return null;
     }
   }
 
@@ -49,16 +67,12 @@ export default class API {
    * @param {String} name model name
    */
   createModel = async (model, name) => {
-    const params = {};
-    Object.values(model).forEach((value) => {
-      Object.assign(params, value);
-    });
     try {
       await axios.post(`${baseurl}/create`, {
-        params,
+        params: this.flatten(model),
         label: name,
       });
-      await Promise.all([this.setModel(model, name), this.createPlot()]);
+      await Promise.all([this.setModel(name, model), this.createPlot()]);
     } catch (error) {
       console.error(error);
       // better error messaging here
@@ -68,12 +82,15 @@ export default class API {
   /**
    * Updates a model
    * @param {Object} model model to update
-   * @param {String} label label to update model
+   * @param {String} name label to update model
    */
-  updateModel = async (model, name) => {
+  updateModel = async (name, model) => {
     try {
-      /* some api call here */
-      await Promise.all([this.setModel(model, name), this.createPlot()]);
+      await axios.post(`${baseurl}/update`, {
+        params: this.flatten(model),
+        model_name: name,
+      });
+      await Promise.all([this.setModel(name, model), this.createPlot()]);
     } catch (error) {
       console.error(error);
       // better error handling here, some vue event?
@@ -81,16 +98,20 @@ export default class API {
   }
 
   /**
-   *
-   * @param {*} model
-   * @param {*} name
+   * clones a model
+   * @param {String} oldName
+   * @param {String} newName
    */
-  cloneModel = async (model, name) => {
+  cloneModel = async (oldName, newName) => {
     try {
-      // unknown api call somewhere,
-      // name may be old name for api call
-      // use getModel to create the cloned model
-      await Promise.all([this.setModel(model, name), this.createPlot()]);
+      await axios.post(`${baseurl}/clone`, {
+        model_name: oldName,
+        new_model_name: newName,
+      });
+      console.time('test');
+      const model = await this.getModel(oldName);
+      console.timeEnd('test');
+      await Promise.all([this.setModel(newName, model), this.createPlot()]);
     } catch (error) {
       console.error(error);
     }
@@ -98,29 +119,44 @@ export default class API {
 
   /**
    * Gets (clones) a model at label, keeps function pure.
-   * @param {String} label
+   * @param {String} name the name of the model
    * @returns {Object} A copy of the target model, or null
    */
-  getModel = (name) => clonedeep(this.models[name])
+  getModel = async (name) => clonedeep(await this.models.get(name));
 
   /**
-   * gets all keys
-   * @returns {Array<String>} keys
+   * Sets a model at name
+   * @param {String} name the name of the model
+   * @param {Object} model the model to set
    */
-  getKeys = () => this.keys
+  setModel = async (name, model) => {
+    try {
+      await set(name, model);
+      this.models.set(name, model);
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   /**
-   * Sets a model at label
-   * @param {Object} model the model object to set
+   * Gets all keys
+   * @returns {MapIterator} list of keys
+   */
+  getKeys = () => this?.models?.keys();
+
+  /**
+   * deletes a model
    * @param {String} name the name to set the model
    */
-  setModel = async (model, name) => {
-    // puts model inside idb after successful api call
-    await this.db.put(name, {
-      name,
-      model,
-    });
-    this.models[name] = model;
-    this.keys = this.db.keys();
+  deleteModel = async (name) => {
+    try {
+      await axios.post(`${baseurl}/delete`, {
+        model_name: name,
+      });
+      await del(name);
+      this.models.delete(name);
+    } catch (error) {
+      console.error(error);
+    }
   }
 }
