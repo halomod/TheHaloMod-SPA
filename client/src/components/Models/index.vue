@@ -22,11 +22,20 @@
         />
       </md-list>
     </md-toolbar>
+    <div v-if="loadingNewModel"
+      style="display: grid; height: 100%">
+      <md-progress-spinner
+        :md-diameter="100"
+        :md-stroke="10"
+        md-mode="indeterminate"
+        style="margin: auto;"/>
+    </div>
     <md-dialog :md-active.sync="showDialog">
       <md-dialog-title>New Model</md-dialog-title>
       <Create
         :params="currentModelParams"
         :model_metadata="currentModelMetaData"
+        @update-metadata="updateModelMetaData"
       />
 
       <md-dialog-actions>
@@ -93,6 +102,9 @@ export default {
     },
     updateModelNames() {
       this.modelNames = this.$store.getModelNames();
+    },
+    updateModelMetaData(newModelMetaData) {
+      this.currentModelMetaData = newModelMetaData;
     },
   },
 };

@@ -22,7 +22,8 @@
           @toggle-highlight="(bool) => toggleHighlight(bool, form, index)">
           <component v-if="form.isMeta"
             :is="form.component"
-            v-model="model_metadata"
+            :parent_model="model_metadata"
+            @onChange="updateModelMetaData"
           />
           <component v-else
             v-bind="form.props"
@@ -203,6 +204,9 @@ export default {
       const f = form;
       f.highlight = true;
       window.history.replaceState({}, '', `${prefix}#${form.props ? form.props.id : form.component.id}`);
+    },
+    updateModelMetaData(updatedMetaData) {
+      this.$emit('update-metadata', updatedMetaData);
     },
   },
   created() {
