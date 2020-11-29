@@ -22,7 +22,7 @@
         />
       </md-list>
     </md-toolbar>
-    <div v-if="loadingNewModel"
+    <div v-if="loadingModel"
       style="display: grid; height: 100%">
       <md-progress-spinner
         :md-diameter="100"
@@ -52,12 +52,18 @@ import INITIAL_STATE from '@/constants/initial_state.json';
 import clonedeep from 'lodash.clonedeep';
 import Model from './Model';
 
+const OPERATIONS = {
+  edit: 'edit',
+  create: 'create',
+};
+
 export default {
   name: 'Models',
   data() {
     return {
       showDialog: false,
-      loadingNewModel: false,
+      loadingModel: false,
+      currentOperation: OPERATIONS.create,
       /**
        * Starts out as new model params. But when a model is selected, this
        * changes.
@@ -67,6 +73,11 @@ export default {
         model_name: 'Model',
         fig_type: 'dndm',
       },
+      /**
+       * Used to determine what the model's name used to be if the name is
+       * updated.
+       */
+      currentModelStoredName: 'Model',
       modelNames: this.$store.getModelNames(),
     };
   },
@@ -79,14 +90,23 @@ export default {
       console.log('Restart was clicked');
     },
     handleNewModelClick() {
+      this.currentOperation = OPERATIONS.create;
       this.showDialog = true;
     },
     async handleSaveClick() {
-      const modelName = this.currentModelMetaData.model_name;
       this.showDialog = false;
-      this.loadingNewModel = true;
-      await this.$store.createModel(this.currentModelParams, modelName);
-      this.loadingNewModel = false;
+      this.loadingModel = true;
+
+      const modelName = this.currentModelMetaData.model_name;
+      if (this.currentOperation === OPERATIONS.edit) {
+        // Put in logic here for chaning the name of the model once it is clear
+        // how that is done with the store.
+        await this.$store.updateModel(this.currentModelParams, this.currentModelStoredName);
+      } else if (this.currentOperation === OPERATIONS.create) {
+        await this.$store.createModel(this.currentModelParams, modelName);
+      }
+
+      this.loadingModel = false;
       this.updateModelNames();
     },
     async handleDeleteClick(modelName) {
@@ -94,8 +114,15 @@ export default {
       console.log('Model successfully deleted');
       this.updateModelNames();
     },
-    handleEditClick(modelName) {
-      console.log(modelName);
+    async handleEditClick(modelName) {
+      this.loadingModel = true;
+      this.currentModelParams = await this.$store.getModel(modelName);
+      console.log(this.currentModelParams);
+      this.currentModelMetaData.model_name = modelName;
+      this.currentModelStoredName = modelName;
+      this.currentOperation = OPERATIONS.edit;
+      this.loadingModel = false;
+      this.showDialog = true;
     },
     handleCopyClick(modelName) {
       console.log(modelName);
