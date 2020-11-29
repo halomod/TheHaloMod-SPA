@@ -12,7 +12,7 @@ export default {
   data: () => ({}),
   async created() {
     try {
-      // console.log(await this.$store.getKeys());
+      console.log(await this.$store.getKeys());
     } catch (e) {
       console.log(e);
     }

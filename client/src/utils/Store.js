@@ -12,7 +12,7 @@ axios.defaults.withCredentials = true;
 export default class API {
   constructor() {
     this.plot = '';
-    this.init();
+    this.models = new Map();
   }
 
   /**
@@ -20,7 +20,6 @@ export default class API {
    */
   init = async () => {
     const k = await keys();
-    this.models = new Map();
     k.forEach((key) => {
       this.models.set(key, get(key));
     });
@@ -59,6 +58,12 @@ export default class API {
       return null;
     }
   }
+
+  /**
+   * gets the plot
+   * @returns {String} plot base64 string
+   */
+  getPlot = () => this.plot;
 
   /**
    * Sends model data to server to create Tracer Halo Model Object
@@ -122,7 +127,7 @@ export default class API {
    * @param {String} name the name of the model
    * @returns {Object} A copy of the target model, or null
    */
-  getModel = async (name) => clonedeep(await this.models.get(name));
+  getModel = async (name) => clonedeep(await this?.models?.get(name));
 
   /**
    * Sets a model at name
@@ -132,7 +137,9 @@ export default class API {
   setModel = async (name, model) => {
     try {
       await set(name, model);
-      this.models.set(name, model);
+      /* eslint-disable */
+      this.models?.set(name, model);
+      /* eslint-enable */
     } catch (error) {
       console.error(error);
     }
@@ -154,7 +161,9 @@ export default class API {
         model_name: name,
       });
       await del(name);
-      this.models.delete(name);
+      /* eslint-disable */
+      this.models?.delete(name);
+      /* eslint-enable */
     } catch (error) {
       console.error(error);
     }

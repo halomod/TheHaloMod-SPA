@@ -142,10 +142,10 @@ export default {
           component: CosmologyForm,
           model: 'cosmo',
         },
-        // {
-        //   component: HaloModelForm,
-        //   model: 'halo_model',
-        // },
+        {
+          component: HaloModelForm,
+          model: 'halo_model',
+        },
         {
           component: GrowthForm,
           model: 'growth',
