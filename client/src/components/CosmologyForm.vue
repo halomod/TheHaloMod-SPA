@@ -90,7 +90,7 @@ export default {
        */
       allCosmoData: JSON.parse(JSON.stringify(BACKEND_CONSTANTS.cosmo_params)),
       cosmologyChoices: Object.keys(BACKEND_CONSTANTS.cosmo_params),
-      cosmologyChoice: 'Planck13',
+      cosmologyChoice: this.cosmoData.cosmo_model,
     };
   },
   components: {

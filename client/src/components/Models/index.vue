@@ -126,12 +126,12 @@ export default {
     },
     async handleEditClick(modelName) {
       this.loadingModel = true;
+      this.showDialog = true;
       this.currentModelParams = await this.$store.getModel(modelName);
       this.currentModelMetaData.model_name = modelName;
       this.currentModelStoredName = modelName;
       this.currentOperation = OPERATIONS.edit;
       this.loadingModel = false;
-      this.showDialog = true;
     },
     handleCopyClick(modelName) {
       console.log(modelName);
