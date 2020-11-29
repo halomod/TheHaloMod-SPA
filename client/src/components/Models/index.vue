@@ -16,6 +16,9 @@
           v-for="modelName in modelNames"
           :key="modelName"
           :name="modelName"
+          @delete-click="handleDeleteClick"
+          @edit-click="handleEditClick"
+          @copy-click="handleCopyClick"
         />
       </md-list>
     </md-toolbar>
@@ -55,16 +58,12 @@ export default {
         model_name: 'Model',
         fig_type: 'dndm',
       },
+      modelNames: this.$store.getModelNames(),
     };
   },
   components: {
     Model,
     Create,
-  },
-  computed: {
-    modelNames() {
-      return this.$store.getModelNames();
-    },
   },
   methods: {
     handleRestartClick() {
@@ -79,6 +78,21 @@ export default {
       this.loadingNewModel = true;
       await this.$store.createModel(this.currentModelParams, modelName);
       this.loadingNewModel = false;
+      this.updateModelNames();
+    },
+    async handleDeleteClick(modelName) {
+      await this.$store.deleteModel(modelName);
+      console.log('Model successfully deleted');
+      this.updateModelNames();
+    },
+    handleEditClick(modelName) {
+      console.log(modelName);
+    },
+    handleCopyClick(modelName) {
+      console.log(modelName);
+    },
+    updateModelNames() {
+      this.modelNames = this.$store.getModelNames();
     },
   },
 };
