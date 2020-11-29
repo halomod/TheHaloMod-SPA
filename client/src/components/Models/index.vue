@@ -13,9 +13,9 @@
       </div>
       <md-list class="model-list">
         <Model
-          v-for="model in models"
-          :key="model"
-          :name="test"
+          v-for="modelName in modelNames"
+          :key="modelName"
+          :name="modelName"
         />
       </md-list>
     </md-toolbar>
@@ -62,13 +62,8 @@ export default {
     Create,
   },
   computed: {
-    /**
-     * A read-only set of models pulled in from the store.
-     */
-    models() {
-      const { models } = this.$store.models;
-      console.log(models);
-      return models;
+    modelNames() {
+      return this.$store.getModelNames();
     },
   },
   methods: {
