@@ -14,7 +14,7 @@
       </md-list>
     </md-app-drawer>
     <md-app-content>
-      <submit-button :model="params" :meta="model_metadata"/>
+
       <div v-for="(form, index) in forms" :key="index">
         <FormWrapper
           :name="form.props ? form.props.title : form.component.title"
@@ -43,7 +43,6 @@ import BiasForm from '@/components/BiasForm.vue';
 import HMFForm from '@/components/HMFForm.vue';
 import HODForm from '@/components/HODForm.vue';
 import Profile from '@/components/Profile.vue';
-import SubmitButton from '@/components/SubmitButton.vue';
 import ModelMetadataForm from '@/components/ModelMetadataForm.vue';
 import CosmologyForm from '@/components/CosmologyForm.vue';
 import MassDefinitionForm from '@/components/MassDefinitionForm.vue';
@@ -63,7 +62,6 @@ export default {
     Profile,
     MassDefinitionForm,
     GrowthForm,
-    SubmitButton,
     HaloModelForm,
     FilterForm,
     TransferForm,
