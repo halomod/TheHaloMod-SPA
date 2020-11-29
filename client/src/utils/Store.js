@@ -29,7 +29,7 @@ export default class API {
     });
     await Promise.all(models);
 
-    this.state.models = Object.fromEntries(map);
+    this.state.models = Object.fromEntries(models);
   }
 
   /**
