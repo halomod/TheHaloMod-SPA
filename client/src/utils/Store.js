@@ -11,8 +11,10 @@ import {
 axios.defaults.withCredentials = true;
 export default class API {
   constructor() {
-    this.plot = '';
-    this.models = new Map();
+    this.state = {
+      plot: '',
+      models: {},
+    };
   }
 
   /**
@@ -20,10 +22,13 @@ export default class API {
    */
   init = async () => {
     const k = await keys();
+    const models = new Map();
     k.forEach((key) => {
-      this.models.set(key, get(key));
+      const obj = get(key);
+      models.set(key, obj);
+      this.state.models[key] = obj;
     });
-    await Promise.all(this.models);
+    await Promise.all(models);
   }
 
   /**
@@ -51,8 +56,8 @@ export default class API {
         fig_type,
         img_type: 'png',
       });
-      this.plot = `data:image/png;base64,${data.figure}`;
-      return this.plot;
+      this.state.plot = `data:image/png;base64,${data.figure}`;
+      return this.state.plot;
     } catch (error) {
       console.error(error);
       return null;
@@ -113,9 +118,7 @@ export default class API {
         model_name: oldName,
         new_model_name: newName,
       });
-      console.time('test');
       const model = await this.getModel(oldName);
-      console.timeEnd('test');
       await Promise.all([this.setModel(newName, model), this.createPlot()]);
     } catch (error) {
       console.error(error);
@@ -127,7 +130,7 @@ export default class API {
    * @param {String} name the name of the model
    * @returns {Object} A copy of the target model, or null
    */
-  getModel = async (name) => clonedeep(await this?.models?.get(name));
+  getModel = async (name) => clonedeep(await this?.state.models[name]);
 
   /**
    * Sets a model at name
@@ -137,9 +140,7 @@ export default class API {
   setModel = async (name, model) => {
     try {
       await set(name, model);
-      /* eslint-disable */
-      this.models?.set(name, model);
-      /* eslint-enable */
+      this.state.models[name] = model;
     } catch (error) {
       console.error(error);
     }
@@ -149,7 +150,7 @@ export default class API {
    * Gets all keys
    * @returns {MapIterator} list of keys
    */
-  getKeys = () => this?.models?.keys();
+  getKeys = () => this?.state.models.keys();
 
   /**
    * deletes a model
@@ -162,7 +163,7 @@ export default class API {
       });
       await del(name);
       /* eslint-disable */
-      this.models?.delete(name);
+      delete this?.state.models[name];
       /* eslint-enable */
     } catch (error) {
       console.error(error);
