@@ -15,17 +15,20 @@
         <Model
           v-for="model in models"
           :key="model"
-          :name="model"
+          :name="test"
         />
       </md-list>
     </md-toolbar>
     <md-dialog :md-active.sync="showDialog">
-      <md-dialog-title>Preferences</md-dialog-title>
-      <Create/>
+      <md-dialog-title>New Model</md-dialog-title>
+      <Create
+        :params="currentModelParams"
+        :model_metadata="currentModelMetaData"
+      />
 
       <md-dialog-actions>
         <md-button class="md-primary" @click="showDialog = false">Close</md-button>
-        <md-button class="md-primary" @click="showDialog = false">Save</md-button>
+        <md-button class="md-primary" @click="handleSaveClick">Save</md-button>
       </md-dialog-actions>
     </md-dialog>
   </div>
@@ -33,6 +36,8 @@
 
 <script>
 import Create from '@/views/Create';
+import INITIAL_STATE from '@/constants/initial_state.json';
+import clonedeep from 'lodash.clonedeep';
 import Model from './Model';
 
 export default {
@@ -40,6 +45,15 @@ export default {
   data() {
     return {
       showDialog: false,
+      /**
+       * Starts out as new model params. But when a model is selected, this
+       * changes.
+       */
+      currentModelParams: clonedeep(INITIAL_STATE),
+      currentModelMetaData: {
+        model_name: 'Model',
+        fig_type: 'dndm',
+      },
     };
   },
   components: {
@@ -47,8 +61,12 @@ export default {
     Create,
   },
   computed: {
+    /**
+     * A read-only set of models pulled in from the store.
+     */
     models() {
-      const { models } = this.$store;
+      const { models } = this.$store.models;
+      console.log(models);
       return models;
     },
   },
@@ -58,6 +76,12 @@ export default {
     },
     handleNewModelClick() {
       this.showDialog = true;
+    },
+    async handleSaveClick() {
+      const modelName = this.currentModelMetaData.model_name;
+      this.showDialog = false;
+      await this.$store.createModel(this.currentModelParams, modelName);
+      this.$forceUpdate();
     },
   },
 };
