@@ -2,11 +2,13 @@
   <div class="md-layout md-gutter md-alignment-top-space-around home">
     <div class="md-layout-item md-small-size-100">
       <Models
-        :models="testModels"
+        @update-plot="updatePlot"
       />
     </div>
     <div class="md-layout-item md-small-size-100 graph">
-      <Graph/>
+      <Graph
+        :image="image"
+      />
     </div>
   </div>
 </template>
@@ -19,25 +21,20 @@ export default {
   name: 'Home',
   data() {
     return {
-      testModels: {
-        model1: {
-          id: 'something',
-          name: 'Test name. This is a really long name wheeeeeeeeee. Maybe a little longer',
-        },
-        model2: {
-          id: 'lahweth',
-          name: 'Test stuff',
-        },
-        model3: {
-          id: '92179329h32',
-          name: 'Test thing',
-        },
-      },
+      image: null,
     };
   },
   components: {
     Models,
     Graph,
+  },
+  created() {
+    this.updatePlot('dndm');
+  },
+  methods: {
+    async updatePlot(plotType) {
+      this.image = await this.$store.createPlot(plotType);
+    },
   },
 };
 

@@ -7,11 +7,14 @@
         </div>
 
         <div class="md-toolbar-section-end">
+          <!-- At this moment, restarting causes some inconsistencies between
+          the state held on the server and the state in the browser.
           <md-button @click="handleRestartClick" class="md-accent">Restart</md-button>
+          -->
           <md-button @click="handleNewModelClick" class="md-primary">New Model</md-button>
         </div>
       </div>
-      <md-list class="model-list">
+      <md-list v-if="modelNames.length !== 0" class="model-list">
         <Model
           v-for="modelName in modelNames"
           :key="modelName"
@@ -21,6 +24,7 @@
           @copy-click="handleCopyClick"
         />
       </md-list>
+      <p v-else>No models created yet. Please click "New Model"</p>
     </md-toolbar>
     <div v-if="loadingModel"
       style="display: grid; height: 100%">
@@ -88,8 +92,14 @@ export default {
     Create,
   },
   methods: {
-    handleRestartClick() {
-      console.log('Restart was clicked');
+    async handleRestartClick() {
+      if (this.modelNames.length !== 0) {
+        this.loadingModel = true;
+        await Promise.all(this.modelNames.map((modelName) => this.$store.deleteModel(modelName)));
+        this.updateModelNames();
+        await this.updatePlot();
+        this.loadingModel = false;
+      }
     },
     handleNewModelClick() {
       this.currentOperation = OPERATIONS.create;
@@ -116,13 +126,14 @@ export default {
         await this.$store.createModel(this.currentModelParams, modelName);
       }
 
+      await this.updatePlot();
       this.loadingModel = false;
       this.updateModelNames();
     },
     async handleDeleteClick(modelName) {
       await this.$store.deleteModel(modelName);
-      console.log('Model successfully deleted');
       this.updateModelNames();
+      await this.updatePlot();
     },
     async handleEditClick(modelName) {
       this.loadingModel = true;
@@ -134,8 +145,11 @@ export default {
       this.showDialog = true;
     },
     async handleCopyClick(modelName) {
+      this.loadingModel = true;
       await this.$store.cloneModel(modelName, `${modelName} copy`);
+      await this.updatePlot();
       this.updateModelNames();
+      this.loadingModel = false;
     },
     updateModelNames() {
       this.modelNames = this.$store.getModelNames();
@@ -145,6 +159,9 @@ export default {
     },
     updateParams(newParams) {
       this.currentModelParams = newParams;
+    },
+    updatePlot() {
+      this.$emit('update-plot', this.currentModelMetaData.fig_type);
     },
     // DELETE ME
     printParams() {
