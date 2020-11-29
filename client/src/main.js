@@ -1,13 +1,16 @@
 import Vue from 'vue';
-import axios from 'axios';
 import App from './App.vue';
 import router from './router';
+import Store from './utils/Store';
 
-Vue.config.productionTip = false;
-axios.defaults.withCredentials = true;
-Vue.prototype.$http = axios;
+(async () => {
+  const store = new Store();
+  await store.init();
+  Vue.config.productionTip = false;
+  Vue.prototype.$store = store;
 
-new Vue({
-  router,
-  render: (h) => h(App),
-}).$mount('#app');
+  new Vue({
+    router,
+    render: (h) => h(App),
+  }).$mount('#app');
+})();

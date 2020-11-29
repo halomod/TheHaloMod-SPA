@@ -17,15 +17,13 @@
       v-if="!showDialog"
       style="position: fixed; bottom: 15px; right: 15px; z-index: 10;"
       class="md-primary md-raised"
-      @click="createObject">
+      @click="createModel">
       Calculate
     </md-button>
   </div>
 </template>
 
 <script>
-import baseurl from '../env';
-
 export default {
   name: 'SubmitButton',
   props: ['model', 'meta'],
@@ -47,27 +45,12 @@ export default {
     },
   },
   methods: {
-    createObject() {
-      const params = this.payload;
-      /* creates model on server */
-      this.$http.post(`${baseurl}/create`, {
-        params: { ...params },
-        label: this.meta.model_name,
-      }).then(() => {
-        this.getFigure();
-      });
-    },
-    getFigure() {
+    async createModel() {
       this.image = null;
       this.showDialog = true;
-      /* gets figure from server */
-      this.$http.post(`${baseurl}/plot`, {
-        fig_type: this.meta.fig_type,
-        img_type: 'png',
-      }).then((response) => {
-        /* saves image src as string */
-        this.image = `data:image/png;base64,${response.data.figure}`;
-      });
+      await this.$store.createModel(this.model, this.meta.model_name);
+      // should redirect to home. Image should be requested when at home component
+      this.image = await this.$store.createPlot(this.meta.fig_type);
     },
   },
 };
