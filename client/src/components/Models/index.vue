@@ -11,7 +11,7 @@
           <md-button class="md-primary">New Model</md-button>
         </div>
       </div>
-      <md-list class="full-width">
+      <md-list class="model-list">
         <Model
           v-for="model in models"
           :key="model.id"
@@ -44,7 +44,8 @@ export default {
 </script>
 
 <style>
-  .full-width {
+  .model-list {
     width: 100%;
+    margin-bottom: 16px;
   }
 </style>
