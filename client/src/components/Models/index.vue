@@ -7,38 +7,58 @@
         </div>
 
         <div class="md-toolbar-section-end">
-          <md-button class="md-accent">Restart</md-button>
-          <md-button class="md-primary">New Model</md-button>
+          <md-button @click="handleRestartClick" class="md-accent">Restart</md-button>
+          <md-button @click="handleNewModelClick" class="md-primary">New Model</md-button>
         </div>
       </div>
       <md-list class="model-list">
         <Model
           v-for="model in models"
-          :key="model.id"
-          :name="model.name"
+          :key="model"
+          :name="model"
         />
       </md-list>
     </md-toolbar>
+    <md-dialog :md-active.sync="showDialog">
+      <md-dialog-title>Preferences</md-dialog-title>
+      <Create/>
+
+      <md-dialog-actions>
+        <md-button class="md-primary" @click="showDialog = false">Close</md-button>
+        <md-button class="md-primary" @click="showDialog = false">Save</md-button>
+      </md-dialog-actions>
+    </md-dialog>
   </div>
 </template>
 
 <script>
+import Create from '@/views/Create';
 import Model from './Model';
 
 export default {
   name: 'Models',
-  props: {
-    models: {
-      type: Object,
-    },
-  },
   data() {
     return {
-      stuff: 'something',
+      showDialog: false,
     };
   },
   components: {
     Model,
+    Create,
+  },
+  computed: {
+    models() {
+      const { models } = this.$store;
+      return models;
+    },
+  },
+  methods: {
+    handleRestartClick() {
+      console.log('Restart was clicked');
+    },
+    handleNewModelClick() {
+      this.showDialog = true;
+    },
   },
 };
 </script>

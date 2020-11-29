@@ -17,7 +17,6 @@ import Graph from '../components/Graph.vue';
 
 export default {
   name: 'Home',
-  // TODO: Make the data at the app level and learn how to pass this to routes
   data() {
     return {
       testModels: {

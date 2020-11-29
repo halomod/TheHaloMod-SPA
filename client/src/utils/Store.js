@@ -9,6 +9,11 @@ import {
 } from 'idb-keyval';
 
 axios.defaults.withCredentials = true;
+
+/**
+ * This store is initialized at the beginning of the application startup. It
+ * should be able to be accessed with `this.$store` on any component.
+ */
 export default class API {
   constructor() {
     this.plot = '';
@@ -98,7 +103,7 @@ export default class API {
   }
 
   /**
-   * clones a model
+   * Clones a model
    * @param {String} oldName
    * @param {String} newName
    */
@@ -120,7 +125,7 @@ export default class API {
   /**
    * Gets (clones) a model at label, keeps function pure.
    * @param {String} name the name of the model
-   * @returns {Object} A copy of the target model, or null
+   * @returns {Object | null} A copy of the target model, or null
    */
   getModel = async (name) => clonedeep(await this.models.get(name));
 
