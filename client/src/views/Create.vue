@@ -52,6 +52,8 @@ import CosmologyForm from '@/components/CosmologyForm.vue';
 import MassDefinitionForm from '@/components/MassDefinitionForm.vue';
 import GrowthForm from '@/components/GrowthForm.vue';
 import HaloModelForm from '@/components/HaloModelForm.vue';
+import FilterForm from '@/components/FilterForm.vue';
+import TransferForm from '@/components/TransferForm.vue';
 
 export default {
   name: 'Create',
@@ -66,6 +68,8 @@ export default {
     GrowthForm,
     SubmitButton,
     HaloModelForm,
+    FilterForm,
+    TransferForm,
   },
   data: () => ({
     params: null,
@@ -149,6 +153,14 @@ export default {
         {
           component: GrowthForm,
           model: 'growth',
+        },
+        {
+          component: FilterForm,
+          model: 'filter',
+        },
+        {
+          component: TransferForm,
+          model: 'transfer',
         },
       ];
       forms.forEach((item) => {

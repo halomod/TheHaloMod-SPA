@@ -16,32 +16,28 @@
         </md-option>
       </md-select>
     </md-field>
-
-    <div v-if="filterParams[filterModel] !== undefined">
-      <InputField
-        v-for="(input, inputName) in filterParams[filterModel]"
-        :labelHtml="'<label>' + inputName + '</label>'"
+    <div v-if="Object.keys(allFilterData[filterChoice]).length !== 0">
+      <DoubleField
+        v-for="(input, inputName) in filterData.filter_params"
         :key="inputName"
-        :step="1"
-        :currentValue="filterParams[filterModel][inputName]"
-        v-on:updateCurrentValue="createSetCurrentValueFunc(filterModel, inputName)($event)"
+        :param="inputName"
+        :value="input"
+        v-on:input="createSetParamValueFunc(filterChoice, inputName)($event)"
       />
     </div>
-
-    <InputField
-      :labelHtml="'<label>&#948;<sub>c</sub></label>'"
-      :step=".1"
+    <DoubleField
+      :htmlParam="'&#948;<sub>c</sub>'"
       :min="1"
       :max="3"
-      :currentValue="deltaC"
-      v-on:updateCurrentValue="setDeltaC($event)"
+      :value="filterData.delta_c"
+      v-on:input="createSetValueFunc('delta_c')($event)"
     />
-
   </div>
 </template>
 
 <script>
-import InputField from './InputField.vue';
+import BACKEND_CONSTANTS from '../constants/backend_constants';
+import DoubleField from './DoubleField.vue';
 
 const filterChoices = {
   TopHat: 'Top-hat',
@@ -53,38 +49,66 @@ export default {
   name: 'FilterForm',
   title: 'Filter',
   id: 'filter',
-  props: {
-    deltaC: Number,
-    setDeltaC: Function,
-    filterModel: String,
-    setFilterModel: Function,
-    filterParams: Object,
-    setFilterParams: Function,
+  model: {
+    prop: 'filterData',
+    event: 'updateFilter',
   },
-  data: () => ({
-    filterChoices,
-    filterChoice: '',
-  }),
+  props: {
+    filterData: {
+      type: Object,
+      required: true,
+    },
+  },
+  data() {
+    return {
+      allFilterData: BACKEND_CONSTANTS.Filter_params,
+      filterChoices,
+      filterChoice: BACKEND_CONSTANTS.filter_model,
+    };
+  },
   components: {
-    InputField,
+    DoubleField,
   },
   methods: {
-    createSetCurrentValueFunc(filterType, varName) {
+    createSetParamValueFunc(filterType, varName) {
       return (newValue) => {
-        // Set the new value temporarily
-        this.filterParams[filterType][varName] = newValue;
-
-        // Set the value for good.
-        this.setFilterParams(this.filterParams);
+        const newFilterObj = {
+          ...this.filterData,
+          filter_params: {
+            ...this.filterData.filter_params,
+          },
+        };
+        newFilterObj.filter_params[varName] = newValue;
+        this.allFilterData[filterType][varName] = newValue;
+        this.$emit('updateFilter', newFilterObj);
+      };
+    },
+    /**
+     * Sets a value at the top level of filterData.
+     */
+    createSetValueFunc(varName) {
+      return (newValue) => {
+        const newFilterObj = {
+          ...this.filterData,
+        };
+        newFilterObj[varName] = newValue;
+        this.$emit('updateFilter', newFilterObj);
       };
     },
   },
-  mounted() {
-    this.filterChoice = this.filterModel;
-  },
   watch: {
-    filterChoice() {
-      this.setFilterModel(this.filterChoice);
+    filterChoice(newChoice) {
+      const newFilterObj = {
+        ...this.filterData,
+      };
+      // If the new choice doesn't have extra params
+      if (Object.keys(this.allFilterData[newChoice]).length === 0) {
+        delete newFilterObj.filter_params;
+      } else {
+        newFilterObj.filter_params = this.allFilterData[newChoice];
+      }
+      newFilterObj.filter_model = newChoice;
+      this.$emit('updateFilter', newFilterObj);
     },
   },
 };
