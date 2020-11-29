@@ -45,6 +45,7 @@ export default {
   data() {
     return {
       showDialog: false,
+      loadingNewModel: false,
       /**
        * Starts out as new model params. But when a model is selected, this
        * changes.
@@ -80,8 +81,9 @@ export default {
     async handleSaveClick() {
       const modelName = this.currentModelMetaData.model_name;
       this.showDialog = false;
+      this.loadingNewModel = true;
       await this.$store.createModel(this.currentModelParams, modelName);
-      this.$forceUpdate();
+      this.loadingNewModel = false;
     },
   },
 };

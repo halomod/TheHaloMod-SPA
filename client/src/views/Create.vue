@@ -204,11 +204,6 @@ export default {
       f.highlight = true;
       window.history.replaceState({}, '', `${prefix}#${form.props ? form.props.id : form.component.id}`);
     },
-    createParamsSetFunction(keyName) {
-      return (newVal) => {
-        this.params[keyName] = newVal;
-      };
-    },
   },
   created() {
     this.createForms();
