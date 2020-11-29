@@ -26,9 +26,10 @@ export default class API {
     k.forEach((key) => {
       const obj = get(key);
       models.set(key, obj);
-      this.state.models[key] = obj;
     });
     await Promise.all(models);
+
+    this.state.models = Object.fromEntries(map);
   }
 
   /**
