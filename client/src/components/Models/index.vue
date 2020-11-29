@@ -99,9 +99,16 @@ export default {
 
       const modelName = this.currentModelMetaData.model_name;
       if (this.currentOperation === OPERATIONS.edit) {
-        // Put in logic here for chaning the name of the model once it is clear
-        // how that is done with the store.
-        await this.$store.updateModel(this.currentModelParams, this.currentModelStoredName);
+        if (this.currentModelMetaData.model_name !== this.currentModelStoredName) {
+          // Changing the name of the model, once there is logic built into the
+          // API with this functionality, this process can be changed to that.
+          const oldName = this.currentModelStoredName;
+          const newName = this.currentModelMetaData.model_name;
+          await this.$store.cloneModel(oldName, newName);
+          await this.$store.deleteModel(oldName);
+        } else {
+          await this.$store.updateModel(this.currentModelStoredName, this.currentModelParams);
+        }
       } else if (this.currentOperation === OPERATIONS.create) {
         await this.$store.createModel(this.currentModelParams, modelName);
       }
