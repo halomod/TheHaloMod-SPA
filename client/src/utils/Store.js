@@ -153,10 +153,11 @@ export default class API {
   }
 
   /**
-   * Gets all keys
-   * @returns {MapIterator} list of keys
+   * Gets all of the model names.
+   *
+   * @returns {string[]} array of the model names
    */
-  getKeys = () => this?.state.models.keys();
+  getModelNames = () => Object.keys(this.state.models);
 
   /**
    * deletes a model
