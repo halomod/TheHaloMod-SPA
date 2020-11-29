@@ -1,11 +1,11 @@
 <template>
-  <div class="md-layout md-gutter md-alignment-top-center">
-    <div class="md-layout-item md-large-size-45 md-small-size-90">
+  <div class="md-layout md-gutter md-alignment-top-space-around home">
+    <div class="md-layout-item md-small-size-100">
       <Models
         :models="testModels"
       />
     </div>
-    <div class="md-layout-item md-large-size-45 md-small-size-90">
+    <div class="md-layout-item md-small-size-100 graph">
       <Graph/>
     </div>
   </div>
@@ -47,5 +47,12 @@ export default {
   .md-layout-item {
     margin-top: 16px;
     margin-bottom: 16px;
+  }
+  .graph {
+    flex-grow: 2;
+  }
+  .home {
+    margin-left: 16px;
+    margin-right: 16px;
   }
 </style>
