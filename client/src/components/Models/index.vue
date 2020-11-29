@@ -35,7 +35,11 @@
         style="margin: auto;"/>
     </div>
     <md-dialog :md-active.sync="showDialog">
-      <md-dialog-title>New Model</md-dialog-title>
+      <md-dialog-title>{{
+        currentOperation === OPERATIONS.create ?
+        'New Model' :
+        'Edit Model'
+      }}</md-dialog-title>
       <Create
         :params="currentModelParams"
         @update-params="updateParams"
@@ -70,6 +74,7 @@ export default {
       showDialog: false,
       loadingModel: false,
       currentOperation: OPERATIONS.create,
+      OPERATIONS,
       /**
        * Starts out as new model params. But when a model is selected, this
        * changes.
