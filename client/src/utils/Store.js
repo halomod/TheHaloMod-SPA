@@ -19,6 +19,7 @@ export default class API {
     this.state = {
       plot: '',
       models: {},
+      modelNames: [],
     };
   }
 
@@ -35,6 +36,8 @@ export default class API {
     await Promise.all(models);
 
     this.state.models = Object.fromEntries(models);
+    this.state.modelNames = this.getModelNames();
+    this.createPlot('dndm');
   }
 
   /**
@@ -147,6 +150,7 @@ export default class API {
     try {
       await set(name, model);
       this.state.models[name] = model;
+      this.state.modelNames = this.getModelNames();
     } catch (error) {
       console.error(error);
     }
@@ -171,6 +175,7 @@ export default class API {
       await del(name);
       /* eslint-disable */
       delete this?.state.models[name];
+      this.state.modelNames = this.getModelNames();
       /* eslint-enable */
     } catch (error) {
       console.error(error);

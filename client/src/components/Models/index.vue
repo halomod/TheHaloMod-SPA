@@ -14,9 +14,9 @@
           <md-button @click="handleNewModelClick" class="md-primary">New Model</md-button>
         </div>
       </div>
-      <md-list v-if="modelNames.length !== 0" class="model-list">
+      <md-list v-if="READ_ONLY.modelNames.length > 0" class="model-list">
         <Model
-          v-for="modelName in modelNames"
+          v-for="modelName in READ_ONLY.modelNames"
           :key="modelName"
           :name="modelName"
           @delete-click="handleDeleteClick"
@@ -89,7 +89,7 @@ export default {
        * updated.
        */
       currentModelStoredName: 'Model',
-      modelNames: this.$store.getModelNames(),
+      READ_ONLY: this.$store.state,
     };
   },
   components: {
@@ -101,8 +101,6 @@ export default {
       if (this.modelNames.length !== 0) {
         this.loadingModel = true;
         await Promise.all(this.modelNames.map((modelName) => this.$store.deleteModel(modelName)));
-        this.updateModelNames();
-        await this.updatePlot();
         this.loadingModel = false;
       }
     },
@@ -133,12 +131,9 @@ export default {
 
       await this.updatePlot();
       this.loadingModel = false;
-      this.updateModelNames();
     },
     async handleDeleteClick(modelName) {
       await this.$store.deleteModel(modelName);
-      this.updateModelNames();
-      await this.updatePlot();
     },
     async handleEditClick(modelName) {
       this.loadingModel = true;
@@ -152,21 +147,13 @@ export default {
     async handleCopyClick(modelName) {
       this.loadingModel = true;
       await this.$store.cloneModel(modelName, `${modelName} copy`);
-      await this.updatePlot();
-      this.updateModelNames();
       this.loadingModel = false;
-    },
-    updateModelNames() {
-      this.modelNames = this.$store.getModelNames();
     },
     updateModelMetaData(newModelMetaData) {
       this.currentModelMetaData = newModelMetaData;
     },
     updateParams(newParams) {
       this.currentModelParams = newParams;
-    },
-    updatePlot() {
-      this.$emit('update-plot', this.currentModelMetaData.fig_type);
     },
     // DELETE ME
     printParams() {
