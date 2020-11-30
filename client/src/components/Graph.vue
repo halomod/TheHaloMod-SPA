@@ -6,7 +6,7 @@
           <h3 class="md-title">Plot</h3>
         </div>
       </div>
-      <img v-if="image !== null" :src="image"/>
+      <img v-if="READ_ONLY.plot !== null" :src="READ_ONLY.plot"/>
       <p v-else>No graph has been generated yet</p>
     </md-toolbar>
   </div>
@@ -15,10 +15,10 @@
 <script>
 export default {
   name: 'Graph',
-  props: {
-    image: {
-      type: String,
-    },
+  data() {
+    return {
+      READ_ONLY: this.$store.state,
+    };
   },
 };
 </script>
