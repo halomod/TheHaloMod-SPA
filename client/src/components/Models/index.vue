@@ -128,8 +128,6 @@ export default {
       } else if (this.currentOperation === OPERATIONS.create) {
         await this.$store.createModel(this.currentModelParams, modelName);
       }
-
-      await this.updatePlot();
       this.loadingModel = false;
     },
     async handleDeleteClick(modelName) {
