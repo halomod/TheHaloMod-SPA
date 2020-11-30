@@ -14,7 +14,7 @@
       </md-list>
     </md-app-drawer>
     <md-app-content>
-      <submit-button :model="params" :meta="model_metadata"/>
+
       <div v-for="(form, index) in forms" :key="index">
         <FormWrapper
           :name="form.props ? form.props.title : form.component.title"
@@ -22,7 +22,8 @@
           @toggle-highlight="(bool) => toggleHighlight(bool, form, index)">
           <component v-if="form.isMeta"
             :is="form.component"
-            v-model="model_metadata"
+            :parent_model="model_metadata"
+            @onChange="updateModelMetaData"
           />
           <component v-else
             v-bind="form.props"
@@ -35,9 +36,6 @@
 </template>
 
 <script>
-// @ is an alias to /src
-import clonedeep from 'lodash.clonedeep';
-
 import FormWrapper from '@/components/FormWrapper.vue';
 import Concentration from '@/components/Concentration.vue';
 import HaloExclusion from '@/components/HaloExclusion.vue';
@@ -45,8 +43,6 @@ import BiasForm from '@/components/BiasForm.vue';
 import HMFForm from '@/components/HMFForm.vue';
 import HODForm from '@/components/HODForm.vue';
 import Profile from '@/components/Profile.vue';
-import INITIAL_STATE from '@/constants/initial_state.json';
-import SubmitButton from '@/components/SubmitButton.vue';
 import ModelMetadataForm from '@/components/ModelMetadataForm.vue';
 import CosmologyForm from '@/components/CosmologyForm.vue';
 import MassDefinitionForm from '@/components/MassDefinitionForm.vue';
@@ -66,18 +62,22 @@ export default {
     Profile,
     MassDefinitionForm,
     GrowthForm,
-    SubmitButton,
     HaloModelForm,
     FilterForm,
     TransferForm,
   },
-  data: () => ({
-    params: null,
-    forms: null,
-    model_metadata: {
-      model_name: 'Model',
-      fig_type: 'dndm',
+  props: {
+    params: {
+      type: Object,
+      required: true,
     },
+    model_metadata: {
+      type: Object,
+      required: true,
+    },
+  },
+  data: () => ({
+    forms: null,
   }),
   methods: {
     createForms() {
@@ -203,14 +203,11 @@ export default {
       f.highlight = true;
       window.history.replaceState({}, '', `${prefix}#${form.props ? form.props.id : form.component.id}`);
     },
-    createParamsSetFunction(keyName) {
-      return (newVal) => {
-        this.params[keyName] = newVal;
-      };
+    updateModelMetaData(updatedMetaData) {
+      this.$emit('update-metadata', updatedMetaData);
     },
   },
   created() {
-    this.params = clonedeep(INITIAL_STATE);
     this.createForms();
   },
 };

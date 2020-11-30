@@ -9,11 +9,17 @@ import {
 } from 'idb-keyval';
 
 axios.defaults.withCredentials = true;
+
+/**
+ * This store is initialized at the beginning of the application startup. It
+ * should be able to be accessed with `this.$store` on any component.
+ */
 export default class API {
   constructor() {
     this.state = {
       plot: '',
       models: {},
+      modelNames: [],
     };
   }
 
@@ -30,6 +36,8 @@ export default class API {
     await Promise.all(models);
 
     this.state.models = Object.fromEntries(models);
+    this.state.modelNames = this.getModelNames();
+    this.createPlot('dndm');
   }
 
   /**
@@ -109,7 +117,7 @@ export default class API {
   }
 
   /**
-   * clones a model
+   * Clones a model
    * @param {String} oldName
    * @param {String} newName
    */
@@ -129,7 +137,7 @@ export default class API {
   /**
    * Gets (clones) a model at label, keeps function pure.
    * @param {String} name the name of the model
-   * @returns {Object} A copy of the target model, or null
+   * @returns {Object | null} A copy of the target model, or null
    */
   getModel = async (name) => clonedeep(await this?.state.models[name]);
 
@@ -142,16 +150,18 @@ export default class API {
     try {
       await set(name, model);
       this.state.models[name] = model;
+      this.state.modelNames = this.getModelNames();
     } catch (error) {
       console.error(error);
     }
   }
 
   /**
-   * Gets all keys
-   * @returns {MapIterator} list of keys
+   * Gets all of the model names.
+   *
+   * @returns {string[]} array of the model names
    */
-  getKeys = () => this?.state.models.keys();
+  getModelNames = () => Object.keys(this.state.models);
 
   /**
    * deletes a model
@@ -165,7 +175,9 @@ export default class API {
       await del(name);
       /* eslint-disable */
       delete this?.state.models[name];
+      this.state.modelNames = this.getModelNames();
       /* eslint-enable */
+      await this.createPlot();
     } catch (error) {
       console.error(error);
     }

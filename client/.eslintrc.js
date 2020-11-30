@@ -18,6 +18,12 @@ module.exports = {
      * that use underscores for variable names are used.
      */
     camelcase: 'off',
+    /**
+     * Turned off because it doesn't allow importing a component from a folder
+     * where `index.vue` might exist. This is proper formatting though according
+     * to vue: https://vueschool.io/articles/vuejs-tutorials/structuring-vue-components/
+     */
+    'import/extensions': 'off'
   },
   overrides: [
     {
