@@ -18,6 +18,7 @@ import {
   MdDialog,
   MdProgress,
   MdCard,
+  MdTooltip,
 } from 'vue-material/dist/components';
 import VueObserveVisibility from 'vue-observe-visibility';
 import 'vue-material/dist/vue-material.min.css';
@@ -46,6 +47,7 @@ Vue.use(MdDialog);
 Vue.use(MdProgress);
 Vue.use(MdCard);
 Vue.use(SliderPlugin);
+Vue.use(MdTooltip);
 
 const routes = [
   {
