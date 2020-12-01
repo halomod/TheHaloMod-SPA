@@ -16,7 +16,37 @@
       </div>
       <div v-for="(input, inputName) in haloModelDefaultModel"
         :key="input.id" class="md-layout-item">
-        <InputField v-if="inputName === 'force_1halo_turnover'"
+        <div v-if="inputName === 'log_r_range'" >
+          <label style="font-size:12px;opacity:1;color:rgba(0,0,0,0.54)">
+            {{input.label}}</label>
+          <ejs-slider
+            style="width:300px;min-height:45px;padding-top:16px;"
+            :value="input.value"
+            :tooltip="{ showOn: 'Hover', isVisible: true }"
+            :min="input.min"
+            :max="input.max"
+            :step="input.step"
+            :ticks="{ placement: 'Before', largeStep: 1, smallStep: 0.5, showSmallTicks: true }"
+            :type="'Range'"
+            v-model="log_r_model"
+          />
+        </div>
+        <div v-else-if="inputName === 'log_k_range'">
+          <label style="font-size:12px;opacity:1;color:rgba(0,0,0,0.54)">
+            {{input.label}}</label>
+          <ejs-slider
+            style="width:300px;min-height:45px;padding-top:16px;"
+            :value="input.value"
+            :tooltip="{ showOn: 'Hover', isVisible: true }"
+            :min="input.min"
+            :max="input.max"
+            :step="input.step"
+            :ticks="{ placement: 'Before', largeStep: 1, smallStep: 0.5, showSmallTicks: true }"
+            :type="'Range'"
+            v-model="log_k_model"
+          />
+        </div>
+        <InputField v-else-if="inputName === 'force_1halo_turnover'"
           :key="inputName"
           :label="input.label"
           :step="input.step"
@@ -31,9 +61,8 @@
         />
         <double-field v-else
           :key="inputName"
-          :label="input.label"
-          :step="input.step"
-          :value="input.value"
+          :param="input.label"
+          :value='input.value'
           :min="input.min"
           :max="input.max"
           range=true
@@ -57,18 +86,11 @@ const haloModelChoices = {
 };
 
 const haloModelDefaultModel = {
-  rmin: {
-    label: 'Scale Min (log10)',
+  log_r_range: {
+    label: 'Scale (log10)',
     min: -3.0,
     max: 3.0,
-    value: -2,
-    step: 0.05,
-  },
-  rmax: {
-    label: 'Scale Max (log10)',
-    min: -3.0,
-    max: 3.0,
-    value: 2.1,
+    value: [-2.0, 2.1],
     step: 0.05,
   },
   rnum: {
@@ -76,20 +98,12 @@ const haloModelDefaultModel = {
     min: 5.0,
     max: 100,
     value: 5,
-    inputType: 'number',
   },
-  hm_logk_min: {
-    label: 'Wavenumber Min (log10)',
+  log_k_range: {
+    label: 'Wavenumber (log10)',
     min: -3.0,
-    max: 100.0,
-    value: -2,
-    step: 0.05,
-  },
-  hm_logk_max: {
-    label: 'Wavenumber Max (log10)',
-    min: -3.0,
-    max: 100.0,
-    value: 2,
+    max: 3.0,
+    value: [-2.0, 2.0],
     step: 0.05,
   },
   hm_dlog10k: {
@@ -97,7 +111,6 @@ const haloModelDefaultModel = {
     min: 0.01,
     max: 1.0,
     value: 0.05,
-    step: 0.01,
   },
   force_1halo_turnover: {
     label: 'Force 1-halo turnover?',
@@ -133,5 +146,35 @@ export default {
   updated() {
     this.$emit('onChange', this.model);
   },
+  computed: {
+    log_r_model: {
+      get() {
+        return [this.model.rmin, this.model.rmax];
+      },
+      set(newValue) {
+        const [one, two] = newValue;
+        this.model.rmin = one;
+        this.model.rmax = two;
+      },
+    },
+    log_k_model: {
+      get() {
+        return [this.model.hm_logk_min, this.model.hm_logk_max];
+      },
+      set(newValue) {
+        const [one, two] = newValue;
+        this.model.hm_logk_min = one;
+        this.model.hm_logk_max = two;
+      },
+    },
+  },
 };
 </script>
+
+<style scoped>
+  @import "../../node_modules/@syncfusion/ej2-base/styles/material.css";
+  @import "../../node_modules/@syncfusion/ej2-buttons/styles/material.css";
+  @import "../../node_modules/@syncfusion/ej2-popups/styles/material.css";
+  @import "../../node_modules/@syncfusion/ej2-inputs/styles/material.css";
+
+</style>
