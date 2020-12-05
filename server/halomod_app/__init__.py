@@ -55,7 +55,8 @@ def create_app(test_config=None):
         models[label] = utils.hmf_driver(**params)  # creates model from params
         session["models"] = pickle.dumps(models)  # writes updated model dict to session
 
-        return jsonify({"model_names": get_model_names()})  # returns new list of model names
+        # returns new list of model names
+        return jsonify({"model_names": get_model_names()})
 
     # This endpoint returns the names of all the models associated with the current
     # session
@@ -66,6 +67,16 @@ def create_app(test_config=None):
     def get_names():
         res = {"model_names": get_model_names()}
         return jsonify(res)  # returns list of model names
+
+    # This endpoint returns the details of all the different plot types that
+    # can be used to represent a halo model.
+    #
+    # expects: None
+    # outputs: KEYMAP as defined in `utils.py`
+    @app.route('/get_plot_types', methods=["GET"])
+    def get_plot_types():
+        res = utils.KEYMAP
+        return jsonify(res)  # returns full key map of plot types
 
     # This endpoint returns plot data required for front-end plotting from session data
     #
@@ -98,7 +109,8 @@ def create_app(test_config=None):
             models = {}
 
         # if model_names in json use those else use all
-        names = request_json["model_names"] if "model_names" in request_json else list(models.keys())
+        names = request_json["model_names"] if "model_names" in request_json else list(
+            models.keys())
 
         for name in names:
             model = models[name]  # gets model with label <name>
@@ -115,9 +127,11 @@ def create_app(test_config=None):
 
             res["plot_data"][name] = data  # put data in response object
 
-        res["plot_details"] = utils.KEYMAP[fig_type]  # put figure metadata into response
+        # put figure metadata into response
+        res["plot_details"] = utils.KEYMAP[fig_type]
 
-        session["models"] = pickle.dumps(models)  # save post-calculation models to session to take advantage of compute
+        # save post-calculation models to session to take advantage of compute
+        session["models"] = pickle.dumps(models)
 
         return jsonify(res)
 
