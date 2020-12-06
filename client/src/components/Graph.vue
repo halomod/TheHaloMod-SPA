@@ -59,6 +59,13 @@ export default {
 
     this.plotChoices = plotChoices;
   },
+  watch: {
+    plotChoice(newPlotChoice, oldPlotChoice) {
+      if (newPlotChoice !== null && newPlotChoice !== oldPlotChoice) {
+        this.$store.setPlotType(newPlotChoice);
+      }
+    },
+  },
 };
 </script>
 

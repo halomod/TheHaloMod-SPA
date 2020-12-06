@@ -20,6 +20,7 @@ export default class API {
       plot: '',
       models: {},
       modelNames: [],
+      plotType: 'dndm',
     };
   }
 
@@ -58,7 +59,7 @@ export default class API {
    * @param {String} fig_type, type of figure to be requested from server
    * @return {String} image data base64 string, or null if request fails
    */
-  createPlot = async (fig_type = 'dndm') => {
+  createPlot = async (fig_type = this.state.plotType) => {
     // may need to call createModel on all items before getting plot
     try {
       const { data } = await axios.post(`${baseurl}/plot`, {
@@ -180,6 +181,22 @@ export default class API {
       await this.createPlot();
     } catch (error) {
       console.error(error);
+    }
+  }
+
+  /**
+   * Sets the plot type for the plot, and generates a new plot if it is
+   * different.
+   *
+   * @param {string} newPlotType the identifier of the new plot type. For
+   * example: `dndm`.
+   */
+  setPlotType = async (newPlotType) => {
+    if (newPlotType !== this.state.plotType) {
+      this.state.plotType = newPlotType;
+      this.createPlot();
+    } else {
+      this.state.plotType = newPlotType;
     }
   }
 }
