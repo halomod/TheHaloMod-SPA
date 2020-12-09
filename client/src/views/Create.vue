@@ -22,8 +22,8 @@
           @toggle-highlight="(bool) => toggleHighlight(bool, form, index)">
           <component v-if="form.isMeta"
             :is="form.component"
-            :parent_model="model_metadata"
-            @onChange="updateModelMetaData"
+            :modelName="modelName"
+            @onChange="updateModelName"
           />
           <component v-else
             v-bind="form.props"
@@ -50,6 +50,10 @@ import GrowthForm from '@/components/GrowthForm.vue';
 import HaloModelForm from '@/components/HaloModelForm.vue';
 import FilterForm from '@/components/FilterForm.vue';
 import TransferForm from '@/components/TransferForm.vue';
+import Debug from 'debug';
+
+const debug = Debug('Create.vue');
+debug.enabled = true;
 
 export default {
   name: 'Create',
@@ -71,8 +75,8 @@ export default {
       type: Object,
       required: true,
     },
-    model_metadata: {
-      type: Object,
+    modelName: {
+      type: String,
       required: true,
     },
   },
@@ -203,8 +207,8 @@ export default {
       f.highlight = true;
       window.history.replaceState({}, '', `${prefix}#${form.props ? form.props.id : form.component.id}`);
     },
-    updateModelMetaData(updatedMetaData) {
-      this.$emit('update-metadata', updatedMetaData);
+    updateModelName(updatedModelName) {
+      this.$emit('update-model-name', updatedModelName);
     },
   },
   created() {
