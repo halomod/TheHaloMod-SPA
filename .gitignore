@@ -340,3 +340,6 @@ test/
 
 # Git commit message template file
 .gitmessage
+
+# redis
+dump.rdb
