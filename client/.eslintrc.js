@@ -23,7 +23,7 @@ module.exports = {
      * where `index.vue` might exist. This is proper formatting though according
      * to vue: https://vueschool.io/articles/vuejs-tutorials/structuring-vue-components/
      */
-    'import/extensions': 'off'
+    'import/extensions': 'off',
   },
   overrides: [
     {

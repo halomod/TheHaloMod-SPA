@@ -24,6 +24,7 @@ import VueObserveVisibility from 'vue-observe-visibility';
 import 'vue-material/dist/vue-material.min.css';
 import 'vue-material/dist/theme/default.css';
 import { SliderPlugin } from '@syncfusion/ej2-vue-inputs';
+import VueScrollactive from 'vue-scrollactive';
 
 import Home from '../views/Home.vue';
 
@@ -48,6 +49,7 @@ Vue.use(MdProgress);
 Vue.use(MdCard);
 Vue.use(SliderPlugin);
 Vue.use(MdTooltip);
+Vue.use(VueScrollactive);
 
 const routes = [
   {

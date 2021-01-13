@@ -5,31 +5,42 @@
       class="md-primary"
       md-fixed
     >
+      <scrollactive
+        active-class="router-link-active"
+        ref="scrollactive"
+        :offset="offset"
+        :always-track="alwaysTrack"
+        :duration="duration"
+        :click-to-scroll="clickToScroll"
+        :bezier-easing-value="easing"
+      >
       <md-list v-for="(form, index) in forms" :key="index">
         <md-list-item
-          :class="{'router-link-active': form.highlight}"
-          v-bind:to="`#${form.props ? form.props.id : form.component.id}`">
-          {{form.props ? form.props.title : form.component.title}}
+          :href="`#${form.props ? form.props.id : form.component.id}`">
+            {{form.props ? form.props.title : form.component.title}}
         </md-list-item>
       </md-list>
+      </scrollactive>
     </md-app-drawer>
     <md-app-content>
 
-      <div v-for="(form, index) in forms" :key="index">
-        <FormWrapper
-          :name="form.props ? form.props.title : form.component.title"
-          v-bind:id="`${form.props ? form.props.id : form.component.id}`"
-          @toggle-highlight="(bool) => toggleHighlight(bool, form, index)">
-          <component v-if="form.isMeta"
-            :is="form.component"
-            :parent_model="model_metadata"
-            @onChange="updateModelMetaData"
-          />
-          <component v-else
-            v-bind="form.props"
-            :is="form.component"
-            v-model="params[form.model]"/>
-        </FormWrapper>
+      <div>
+        <section :id="`${form.props ? form.props.id : form.component.id}`"
+          v-for="(form, index) in forms" :key="index">
+          <FormWrapper
+            :name="form.props ? form.props.title : form.component.title"
+          >
+            <component v-if="form.isMeta"
+              :is="form.component"
+              :parent_model="model_metadata"
+              @onChange="updateModelMetaData"
+            />
+            <component v-else
+              v-bind="form.props"
+              :is="form.component"
+              v-model="params[form.model]"/>
+          </FormWrapper>
+        </section>
       </div>
     </md-app-content>
   </md-app>
@@ -77,138 +88,91 @@ export default {
     },
   },
   data: () => ({
-    forms: null,
+    forms: [
+      {
+        component: ModelMetadataForm,
+        isMeta: true,
+      },
+      {
+        component: MassDefinitionForm,
+        model: 'mass_definition',
+      },
+      {
+        component: Concentration,
+        model: 'tracer_concentration',
+        props: {
+          title: 'Tracer Concentration',
+          id: 'tracer-concentration',
+          defaultModel: 'Bullock01',
+        },
+      },
+      {
+        component: Concentration,
+        model: 'halo_concentration',
+        props: {
+          title: 'Halo Concentration',
+          id: 'halo-concentration',
+          defaultModel: 'Duffy08',
+        },
+      },
+      {
+        component: HaloExclusion,
+        model: 'exclusion',
+      },
+      {
+        component: BiasForm,
+        model: 'bias',
+      },
+      {
+        component: HMFForm,
+        model: 'hmf',
+      },
+      {
+        component: HODForm,
+        model: 'hod',
+      },
+      {
+        component: Profile,
+        model: 'tracer_profile',
+        props: {
+          title: 'Tracer Profile',
+          id: 'tracer_profile',
+        },
+      },
+      {
+        component: Profile,
+        model: 'halo_profile',
+        props: {
+          title: 'Halo Profile',
+          id: 'Halo_profile',
+        },
+      },
+      {
+        component: CosmologyForm,
+        model: 'cosmo',
+      },
+      {
+        component: HaloModelForm,
+        model: 'halo_model',
+      },
+      {
+        component: GrowthForm,
+        model: 'growth',
+      },
+      {
+        component: FilterForm,
+        model: 'filter',
+      },
+      {
+        component: TransferForm,
+        model: 'transfer',
+      },
+    ],
   }),
   methods: {
-    createForms() {
-      // Add forms to this list, and remove the example form.
-      // make sure you have a "title" and "id" property.
-      const forms = [
-        {
-          component: ModelMetadataForm,
-          isMeta: true,
-        },
-        {
-          component: MassDefinitionForm,
-          model: 'mass_definition',
-        },
-        {
-          component: Concentration,
-          model: 'tracer_concentration',
-          props: {
-            title: 'Tracer Concentration',
-            id: 'tracer-concentration',
-            defaultModel: 'Bullock01',
-          },
-        },
-        {
-          component: Concentration,
-          model: 'halo_concentration',
-          props: {
-            title: 'Halo Concentration',
-            id: 'halo-concentration',
-            defaultModel: 'Duffy08',
-          },
-        },
-        {
-          component: HaloExclusion,
-          model: 'exclusion',
-        },
-        {
-          component: BiasForm,
-          model: 'bias',
-        },
-        {
-          component: HMFForm,
-          model: 'hmf',
-        },
-        {
-          component: HODForm,
-          model: 'hod',
-        },
-        {
-          component: Profile,
-          model: 'tracer_profile',
-          props: {
-            title: 'Tracer Profile',
-            id: 'tracer_profile',
-          },
-        },
-        {
-          component: Profile,
-          model: 'halo_profile',
-          props: {
-            title: 'Halo Profile',
-            id: 'Halo_profile',
-          },
-        },
-        {
-          component: CosmologyForm,
-          model: 'cosmo',
-        },
-        {
-          component: HaloModelForm,
-          model: 'halo_model',
-        },
-        {
-          component: GrowthForm,
-          model: 'growth',
-        },
-        {
-          component: FilterForm,
-          model: 'filter',
-        },
-        {
-          component: TransferForm,
-          model: 'transfer',
-        },
-      ];
-      forms.forEach((item) => {
-        const i = item;
-        i.highlight = false;
-        i.isVisible = false;
-      });
-      this.forms = forms;
-      this.$forceUpdate();
-    },
-    toggleHighlight(bool, form, index) {
-      const f = form;
-      if (!bool) {
-        f.highlight = false;
-        if (index + 1 < this.forms.length) {
-          if (index === 0) {
-            this.handleTopForm(this.forms[index + 1], index + 1);
-          } else if (index - 1 >= 0 && !this.forms[index - 1].isVisible) {
-            this.handleTopForm(this.forms[index + 1], index + 1);
-          }
-        }
-      } else if (bool) {
-        if (index - 1 >= 0) {
-          if (!this.forms[index - 1].isVisible) {
-            this.handleTopForm(f, index);
-          }
-        } else {
-          this.handleTopForm(f, index);
-        }
-        if (index + 1 < this.forms.length) {
-          this.forms[index + 1].highlight = false;
-        }
-      }
-      f.isVisible = bool;
-      this.forms[index] = f;
-      this.$forceUpdate();
-    },
-    handleTopForm(form, index, prefix = '/create') {
-      const f = form;
-      f.highlight = true;
-      window.history.replaceState({}, '', `${prefix}#${form.props ? form.props.id : form.component.id}`);
-    },
     updateModelMetaData(updatedMetaData) {
       this.$emit('update-metadata', updatedMetaData);
     },
-  },
-  created() {
-    this.createForms();
   },
 };
 </script>
