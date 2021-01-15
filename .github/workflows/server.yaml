@@ -43,7 +43,7 @@ jobs:
       uses: actions/cache@v2
       with:
         path: ~/.cache/pip
-        key: ${{ hashFiles('setup.py') }}-${{ hashFiles('requirements.txt') }}
+        key: ${{ hashFiles('server/requirements.txt') }}
     
     - name: Lint
       run: sh run.sh --lint --ci
