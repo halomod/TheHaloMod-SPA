@@ -5,6 +5,6 @@ module.exports = {
   coverageReporters: ['lcov', 'text-summary'],
   setupFiles: ['./__tests__/setup.js'],
   testPathIgnorePatterns: [
-    "<rootDir>/__tests__/setup.js"
+    '<rootDir>/__tests__/setup.js',
   ],
 };

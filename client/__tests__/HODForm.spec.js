@@ -16,7 +16,7 @@ describe('Mounted HODForm', () => {
     for(let option of options){
       if(wrapper.vm.model.hod_model === option) continue;
       var oldParams = wrapper.vm.model.hod_params;
-      wrapper.setData({...wrapper.vm.$data, model: {...wrapper.vm.$data.model, hod_model: option}});
+      wrapper.vm.$data.model.hod_model = option;
       await localVue.nextTick();
       await localVue.nextTick();
       var newParams = wrapper.vm.model.hod_params;
@@ -30,7 +30,7 @@ describe('Mounted HODForm', () => {
 
   test('renders correct fields for each model selection', async () => {
     for(let option of options){
-      wrapper.setData({...wrapper.vm.$data, model: {...wrapper.vm.$data.model, hod_model: option}});
+      wrapper.vm.$data.model.hod_model = option;
       await localVue.nextTick();
       await localVue.nextTick();
       let params = Object.keys(BACKEND_CONSTANTS.HOD_params[option]);
@@ -46,11 +46,24 @@ describe('Mounted HODForm', () => {
     for(let option of options){
       if(wrapper.vm.model.hod_model === option) continue;
       prevCount = emitted.onChange.length;
-      wrapper.setData({...wrapper.vm.$data, model: {...wrapper.vm.$data.model, hod_model: option}});
+      wrapper.vm.$data.model.hod_model = option;
       await localVue.nextTick();
       await localVue.nextTick();
       expect(emitted.onChange.length).toBeGreaterThan(prevCount);
       prevCount = emitted.onChange.length;
     }
-  })
+  });
+
+  test('emits onChange event whenever the values of model params have changed', async () => {
+    const emitted = wrapper.emitted();
+    let prevCount = emitted.onChange.length;
+    let params = Object.keys(wrapper.vm.model.hod_params);
+    for(let param of params){
+      wrapper.vm.$data.model.hod_params[param] += .01;
+      await localVue.nextTick();
+      await localVue.nextTick();
+      expect(emitted.onChange.length).toBeGreaterThan(prevCount);
+      prevCount = emitted.onChange.length;
+    }
+  });
 })
