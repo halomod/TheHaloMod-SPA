@@ -8,46 +8,47 @@
       <scrollactive
         active-class="router-link-active"
         ref="scrollactive"
-        :offset="offset"
-        :always-track="alwaysTrack"
-        :duration="duration"
-        :click-to-scroll="clickToScroll"
-        :bezier-easing-value="easing"
+        :click-to-scroll="true"
+        :highlight-first-item="true"
+        :scroll-on-start="true"
+        :always-track="true"
+        v-on:itemchanged="setScrollactiveItems"
       >
-      <md-list v-for="(form, index) in forms" :key="index">
-        <md-list-item
-          :href="`#${form.props ? form.props.id : form.component.id}`">
-            {{form.props ? form.props.title : form.component.title}}
-        </md-list-item>
-      </md-list>
+        <md-list v-for="(form, index) in forms" :key="index">
+          <md-list-item>
+            <!-- need to add `scrollactive-item` into class for highlighting purposes -->
+              <a :href="`#${form.props ? form.props.id : form.component.id}`"
+                :md-ripple="true"
+                class="md-list-item-link md-list-item-container md-button-clean">
+                <div class="md-list-item-content md-ripple">
+                  {{form.props ? form.props.title : form.component.title}}
+
+                </div>
+              </a>
+          </md-list-item>
+        </md-list>
       </scrollactive>
     </md-app-drawer>
-    <md-app-content>
-
-      <div>
-        <section :id="`${form.props ? form.props.id : form.component.id}`"
-          v-for="(form, index) in forms" :key="index">
-          <FormWrapper
-            :name="form.props ? form.props.title : form.component.title"
-          >
-            <component v-if="form.isMeta"
-              :is="form.component"
-              :parent_model="model_metadata"
-              @onChange="updateModelMetaData"
-            />
-            <component v-else
-              v-bind="form.props"
-              :is="form.component"
-              v-model="params[form.model]"/>
-          </FormWrapper>
-        </section>
-      </div>
+    <md-app-content class="scroll-container">
+      <section :id="`${form.props ? form.props.id : form.component.id}`"
+        class="scrollactive-item form"
+        v-for="(form, index) in forms" :key="index">
+        <h2 class="md-title">{{form.props ? form.props.title : form.component.title}}</h2>
+        <component v-if="form.isMeta"
+          :is="form.component"
+          :parent_model="model_metadata"
+          @onChange="updateModelMetaData"
+        />
+        <component v-else
+          v-bind="form.props"
+          :is="form.component"
+          v-model="params[form.model]"/>
+      </section>
     </md-app-content>
   </md-app>
 </template>
 
 <script>
-import FormWrapper from '@/components/FormWrapper.vue';
 import Concentration from '@/components/Concentration.vue';
 import HaloExclusion from '@/components/HaloExclusion.vue';
 import BiasForm from '@/components/BiasForm.vue';
@@ -65,7 +66,6 @@ import TransferForm from '@/components/TransferForm.vue';
 export default {
   name: 'Create',
   components: {
-    FormWrapper,
     Concentration,
     HaloExclusion,
     HODForm,
@@ -173,6 +173,11 @@ export default {
     updateModelMetaData(updatedMetaData) {
       this.$emit('update-metadata', updatedMetaData);
     },
+    setScrollactiveItems(event, currentItem, lastActiveItem) {
+      // not working
+      console.log(this.$refs.scrollactive, event, currentItem, lastActiveItem);
+      this.$refs.scrollactive.setScrollactiveItems();
+    },
   },
 };
 </script>
@@ -184,5 +189,9 @@ export default {
   .md-drawer {
     width: 230px;
     max-width: calc(100vw - 125px);
+  }
+  .form {
+    margin: 10px;
+    margin-bottom: 10vh;
   }
 </style>
