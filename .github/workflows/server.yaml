@@ -39,7 +39,7 @@ jobs:
       with:
         python-version: 3.8
 
-    - name: Pull from pip cache if available
+    - name: Python Caching
       uses: actions/cache@v2
       with:
         path: ~/.cache/pip
