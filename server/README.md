@@ -7,3 +7,7 @@
 
 ## How to run lint
 ```sh run.sh --lint```
+
+## To start development which includes an environment
+
+`. env/bin/activate`
