@@ -20,6 +20,7 @@ export default class API {
       plot: '',
       models: {},
       modelNames: [],
+      plotData: {},
     };
   }
 
@@ -60,7 +61,7 @@ export default class API {
    */
   createPlot = async (fig_type = 'dndm') => {
     // may need to call createModel on all items before getting plot
-    try {
+    /*    try {
       const { data } = await axios.post(`${baseurl}/plot`, {
         fig_type,
         img_type: 'png',
@@ -70,7 +71,8 @@ export default class API {
     } catch (error) {
       console.error(error);
       return null;
-    }
+    }  */
+    console.log(fig_type);
   }
 
   /**
@@ -91,7 +93,7 @@ export default class API {
         params: this.flatten(model),
         label: name,
       });
-      await Promise.all([this.setModel(name, model), this.createPlot()]);
+      await Promise.all([this.setModel(name, model), this.createPlot(), this.getPlotData()]);
     } catch (error) {
       console.error(error);
       // better error messaging here
@@ -109,7 +111,7 @@ export default class API {
         params: this.flatten(model),
         model_name: name,
       });
-      await Promise.all([this.setModel(name, model), this.createPlot()]);
+      await Promise.all([this.setModel(name, model), this.createPlot(), this.getPlotData()]);
     } catch (error) {
       console.error(error);
       // better error handling here, some vue event?
@@ -181,5 +183,36 @@ export default class API {
     } catch (error) {
       console.error(error);
     }
+  }
+
+  getPlotData = async (fig = 'dndm') => {
+    let data = {};
+    try {
+      data = await axios.post(`${baseurl}/get_plot_data`, {
+        fig_type: fig,
+      });
+      this.mapToChartData(data.data);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  mapToChartData = (data) => {
+    const chartdata = {};
+    chartdata.labels = Object.keys(data.plot_data);
+    chartdata.datasets = [];
+    console.log(data);
+    Object.keys(data.plot_data).forEach((model_name, model_idx) => {
+      chartdata.datasets[model_idx] = {};
+      chartdata.datasets[model_idx].label = model_name;
+      chartdata.datasets[model_idx].data = [];
+      data.plot_data[model_name].xs.forEach((x, point_idx) => {
+        chartdata.datasets[model_idx].data[point_idx] = {};
+        chartdata.datasets[model_idx].data[point_idx].x = x;
+        chartdata.datasets[model_idx].data[point_idx].y = data.plot_data[model_name].ys[point_idx];
+      });
+    });
+    console.log(chartdata);
+    this.state.plotData = chartdata;
   }
 }
