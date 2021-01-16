@@ -192,11 +192,9 @@ export default class API {
    * example: `dndm`.
    */
   setPlotType = async (newPlotType) => {
+    this.state.plotType = newPlotType;
     if (newPlotType !== this.state.plotType) {
-      this.state.plotType = newPlotType;
       this.createPlot();
-    } else {
-      this.state.plotType = newPlotType;
     }
   }
 }
