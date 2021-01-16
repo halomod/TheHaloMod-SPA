@@ -49,7 +49,7 @@ export default {
       plotChoices = Object.keys(plotTypes);
     } catch (error) {
       // Might be better to tell the user here once the snackbar is ready.
-      console.error(error);
+      // console.error(error);
     }
     if (plotChoices.includes('dndm')) {
       this.plotChoice = 'dndm';
