@@ -25,6 +25,13 @@ def test_get_names(client):
     assert "AnotherModel" in names
 
 
+def test_get_plot_types(client):
+    response = client.get('/get_plot_types')
+    assert response is not None
+    assert response.status_code == 200
+    assert "dndm" in response.json
+
+
 def test_clone(client):
     with client.session_transaction() as sess:
         sess["models"] = pickle.dumps({"TheModel": TracerHaloModel()})
@@ -77,7 +84,8 @@ def test_get_plot_data(client):
 
 def test_plot(client, plot_payload):
     with client.session_transaction() as sess:
-        sess["models"] = pickle.dumps({"TheModel": TracerHaloModel(), "TheOtherModel": TracerHaloModel()})
+        sess["models"] = pickle.dumps(
+            {"TheModel": TracerHaloModel(), "TheOtherModel": TracerHaloModel()})
     response = client.post('/plot', json={"fig_type": "dndm", "img_type": "png"})
     assert response is not None
     assert response.status_code == 200
