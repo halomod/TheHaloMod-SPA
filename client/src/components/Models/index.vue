@@ -14,11 +14,12 @@
           <md-button @click="handleNewModelClick" class="md-primary">New Model</md-button>
         </div>
       </div>
-      <md-list v-if="READ_ONLY.modelNames.length > 0" class="model-list">
+      <md-list v-if="STORE_STATE.modelNames.length > 0" class="model-list">
         <Model
-          v-for="modelName in READ_ONLY.modelNames"
+          v-for="modelName in STORE_STATE.modelNames"
           :key="modelName"
           :name="modelName"
+          :buttonsDisabled="loadingModel"
           @delete-click="handleDeleteClick"
           @edit-click="handleEditClick"
           @copy-click="handleCopyClick"
@@ -65,6 +66,9 @@ import Model from './Model';
 const debug = Debug('Models');
 debug.enabled = true;
 
+/**
+ * The operations enum.
+ */
 const OPERATIONS = {
   edit: 'edit',
   create: 'create',
@@ -76,6 +80,9 @@ export default {
     return {
       showDialog: false,
       loadingModel: false,
+      /**
+       * Keeps track of the most recent operation on a model.
+       */
       currentOperation: OPERATIONS.create,
       OPERATIONS,
       /**
@@ -89,7 +96,11 @@ export default {
        * updated.
        */
       currentModelStoredName: 'Model',
-      READ_ONLY: this.$store.state,
+      /**
+       * Needs to stay as a direct reference to the state of the store so that
+       * it updates automatically.
+       */
+      STORE_STATE: this.$store.state,
     };
   },
   components: {
