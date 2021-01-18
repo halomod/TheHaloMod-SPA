@@ -2,17 +2,18 @@ for arg in "$@"
 do 
   case $arg in
     "--ci" )
-      python3 -m pip install -r requirements.txt;;
+      ;;
     *)
       python3 -m venv env
-      . env/bin/activate
-      python3 -m pip install -r requirements.txt;;
+      . env/bin/activate;;
   esac
 done
 
 for arg in "$@"
 do
   case $arg in
+    "--install")
+      python3 -m pip install -r requirements.txt;;
     "--lint" )
       flake8 tests halomod_app;;
     "--test" )
