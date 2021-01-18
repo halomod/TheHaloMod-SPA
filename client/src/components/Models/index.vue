@@ -52,7 +52,6 @@
         <md-button class="md-primary" @click="handleSaveClick">Save</md-button>
       </md-dialog-actions>
     </md-dialog>
-    <p><code>{{printParams()}}</code></p>
   </div>
 </template>
 
@@ -122,7 +121,6 @@ export default {
           await this.$store.cloneModel(oldName, newName);
           await this.$store.deleteModel(oldName);
         } else {
-          console.log('The params are: ', this.currentModelParams);
           await this.$store.updateModel(this.currentModelStoredName, this.currentModelParams);
         }
       } else if (this.currentOperation === OPERATIONS.create) {
@@ -152,10 +150,6 @@ export default {
     },
     updateParams(newParams) {
       this.currentModelParams = newParams;
-    },
-    // DELETE ME
-    printParams() {
-      console.log(`${JSON.stringify(this.currentModelParams, null, 2)}`);
     },
   },
 };
