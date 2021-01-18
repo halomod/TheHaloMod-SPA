@@ -46,13 +46,15 @@ jobs:
         key: ${{ hashFiles('server/requirements.txt') }}
 
     - name: Install Dependencies
-      run: python -m pip install --upgrade pip
-      run: sh run.sh --install --ci
+      run: |
+        python -m pip install --upgrade pip
+        sh run.sh --install --ci
     
     - name: Lint
       run: sh run.sh --lint --ci
     
     - name: Test
-      run: pytest --version
-      run: python3 -m pytest
+      run: |
+        pytest --version
+        python3 -m pytest
       # run: sh run.sh --test --ci
