@@ -47,17 +47,13 @@ jobs:
 
     - name: Install Dependencies
       run: |
-        python3 -m venv env
-        . env/bin/activate
         python3 -m pip install --upgrade pip
-        sh run.sh --install --ci
+        . ./run.sh --install --ci
     
     - name: Lint
       run: sh run.sh --lint --ci
     
     - name: Test
       run: | 
-        python3 -m venv env
-        . env/bin/activate
-        python3 -m pytest
+        . ./run.sh --test
       # run: sh run.sh --test --ci
