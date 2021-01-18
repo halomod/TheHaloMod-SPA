@@ -17,6 +17,8 @@ sess = Session()
 
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
+
+    # Everything in config.py Config class is loaded into the Flask app config
     app.config.from_object('config.Config')
 
     CORS(app, origins="http://localhost:*", supports_credentials=True)  # enable CORS
