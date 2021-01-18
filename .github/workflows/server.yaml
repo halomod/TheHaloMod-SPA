@@ -56,6 +56,8 @@ jobs:
       run: sh run.sh --lint --ci
     
     - name: Test
-      run: |
+      run: | 
+        python3 -m venv env
+        . env/bin/activate
         python3 -m pytest
       # run: sh run.sh --test --ci

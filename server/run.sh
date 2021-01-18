@@ -1,6 +1,3 @@
-python3 -m venv env
-. env/bin/activate
-
 for arg in "$@"
 do 
   case $arg in
