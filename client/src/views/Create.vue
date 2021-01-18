@@ -1,4 +1,5 @@
 <template>
+<!-- <md-dialog :md-active.sync="showDialog"> -->
   <md-app id="create" md-mode="fixed">
     <md-app-drawer
       md-permanent="full"
@@ -19,10 +20,11 @@
             <!-- need to add `scrollactive-item` into class for highlighting purposes -->
               <a :href="`#${form.props ? form.props.id : form.component.id}`"
                 :md-ripple="true"
-                class="md-list-item-link md-list-item-container md-button-clean">
+                v-on:click="() => highlight = index"
+                :class="`${highlight == index ? 'router-link-active' : ''}
+                  md-list-item-link md-list-item-container md-button-clean`">
                 <div class="md-list-item-content md-ripple">
                   {{form.props ? form.props.title : form.component.title}}
-
                 </div>
               </a>
           </md-list-item>
@@ -46,9 +48,11 @@
       </section>
     </md-app-content>
   </md-app>
+  <!-- </md-dialog> -->
 </template>
 
 <script>
+import clonedeep from 'lodash.clonedeep';
 import Concentration from '@/components/Concentration.vue';
 import HaloExclusion from '@/components/HaloExclusion.vue';
 import BiasForm from '@/components/BiasForm.vue';
@@ -62,6 +66,7 @@ import GrowthForm from '@/components/GrowthForm.vue';
 import HaloModelForm from '@/components/HaloModelForm.vue';
 import FilterForm from '@/components/FilterForm.vue';
 import TransferForm from '@/components/TransferForm.vue';
+import INITIAL_STATE from '@/constants/initial_state.json';
 
 export default {
   name: 'Create',
@@ -80,14 +85,19 @@ export default {
   props: {
     params: {
       type: Object,
-      required: true,
+      default: () => clonedeep(INITIAL_STATE),
     },
     model_metadata: {
       type: Object,
-      required: true,
+      default: () => ({
+        model_name: 'Model',
+        fig_type: 'dndm',
+      }),
     },
   },
   data: () => ({
+    showDialog: true,
+    highlight: 0,
     forms: [
       {
         component: ModelMetadataForm,

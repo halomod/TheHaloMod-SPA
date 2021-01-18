@@ -78,24 +78,6 @@ const routes = [
 const router = new VueRouter({
   routes,
   mode: 'history',
-  linkActiveClass: 'active',
-  scrollBehavior({ hash }, from, savedPosition) {
-    if (hash) {
-      try {
-        document
-          .getElementById(hash.slice(1))
-          .scrollIntoView({
-            behavior: 'smooth',
-          });
-        return {};
-      } catch (err) {
-        console.warn(err);
-      }
-    } else if (savedPosition) {
-      return savedPosition;
-    }
-    return { x: 0, y: 0 };
-  },
 });
 
 export default router;
