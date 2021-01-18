@@ -38,6 +38,9 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: 3.8
+      run: |
+        python3 -m venv env
+        . env/bin/activate
 
     - name: Python Caching
       uses: actions/cache@v2
@@ -55,6 +58,5 @@ jobs:
     
     - name: Test
       run: |
-        pytest --version
         python3 -m pytest
       # run: sh run.sh --test --ci
