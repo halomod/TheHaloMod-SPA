@@ -1,30 +1,28 @@
 # This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
 
-name: Client CI
+name: Client Deployment
 
-on: [push]
+on: 
+  push:
+    branches:
+      - main
 
 jobs:
-  test:
+  build-and-deploy:
     runs-on: ubuntu-latest
+    # Require that the 'test' job completes first
+    needs: test
     defaults:
       run:
         working-directory: client
 
-    strategy:
-      matrix:
-        node-version: [14.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
     steps:
-    - uses: actions/checkout@v2
-
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
+    - name: Checkout 🛎️
+      uses: actions/checkout@v2
       with:
-        node-version: ${{ matrix.node-version }}
-    
+        persist-credentials: false
+
     - name: Cache node modules
       uses: actions/cache@v2
       env:
@@ -37,7 +35,16 @@ jobs:
           ${{ runner.os }}-build-${{ env.cache-name }}-
           ${{ runner.os }}-build-
           ${{ runner.os }}-
-    
-    - run: npm ci
-    - run: npm run lint
-    - run: npm run test:unit
+
+    - name: Install and Build 🔧
+      run: |
+        npm install
+        npm run build
+
+    - name: Deploy 🚀
+      uses: JamesIves/github-pages-deploy-action@3.7.1
+      with:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        BRANCH: gh-pages # The branch the action should deploy to.
+        FOLDER: client/dist # The folder the action should deploy.
+        CLEAN: true # Automatically remove deleted files from the deploy branch
