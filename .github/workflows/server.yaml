@@ -49,4 +49,5 @@ jobs:
       run: sh run.sh --lint --ci
     
     - name: Test
-      run: sh run.sh --test --ci
+      run: python3 -m pytest
+      # run: sh run.sh --test --ci
