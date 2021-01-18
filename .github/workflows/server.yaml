@@ -44,6 +44,9 @@ jobs:
       with:
         path: ~/.cache/pip
         key: ${{ hashFiles('server/requirements.txt') }}
+
+    - name: Install Dependencies
+      run: sh run.sh --install --ci
     
     - name: Lint
       run: sh run.sh --lint --ci
