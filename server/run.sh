@@ -12,14 +12,14 @@ done
 
 for arg in "$@"
 do
-    case $arg in
-        "--lint" )
-          flake8 tests halomod_app;;
-        "--test" )
-          python -m pytest;;
-        "--dev" )
-          export FLASK_APP=halomod_app
-          export FLASK_ENV=development
-          flask run;;
-   esac
+  case $arg in
+    "--lint" )
+      flake8 tests halomod_app;;
+    "--test" )
+      python -m pytest;;
+    "--dev" )
+      export FLASK_APP=halomod_app
+      export FLASK_ENV=development
+      flask run;;
+  esac
 done
