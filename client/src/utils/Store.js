@@ -20,7 +20,8 @@ export default class API {
       plot: '',
       models: {},
       modelNames: [],
-      plotData: {},
+      plotData: null,
+      plotScale: 'logarithmic',
     };
   }
 
@@ -199,7 +200,6 @@ export default class API {
 
   mapToChartData = (data) => {
     const chartdata = {};
-    chartdata.labels = Object.keys(data.plot_data);
     chartdata.datasets = [];
     console.log(data);
     Object.keys(data.plot_data).forEach((model_name, model_idx) => {
@@ -212,7 +212,7 @@ export default class API {
         chartdata.datasets[model_idx].data[point_idx].y = data.plot_data[model_name].ys[point_idx];
       });
     });
-    console.log(chartdata);
+    console.log(JSON.stringify(chartdata));
     this.state.plotData = chartdata;
   }
 }

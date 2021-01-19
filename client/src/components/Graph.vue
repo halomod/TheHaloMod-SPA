@@ -6,19 +6,32 @@
           <h3 class="md-title">Plot</h3>
         </div>
       </div>
-      <img v-if="READ_ONLY.plot !== null" :src="READ_ONLY.plot"/>
+      <Chart v-if="READ_ONLY.plotData !== null" :chartData="READ_ONLY.plotData"
+      :styles="chartStyles"/>
       <p v-else>No graph has been generated yet</p>
     </md-toolbar>
   </div>
 </template>
 
 <script>
+import Chart from './Chart.vue';
+
 export default {
   name: 'Graph',
   data() {
     return {
       READ_ONLY: this.$store.state,
     };
+  },
+  components: {
+    Chart,
+  },
+  computed: {
+    chartStyles() {
+      return {
+        width: '800px',
+      };
+    },
   },
 };
 </script>

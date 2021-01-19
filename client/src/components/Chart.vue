@@ -1,20 +1,60 @@
 <script>
-import { Line } from 'vue-chartjs';
+import { Line, mixins } from 'vue-chartjs';
+
+const { reactiveProp } = mixins;
 
 export default {
   extends: Line,
-  props: {
-    data: {
-      type: Object,
-      default: null,
+  name: 'Chart',
+  mixins: [reactiveProp],
+  data: () => ({
+    sample: {
+      datasets: [
+        {
+          label: 'Tias Data',
+          data: [
+            {
+              x: 1,
+              y: 186742769.27833816,
+            },
+            {
+              x: 26302679.918953814,
+              y: 0.0000020952114019357093,
+            },
+            {
+              x: 60255958.60743581,
+              y: 4.2425385415859126e-7,
+            },
+          ],
+        },
+      ],
     },
     options: {
-      type: Object,
-      default: null,
+      responsive: true,
+      scales: {
+        yAxes: [{
+          type: 'logarithmic',
+          ticks: {
+            beginAtZero: false,
+          },
+        }],
+        xAxes: [{
+          type: 'logarithmic',
+          ticks: {
+            beginAtZero: false,
+          },
+        }],
+      },
+    },
+  }),
+  props: {
+    scale: {
+      type: String,
+      default: 'logarithmic',
     },
   },
   mounted() {
-    this.renderChart(this.data, this.options);
+    this.renderChart(this.chartData, this.options);
   },
 };
 </script>
