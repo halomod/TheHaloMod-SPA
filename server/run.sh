@@ -1,15 +1,7 @@
 #!/bin/bash
 
-for arg in "$@"
-do 
-  case $arg in
-    "--ci" )
-      ;;
-    *)
-      python3 -m venv env
-      . env/bin/activate;;
-  esac
-done
+python3 -m venv env
+. env/bin/activate
 
 for arg in "$@"
 do
