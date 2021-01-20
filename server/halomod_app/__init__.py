@@ -17,9 +17,11 @@ sess = Session()
 
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
+
+    # Everything in config.py Config class is loaded into the Flask app config
     app.config.from_object('config.Config')
 
-    CORS(app, origins="http://localhost:8080", supports_credentials=True)  # enable CORS
+    CORS(app, origins="http://localhost:*", supports_credentials=True)  # enable CORS
     sess.init_app(app)  # enable Sessions
 
     # Helper function that abstracts logic for getting names of all models
