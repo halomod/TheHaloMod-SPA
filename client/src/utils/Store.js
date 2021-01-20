@@ -212,7 +212,6 @@ export default class API {
         chartdata.datasets[model_idx].data[point_idx].y = data.plot_data[model_name].ys[point_idx];
       });
     });
-    console.log(JSON.stringify(chartdata));
     this.state.plotData = chartdata;
   }
 }
