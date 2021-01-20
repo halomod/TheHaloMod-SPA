@@ -1,6 +1,7 @@
 import axios from 'axios';
 import clonedeep from 'lodash.clonedeep';
 import baseurl from '@/env';
+import Debug from 'debug';
 import {
   set,
   keys,
@@ -9,6 +10,9 @@ import {
 } from 'idb-keyval';
 
 axios.defaults.withCredentials = true;
+
+const debug = Debug('Store.js');
+debug.enabled = false;
 
 /**
  * This store is initialized at the beginning of the application startup. It
@@ -66,6 +70,8 @@ export default class API {
         fig_type,
         img_type: 'png',
       });
+      debug(`The data was retrieved with the baseurl of ${baseurl} and is: `,
+        data);
       this.state.plot = `data:image/png;base64,${data.figure}`;
       return this.state.plot;
     } catch (error) {
