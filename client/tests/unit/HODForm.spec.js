@@ -1,6 +1,6 @@
 import { mount, createLocalVue } from '@vue/test-utils';
 import HODForm from '@/components/HODForm';
-import BACKEND_CONSTANTS from '../src/constants/backend_constants';
+import BACKEND_CONSTANTS from '@/constants/backend_constants';
 
 describe('Mounted HODForm', () => {
   const localVue = createLocalVue();
