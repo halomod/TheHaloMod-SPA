@@ -1,0 +1,61 @@
+# This workflow will install Python dependencies, run tests and lint with a single version of Python
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+
+name: Server CI
+
+on: [push, workflow_dispatch]
+
+jobs:
+  test:
+    defaults:
+      run:
+        working-directory: server
+    runs-on: ubuntu-latest
+
+    # Service containers to run with `container-job`
+    services:
+      # Label used to access the service container
+      redis:
+        # Docker Hub image
+        image: redis
+        # Set health checks to wait until redis has started
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+            # Maps port 6379 on service container to the host
+            - 6379:6379
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup gfortran
+      run: |
+        sudo apt-get install gfortran-8
+        mkdir -p gfortran-symlinks
+        ln -s /usr/bin/gfortran-8 gfortran-symlinks/gfortran
+        export PATH=$PWD/gfortran-symlinks:$PATH
+    
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+
+    - name: Python Caching
+      uses: actions/cache@v2
+      with:
+        path: ~/.cache/pip
+        key: ${{ hashFiles('server/requirements.txt') }}
+
+    - name: Install Dependencies
+      run: |
+        python3 -m pip install --upgrade pip
+        . ./run.sh --install
+    
+    - name: Lint
+      run: . ./run.sh --lint
+    
+    - name: Test
+      run: | 
+        . ./run.sh --test
