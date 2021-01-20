@@ -38,7 +38,7 @@ describe('Mounted HMFForm', () => {
     }
   });
 
-  // leaving this in as documentation for another way to potentially do this -- dynamically generates
+  // leaving this in as documentation for another way to potentially do this: dynamically generates
   // narrower test cases to give you a better idea of the point of failure (thoughts?)
   //
   // test.each(options)('renders correct fields for %s model selection', async (option) => {
