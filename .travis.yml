@@ -1,3 +1,0 @@
-import:
-  - client/.travis.yml
-  - server/.travis.yml
