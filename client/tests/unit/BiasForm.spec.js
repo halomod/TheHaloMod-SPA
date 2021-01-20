@@ -22,7 +22,7 @@ describe('Mounted BiasForm', () => {
       await localVue.nextTick();
       await localVue.nextTick();
       const newParams = wrapper.vm.model.bias_params;
-      if (option == 'Mo96') {
+      if (option === 'Mo96') {
         expect(JSON.stringify(oldParams)).toBe(JSON.stringify(newParams));
       } else {
         expect(JSON.stringify(oldParams)).not.toBe(JSON.stringify(newParams));
