@@ -19,7 +19,8 @@
               <a :href="`#${form.props ? form.props.id : form.component.id}`"
                 :md-ripple="true"
                 v-on:click="() => highlight = index"
-                :class="`${highlight == index ? 'router-link-active' : ''} md-list-item-link md-list-item-container md-button-clean`">
+                :class="`${highlight == index ? 'router-link-active' : ''}
+                md-list-item-link md-list-item-container md-button-clean`">
                 <div class="md-list-item-content md-ripple">
                   {{form.props ? form.props.title : form.component.title}}
                 </div>
