@@ -12,17 +12,14 @@
         :click-to-scroll="true"
         :highlight-first-item="true"
         :scroll-on-start="true"
-        :always-track="true"
-        v-on:itemchanged="setScrollactiveItems"
+        scroll-container-selector="md-app-scroller"
       >
-        <md-list v-for="(form, index) in forms" :key="index">
-          <md-list-item>
-            <!-- need to add `scrollactive-item` into class for highlighting purposes -->
+        <md-list>
+          <md-list-item v-for="(form, index) in forms" :key="index">
               <a :href="`#${form.props ? form.props.id : form.component.id}`"
                 :md-ripple="true"
                 v-on:click="() => highlight = index"
-                :class="`${highlight == index ? 'router-link-active' : ''}
-                  md-list-item-link md-list-item-container md-button-clean`">
+                :class="`${highlight == index ? 'router-link-active' : ''} md-list-item-link md-list-item-container md-button-clean`">
                 <div class="md-list-item-content md-ripple">
                   {{form.props ? form.props.title : form.component.title}}
                 </div>
@@ -33,8 +30,8 @@
     </md-app-drawer>
     <md-app-content class="scroll-container">
       <section :id="`${form.props ? form.props.id : form.component.id}`"
-        class="scrollactive-item form"
-        v-for="(form, index) in forms" :key="index">
+        v-for="(form, index) in forms" :key="index"
+        class="form scrollactive-item">
         <h2 class="md-title">{{form.props ? form.props.title : form.component.title}}</h2>
         <component v-if="form.isMeta"
           :is="form.component"
@@ -66,6 +63,7 @@ import GrowthForm from '@/components/GrowthForm.vue';
 import HaloModelForm from '@/components/HaloModelForm.vue';
 import FilterForm from '@/components/FilterForm.vue';
 import TransferForm from '@/components/TransferForm.vue';
+import scrollactive from '@/utils/Scrollactive/scrollactive.vue';
 import INITIAL_STATE from '@/constants/initial_state.json';
 
 export default {
@@ -81,6 +79,7 @@ export default {
     HaloModelForm,
     FilterForm,
     TransferForm,
+    scrollactive,
   },
   props: {
     params: {

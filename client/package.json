@@ -12,6 +12,7 @@
   "dependencies": {
     "@syncfusion/ej2-vue-inputs": "^18.3.52",
     "axios": "^0.21.1",
+    "bezier-easing": "^2.1.0",
     "core-js": "^3.8.0",
     "debug": "^4.3.1",
     "idb-keyval": "^3.2.0",
@@ -20,8 +21,7 @@
     "vue": "^2.6.11",
     "vue-material": "^1.0.0-beta-15",
     "vue-observe-visibility": "^0.4.6",
-    "vue-router": "^3.4.9",
-    "vue-scrollactive": "^0.9.3"
+    "vue-router": "^3.4.9"
   },
   "devDependencies": {
     "@babel/plugin-proposal-optional-chaining": "^7.12.7",
