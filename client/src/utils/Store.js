@@ -181,6 +181,7 @@ export default class API {
       this.state.modelNames = this.getModelNames();
       /* eslint-enable */
       await this.createPlot();
+      await this.getPlotData();
     } catch (error) {
       console.error(error);
     }

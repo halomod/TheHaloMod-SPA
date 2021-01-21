@@ -31,6 +31,11 @@ export default {
     },
     options: {
       responsive: true,
+      elements: {
+        point: {
+          radius: 0,
+        },
+      },
       scales: {
         yAxes: [{
           type: 'logarithmic',
