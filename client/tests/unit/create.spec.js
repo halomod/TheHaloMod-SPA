@@ -25,18 +25,21 @@ describe('Mounted Create', () => {
   localVue.use(VueObserveVisibility);
 
   // shallowMount only renders top level component and uses stubs for everything
-  // below 
+  // below
   const wrapper = shallowMount(Create /* the component you're trying to test */, {
     localVue, // a reference to the Vue instance from above
-    propsData: { // any props that need to be passed to the component for it to function / avoid warnings
+    // any props that need to be passed to the component for it to function / avoid warnings
+    propsData: {
       model_metadata: {},
       params: constants,
-    }
+    },
   });
 
   test('has all forms', () => {
-    expect(wrapper.findComponent(BiasForm)).toBeTruthy(); //checks if BiasForm is present in the rendered page
-    expect(wrapper.findComponent(Concentration)).toBeTruthy(); // same for the rest of these expect() calls and their respective forms
+    // checks if BiasForm is present in the rendered page
+    expect(wrapper.findComponent(BiasForm)).toBeTruthy();
+    // same for the rest of these expect() calls and their respective forms
+    expect(wrapper.findComponent(Concentration)).toBeTruthy();
     expect(wrapper.findComponent(CosmologyForm)).toBeTruthy();
     expect(wrapper.findComponent(FilterForm)).toBeTruthy();
     expect(wrapper.findComponent(GrowthForm)).toBeTruthy();
@@ -48,5 +51,5 @@ describe('Mounted Create', () => {
     expect(wrapper.findComponent(MassDefinitionForm)).toBeTruthy();
     expect(wrapper.findComponent(ModelMetadataForm)).toBeTruthy();
     expect(wrapper.findComponent(TransferForm)).toBeTruthy();
-  })
-})
+  });
+});
