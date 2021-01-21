@@ -194,11 +194,11 @@ export default class API {
     }
   }
 
-  getPlotData = async (fig = 'dndm') => {
+  getPlotData = async () => {
     let data = {};
     try {
       data = await axios.post(`${baseurl}/get_plot_data`, {
-        fig_type: fig,
+        fig_type: this.state.plotType,
       });
       this.mapToChartData(data.data);
     } catch (error) {
@@ -222,6 +222,7 @@ export default class API {
     });
     this.state.plotData = chartdata;
   }
+
   /**
    * Sets the plot type for the plot, and generates a new plot if it is
    * different.
@@ -232,7 +233,7 @@ export default class API {
   setPlotType = async (newPlotType) => {
     this.state.plotType = newPlotType;
     if (newPlotType !== this.state.plotType) {
-      this.createPlot();
+      await this.getPlotData();
     }
   }
 }

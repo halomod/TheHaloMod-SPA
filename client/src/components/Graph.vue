@@ -6,10 +6,6 @@
           <h3 class="md-title">Plot</h3>
         </div>
       </div>
-      <Chart v-if="READ_ONLY.plotData !== null" :chartData="READ_ONLY.plotData"
-      :styles="chartStyles"/>
-      <p v-else>No graph has been generated yet</p>
-
       <md-field v-if="plotChoices">
         <label for="plotChoices">Plot Type</label>
         <md-select v-model="plotChoice" id="plotChoices" name="plotChoice">
@@ -23,14 +19,17 @@
           </md-option>
         </md-select>
       </md-field>
+      <Chart v-if="READ_ONLY.plotData !== null" :chartData="READ_ONLY.plotData"
+          :styles="chartStyles"/>
+      <p v-else>No graph has been generated yet</p>
     </md-toolbar>
   </div>
 </template>
 
 <script>
-import Chart from './Chart.vue';
 import axios from 'axios';
 import baseurl from '@/env';
+import Chart from './Chart.vue';
 
 axios.defaults.withCredentials = true;
 
@@ -51,6 +50,8 @@ export default {
       return {
         width: '800px',
       };
+    },
+  },
   async created() {
     let plotChoices = [];
     try {
