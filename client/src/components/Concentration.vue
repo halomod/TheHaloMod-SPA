@@ -63,7 +63,6 @@ export default {
     };
   },
   created() {
-    console.log(this.default);
     this.$emit('onChange', this.model);
     // this.model.tracer_concentration_model = this.defaultModel;
     // this.model.tracer_concentration_params = params[this.defaultModel];

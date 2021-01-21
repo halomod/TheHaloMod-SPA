@@ -7,6 +7,11 @@ ignore =
     F403
     F401
     E231
+
+    # Disabled complexity for now because of the `create_app` function which
+    # is huge.
+    C901
+    
 max-line-length = 88
 # Should be 18.
 max-complexity = 25

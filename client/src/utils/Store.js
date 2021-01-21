@@ -1,6 +1,7 @@
 import axios from 'axios';
 import clonedeep from 'lodash.clonedeep';
 import baseurl from '@/env';
+import Debug from 'debug';
 import {
   set,
   keys,
@@ -9,6 +10,9 @@ import {
 } from 'idb-keyval';
 
 axios.defaults.withCredentials = true;
+
+const debug = Debug('Store.js');
+debug.enabled = false;
 
 /**
  * This store is initialized at the beginning of the application startup. It
@@ -20,6 +24,7 @@ export default class API {
       plot: '',
       models: {},
       modelNames: [],
+      plotType: 'dndm',
       plotData: null,
       plotScale: 'logarithmic',
     };
@@ -60,13 +65,15 @@ export default class API {
    * @param {String} fig_type, type of figure to be requested from server
    * @return {String} image data base64 string, or null if request fails
    */
-  createPlot = async (fig_type = 'dndm') => {
+  createPlot = async (fig_type = this.state.plotType) => {
     // may need to call createModel on all items before getting plot
     /*    try {
       const { data } = await axios.post(`${baseurl}/plot`, {
         fig_type,
         img_type: 'png',
       });
+      debug(`The data was retrieved with the baseurl of ${baseurl} and is: `,
+        data);
       this.state.plot = `data:image/png;base64,${data.figure}`;
       return this.state.plot;
     } catch (error) {
@@ -214,5 +221,18 @@ export default class API {
       });
     });
     this.state.plotData = chartdata;
+  }
+  /**
+   * Sets the plot type for the plot, and generates a new plot if it is
+   * different.
+   *
+   * @param {string} newPlotType the identifier of the new plot type. For
+   * example: `dndm`.
+   */
+  setPlotType = async (newPlotType) => {
+    this.state.plotType = newPlotType;
+    if (newPlotType !== this.state.plotType) {
+      this.createPlot();
+    }
   }
 }
