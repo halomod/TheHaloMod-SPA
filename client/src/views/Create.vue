@@ -7,7 +7,7 @@
     >
       <md-list v-for="(form, index) in forms" :key="index">
         <md-list-item
-          :class="{'router-link-active': form.highlight}"
+          :class="{'router-link-active': currentlyVisible == form.name}"
           v-bind:to="`#${form.props ? form.props.id : form.component.id}`">
           {{form.props ? form.props.title : form.component.title}}
         </md-list-item>
@@ -17,9 +17,9 @@
 
       <div v-for="(form, index) in forms" :key="index">
         <FormWrapper
-          :name="form.props ? form.props.title : form.component.title"
+          :name="form.name"
           v-bind:id="`${form.props ? form.props.id : form.component.id}`"
-          @toggle-highlight="(bool) => toggleHighlight(bool, form, index)">
+          @currently-visible="(name) => setCurrentlyVisible(name)">
           <component v-if="form.isMeta"
             :is="form.component"
             :parent_model="model_metadata"
@@ -78,6 +78,7 @@ export default {
   },
   data: () => ({
     forms: null,
+    currentlyVisible: null,
   }),
   methods: {
     createForms() {
@@ -163,48 +164,18 @@ export default {
           model: 'transfer',
         },
       ];
-      forms.forEach((item) => {
-        const i = item;
-        i.highlight = false;
-        i.isVisible = false;
+      forms.forEach((form) => {
+        const lForm = form;
+        lForm.name = lForm.props ? lForm.props.title : lForm.component.title;
       });
       this.forms = forms;
       this.$forceUpdate();
     },
-    toggleHighlight(bool, form, index) {
-      const f = form;
-      if (!bool) {
-        f.highlight = false;
-        if (index + 1 < this.forms.length) {
-          if (index === 0) {
-            this.handleTopForm(this.forms[index + 1], index + 1);
-          } else if (index - 1 >= 0 && !this.forms[index - 1].isVisible) {
-            this.handleTopForm(this.forms[index + 1], index + 1);
-          }
-        }
-      } else if (bool) {
-        if (index - 1 >= 0) {
-          if (!this.forms[index - 1].isVisible) {
-            this.handleTopForm(f, index);
-          }
-        } else {
-          this.handleTopForm(f, index);
-        }
-        if (index + 1 < this.forms.length) {
-          this.forms[index + 1].highlight = false;
-        }
-      }
-      f.isVisible = bool;
-      this.forms[index] = f;
-      this.$forceUpdate();
-    },
-    handleTopForm(form, index, prefix = '/create') {
-      const f = form;
-      f.highlight = true;
-      window.history.replaceState({}, '', `${prefix}#${form.props ? form.props.id : form.component.id}`);
-    },
     updateModelMetaData(updatedMetaData) {
       this.$emit('update-metadata', updatedMetaData);
+    },
+    setCurrentlyVisible(name) {
+      this.currentlyVisible = name;
     },
   },
   created() {
