@@ -18,8 +18,8 @@
       <div v-for="(form, index) in forms" :key="index">
         <FormWrapper
           :name="form.name"
-          v-bind:id="`${form.props ? form.props.id : form.component.id}`"
-          @currently-visible="(name) => setCurrentlyVisible(name)">
+          :id="form.id"
+          @currently-visible="() => setCurrentlyVisible(form.name, form.id)">
           <component v-if="form.isMeta"
             :is="form.component"
             :parent_model="model_metadata"
@@ -167,6 +167,7 @@ export default {
       forms.forEach((form) => {
         const lForm = form;
         lForm.name = lForm.props ? lForm.props.title : lForm.component.title;
+        lForm.id = lForm.props ? lForm.props.id : lForm.component.id;
       });
       this.forms = forms;
       this.$forceUpdate();
@@ -174,8 +175,9 @@ export default {
     updateModelMetaData(updatedMetaData) {
       this.$emit('update-metadata', updatedMetaData);
     },
-    setCurrentlyVisible(name) {
+    setCurrentlyVisible(name, id, prefix = '/create') {
       this.currentlyVisible = name;
+      window.history.replaceState({}, '', `${prefix}#${id}`);
     },
   },
   created() {
