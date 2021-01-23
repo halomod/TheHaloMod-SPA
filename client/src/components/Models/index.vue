@@ -14,11 +14,12 @@
           <md-button @click="handleNewModelClick" class="md-primary">New Model</md-button>
         </div>
       </div>
-      <md-list v-if="READ_ONLY.modelNames.length > 0" class="model-list">
+      <md-list v-if="STORE_STATE.modelNames.length > 0" class="model-list">
         <Model
-          v-for="modelName in READ_ONLY.modelNames"
+          v-for="modelName in STORE_STATE.modelNames"
           :key="modelName"
           :name="modelName"
+          :buttonsDisabled="loadingModel"
           @delete-click="handleDeleteClick"
           @edit-click="handleEditClick"
           @copy-click="handleCopyClick"
@@ -43,8 +44,8 @@
       <Create
         :params="currentModelParams"
         @update-params="updateParams"
-        :model_metadata="currentModelMetaData"
-        @update-metadata="updateModelMetaData"
+        :modelName="currentModelName"
+        @update-model-name="updateModelName"
       />
 
       <md-dialog-actions>
@@ -59,8 +60,15 @@
 import Create from '@/views/Create';
 import INITIAL_STATE from '@/constants/initial_state.json';
 import clonedeep from 'lodash.clonedeep';
+import Debug from 'debug';
 import Model from './Model';
 
+const debug = Debug('Models');
+debug.enabled = true;
+
+/**
+ * The operations enum.
+ */
 const OPERATIONS = {
   edit: 'edit',
   create: 'create',
@@ -72,6 +80,9 @@ export default {
     return {
       showDialog: false,
       loadingModel: false,
+      /**
+       * Keeps track of the most recent operation on a model.
+       */
       currentOperation: OPERATIONS.create,
       OPERATIONS,
       /**
@@ -79,16 +90,17 @@ export default {
        * changes.
        */
       currentModelParams: clonedeep(INITIAL_STATE),
-      currentModelMetaData: {
-        model_name: 'Model',
-        fig_type: 'dndm',
-      },
+      currentModelName: 'Model',
       /**
        * Used to determine what the model's name used to be if the name is
        * updated.
        */
       currentModelStoredName: 'Model',
-      READ_ONLY: this.$store.state,
+      /**
+       * Needs to stay as a direct reference to the state of the store so that
+       * it updates automatically.
+       */
+      STORE_STATE: this.$store.state,
     };
   },
   components: {
@@ -111,20 +123,19 @@ export default {
       this.showDialog = false;
       this.loadingModel = true;
 
-      const modelName = this.currentModelMetaData.model_name;
       if (this.currentOperation === OPERATIONS.edit) {
-        if (this.currentModelMetaData.model_name !== this.currentModelStoredName) {
+        if (this.currentModelName !== this.currentModelStoredName) {
           // Changing the name of the model, once there is logic built into the
           // API with this functionality, this process can be changed to that.
           const oldName = this.currentModelStoredName;
-          const newName = this.currentModelMetaData.model_name;
+          const newName = this.currentModelName;
           await this.$store.cloneModel(oldName, newName);
           await this.$store.deleteModel(oldName);
         } else {
           await this.$store.updateModel(this.currentModelStoredName, this.currentModelParams);
         }
       } else if (this.currentOperation === OPERATIONS.create) {
-        await this.$store.createModel(this.currentModelParams, modelName);
+        await this.$store.createModel(this.currentModelParams, this.currentModelName);
       }
       this.loadingModel = false;
     },
@@ -133,9 +144,9 @@ export default {
     },
     async handleEditClick(modelName) {
       this.loadingModel = true;
-      this.currentModelParams = await this.$store.getModel(modelName);
-      this.currentModelMetaData.model_name = modelName;
+      this.currentModelName = modelName;
       this.currentModelStoredName = modelName;
+      this.currentModelParams = await this.$store.getModel(modelName);
       this.currentOperation = OPERATIONS.edit;
       this.loadingModel = false;
       this.showDialog = true;
@@ -145,8 +156,8 @@ export default {
       await this.$store.cloneModel(modelName, `${modelName} copy`);
       this.loadingModel = false;
     },
-    updateModelMetaData(newModelMetaData) {
-      this.currentModelMetaData = newModelMetaData;
+    updateModelName(newModelName) {
+      this.currentModelName = newModelName;
     },
     updateParams(newParams) {
       this.currentModelParams = newParams;

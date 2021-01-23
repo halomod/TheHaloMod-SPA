@@ -22,8 +22,8 @@
           @currently-visible="() => setCurrentlyVisible(form.name, form.id)">
           <component v-if="form.isMeta"
             :is="form.component"
-            :parent_model="model_metadata"
-            @onChange="updateModelMetaData"
+            :modelName="modelName"
+            @onChange="updateModelName"
           />
           <component v-else
             v-bind="form.props"
@@ -50,6 +50,10 @@ import GrowthForm from '@/components/GrowthForm.vue';
 import HaloModelForm from '@/components/HaloModelForm.vue';
 import FilterForm from '@/components/FilterForm.vue';
 import TransferForm from '@/components/TransferForm.vue';
+import Debug from 'debug';
+
+const debug = Debug('Create.vue');
+debug.enabled = true;
 
 export default {
   name: 'Create',
@@ -71,8 +75,8 @@ export default {
       type: Object,
       required: true,
     },
-    model_metadata: {
-      type: Object,
+    modelName: {
+      type: String,
       required: true,
     },
   },
