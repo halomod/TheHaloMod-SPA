@@ -8,29 +8,12 @@ export default {
   name: 'Chart',
   mixins: [reactiveProp],
   data: () => ({
-    sample: {
-      datasets: [
-        {
-          label: 'Tias Data',
-          data: [
-            {
-              x: 1,
-              y: 186742769.27833816,
-            },
-            {
-              x: 26302679.918953814,
-              y: 0.0000020952114019357093,
-            },
-            {
-              x: 60255958.60743581,
-              y: 4.2425385415859126e-7,
-            },
-          ],
-        },
-      ],
-    },
     options: {
       responsive: true,
+      maintainAspectRatio: false,
+      legend: {
+        position: 'right',
+      },
       elements: {
         point: {
           radius: 0,

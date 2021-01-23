@@ -48,7 +48,10 @@ export default {
   computed: {
     chartStyles() {
       return {
-        width: '800px',
+        position: 'relative',
+        margin: '16px auto',
+        height: '70vh',
+        width: '50vw',
       };
     },
   },

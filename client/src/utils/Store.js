@@ -27,6 +27,8 @@ export default class API {
       plotType: 'dndm',
       plotData: null,
       plotScale: 'logarithmic',
+      xLabel: '',
+      yLabel: '',
     };
   }
 
@@ -44,7 +46,7 @@ export default class API {
 
     this.state.models = Object.fromEntries(models);
     this.state.modelNames = this.getModelNames();
-    this.createPlot('dndm');
+    this.getPlotData();
   }
 
   /**
@@ -67,7 +69,7 @@ export default class API {
    */
   createPlot = async (fig_type = this.state.plotType) => {
     // may need to call createModel on all items before getting plot
-    /*    try {
+    try {
       const { data } = await axios.post(`${baseurl}/plot`, {
         fig_type,
         img_type: 'png',
@@ -79,8 +81,7 @@ export default class API {
     } catch (error) {
       console.error(error);
       return null;
-    }  */
-    console.log(fig_type);
+    }
   }
 
   /**
@@ -101,7 +102,7 @@ export default class API {
         params: this.flatten(model),
         label: name,
       });
-      await Promise.all([this.setModel(name, model), this.createPlot(), this.getPlotData()]);
+      await Promise.all([this.setModel(name, model), this.getPlotData()]);
     } catch (error) {
       console.error(error);
       // better error messaging here
@@ -119,7 +120,7 @@ export default class API {
         params: this.flatten(model),
         model_name: name,
       });
-      await Promise.all([this.setModel(name, model), this.createPlot(), this.getPlotData()]);
+      await Promise.all([this.setModel(name, model), this.getPlotData()]);
     } catch (error) {
       console.error(error);
       // better error handling here, some vue event?
@@ -138,7 +139,7 @@ export default class API {
         new_model_name: newName,
       });
       const model = await this.getModel(oldName);
-      await Promise.all([this.setModel(newName, model), this.createPlot()]);
+      await Promise.all([this.setModel(newName, model), this.getPlotData()]);
     } catch (error) {
       console.error(error);
     }
@@ -187,13 +188,15 @@ export default class API {
       delete this?.state.models[name];
       this.state.modelNames = this.getModelNames();
       /* eslint-enable */
-      await this.createPlot();
       await this.getPlotData();
     } catch (error) {
       console.error(error);
     }
   }
 
+  /**
+   * Retrieves plot data for specified models, or all models
+   */
   getPlotData = async () => {
     let data = {};
     try {
@@ -206,10 +209,24 @@ export default class API {
     }
   }
 
+  /**
+   * Maps the plot data returned from the POST request to /get_plot_data
+   * to the format of the chartData prop in Chart.Vue:
+   * chartData {
+   *  datasets: [{
+   *    label: <dataset/model label>,
+   *    data: [
+   *      x:<x value>
+   *      y: <y value>
+   *    ]
+   *  }]
+   * }
+   * @param {Object} data the plot data returned from the body of the
+   * POST request to /get_plot_data
+   */
   mapToChartData = (data) => {
     const chartdata = {};
     chartdata.datasets = [];
-    console.log(data);
     Object.keys(data.plot_data).forEach((model_name, model_idx) => {
       chartdata.datasets[model_idx] = {};
       chartdata.datasets[model_idx].label = model_name;
@@ -231,8 +248,8 @@ export default class API {
    * example: `dndm`.
    */
   setPlotType = async (newPlotType) => {
-    this.state.plotType = newPlotType;
     if (newPlotType !== this.state.plotType) {
+      this.state.plotType = newPlotType;
       await this.getPlotData();
     }
   }
