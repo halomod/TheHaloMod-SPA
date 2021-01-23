@@ -135,7 +135,7 @@ def create_app(test_config=None):
         # save post-calculation models to session to take advantage of compute
         session["models"] = pickle.dumps(models)
 
-        return jsonify(res);
+        return jsonify(res)
 
     # This endpoint clones a model based on name and adds the new model to the session
     #
