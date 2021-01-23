@@ -2,7 +2,7 @@
   <form novalidate>
     <md-field>
       <label> Model Name </label>
-      <md-input v-model="model_metadata.model_name"/>
+      <md-input v-model="input"/>
     </md-field>
   </form>
 </template>
@@ -12,19 +12,21 @@ export default {
   name: 'ModelMetadataForm',
   title: 'Model Metadata',
   id: 'model-metadata',
-  model: {
-    prop: 'parent_model',
-    event: 'onChange',
+  props: {
+    modelName: {
+      type: String,
+      required: true,
+    },
   },
   data() {
     return {
-      model_metadata: {
-        model_name: 'Model',
-      },
+      input: this.modelName,
     };
   },
-  updated() {
-    this.$emit('onChange', this.model_metadata);
+  watch: {
+    input() {
+      this.$emit('onChange', this.input);
+    },
   },
 };
 </script>
