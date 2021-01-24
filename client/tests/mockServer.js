@@ -4,17 +4,13 @@ import baseurl from '@/env';
 /**
  * Creates a mock server for use in tests on the front-end.
  *
- * @param {any} object a configuration object for `miragejs` to create the
- * server. The basic thing that can be provided is the following:
- * ```
- * {environment: 'test'}
- * ```
+ * @param {string} environment this can be `test` for a test environment
  */
-export default function makeServer({ environment = 'development' } = {}) {
-  const server = createServer({
+export default function makeServer(environment) {
+  return createServer({
     environment,
     models: {
-      user: Model,
+      haloModel: Model,
     },
 
     /**
@@ -22,23 +18,26 @@ export default function makeServer({ environment = 'development' } = {}) {
      * `{environment: 'test'}` is provided as an argument to the `makeServer`
      * function.
      */
-    seeds(serverArg) {
-      serverArg.create('user', { name: 'Bob' });
-      serverArg.create('user', { name: 'Alice' });
+    seeds(server) {
+      server.create('user', { name: 'Bob' });
+      server.create('user', { name: 'Alice' });
     },
 
     routes() {
-      /**
-       * `namespace` can be setup to define a basic url extension for the
-       * rest of the extensions to be built off of. This can replace what
-       * the components or other javascript requests.
-       */
-      this.namespace = baseurl;
+      /* Note that in the documentation for Mirage JS they say you can use
+      `this.namespace` to set a prefix like baseurl. What they don't tell
+      you is that it only works on domains that are the same as the website.
+      So that doesn't work for localhost:5000 aka the server address. */
 
-      // Define the routes for the mock server
-      this.get('/users', (schema) => schema.users.all());
+      /**
+       * Defines what the mock server will do on a POST request to `/create`.
+       *
+       * If the real server arguments are changed, this should be changed too.
+       */
+      this.post(`${baseurl}/create`, (schema, request) => {
+        const attributes = request.requestBody;
+        return schema.haloModels.create(attributes);
+      });
     },
   });
-
-  return server;
 }
