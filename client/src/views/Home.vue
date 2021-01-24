@@ -25,7 +25,7 @@ export default {
 
 <style scoped>
   .md-layout-item {
-    margin-top: 16px;
+    margin-top: 8vh;
     margin-bottom: 16px;
   }
   .graph {
