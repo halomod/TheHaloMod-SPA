@@ -109,14 +109,17 @@ export default class API {
    * Updates a model
    * @param {Object} model model to update
    * @param {String} name label to update model
+   * @param {String} newName label to update model name
    */
-  updateModel = async (name, model) => {
+  updateModel = async (name, newName, model) => {
     try {
       await axios.post(`${baseurl}/update`, {
         params: this.flatten(model),
         model_name: name,
       });
       await Promise.all([this.setModel(name, model), this.createPlot()]);
+      await this.cloneModel(name, newName);
+      await this.deleteModel(name);
     } catch (error) {
       console.error(error);
       // better error handling here, some vue event?

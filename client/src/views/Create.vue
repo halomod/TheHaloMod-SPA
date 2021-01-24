@@ -3,7 +3,7 @@
   <md-progress-bar md-mode="indeterminate" v-if="loading"/>
   <md-app id="create" md-mode="fixed" v-if="!loading">
     <md-app-toolbar>
-      <span class="md-title">{{model_metadata.model_name}}</span>
+      <span class="md-title">{{modelName}}</span>
       <div class="md-toolbar-section-end">
           <md-button class="md-primary" @click="handleSave">
             Save
@@ -35,7 +35,7 @@
           @currently-visible="() => setCurrentlyVisible(form.name, form.id)">
           <component v-if="form.isMeta"
             :is="form.component"
-            :modelName="model_metadata.model_name"
+            :modelName="modelName"
             @onChange="updateModelName"
           />
           <component v-else
@@ -92,15 +92,12 @@ export default {
     forms: null,
     currentlyVisible: null,
     params: clonedeep(INITIAL_STATE),
-    model_metadata: {
-      model_name: 'New Model',
-      figType: 'dndm',
-    },
+    modelName: 'New Model',
   }),
   async mounted() {
     if (this.$route.name === 'Edit') {
-      this.model_metadata.model_name = this.$route.params.id;
-      this.params = await this.$store.getModel(this.model_metadata.model_name);
+      this.modelName = this.$route.params.id;
+      this.params = await this.$store.getModel(this.modelName);
       this.$forceUpdate();
     }
     this.createForms();
@@ -199,7 +196,7 @@ export default {
       this.$forceUpdate();
     },
     updateModelName(name) {
-      this.model_metadata.model_name = name;
+      this.modelName = name;
     },
     setCurrentlyVisible(name, id, prefix = '/create') {
       this.currentlyVisible = name;
@@ -207,15 +204,11 @@ export default {
     },
     async handleSave() {
       this.loading = true;
-      console.log(this.params);
       if (this.$route.name === 'Edit') {
-        await this.$store.updateModel(this.$route.params.id, this.params);
-        if (this.model_metadata.model_name !== this.$route.params.id) {
-          await this.$store.cloneModel(this.$route.params.id, this.model_metadata.model_name);
-          await this.$store.deleteModel(this.$route.params.id);
-        }
+        await this.$store.updateModel(this.$route.params.id,
+          this.modelName, this.params);
       } else {
-        await this.$store.createModel(this.params, this.model_metadata.model_name);
+        await this.$store.createModel(this.params, this.modelName);
       }
       this.loading = false;
       this.$router.push('/');
