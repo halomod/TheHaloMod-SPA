@@ -61,7 +61,7 @@ export default {
   data: () => ({
     profileChoices,
     model: {
-      profile_model: profileChoices['NFW (1997)'],
+      profile_model: 'NFW',
       profile_params: profileParams.NFW,
     },
     defaults: BACKEND_CONSTANTS.Profile_params.NFW,
