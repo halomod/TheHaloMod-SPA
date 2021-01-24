@@ -54,7 +54,6 @@ import Debug from 'debug';
 
 const debug = Debug('Create.vue');
 debug.enabled = true;
-
 export default {
   name: 'Create',
   components: {
@@ -176,8 +175,8 @@ export default {
       this.forms = forms;
       this.$forceUpdate();
     },
-    updateModelMetaData(updatedMetaData) {
-      this.$emit('update-metadata', updatedMetaData);
+    updateModelName(updatedName) {
+      this.$emit('update-model-name', updatedName);
     },
     setCurrentlyVisible(name, id, prefix = '/create') {
       this.currentlyVisible = name;
