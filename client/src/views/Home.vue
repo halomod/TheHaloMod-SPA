@@ -10,8 +10,8 @@
 </template>
 
 <script>
-import Models from '@/components/Models';
-import Graph from '../components/Graph.vue';
+import Models from '@/components/Models.vue';
+import Graph from '@/components/Graph.vue';
 
 export default {
   name: 'Home',
