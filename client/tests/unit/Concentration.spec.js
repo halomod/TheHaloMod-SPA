@@ -69,13 +69,17 @@ describe('Mounted ConcentrationForm', () => {
 
   test('emits onChange event whenever the values of model params have changed', async () => {
     const emitted = wrapper.emitted();
+    wrapper.vm.$emit('onChange');
+    await localVue.nextTick();
     let prevCount = emitted.onChange.length;
     const params = Object.keys(wrapper.vm.model.concentration_params);
     for (const param of params) {
       const val = wrapper.vm.$data.model.concentration_params[param];
       if (typeof val === 'string') {
-        if(val === 'full'){
-          wrapper.vm.$data.model.concentration_params[param]
+        if (val === 'full') {
+          wrapper.vm.$data.model.concentration_params[param] = 'relaxed';
+        } else {
+          wrapper.vm.$data.model.concentration_params[param] = 'full';
         }
       } else {
         wrapper.vm.$data.model.concentration_params[param] += 0.1;

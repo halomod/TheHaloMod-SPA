@@ -609,7 +609,7 @@ const BACKEND_CONSTANTS = {
       sigma_A: 0,
     },
   },
-  Exculsion_options: {
+  Exclusion_options: {
     NoExclusion: 'No Exclusion',
     Sphere: 'Spherical Halos',
     DblSphere_: 'Spherical Overlapping Halos',
