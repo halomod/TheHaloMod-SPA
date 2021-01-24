@@ -30,7 +30,7 @@ describe('Mounted Create', () => {
     localVue, // a reference to the Vue instance from above
     // any props that need to be passed to the component for it to function / avoid warnings
     propsData: {
-      model_metadata: {},
+      modelName: 'Model',
       params: constants,
     },
   });
