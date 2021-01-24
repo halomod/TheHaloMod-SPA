@@ -1,5 +1,6 @@
 import { createServer, Model } from 'miragejs';
 import baseurl from '@/env';
+import figureData from './example_data/figureData.json';
 
 /**
  * Creates a mock server for use in tests on the front-end.
@@ -23,6 +24,9 @@ export default function makeServer(environment) {
       server.create('user', { name: 'Alice' });
     },
 
+    /**
+     * Defines the routes that the mock server will intercept.
+     */
     routes() {
       /* Note that in the documentation for Mirage JS they say you can use
       `this.namespace` to set a prefix like baseurl. What they don't tell
@@ -35,8 +39,28 @@ export default function makeServer(environment) {
        * If the real server arguments are changed, this should be changed too.
        */
       this.post(`${baseurl}/create`, (schema, request) => {
-        const attributes = request.requestBody;
-        return schema.haloModels.create(attributes);
+        const modelName = request.requestBody.label;
+        return schema.haloModels.create({
+          name: modelName,
+        });
+      });
+
+      this.post(`${baseurl}/plot`, () => figureData.data);
+
+      this.post(`${baseurl}/update`, () => ({}));
+
+      /**
+       * Simply adds the new model name to the list of halo models. Doesn't
+       * add the model itself.
+       */
+      this.post(`${baseurl}/clone`, (schema, request) => {
+        const newModelName = request.requestBody.new_model_name;
+        return schema.haloModels.create(newModelName);
+      });
+
+      this.post(`${baseurl}/delete`, (schema, request) => {
+        const modelName = request.requestBody.model_name;
+        return schema.haloModels.findBy({ name: modelName }).destroy();
       });
     },
   });

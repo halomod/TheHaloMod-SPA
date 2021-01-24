@@ -1,10 +1,13 @@
 import Store from '@/utils/Store.js';
 import DEFAULT_MODEL from '@/constants/initial_state.json';
+import Vue from 'vue';
 import makeServer from '../mockServer';
 
-// Setup a fake indexedDB because `window` does not exist while testing. This
-// logs to the console that vue is in dev mode because it thinks there is a
-// browser.
+// Disable dev notice info logs. Just a quality of life thing.
+Vue.config.productionTip = false;
+Vue.config.devtools = false;
+
+// Setup a fake indexedDB because `window` does not exist while testing.
 require('fake-indexeddb/auto');
 
 describe('Store tests', () => {
@@ -31,10 +34,14 @@ describe('Store tests', () => {
   });
 
   test('Store should retrieve no model names if no models have been added', () => {
-    expect(store.getModelNames.length === 0).toBeTruthy();
+    expect(store.getModelNames().length === 0).toBeTruthy();
   });
 
   test('Store should be able to create models and return them', async () => {
-    await store.createModel(DEFAULT_MODEL, 'Some test model');
+    const testModelName1 = 'Some test model';
+    await store.createModel(DEFAULT_MODEL, testModelName1);
+    expect(store.getModelNames().length === 1).toBeTruthy();
+    await store.createModel(DEFAULT_MODEL, 'Some other test model');
+    expect(store.getModelNames()).toContain(testModelName1);
   });
 });
