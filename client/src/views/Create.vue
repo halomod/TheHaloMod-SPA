@@ -219,7 +219,8 @@ export default {
 
 <style scoped>
   #create {
-    height: 80vh;
+    padding-top: 7vh; /*needs better styling here*/
+    height: 100vh;
   }
   .md-drawer {
     width: 230px;

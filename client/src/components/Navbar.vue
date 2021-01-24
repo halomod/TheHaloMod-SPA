@@ -18,3 +18,10 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+  .md-toolbar {
+    position: fixed;
+    z-index: 9;
+  }
+</style>
