@@ -194,6 +194,21 @@ export default {
       this.currentlyVisible = name;
       window.history.replaceState({}, '', `${prefix}#${id}`);
     },
+    async handleSave() {
+      this.loading = true;
+      console.log(this.params);
+      if (this.$route.name === 'Edit') {
+        await this.$store.updateModel(this.$route.params.id, this.params);
+        if (this.model_metadata.model_name !== this.$route.params.id) {
+          await this.$store.cloneModel(this.$route.params.id, this.model_metadata.model_name);
+          await this.$store.deleteModel(this.$route.params.id);
+        }
+      } else {
+        await this.$store.createModel(this.params, this.model_metadata.model_name);
+      }
+      this.loading = false;
+      this.$router.push('/');
+    },
   },
   created() {
     this.createForms();
