@@ -19,7 +19,9 @@
           </md-option>
         </md-select>
       </md-field>
-      <Chart v-if="READ_ONLY.plotData !== null" :chartData="READ_ONLY.plotData"
+      <Chart v-if="READ_ONLY.plotData !== null && READ_ONLY.plotDetails !== null"
+          :chartData="READ_ONLY.plotData"
+          :options="READ_ONLY.plotOptions"
           :styles="chartStyles"/>
       <p v-else>No graph has been generated yet</p>
     </md-toolbar>
