@@ -1,0 +1,16 @@
+version: '3.5'
+
+services:
+  server:
+    build: .
+    ports:
+      - "5000:5000"
+    links:
+      - redis
+    environment: 
+      - REDIS_URL=redis://localhost
+  redis:
+    image: "redis"
+    container_name: redis-cache
+    expose: 
+      - 6379
