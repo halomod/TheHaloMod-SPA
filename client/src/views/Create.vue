@@ -1,5 +1,16 @@
 <template>
   <md-app id="create" md-mode="fixed">
+    <md-app-toolbar>
+      <span class="md-title">{{model_metadata.model_name}}</span>
+      <div class="md-toolbar-section-end">
+          <md-button class="md-primary" @click="handleSave">
+            Save
+          </md-button>
+          <md-button href="/" class="md-primary">
+            Close
+          </md-button>
+        </div>
+    </md-app-toolbar>
     <md-app-drawer
       md-permanent="full"
       class="md-primary"
