@@ -36,6 +36,8 @@
 </template>
 
 <script>
+import clonedeep from 'lodash.clonedeep';
+
 import DoubleField from './DoubleField.vue';
 import BACKEND_CONSTANTS from '../constants/backend_constants';
 
@@ -48,10 +50,9 @@ const profileChoices = {
   'Cored NFW': 'CoredNFW',
 };
 
-const profileParams = BACKEND_CONSTANTS.Profile_params;
+const profileParams = clonedeep(BACKEND_CONSTANTS.Profile_params);
 
 export default {
-  id: 'profile',
   name: 'profile',
   model: {
     event: 'onChange',
@@ -64,18 +65,26 @@ export default {
       profile_model: 'NFW',
       profile_params: profileParams.NFW,
     },
-    defaults: BACKEND_CONSTANTS.Profile_params.NFW,
+    defaults: profileParams.NFW,
     choices: profileChoices,
   }),
   updated() {
-    this.$emit('onChange', this.model);
+    const payload = {};
+    if (this.id === 'tracer-profile') {
+      payload.tracer_profile_model = this.model.profile_model;
+      payload.tracer_profile_params = this.model.profile_params;
+    } else {
+      payload.halo_profile_model = this.model.profile_model;
+      payload.halo_profile_params = this.model.profile_params;
+    }
+    this.$emit('onChange', this.payload);
   },
   watch: {
     'model.profile_model': function updateOptions(val) {
       this.model.profile_params = null;
       this.$nextTick(function saveNewOptions() {
-        this.model.profile_params = BACKEND_CONSTANTS.Profile_params[val];
-        this.defaults = BACKEND_CONSTANTS.Profile_params[val];
+        this.model.profile_params = profileParams[val];
+        this.defaults = profileParams[val];
       });
     },
   },

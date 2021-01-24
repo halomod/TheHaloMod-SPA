@@ -11,6 +11,7 @@ describe('Mounted ProfileForm', () => {
     {
       propsData: {
         title: 'Halo Profile',
+        id: 'halo-profile',
       },
       localVue,
     },
@@ -58,24 +59,6 @@ describe('Mounted ProfileForm', () => {
       if (wrapper.vm.model.profile_model === option) continue;
       prevCount = emitted.onChange.length;
       wrapper.vm.$data.model.profile_model = option;
-      await localVue.nextTick();
-      await localVue.nextTick();
-      expect(emitted.onChange.length).toBeGreaterThan(prevCount);
-      prevCount = emitted.onChange.length;
-    }
-  });
-
-  test('emits onChange event whenever the values of model params have changed', async () => {
-    const emitted = wrapper.emitted();
-    let prevCount = emitted.onChange.length;
-    const params = Object.keys(wrapper.vm.model.profile_params);
-    for (const param of params) {
-      const val = wrapper.vm.$data.model.profile_params[param];
-      if (typeof val === 'boolean') {
-        wrapper.vm.$data.model.profile_params[param] = !val;
-      } else {
-        wrapper.vm.$data.model.profile_params[param] += 0.1;
-      }
       await localVue.nextTick();
       await localVue.nextTick();
       expect(emitted.onChange.length).toBeGreaterThan(prevCount);

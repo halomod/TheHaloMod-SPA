@@ -2,8 +2,8 @@
   <div class="md-layout md-gutter">
     <div class="md-layout-item md-size-50">
       <md-field>
-        <label>Tracer Concentration</label>
-        <md-select v-model="model.tracer_concentration_model">
+        <label>{{title}}</label>
+        <md-select v-model="model.concentration_model">
           <md-option
             v-for="(value, key) in options"
             :key="key"
@@ -14,16 +14,16 @@
       </md-field>
     </div>
     <div class="md-layout-item md-size-25">
-      <div v-for="(value, key) in model.tracer_concentration_params" :key="key">
+      <div v-for="(value, key) in model.concentration_params" :key="key">
         <md-field v-if="key === 'sample'">
           <label>{{key}}</label>
-          <md-select v-model="model.tracer_concentration_params.sample">
+          <md-select v-model="model.concentration_params.sample">
             <md-option value="relaxed">relaxed</md-option>
             <md-option value="full">full</md-option>
           </md-select>
         </md-field>
         <DoubleField
-          v-model="model.tracer_concentration_params[key]"
+          v-model="model.concentration_params[key]"
           v-else
           :value="value"
           :param="key"
@@ -40,15 +40,14 @@ import clonedeep from 'lodash.clonedeep';
 import DoubleField from '@/components/DoubleField.vue';
 import CONSTANTS from '@/constants/backend_constants';
 
-const params = clonedeep(CONSTANTS.CMRelation_params);
+const concentrationParams = clonedeep(CONSTANTS.CMRelation_params);
 
 export default {
   name: 'concentration',
-  id: 'concentration',
   components: {
     DoubleField,
   },
-  props: ['defaultModel'],
+  props: ['defaultModel', 'id', 'title'],
   model: {
     event: 'onChange',
     prop: 'parent_model',
@@ -57,25 +56,29 @@ export default {
     return {
       options: CONSTANTS.CMRelation_options,
       model: {
-        tracer_concentration_model: this.defaultModel,
-        tracer_concentration_params: params[this.defaultModel],
+        concentration_model: this.defaultModel,
+        concentration_params: concentrationParams[this.defaultModel],
       },
     };
   },
-  created() {
-    this.$emit('onChange', this.model);
-    // this.model.tracer_concentration_model = this.defaultModel;
-    // this.model.tracer_concentration_params = params[this.defaultModel];
+  updated() {
+    const payload = {};
+    if (this.id === 'tracer-concentration') {
+      payload.tracer_concentration_model = this.model.concentration_model;
+      payload.tracer_concentration_params = this.model.concentration_params;
+    } else {
+      payload.halo_concentration_model = this.model.concentration_model;
+      payload.halo_concentration_params = this.model.concentration_params;
+    }
+    this.$emit('onChange', this.payload);
   },
   watch: {
-    model: {
-      deep: true,
-      handler() {
-        this.model.tracer_concentration_params = params[
-          this.model.tracer_concentration_model
-        ];
-        this.$emit('onChange', this.model);
-      },
+    'model.concentration_model': function updateOptions(val) {
+      this.model.concentration_params = null;
+      this.$nextTick(function saveNewOptions() {
+        this.model.concentration_params = concentrationParams[val];
+        this.defaults = concentrationParams[val];
+      });
     },
   },
 };
