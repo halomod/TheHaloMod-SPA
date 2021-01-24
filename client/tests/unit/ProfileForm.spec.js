@@ -23,7 +23,7 @@ describe('Mounted ProfileForm', () => {
   });
 
   test('renders correct title based on props', () => {
-    const title = wrapper.vm.$props.title;
+    const { title } = wrapper.vm.$props;
     expect(wrapper.html()).toEqual(expect.stringMatching(new RegExp(`.*${title}.*`)));
   });
 
@@ -70,7 +70,12 @@ describe('Mounted ProfileForm', () => {
     let prevCount = emitted.onChange.length;
     const params = Object.keys(wrapper.vm.model.profile_params);
     for (const param of params) {
-      wrapper.vm.$data.model.profile_params[param] += 0.01;
+      const val = wrapper.vm.$data.model.profile_params[param];
+      if (typeof val === 'boolean') {
+        wrapper.vm.$data.model.profile_params[param] = !val;
+      } else {
+        wrapper.vm.$data.model.profile_params[param] += 0.1;
+      }
       await localVue.nextTick();
       await localVue.nextTick();
       expect(emitted.onChange.length).toBeGreaterThan(prevCount);
