@@ -97,6 +97,15 @@ export default {
       figType: 'dndm',
     },
   }),
+  async mounted() {
+    if (this.$route.name === 'Edit') {
+      this.model_metadata.model_name = this.$route.params.id;
+      this.params = await this.$store.getModel(this.model_metadata.model_name);
+      this.$forceUpdate();
+    }
+    this.createForms();
+    this.loading = false;
+  },
   methods: {
     createForms() {
       // Add forms to this list, and remove the example form.
@@ -211,9 +220,6 @@ export default {
       this.loading = false;
       this.$router.push('/');
     },
-  },
-  created() {
-    this.createForms();
   },
 };
 </script>
