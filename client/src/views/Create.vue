@@ -1,5 +1,7 @@
 <template>
-  <md-app id="create" md-mode="fixed">
+  <div>
+  <md-progress-bar md-mode="indeterminate" v-if="loading"/>
+  <md-app id="create" md-mode="fixed" v-if="!loading">
     <md-app-toolbar>
       <span class="md-title">{{model_metadata.model_name}}</span>
       <div class="md-toolbar-section-end">
@@ -33,7 +35,7 @@
           @currently-visible="() => setCurrentlyVisible(form.name, form.id)">
           <component v-if="form.isMeta"
             :is="form.component"
-            :modelName="modelName"
+            :modelName="model_metadata.model_name"
             @onChange="updateModelName"
           />
           <component v-else
@@ -44,9 +46,13 @@
       </div>
     </md-app-content>
   </md-app>
+  </div>
 </template>
 
 <script>
+import Debug from 'debug';
+import clonedeep from 'lodash.clonedeep';
+
 import FormWrapper from '@/components/FormWrapper.vue';
 import Concentration from '@/components/Concentration.vue';
 import HaloExclusion from '@/components/HaloExclusion.vue';
@@ -61,7 +67,7 @@ import GrowthForm from '@/components/GrowthForm.vue';
 import HaloModelForm from '@/components/HaloModelForm.vue';
 import FilterForm from '@/components/FilterForm.vue';
 import TransferForm from '@/components/TransferForm.vue';
-import Debug from 'debug';
+import INITIAL_STATE from '@/constants/initial_state.json';
 
 const debug = Debug('Create.vue');
 debug.enabled = true;
@@ -81,19 +87,15 @@ export default {
     FilterForm,
     TransferForm,
   },
-  props: {
-    params: {
-      type: Object,
-      required: true,
-    },
-    modelName: {
-      type: String,
-      required: true,
-    },
-  },
   data: () => ({
+    loading: false,
     forms: null,
     currentlyVisible: null,
+    params: clonedeep(INITIAL_STATE),
+    model_metadata: {
+      model_name: 'New Model',
+      figType: 'dndm',
+    },
   }),
   methods: {
     createForms() {
@@ -187,8 +189,8 @@ export default {
       this.forms = forms;
       this.$forceUpdate();
     },
-    updateModelMetaData(updatedMetaData) {
-      this.$emit('update-metadata', updatedMetaData);
+    updateModelName(name) {
+      this.model_metadata.model_name = name;
     },
     setCurrentlyVisible(name, id, prefix = '/create') {
       this.currentlyVisible = name;
