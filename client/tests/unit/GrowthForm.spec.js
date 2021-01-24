@@ -8,7 +8,7 @@ describe('Mounted GrowthForm', () => {
   const localVue = createLocalVue();
   const wrapper = mount(GrowthForm, localVue);
 
-  const options = Object.keys(BACKEND_CONSTANTS._GrowthFactor_params);
+  const options = Object.keys(BACKEND_CONSTANTS._GrowthFactor_params); // eslint-disable-line
 
   test('has correct default model', () => {
     expect(wrapper.vm.model.growth_model).toBe('GrowthFactor');
@@ -31,7 +31,7 @@ describe('Mounted GrowthForm', () => {
       wrapper.vm.$data.model.growth_model = option;
       await localVue.nextTick();
       await localVue.nextTick();
-      const params = Object.keys(BACKEND_CONSTANTS._GrowthFactor_params[option]);
+      const params = Object.keys(BACKEND_CONSTANTS._GrowthFactor_params[option]); // eslint-disable-line
       for (const param of params) {
         expect(wrapper.html()).toEqual(expect.stringMatching(new RegExp(`.*${param}.*`)));
       }
