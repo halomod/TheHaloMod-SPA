@@ -1,6 +1,6 @@
 import { createServer, Model } from 'miragejs';
 import baseurl from '@/env';
-import figureData from './example_data/figureData.json';
+// import chartSampleData from '@/constants/chart_data_sample.json';
 
 /**
  * Creates a mock server for use in tests on the front-end.
@@ -45,7 +45,9 @@ export default function makeServer(environment) {
         });
       });
 
-      this.post(`${baseurl}/plot`, () => figureData.data);
+      /*
+      this.post(`${baseurl}/get_plot_data`, () => chartSampleData);
+      */
 
       this.post(`${baseurl}/update`, () => ({}));
 
