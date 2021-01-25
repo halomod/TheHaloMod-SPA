@@ -89,7 +89,7 @@ def create_app(test_config=None):
     #              <model_label>: {"xs": <array_of_xs>, "ys": <array_of_ys>},
     #              ...
     #           }}
-    @app.route('/get_plot_data', methods=["GET"])
+    @app.route('/get_plot_data', methods=["POST"])
     def get_plot_data():
 
         request_json = request.get_json()

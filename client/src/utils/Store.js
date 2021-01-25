@@ -25,6 +25,12 @@ export default class API {
       models: {},
       modelNames: [],
       plotType: 'dndm',
+      plotData: null,
+      plotDetails: {
+        scale: '',
+        xLabel: '',
+        yLabel: '',
+      },
     };
   }
 
@@ -42,7 +48,7 @@ export default class API {
 
     this.state.models = Object.fromEntries(models);
     this.state.modelNames = this.getModelNames();
-    this.createPlot('dndm');
+    this.getPlotData();
   }
 
   /**
@@ -99,7 +105,7 @@ export default class API {
         params: this.flatten(model),
         label: name,
       });
-      await Promise.all([this.setModel(name, model), this.createPlot()]);
+      await Promise.all([this.setModel(name, model), this.getPlotData()]);
     } catch (error) {
       console.error(error);
       // better error messaging here
@@ -117,7 +123,7 @@ export default class API {
         params: this.flatten(model),
         model_name: name,
       });
-      await Promise.all([this.setModel(name, model), this.createPlot()]);
+      await Promise.all([this.setModel(name, model), this.getPlotData()]);
     } catch (error) {
       console.error(error);
       // better error handling here, some vue event?
@@ -137,7 +143,7 @@ export default class API {
         new_model_name: newName,
       });
       const model = await this.getModel(oldName);
-      await Promise.all([this.setModel(newName, model), this.createPlot()]);
+      await Promise.all([this.setModel(newName, model), this.getPlotData()]);
     } catch (error) {
       console.error(error);
     }
@@ -188,10 +194,61 @@ export default class API {
       delete this?.state.models[name];
       this.state.modelNames = this.getModelNames();
       /* eslint-enable */
-      await this.createPlot();
+      await this.getPlotData();
     } catch (error) {
       console.error(error);
     }
+  }
+
+  /**
+   * Retrieves plot data for specified models, or all models
+   */
+  getPlotData = async () => {
+    let data = {};
+    try {
+      data = await axios.post(`${baseurl}/get_plot_data`, {
+        fig_type: this.state.plotType,
+      });
+      this.mapToChartData(data.data);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  /**
+   * Maps the plot data returned from the POST request to /get_plot_data
+   * to the format of the chartData prop in Chart.Vue:
+   * chartData {
+   *  datasets: [{
+   *    label: <dataset/model label>,
+   *    data: [
+   *      x:<x value>
+   *      y: <y value>
+   *    ]
+   *  }]
+   * }
+   * @param {Object} data the plot data returned from the body of the
+   * POST request to /get_plot_data
+   */
+  mapToChartData = (data) => {
+    const scale = (data.plot_details.yscale === 'log') ? 'logarithmic'
+      : data.plot_details.yscale;
+    this.state.plotDetails.scale = scale;
+    this.state.plotDetails.xLabel = data.plot_details.xlab;
+    this.state.plotDetails.yLabel = data.plot_details.ylab;
+    const chartdata = {};
+    chartdata.datasets = [];
+    Object.keys(data.plot_data).forEach((model_name, model_idx) => {
+      chartdata.datasets[model_idx] = {};
+      chartdata.datasets[model_idx].label = model_name;
+      chartdata.datasets[model_idx].data = [];
+      data.plot_data[model_name].xs.forEach((x, point_idx) => {
+        chartdata.datasets[model_idx].data[point_idx] = {};
+        chartdata.datasets[model_idx].data[point_idx].x = x;
+        chartdata.datasets[model_idx].data[point_idx].y = data.plot_data[model_name].ys[point_idx];
+      });
+    });
+    this.state.plotData = chartdata;
   }
 
   /**
@@ -203,9 +260,9 @@ export default class API {
    * @returns {void}
    */
   setPlotType = async (newPlotType) => {
-    this.state.plotType = newPlotType;
     if (newPlotType !== this.state.plotType) {
-      this.createPlot();
+      this.state.plotType = newPlotType;
+      await this.getPlotData();
     }
   }
 }
