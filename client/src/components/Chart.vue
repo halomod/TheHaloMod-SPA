@@ -12,11 +12,13 @@ export default {
     this.renderChart(this.chartData, this.options);
   },
   watch: {
-    options: () => {
+    options: {
       /* eslint-disable */
-      this.$data._chart.options = this.options;
-      this.$data._chart.destroy();
-      this.$data._chart.renderChart(this.chart, this.options);
+      handler() {
+        this.$data._chart.destroy()
+        this.renderChart(this.chartData, this.options)
+      },
+      deep: true,
     },
   },
 };

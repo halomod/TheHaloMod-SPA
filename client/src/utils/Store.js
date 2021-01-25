@@ -45,6 +45,7 @@ export default class API {
             },
             type: '',
             ticks: {
+              precision: 0,
               beginAtZero: false,
             },
           }],
@@ -55,6 +56,7 @@ export default class API {
             },
             type: '',
             ticks: {
+              precision: 0,
               beginAtZero: false,
             },
           }],
