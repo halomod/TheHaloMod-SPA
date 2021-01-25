@@ -13,6 +13,7 @@ import GrowthForm from '@/components/GrowthForm.vue';
 import HaloModelForm from '@/components/HaloModelForm.vue';
 import FilterForm from '@/components/FilterForm.vue';
 import TransferForm from '@/components/TransferForm.vue';
+import constants from '@/constants/initial_state.json';
 import VueMaterial from 'vue-material';
 import VueObserveVisibility from 'vue-observe-visibility';
 
