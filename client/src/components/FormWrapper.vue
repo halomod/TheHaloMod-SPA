@@ -1,7 +1,17 @@
 <template>
   <div class="wrapper">
-    <div v-observe-visibility="visibilityChanged">
-      <h2 class="md-title">{{name}}</h2>
+    <div>
+      <h2 class="md-title"
+        v-observe-visibility="{
+          callback: visibilityChanged,
+          intersection: {
+            rootMargin: '0px 0px -70% 0px',
+            threshold: '.1',
+          },
+
+      }">
+      {{name}}
+    </h2>
       <slot/>
     </div>
   </div>
@@ -13,7 +23,7 @@ export default {
   props: ['name'],
   methods: {
     visibilityChanged(isVisible) {
-      this.$emit('toggle-highlight', isVisible);
+      if (isVisible) this.$emit('currently-visible', this.name);
     },
   },
 };
