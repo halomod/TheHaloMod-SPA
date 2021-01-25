@@ -52,7 +52,6 @@
 import Debug from 'debug';
 import clonedeep from 'lodash.clonedeep';
 
-import Navbar from '@/components/Navbar.vue';
 import FormWrapper from '@/components/FormWrapper.vue';
 import Concentration from '@/components/Concentration.vue';
 import HaloExclusion from '@/components/HaloExclusion.vue';
@@ -85,7 +84,6 @@ export default {
     HaloModelForm,
     FilterForm,
     TransferForm,
-    Navbar,
   },
   data: () => ({
     loading: false,
@@ -209,9 +207,9 @@ export default {
     updateModelName(name) {
       this.modelName = name;
     },
-    setCurrentlyVisible(name, id, prefix = '/create') {
+    setCurrentlyVisible(name, id) {
       this.currentlyVisible = name;
-      window.history.replaceState({}, '', `${prefix}#${id}`);
+      window.history.replaceState({}, '', `#${id}`);
     },
     async handleSave() {
       this.loading = true;
