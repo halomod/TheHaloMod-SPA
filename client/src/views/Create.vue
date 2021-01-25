@@ -1,20 +1,19 @@
 <template>
   <div>
-  <md-progress-bar md-mode="indeterminate" v-if="loading"/>
-  <md-app id="create" md-mode="fixed" v-if="!loading">
-    <md-app-toolbar>
-      <span class="md-title">{{modelName}}</span>
-      <div class="md-toolbar-section-end">
-          <md-button class="md-primary" @click="handleSave">
-            Save
-          </md-button>
-          <md-button href="/" class="md-primary">
-            Close
-          </md-button>
-        </div>
+  <md-app id="create" md-mode="fixed">
+    <md-app-toolbar class="md-primary" md-elevation="1">
+      <md-avatar>
+        <img src="../assets/thm_logo.png">
+      </md-avatar>
+      <h3 class="md-title" style="flex: 1">The Halo Mod</h3>
+          <md-button v-for="{route, name, click} in createNavButtons()"
+          :key="name"
+          @click="click"
+          :href="route"
+          class="md-primary">{{name}}</md-button>
     </md-app-toolbar>
     <md-app-drawer
-      md-permanent="full"
+      md-permanent="clipped"
       class="md-primary"
       md-fixed
     >
@@ -53,6 +52,7 @@
 import Debug from 'debug';
 import clonedeep from 'lodash.clonedeep';
 
+import Navbar from '@/components/Navbar.vue';
 import FormWrapper from '@/components/FormWrapper.vue';
 import Concentration from '@/components/Concentration.vue';
 import HaloExclusion from '@/components/HaloExclusion.vue';
@@ -86,6 +86,7 @@ export default {
     HaloModelForm,
     FilterForm,
     TransferForm,
+    Navbar,
   },
   data: () => ({
     loading: false,
@@ -195,6 +196,17 @@ export default {
       this.forms = forms;
       this.$forceUpdate();
     },
+    createNavButtons() {
+      return [{
+        name: 'Save',
+        click: this.handleSave,
+        route: '',
+      }, {
+        name: 'Cancel',
+        click: () => null,
+        route: '/',
+      }];
+    },
     updateModelName(name) {
       this.modelName = name;
     },
@@ -219,8 +231,11 @@ export default {
 
 <style scoped>
   #create {
-    padding-top: 7vh; /*needs better styling here*/
     height: 100vh;
+  }
+  #nav {
+    position: fixed;
+    z-index: 9;
   }
   .md-drawer {
     width: 230px;

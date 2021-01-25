@@ -1,10 +1,13 @@
 <template>
-  <div class="md-layout md-gutter md-alignment-top-space-around home">
-    <div class="md-layout-item md-small-size-100">
-      <Models/>
-    </div>
-    <div class="md-layout-item md-small-size-100 graph">
-      <Graph />
+  <div>
+    <Navbar/>
+    <div class="md-layout md-gutter md-alignment-top-space-around home">
+      <div class="md-layout-item md-small-size-100">
+        <Models/>
+      </div>
+      <div class="md-layout-item md-small-size-100 graph">
+        <Graph />
+      </div>
     </div>
   </div>
 </template>
@@ -12,12 +15,14 @@
 <script>
 import Models from '@/components/Models.vue';
 import Graph from '@/components/Graph.vue';
+import Navbar from '@/components/Navbar.vue';
 
 export default {
   name: 'Home',
   components: {
     Models,
     Graph,
+    Navbar,
   },
 };
 
@@ -25,7 +30,7 @@ export default {
 
 <style scoped>
   .md-layout-item {
-    margin-top: 8vh;
+    margin-top: 16px;
     margin-bottom: 16px;
   }
   .graph {
