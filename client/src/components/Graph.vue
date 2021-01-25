@@ -19,9 +19,9 @@
           </md-option>
         </md-select>
       </md-field>
-      <Chart v-if="READ_ONLY.plotData !== null && READ_ONLY.plotDetails !== null"
+      <Chart v-if="READ_ONLY.plotData !== null"
           :chartData="READ_ONLY.plotData"
-          :options="READ_ONLY.plotOptions"
+          :options="options"
           :styles="chartStyles"/>
       <p v-else>No graph has been generated yet</p>
     </md-toolbar>
@@ -54,6 +54,44 @@ export default {
         margin: '16px auto',
         height: '70vh',
         width: '50vw',
+      };
+    },
+    options() {
+      return {
+        responsive: true,
+        maintainAspectRatio: false,
+        legend: {
+          position: 'right',
+        },
+        elements: {
+          point: {
+            radius: 0,
+          },
+        },
+        scales: {
+          yAxes: [{
+            scaleLabel: {
+              display: true,
+              labelString: this.READ_ONLY.plotDetails.yLabel,
+            },
+            type: this.READ_ONLY.plotDetails.scale,
+            ticks: {
+              precision: 0,
+              beginAtZero: false,
+            },
+          }],
+          xAxes: [{
+            scaleLabel: {
+              display: true,
+              labelString: this.READ_ONLY.plotDetails.xLabel,
+            },
+            type: this.READ_ONLY.plotDetails.scale,
+            ticks: {
+              precision: 0,
+              beginAtZero: false,
+            },
+          }],
+        },
       };
     },
   },

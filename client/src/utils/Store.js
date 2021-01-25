@@ -26,41 +26,10 @@ export default class API {
       modelNames: [],
       plotType: 'dndm',
       plotData: null,
-      plotOptions: {
-        responsive: true,
-        maintainAspectRatio: false,
-        legend: {
-          position: 'right',
-        },
-        elements: {
-          point: {
-            radius: 0,
-          },
-        },
-        scales: {
-          yAxes: [{
-            scaleLabel: {
-              display: true,
-              labelString: '',
-            },
-            type: '',
-            ticks: {
-              precision: 0,
-              beginAtZero: false,
-            },
-          }],
-          xAxes: [{
-            scaleLabel: {
-              display: true,
-              labelString: '',
-            },
-            type: '',
-            ticks: {
-              precision: 0,
-              beginAtZero: false,
-            },
-          }],
-        },
+      plotDetails: {
+        scale: '',
+        xLabel: '',
+        yLabel: '',
       },
     };
   }
@@ -260,10 +229,9 @@ export default class API {
   mapToChartData = (data) => {
     const scale = (data.plot_details.yscale === 'log') ? 'logarithmic'
       : data.plot_details.yscale;
-    this.state.plotOptions.scales.xAxes[0].type = scale;
-    this.state.plotOptions.scales.yAxes[0].type = scale;
-    this.state.plotOptions.scales.xAxes[0].scaleLabel.labelString = data.plot_details.xlab;
-    this.state.plotOptions.scales.yAxes[0].scaleLabel.labelString = data.plot_details.ylab;
+    this.state.plotDetails.scale = scale;
+    this.state.plotDetails.xLabel = data.plot_details.xlab;
+    this.state.plotDetails.yLabel = data.plot_details.ylab;
     const chartdata = {};
     chartdata.datasets = [];
     Object.keys(data.plot_data).forEach((model_name, model_idx) => {
