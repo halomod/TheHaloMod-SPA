@@ -71,7 +71,6 @@ import INITIAL_STATE from '@/constants/initial_state.json';
 
 const debug = Debug('Create.vue');
 debug.enabled = true;
-
 export default {
   name: 'Create',
   components: {

@@ -28,6 +28,10 @@ describe('Mounted Create', () => {
   const wrapper = shallowMount(Create /* the component you're trying to test */, {
     localVue, // a reference to the Vue instance from above
     // any props that need to be passed to the component for it to function / avoid warnings
+    propsData: {
+      modelName: 'Model',
+      params: constants,
+    },
   });
 
   test('has all forms', () => {
