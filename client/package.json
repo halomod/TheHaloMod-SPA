@@ -37,7 +37,10 @@
     "eslint": "^6.7.2",
     "eslint-plugin-import": "^2.20.2",
     "eslint-plugin-vue": "^6.2.2",
+    "fake-indexeddb": "^3.1.2",
     "lint-staged": "^9.5.0",
+    "lodash.isequal": "^4.5.0",
+    "miragejs": "^0.1.41",
     "vue-template-compiler": "^2.6.11"
   },
   "gitHooks": {

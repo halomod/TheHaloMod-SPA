@@ -97,6 +97,7 @@ export default class API {
    * Also saves model into indexed db
    * @param {Object} model model data
    * @param {String} name model name
+   * @returns {void}
    */
   createModel = async (model, name) => {
     try {
@@ -133,6 +134,7 @@ export default class API {
    * Clones a model
    * @param {String} oldName
    * @param {String} newName
+   * @returns {void}
    */
   cloneModel = async (oldName, newName) => {
     try {
@@ -150,7 +152,7 @@ export default class API {
   /**
    * Gets (clones) a model at label, keeps function pure.
    * @param {String} name the name of the model
-   * @returns {Object | null} A copy of the target model, or null
+   * @returns {Object | undefined} A copy of the target model, or undefined
    */
   getModel = async (name) => clonedeep(await this?.state.models[name]);
 
@@ -158,6 +160,7 @@ export default class API {
    * Sets a model at name
    * @param {String} name the name of the model
    * @param {Object} model the model to set
+   * @returns {void}
    */
   setModel = async (name, model) => {
     try {
@@ -179,6 +182,7 @@ export default class API {
   /**
    * deletes a model
    * @param {String} name the name to set the model
+   * @returns {void}
    */
   deleteModel = async (name) => {
     try {
@@ -253,6 +257,7 @@ export default class API {
    *
    * @param {string} newPlotType the identifier of the new plot type. For
    * example: `dndm`.
+   * @returns {void}
    */
   setPlotType = async (newPlotType) => {
     if (newPlotType !== this.state.plotType) {
