@@ -209,7 +209,6 @@ export default class API {
       data = await axios.post(`${baseurl}/get_plot_data`, {
         fig_type: this.state.plotType,
       });
-      console.log(JSON.stringify(data, null, 2));
       this.mapToChartData(data.data);
     } catch (error) {
       console.error(error);
