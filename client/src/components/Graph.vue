@@ -6,9 +6,6 @@
           <h3 class="md-title">Plot</h3>
         </div>
       </div>
-      <img v-if="READ_ONLY.plot !== null" :src="READ_ONLY.plot"/>
-      <p v-else>No graph has been generated yet</p>
-
       <md-field v-if="plotChoices">
         <label for="plotChoices">Plot Type</label>
         <md-select v-model="plotChoice" id="plotChoices" name="plotChoice">
@@ -22,6 +19,11 @@
           </md-option>
         </md-select>
       </md-field>
+      <Chart v-if="READ_ONLY.plotData !== null"
+          :chartData="READ_ONLY.plotData"
+          :options="options"
+          :styles="chartStyles"/>
+      <p v-else>No graph has been generated yet</p>
     </md-toolbar>
   </div>
 </template>
@@ -29,6 +31,7 @@
 <script>
 import axios from 'axios';
 import baseurl from '@/env';
+import Chart from './Chart.vue';
 
 axios.defaults.withCredentials = true;
 
@@ -40,6 +43,57 @@ export default {
       plotChoices: null,
       plotChoice: null,
     };
+  },
+  components: {
+    Chart,
+  },
+  computed: {
+    chartStyles() {
+      return {
+        position: 'relative',
+        margin: '16px auto',
+        height: '70vh',
+        width: '50vw',
+      };
+    },
+    options() {
+      return {
+        responsive: true,
+        maintainAspectRatio: false,
+        legend: {
+          position: 'right',
+        },
+        elements: {
+          point: {
+            radius: 0,
+          },
+        },
+        scales: {
+          yAxes: [{
+            scaleLabel: {
+              display: true,
+              labelString: this.READ_ONLY.plotDetails.yLabel,
+            },
+            type: this.READ_ONLY.plotDetails.scale,
+            ticks: {
+              precision: 0,
+              beginAtZero: false,
+            },
+          }],
+          xAxes: [{
+            scaleLabel: {
+              display: true,
+              labelString: this.READ_ONLY.plotDetails.xLabel,
+            },
+            type: this.READ_ONLY.plotDetails.scale,
+            ticks: {
+              precision: 0,
+              beginAtZero: false,
+            },
+          }],
+        },
+      };
+    },
   },
   async created() {
     let plotChoices = [];

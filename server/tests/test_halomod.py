@@ -72,7 +72,7 @@ def test_delete(client):
 def test_get_plot_data(client):
     with client.session_transaction() as sess:
         sess["models"] = pickle.dumps({"TheModel": TracerHaloModel()})
-    response = client.get('/get_plot_data', json={"fig_type": "dndm"})
+    response = client.post('/get_plot_data', json={"fig_type": "dndm"})
     assert "plot_details" in response.json
     assert "xlab" in response.json["plot_details"]
     assert "ylab" in response.json["plot_details"]
