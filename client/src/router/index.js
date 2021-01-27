@@ -21,6 +21,8 @@ import {
   MdTooltip,
 } from 'vue-material/dist/components';
 import VueObserveVisibility from 'vue-observe-visibility';
+import VueKatex from 'vue-katex';
+import 'katex/dist/katex.min.css';
 import 'vue-material/dist/vue-material.min.css';
 import 'vue-material/dist/theme/default.css';
 import { SliderPlugin } from '@syncfusion/ej2-vue-inputs';
@@ -48,6 +50,7 @@ Vue.use(MdProgress);
 Vue.use(MdCard);
 Vue.use(SliderPlugin);
 Vue.use(MdTooltip);
+Vue.use(VueKatex);
 
 const routes = [
   {

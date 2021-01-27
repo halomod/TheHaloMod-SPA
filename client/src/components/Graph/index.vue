@@ -32,8 +32,12 @@
 import axios from 'axios';
 import baseurl from '@/env';
 import Chart from './Chart.vue';
+import testLogo from '../../assets/logo.png';
 
 axios.defaults.withCredentials = true;
+
+const someImage = new Image();
+someImage.src = testLogo;
 
 export default {
   name: 'Graph',

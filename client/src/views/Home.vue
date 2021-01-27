@@ -11,7 +11,7 @@
 
 <script>
 import Models from '@/components/Models';
-import Graph from '../components/Graph.vue';
+import Graph from '../components/Graph';
 
 export default {
   name: 'Home',
