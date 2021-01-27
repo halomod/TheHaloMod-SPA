@@ -47,8 +47,6 @@ const filterChoices = {
 };
 export default {
   name: 'FilterForm',
-  title: 'Filter',
-  id: 'filter',
   model: {
     prop: 'filterData',
     event: 'updateFilter',

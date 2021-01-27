@@ -67,8 +67,6 @@ const transferChoices = {
 };
 export default {
   name: 'TransferForm',
-  title: 'Transfer',
-  id: 'transfer',
   model: {
     prop: 'transferData',
     event: 'updateTransfer',

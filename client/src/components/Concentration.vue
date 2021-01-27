@@ -44,7 +44,6 @@ const params = clonedeep(CONSTANTS.CMRelation_params);
 
 export default {
   name: 'concentration',
-  id: 'concentration',
   components: {
     DoubleField,
   },

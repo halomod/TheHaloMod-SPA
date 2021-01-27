@@ -42,8 +42,6 @@ const biasChoices = {
 };
 
 export default {
-  title: 'Bias',
-  id: 'bias',
   name: 'BiasForm',
   model: {
     event: 'onChange',

@@ -54,8 +54,6 @@ const haloProfileChoices = {
 };
 export default {
   name: 'HaloProfileForm',
-  title: 'Halo Profile',
-  id: 'halo-profile',
   props: {
     haloProfileParams: Object,
     setHaloProfileParams: Function,

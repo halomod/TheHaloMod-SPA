@@ -10,8 +10,6 @@
 <script>
 export default {
   name: 'ModelMetadataForm',
-  title: 'Model Metadata',
-  id: 'model-metadata',
   props: {
     modelName: {
       type: String,

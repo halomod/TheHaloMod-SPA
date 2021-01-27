@@ -68,8 +68,6 @@ const hmfChoices = {
 };
 
 export default {
-  title: 'HMF',
-  id: 'hmf',
   name: 'HMFForm',
   model: {
     event: 'onChange',

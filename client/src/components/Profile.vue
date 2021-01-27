@@ -51,7 +51,6 @@ const profileChoices = {
 const profileParams = BACKEND_CONSTANTS.Profile_params;
 
 export default {
-  id: 'profile',
   name: 'profile',
   model: {
     event: 'onChange',

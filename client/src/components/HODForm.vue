@@ -39,8 +39,6 @@ const hodChoices = {
 };
 
 export default {
-  title: 'HOD',
-  id: 'hod',
   name: 'HODForm',
   model: {
     event: 'onChange',

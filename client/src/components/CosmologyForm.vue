@@ -34,8 +34,6 @@ import DoubleField from './DoubleField.vue';
 
 export default {
   name: 'CosmologyForm',
-  title: 'Cosmology',
-  id: 'cosmology',
   props: {
     cosmoData: {
       type: Object,

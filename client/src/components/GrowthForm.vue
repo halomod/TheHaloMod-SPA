@@ -42,8 +42,6 @@ const growthChoices = {
 // Objects used in the html
 export default {
   name: 'GrowthForm',
-  title: 'Growth',
-  id: 'growth',
   model: {
     event: 'onChange',
     prop: 'parent_model',

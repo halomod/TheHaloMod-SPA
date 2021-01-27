@@ -122,8 +122,6 @@ const haloModelDefaultModel = {
 // Objects used in the html
 export default {
   name: 'HaloModelForm',
-  title: 'Halo Model',
-  id: 'halo_model',
   components: {
     InputField,
     DoubleField,

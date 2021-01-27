@@ -45,8 +45,6 @@ const massDefinitionChoices = {
 // Objects used in the html
 export default {
   name: 'MassDefinitionForm',
-  title: 'Mass Definition',
-  id: 'mass_definition',
   components: {
     DoubleField,
   },
