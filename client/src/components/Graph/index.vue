@@ -19,11 +19,15 @@
           </md-option>
         </md-select>
       </md-field>
-      <Chart v-if="READ_ONLY.plotData !== null"
-          :chartData="READ_ONLY.plotData"
+      <Chart v-if="READ_ONLY.chartJsPlotData !== null"
+          :chartData="READ_ONLY.chartJsPlotData"
           :options="options"
           :styles="chartStyles"/>
       <p v-else>No graph has been generated yet</p>
+      <Example
+        v-if="READ_ONLY.d3PlotData !== null"
+        :d3PlotData="READ_ONLY.d3PlotData"
+      />
     </md-toolbar>
   </div>
 </template>
@@ -32,12 +36,9 @@
 import axios from 'axios';
 import baseurl from '@/env';
 import Chart from './Chart.vue';
-import testLogo from '../../assets/logo.png';
+import Example from './Example';
 
 axios.defaults.withCredentials = true;
-
-const someImage = new Image();
-someImage.src = testLogo;
 
 export default {
   name: 'Graph',
@@ -50,6 +51,7 @@ export default {
   },
   components: {
     Chart,
+    Example,
   },
   computed: {
     chartStyles() {

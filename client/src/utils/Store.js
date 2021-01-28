@@ -25,7 +25,8 @@ export default class API {
       models: {},
       modelNames: [],
       plotType: 'dndm',
-      plotData: null,
+      chartJsPlotData: null,
+      d3PlotData: null,
       plotDetails: {
         scale: '',
         xLabel: '',
@@ -210,6 +211,7 @@ export default class API {
         fig_type: this.state.plotType,
       });
       this.mapToChartData(data.data);
+      this.mapToD3Data(data.data);
     } catch (error) {
       console.error(error);
     }
@@ -248,7 +250,11 @@ export default class API {
         chartdata.datasets[model_idx].data[point_idx].y = data.plot_data[model_name].ys[point_idx];
       });
     });
-    this.state.plotData = chartdata;
+    this.state.chartJsPlotData = chartdata;
+  }
+
+  mapToD3Data = (data) => {
+    this.state.d3PlotData = data;
   }
 
   /**
