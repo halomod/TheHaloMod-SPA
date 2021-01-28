@@ -4,6 +4,7 @@
 
 <script>
 import * as d3 from 'd3';
+import katex from 'katex';
 
 export default {
   name: 'Example',
@@ -25,44 +26,37 @@ export default {
   },
   methods: {
     buildChart() {
-      /* const dataset = [
-        [34, 78],
-        [109, 280],
-        [310, 120],
-        [79, 411],
-        [420, 220],
-        [233, 145],
-        [333, 96],
-        [222, 333],
-        [78, 320],
-        [21, 123],
-      ]; */
       console.log(this.d3PlotData);
 
       const w = 500;
       const h = 500;
       const padding = 60;
 
-      console.log('It got here');
       const datasets = Object.values(this.d3PlotData.plot_data);
-      console.log(' And It got here');
+
+      // Y max is actually the first value when it is returned from server.
       const minXVal = d3.min(datasets, (d) => d.xs[0]);
       const minYVal = d3.min(datasets, (d) => d.ys[d.ys.length - 1]);
       const maxXVal = d3.max(datasets, (d) => d.xs[d.xs.length - 1]);
-
-      // Y max is actually the first value when it is returned from server.
       const maxYVal = d3.max(datasets, (d) => d.ys[0]);
 
-      console.log(minXVal, maxXVal, minYVal, maxYVal);
-
-      const xScale = d3.scaleLog()
+      let xScale;
+      let yScale;
+      if (this.d3PlotData.plot_details.yscale === 'log') {
+        xScale = d3.scaleLog();
+        yScale = d3.scaleLog();
+      } else {
+        xScale = d3.scaleLinear();
+        yScale = d3.scaleLinear();
+      }
+      xScale = xScale
         .domain([minXVal, maxXVal])
         .range([padding, w - padding]);
-
-      const yScale = d3.scaleLog()
+      yScale = yScale
         .domain([minYVal, maxYVal])
         .range([h - padding, padding]);
 
+      // Build the svg where the plot will be placed
       const svg = d3.select('#test')
         .append('svg')
         .attr('width', w)
@@ -98,6 +92,36 @@ export default {
       svg.append('g')
         .attr('transform', `translate(${padding},0)`)
         .call(yAxis);
+
+      // x-Axis label
+      svg.append('text')
+        .attr('text-anchor', 'middle')
+        .attr('class', 'testing-this')
+        .attr('x', w / 2)
+        .attr('y', h - 6)
+        .text('income per capita, inflation-adjusted (dollars)');
+
+      // LEFT OFF: Trying to figure out how to smash an HTML element into an
+      // SVG. THEN YOU WIN.
+
+      console.log(katex.renderToString('c = \\pm\\sqrt{a^2 + b^2}'));
+
+      d3.select('class')
+        .text('something else');
+      // y-Axis label
+      d3.select('#test').append('div')
+        .attr('x', -10)
+        .appendHTML('<p>This is a paragraph</p>');
+
+      /*
+        .attr('text-anchor', 'middle')
+        .attr('x', -(w / 2))
+        .attr('y', 6)
+        .attr('dy', '.75em')
+        .attr('transform', 'rotate(-90)')
+        .html(katex.renderToString('c = \\pm\\sqrt{a^2 + b^2}', {
+          throwOnError: false,
+        })); */
     },
   },
 };
