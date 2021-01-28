@@ -5,7 +5,7 @@
         v-observe-visibility="{
           callback: visibilityChanged,
           intersection: {
-            rootMargin: '0px 0px -70% 0px',
+            rootMargin: `0px 0px -85% 0px`,
             threshold: '.1',
           },
 

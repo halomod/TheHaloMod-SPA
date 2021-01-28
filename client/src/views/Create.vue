@@ -227,10 +227,6 @@ export default {
   #create {
     height: 100vh;
   }
-  #nav {
-    position: fixed;
-    z-index: 9;
-  }
   .md-drawer {
     width: 230px;
     max-width: calc(100vw - 125px);
