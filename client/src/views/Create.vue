@@ -92,7 +92,7 @@ export default {
     params: clonedeep(INITIAL_STATE),
     modelName: 'New Model',
   }),
-  async mounted() {
+  async created() {
     if (this.$route.name === 'Edit') {
       this.modelName = this.$route.params.id;
       this.params = await this.$store.getModel(this.modelName);
