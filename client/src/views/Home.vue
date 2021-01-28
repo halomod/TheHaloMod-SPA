@@ -6,7 +6,7 @@
         <Models/>
       </div>
       <div class="md-layout-item md-small-size-100 graph">
-        <Graph />
+        <Graph/>
       </div>
     </div>
   </div>
@@ -24,6 +24,7 @@ export default {
     Graph,
     Navbar,
   },
+
 };
 
 </script>

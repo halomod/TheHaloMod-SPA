@@ -25,6 +25,12 @@ export default class API {
       models: {},
       modelNames: [],
       plotType: 'dndm',
+      plotData: null,
+      plotDetails: {
+        scale: '',
+        xLabel: '',
+        yLabel: '',
+      },
     };
   }
 
@@ -42,7 +48,7 @@ export default class API {
 
     this.state.models = Object.fromEntries(models);
     this.state.modelNames = this.getModelNames();
-    this.createPlot('dndm');
+    this.getPlotData();
   }
 
   /**
@@ -91,6 +97,7 @@ export default class API {
    * Also saves model into indexed db
    * @param {Object} model model data
    * @param {String} name model name
+   * @returns {void}
    */
   createModel = async (model, name) => {
     try {
@@ -98,7 +105,7 @@ export default class API {
         params: this.flatten(model),
         label: name,
       });
-      await Promise.all([this.setModel(name, model), this.createPlot()]);
+      await Promise.all([this.setModel(name, model), this.getPlotData()]);
     } catch (error) {
       console.error(error);
       // better error messaging here
@@ -117,7 +124,7 @@ export default class API {
         params: this.flatten(model),
         model_name: name,
       });
-      await Promise.all([this.setModel(name, model), this.createPlot()]);
+      await Promise.all([this.setModel(newName, model), this.getPlotData()]);
       await this.cloneModel(name, newName);
       await this.deleteModel(name);
     } catch (error) {
@@ -130,6 +137,7 @@ export default class API {
    * Clones a model
    * @param {String} oldName
    * @param {String} newName
+   * @returns {void}
    */
   cloneModel = async (oldName, newName) => {
     try {
@@ -138,7 +146,7 @@ export default class API {
         new_model_name: newName,
       });
       const model = await this.getModel(oldName);
-      await Promise.all([this.setModel(newName, model), this.createPlot()]);
+      await Promise.all([this.setModel(newName, model), this.getPlotData()]);
     } catch (error) {
       console.error(error);
     }
@@ -147,7 +155,7 @@ export default class API {
   /**
    * Gets (clones) a model at label, keeps function pure.
    * @param {String} name the name of the model
-   * @returns {Object | null} A copy of the target model, or null
+   * @returns {Object | undefined} A copy of the target model, or undefined
    */
   getModel = async (name) => clonedeep(await this?.state.models[name]);
 
@@ -155,6 +163,7 @@ export default class API {
    * Sets a model at name
    * @param {String} name the name of the model
    * @param {Object} model the model to set
+   * @returns {void}
    */
   setModel = async (name, model) => {
     try {
@@ -176,6 +185,7 @@ export default class API {
   /**
    * deletes a model
    * @param {String} name the name to set the model
+   * @returns {void}
    */
   deleteModel = async (name) => {
     try {
@@ -187,10 +197,61 @@ export default class API {
       delete this?.state.models[name];
       this.state.modelNames = this.getModelNames();
       /* eslint-enable */
-      await this.createPlot();
+      await this.getPlotData();
     } catch (error) {
       console.error(error);
     }
+  }
+
+  /**
+   * Retrieves plot data for specified models, or all models
+   */
+  getPlotData = async () => {
+    let data = {};
+    try {
+      data = await axios.post(`${baseurl}/get_plot_data`, {
+        fig_type: this.state.plotType,
+      });
+      this.mapToChartData(data.data);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  /**
+   * Maps the plot data returned from the POST request to /get_plot_data
+   * to the format of the chartData prop in Chart.Vue:
+   * chartData {
+   *  datasets: [{
+   *    label: <dataset/model label>,
+   *    data: [
+   *      x:<x value>
+   *      y: <y value>
+   *    ]
+   *  }]
+   * }
+   * @param {Object} data the plot data returned from the body of the
+   * POST request to /get_plot_data
+   */
+  mapToChartData = (data) => {
+    const scale = (data.plot_details.yscale === 'log') ? 'logarithmic'
+      : data.plot_details.yscale;
+    this.state.plotDetails.scale = scale;
+    this.state.plotDetails.xLabel = data.plot_details.xlab;
+    this.state.plotDetails.yLabel = data.plot_details.ylab;
+    const chartdata = {};
+    chartdata.datasets = [];
+    Object.keys(data.plot_data).forEach((model_name, model_idx) => {
+      chartdata.datasets[model_idx] = {};
+      chartdata.datasets[model_idx].label = model_name;
+      chartdata.datasets[model_idx].data = [];
+      data.plot_data[model_name].xs.forEach((x, point_idx) => {
+        chartdata.datasets[model_idx].data[point_idx] = {};
+        chartdata.datasets[model_idx].data[point_idx].x = x;
+        chartdata.datasets[model_idx].data[point_idx].y = data.plot_data[model_name].ys[point_idx];
+      });
+    });
+    this.state.plotData = chartdata;
   }
 
   /**
@@ -199,11 +260,12 @@ export default class API {
    *
    * @param {string} newPlotType the identifier of the new plot type. For
    * example: `dndm`.
+   * @returns {void}
    */
   setPlotType = async (newPlotType) => {
-    this.state.plotType = newPlotType;
     if (newPlotType !== this.state.plotType) {
-      this.createPlot();
+      this.state.plotType = newPlotType;
+      await this.getPlotData();
     }
   }
 }
