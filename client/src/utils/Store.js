@@ -130,6 +130,30 @@ export default class API {
     }
   }
 
+  /** Renames a model
+   *
+   * @param {String} oldName
+   * @param {String} newName
+   */
+  renameModel = async (oldName, newName) => {
+    try {
+      await axios.post(`${baseurl}/update`, {
+        model_name: oldName,
+        new_model_name: newName,
+      });
+      const model = this.state.models[oldName];
+      await Promise.all([
+        set(newName, model),
+        del(oldName),
+      ]);
+      this.state.models[newName] = model;
+      delete this.state.models[oldName];
+      this.state.modelNames = this.getModelNames();
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   /**
    * Clones a model
    * @param {String} oldName
@@ -154,7 +178,7 @@ export default class API {
    * @param {String} name the name of the model
    * @returns {Object | undefined} A copy of the target model, or undefined
    */
-  getModel = async (name) => clonedeep(await this?.state.models[name]);
+  getModel = (name) => clonedeep(this?.state.models[name]);
 
   /**
    * Sets a model at name

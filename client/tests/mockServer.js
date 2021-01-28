@@ -58,6 +58,13 @@ export default function makeServer(environment) {
         return schema.haloModels.create(newModelName);
       });
 
+      this.post(`${baseurl}/rename`, (schema, request) => {
+        const newModelName = request.requestBody.new_model_name;
+        const oldModelName = request.requestBody.model_name;
+        schema.haloModels.create(newModelName);
+        return schema.haloModels.findBy({ name: oldModelName }).destroy();
+      });
+
       this.post(`${baseurl}/delete`, (schema, request) => {
         const modelName = request.requestBody.model_name;
         return schema.haloModels.findBy({ name: modelName }).destroy();
