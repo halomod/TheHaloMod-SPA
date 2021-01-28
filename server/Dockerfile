@@ -1,12 +1,5 @@
 FROM python:3.8-slim-buster
 
-ENV PYTHONFAULTHANDLER=1 \
-    PYTHONUNBUFFERED=1 \
-    PYTHONHASHSEED=random \
-    PIP_NO_CACHE_DIR=off \
-    PIP_DISABLE_PIP_VERSION_CHECK=on \
-    PIP_DEFAULT_TIMEOUT=100
-
 RUN apt-get update -y
 RUN apt-get install -qq -y build-essential gfortran python-pip python-dev
 
@@ -20,5 +13,6 @@ COPY . /server
 
 # Add support for Redis
 EXPOSE 5000
+EXPOSE 6379
 
 CMD ["sh", "-c", "/server/run.sh --dev"]
