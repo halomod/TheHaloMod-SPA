@@ -1,17 +1,6 @@
 <template>
-  <div>
-  <md-app id="create" md-mode="fixed">
-    <md-app-toolbar class="md-primary" md-elevation="1">
-      <md-avatar>
-        <img src="../assets/thm_logo.png">
-      </md-avatar>
-      <h3 class="md-title" style="flex: 1">The Halo Mod</h3>
-          <md-button v-for="{route, name, click} in createNavButtons()"
-          :key="name"
-          @click="click"
-          :href="route"
-          class="md-primary">{{name}}</md-button>
-    </md-app-toolbar>
+  <md-app id="create" md-mode="fixed" md-waterfall>
+    <Navbar slot="md-app-toolbar" :buttons="this.createNavButtons()"/>
     <md-app-drawer
       md-permanent="clipped"
       class="md-primary"
@@ -26,7 +15,6 @@
       </md-list>
     </md-app-drawer>
     <md-app-content>
-
       <div v-for="(form, index) in forms" :key="index">
         <FormWrapper
           :name="form.name"
@@ -45,7 +33,6 @@
       </div>
     </md-app-content>
   </md-app>
-  </div>
 </template>
 
 <script>
@@ -66,6 +53,7 @@ import GrowthForm from '@/components/GrowthForm.vue';
 import HaloModelForm from '@/components/HaloModelForm.vue';
 import FilterForm from '@/components/FilterForm.vue';
 import TransferForm from '@/components/TransferForm.vue';
+import Navbar from '@/components/Navbar.vue';
 import INITIAL_STATE from '@/constants/initial_state.json';
 
 const debug = Debug('Create.vue');
@@ -84,21 +72,19 @@ export default {
     HaloModelForm,
     FilterForm,
     TransferForm,
+    Navbar,
   },
   data: () => ({
-    loading: false,
-    forms: null,
+    loading: true,
+    forms: [],
     currentlyVisible: null,
-    params: clonedeep(INITIAL_STATE),
+    params: null,
     modelName: 'New Model',
   }),
-  async created() {
-    if (this.$route.name === 'Edit') {
-      this.modelName = this.$route.params.id;
-      this.params = await this.$store.getModel(this.modelName);
-      this.$forceUpdate();
-    }
+  mounted() {
+    this.params = clonedeep(INITIAL_STATE);
     this.createForms();
+    this.getExistingModel();
     this.loading = false;
   },
   methods: {
@@ -193,17 +179,6 @@ export default {
       this.forms = forms;
       this.$forceUpdate();
     },
-    createNavButtons() {
-      return [{
-        name: 'Save',
-        click: this.handleSave,
-        route: '',
-      }, {
-        name: 'Cancel',
-        click: () => null,
-        route: '/',
-      }];
-    },
     updateModelName(name) {
       this.modelName = name;
     },
@@ -221,6 +196,28 @@ export default {
       }
       this.loading = false;
       this.$router.push('/');
+    },
+    async getExistingModel() {
+      if (this.$route.name === 'Edit') {
+        this.loading = true;
+        this.modelName = this.$route.params.id;
+        this.params = await this.$store.getModel(this.modelName);
+        this.loading = false;
+        this.$forceUpdate();
+      }
+    },
+    createNavButtons() {
+      return [
+        {
+          name: 'Save',
+          click: this.handleSave,
+          route: '',
+        }, {
+          name: 'Cancel',
+          click: () => null,
+          route: '/',
+        },
+      ];
     },
   },
 };
