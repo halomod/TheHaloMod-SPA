@@ -32,11 +32,10 @@ export default {
 
       const datasets = Object.values(this.d3PlotData.plot_data);
 
-      // Y max is actually the first value when it is returned from server.
-      const minXVal = d3.min(datasets, (d) => d.xs[0]);
-      const minYVal = d3.min(datasets, (d) => d.ys[d.ys.length - 1]);
-      const maxXVal = d3.max(datasets, (d) => d.xs[d.xs.length - 1]);
-      const maxYVal = d3.max(datasets, (d) => d.ys[0]);
+      const minXVal = d3.min(datasets, (d) => d3.min(d.xs));
+      const minYVal = d3.min(datasets, (d) => d3.min(d.ys));
+      const maxXVal = d3.max(datasets, (d) => d3.max(d.xs));
+      const maxYVal = d3.max(datasets, (d) => d3.max(d.ys));
 
       let xScale;
       let yScale;
@@ -53,6 +52,9 @@ export default {
       yScale = yScale
         .domain([minYVal, maxYVal])
         .range([h - padding, padding]);
+
+      // Clear all SVGs if they exist
+      d3.select('#test').selectAll('svg').remove();
 
       // Build the svg where the plot will be placed
       const svg = d3.select('#test')
@@ -107,7 +109,6 @@ export default {
       svg.append('svg')
         .attr('id', 'x-axis')
         .attr('y', h - 24)
-        .attr('x', '50%')
         .attr('text-anchor', 'middle');
       const plotSvg = document.getElementById('plot');
       const xAxisNode = document.getElementById('x-axis');
@@ -116,7 +117,8 @@ export default {
         xAxisLatexOptions)
         .firstChild;
       xAxisNode.append(xAxisLatexSvg);
-      console.log(xAxisLatexSvg.getBoundingClientRect());
+
+      // Center the x-axis
       xAxisNode.setAttribute('x', (plotSvg.getAttribute('width') / 2)
         - ((xAxisLatexSvg.getBoundingClientRect().width) / 2));
     },
@@ -142,6 +144,7 @@ export default {
         // that as the starting point instead of the first array value.
         }, '');
     },
+
   },
 };
 </script>
