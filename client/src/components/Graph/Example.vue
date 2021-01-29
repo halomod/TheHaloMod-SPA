@@ -104,6 +104,8 @@ export default {
       // Process the labels into a proper latex string
       const xLabel = this.processLatexString(this.d3PlotData.plot_details.xlab);
       console.log(xLabel);
+      const yLabel = this.processLatexString(this.d3PlotData.plot_details.ylab);
+      console.log(yLabel);
 
       // x-Axis label initial placement
       svg.append('svg')
@@ -113,14 +115,25 @@ export default {
       const plotSvg = document.getElementById('plot');
       const xAxisNode = document.getElementById('x-axis');
       const xAxisLatexOptions = MathJax.getMetricsFor(xAxisNode);
-      const xAxisLatexSvg = MathJax.tex2svg('\\textrm{Mass }M_{\\odot}h^{-1}',
-        xAxisLatexOptions)
+      const xAxisLatexSvg = MathJax.tex2svg(xLabel, xAxisLatexOptions)
         .firstChild;
       xAxisNode.append(xAxisLatexSvg);
 
       // Center the x-axis
       xAxisNode.setAttribute('x', (plotSvg.getAttribute('width') / 2)
         - ((xAxisLatexSvg.getBoundingClientRect().width) / 2));
+
+      // y-Axis Placement
+      svg.append('svg')
+        .attr('id', 'y-axis')
+        .attr('x', '50%')
+        .attr('y', '50%')
+        .attr('text-anchor', 'middle');
+      const yAxisNode = document.getElementById('y-axis');
+      const yAxisLatexOptions = MathJax.getMetricsFor(yAxisNode);
+      const yAxisLatexSvg = MathJax.tex2svg(yLabel, yAxisLatexOptions)
+        .firstChild;
+      yAxisNode.append(yAxisLatexSvg);
     },
     /**
      * Processes a latex string from the server into something that MathJax
@@ -133,8 +146,7 @@ export default {
     processLatexString(rawLatex) {
       return rawLatex
         .trim()
-        .split(/\$\(|\)\$/g)
-        .filter((string) => (string !== ''))
+        .split(/\$/g)
         .reduce((label, string, index) => {
           if (index % 2 === 0) {
             return `${label}\\textrm{${string}}`;
