@@ -10,7 +10,9 @@
   <script>
     MathJax = {
       tex: {
-        inlineMath: [['$(', ')$']]
+        inlineMath: [['$(', ')$'], ['\\(', ')\\']],
+        processEnvironments: true,
+        processEscapes: true
       },
       svg: {
         fontCache: 'global'

@@ -93,44 +93,54 @@ export default {
         .attr('transform', `translate(${padding},0)`)
         .call(yAxis);
 
-      // x-Axis label
-      svg.append('svg')
-        .attr('id', 'x-axis')
-        .attr('text-anchor', 'middle')
-        .attr('class', 'testing-this')
-        .attr('x', w / 2)
-        .attr('y', h - 24)
-        .attr('height', '1rem');
-
       // Get the MathJax obect, which is inserted in the `public/index.html` file
       const { MathJax } = window;
 
       // Reset MathJax for numbering reasons in equations
       MathJax.texReset();
 
-      // Render the MathJax.
+      // Process the labels into a proper latex string
+      const xLabel = this.processLatexString(this.d3PlotData.plot_details.xlab);
+      console.log(xLabel);
 
-      console.log(MathJax.tex2svg(this.d3PlotData.plot_details.xlab));
-
-      // y-Axis label
-
-      const latexSvg = MathJax.tex2svg(this.d3PlotData.plot_details.xlab).firstChild;
-
-      const textNode = document.getElementsByClassName('testing-this')[0];
-      console.log(textNode);
-
+      // x-Axis label initial placement
+      svg.append('svg')
+        .attr('id', 'x-axis')
+        .attr('y', h - 24)
+        .attr('x', '50%')
+        .attr('text-anchor', 'middle');
+      const plotSvg = document.getElementById('plot');
       const xAxisNode = document.getElementById('x-axis');
-      xAxisNode.append(latexSvg);
-
-      /*
-        .attr('text-anchor', 'middle')
-        .attr('x', -(w / 2))
-        .attr('y', 6)
-        .attr('dy', '.75em')
-        .attr('transform', 'rotate(-90)')
-        .html(katex.renderToString('c = \\pm\\sqrt{a^2 + b^2}', {
-          throwOnError: false,
-        })); */
+      const xAxisLatexOptions = MathJax.getMetricsFor(xAxisNode);
+      const xAxisLatexSvg = MathJax.tex2svg('\\textrm{Mass }M_{\\odot}h^{-1}',
+        xAxisLatexOptions)
+        .firstChild;
+      xAxisNode.append(xAxisLatexSvg);
+      console.log(xAxisLatexSvg.getBoundingClientRect());
+      xAxisNode.setAttribute('x', (plotSvg.getAttribute('width') / 2)
+        - ((xAxisLatexSvg.getBoundingClientRect().width) / 2));
+    },
+    /**
+     * Processes a latex string from the server into something that MathJax
+     * will happily accept 😁.
+     *
+     * @param {string} string the string to turn into a proper latex string
+     * which can be processed
+     * @returns {string} the output string to be provided to MathJax
+     */
+    processLatexString(rawLatex) {
+      return rawLatex
+        .trim()
+        .split(/\$\(|\)\$/g)
+        .filter((string) => (string !== ''))
+        .reduce((label, string, index) => {
+          if (index % 2 === 0) {
+            return `${label}\\textrm{${string}}`;
+          }
+          return label + string;
+        // Uses an empty string as the second argument to reduce so that it uses
+        // that as the starting point instead of the first array value.
+        }, '');
     },
   },
 };
