@@ -1,10 +1,8 @@
 <template>
-  <div id="test">This is an example</div>
+  <div id="test" class="plot">This is an example</div>
 </template>
-
 <script>
 import * as d3 from 'd3';
-import katex from 'katex';
 
 export default {
   name: 'Example',
@@ -59,8 +57,10 @@ export default {
       // Build the svg where the plot will be placed
       const svg = d3.select('#test')
         .append('svg')
+        .attr('id', 'plot')
         .attr('width', w)
-        .attr('height', h);
+        .attr('height', h)
+        .attr('margin', '16px');
 
       // Take each set of data points and put them on the plot
       Object.values(datasets).forEach((dataset) => {
@@ -94,24 +94,33 @@ export default {
         .call(yAxis);
 
       // x-Axis label
-      svg.append('text')
+      svg.append('svg')
+        .attr('id', 'x-axis')
         .attr('text-anchor', 'middle')
         .attr('class', 'testing-this')
         .attr('x', w / 2)
-        .attr('y', h - 6)
-        .text('income per capita, inflation-adjusted (dollars)');
+        .attr('y', h - 24)
+        .attr('height', '1rem');
 
-      // LEFT OFF: Trying to figure out how to smash an HTML element into an
-      // SVG. THEN YOU WIN.
+      // Get the MathJax obect, which is inserted in the `public/index.html` file
+      const { MathJax } = window;
 
-      console.log(katex.renderToString('c = \\pm\\sqrt{a^2 + b^2}'));
+      // Reset MathJax for numbering reasons in equations
+      MathJax.texReset();
 
-      d3.select('class')
-        .text('something else');
+      // Render the MathJax.
+
+      console.log(MathJax.tex2svg(this.d3PlotData.plot_details.xlab));
+
       // y-Axis label
-      d3.select('#test').append('div')
-        .attr('x', -10)
-        .appendHTML('<p>This is a paragraph</p>');
+
+      const latexSvg = MathJax.tex2svg(this.d3PlotData.plot_details.xlab).firstChild;
+
+      const textNode = document.getElementsByClassName('testing-this')[0];
+      console.log(textNode);
+
+      const xAxisNode = document.getElementById('x-axis');
+      xAxisNode.append(latexSvg);
 
       /*
         .attr('text-anchor', 'middle')
@@ -128,5 +137,7 @@ export default {
 </script>
 
 <style>
-
+.plot {
+  margin: 32px
+}
 </style>
