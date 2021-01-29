@@ -211,15 +211,22 @@ export default {
       }
     },
     createNavButtons() {
+      const disabled = this.loading;
       return [
         {
           name: 'Save',
           click: this.handleSave,
           route: '',
+          props: {
+            disabled,
+          },
         }, {
           name: 'Cancel',
           click: () => null,
           route: '/',
+          props: {
+            disabled,
+          },
         },
       ];
     },

@@ -4,11 +4,12 @@
       <img src="../assets/thm_logo.png">
     </md-avatar>
     <h3 class="md-title" style="flex: 1">The Halo Mod</h3>
-    <md-button v-for="{route, name, click} in buttons"
+    <md-button v-for="{route, name, click, props} in buttons"
       :key="name"
       :to="route"
       @click="click"
       class="md-primary"
+      v-bind="props"
     >
       {{name}}
     </md-button>
