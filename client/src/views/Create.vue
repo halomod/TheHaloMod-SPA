@@ -15,7 +15,11 @@
       </md-list>
     </md-app-drawer>
     <md-app-content>
-      <div v-for="(form, index) in forms" :key="index">
+      <div v-show="loading">
+        <h3 class="md-title">Creating your model...</h3>
+        <md-progress-bar md-mode="indeterminate" />
+      </div>
+      <div v-for="(form, index) in forms" :key="index" v-show="!loading">
         <FormWrapper
           :name="form.name"
           :id="form.id"
