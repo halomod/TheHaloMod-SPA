@@ -88,6 +88,7 @@ export default {
         svg.append('path')
           .datum(coordsArr)
           .attr('fill', 'none')
+          .attr('class', `line-${i}`)
           .attr('stroke', colorGen(i))
           .attr('stroke-width', 1.5)
           .attr('d', d3.line()
@@ -251,13 +252,29 @@ export default {
         .labels(({
           i,
         }) => dataSetNames[i])
-        .on('cellclick', (i) => {
-          console.log('clicked!', i);
+        .labelWrap(150)
+        .on('cellclick', (event) => {
+          const tspanNode = event.target.parentNode.querySelector('tspan');
+          const nodeText = tspanNode.textContent;
+          const cellIndex = dataSetNames.indexOf(nodeText);
+          const classString = `.line-${cellIndex}`;
           // is the element currently visible ?
-          // const currentOpacity = d3.selectAll(`.${d}`).style('opacity');
+          const currentOpacity = d3.selectAll(classString).style('opacity');
           // Change the opacity: from 0 to 1 or from 1 to 0
-          // d3.selectAll(`.${d}`).transition().style('opacity', currentOpacity === 1 ? 0 : 1);
+          if (currentOpacity === '1') {
+            d3.selectAll(classString).style('opacity', '0');
+            tspanNode.setAttribute('text-decoration', 'line-through');
+            tspanNode.setAttribute('fill', 'lightgray');
+          } else {
+            d3.selectAll(classString).style('opacity', '1');
+            tspanNode.removeAttribute('text-decoration');
+            tspanNode.removeAttribute('fill');
+          }
+          const newOpacity = currentOpacity === '1' ? '0' : '1';
+          d3.selectAll(classString).style('opacity', newOpacity);
+          debug(d3.selectAll(classString).style('opacity'));
         });
+
       svg.select('#legendColor')
         .call(colorLegend);
       const legendNode = svg.select('#legendColor').node();
