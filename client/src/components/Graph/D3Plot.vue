@@ -270,9 +270,6 @@ export default {
             tspanNode.removeAttribute('text-decoration');
             tspanNode.removeAttribute('fill');
           }
-          const newOpacity = currentOpacity === '1' ? '0' : '1';
-          d3.selectAll(classString).style('opacity', newOpacity);
-          debug(d3.selectAll(classString).style('opacity'));
         });
 
       svg.select('#legendColor')
