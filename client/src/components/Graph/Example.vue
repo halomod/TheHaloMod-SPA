@@ -1,5 +1,5 @@
 <template>
-  <div id="test" class="plot">This is an example</div>
+  <div id="test" class="plot"></div>
 </template>
 <script>
 import * as d3 from 'd3';
@@ -28,7 +28,7 @@ export default {
 
       const w = 500;
       const h = 500;
-      const padding = 60;
+      const padding = 80;
 
       const datasets = Object.values(this.d3PlotData.plot_data);
 
@@ -110,8 +110,7 @@ export default {
       // x-Axis label initial placement
       svg.append('svg')
         .attr('id', 'x-axis')
-        .attr('y', h - 24)
-        .attr('text-anchor', 'middle');
+        .attr('y', h - 24);
       const plotSvg = document.getElementById('plot');
       const xAxisNode = document.getElementById('x-axis');
       const xAxisLatexOptions = MathJax.getMetricsFor(xAxisNode);
@@ -124,16 +123,18 @@ export default {
         - ((xAxisLatexSvg.getBoundingClientRect().width) / 2));
 
       // y-Axis Placement
-      svg.append('svg')
-        .attr('id', 'y-axis')
-        .attr('x', '50%')
-        .attr('y', '50%')
-        .attr('text-anchor', 'middle');
+      svg.append('g')
+        .attr('id', 'y-axis');
+
       const yAxisNode = document.getElementById('y-axis');
       const yAxisLatexOptions = MathJax.getMetricsFor(yAxisNode);
       const yAxisLatexSvg = MathJax.tex2svg(yLabel, yAxisLatexOptions)
         .firstChild;
       yAxisNode.append(yAxisLatexSvg);
+      yAxisNode.setAttribute('transform-origin', 'center');
+      yAxisNode.setAttribute('transform', 'rotate(-90)');
+      yAxisLatexSvg.setAttribute('x', plotSvg.getAttribute('height') / 2
+        - (yAxisLatexSvg.getBoundingClientRect().height / 2));
     },
     /**
      * Processes a latex string from the server into something that MathJax
@@ -163,6 +164,11 @@ export default {
 
 <style>
 .plot {
-  margin: 32px
+  margin: 32px;
+  display: flex;
+  align-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 100%;
 }
 </style>
