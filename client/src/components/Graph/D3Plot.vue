@@ -7,7 +7,7 @@ import { legendColor } from 'd3-svg-legend';
 import Debug from 'debug';
 
 const debug = Debug('D3Plot.vue');
-debug.enabled = true;
+debug.enabled = false;
 
 export default {
   name: 'D3Plot',
