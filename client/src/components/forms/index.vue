@@ -1,7 +1,8 @@
 <template>
-  <md-app id="create" md-mode="fixed">
+  <md-app id="create" md-mode="fixed" md-waterfall>
+    <Navbar slot='md-app-toolbar'/>
     <md-app-drawer
-      md-permanent="full"
+      md-permanent="clipped"
       class="md-primary"
       md-fixed
     >
@@ -31,6 +32,7 @@
 
 <script>
 import FormWrapper from '@/components/FormWrapper.vue';
+import Navbar from '@/components/Navbar.vue';
 import clonedeep from 'lodash.clonedeep';
 import Debug from 'debug';
 import FORMS from '@/constants/forms.js';
@@ -41,6 +43,7 @@ export default {
   name: 'Forms',
   components: {
     FormWrapper,
+    Navbar,
   },
   props: {
     init: {
