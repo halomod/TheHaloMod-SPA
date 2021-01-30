@@ -3,6 +3,7 @@
 </template>
 <script>
 import * as d3 from 'd3';
+import { legendColor } from 'd3-svg-legend';
 
 export default {
   name: 'Example',
@@ -64,23 +65,30 @@ export default {
         .attr('height', h)
         .attr('margin', '16px');
 
+      // Build the color generator for the lines
+      const colorGen = d3.scaleSequential()
+        .domain([0, datasets.length - 1])
+        .interpolator(d3.interpolateRainbow);
+
       // Take each set of data points and put them on the plot
-      Object.values(datasets).forEach((dataset) => {
+      Object.values(datasets).forEach((dataset, i) => {
         // Map each point to an array where it has the x, y value in each entry
         const coordsArr = dataset.xs.map((val, index) => [
           val,
           dataset.ys[index],
         ]);
-        console.log(coordsArr);
         svg.append('path')
           .datum(coordsArr)
           .attr('fill', 'none')
-          .attr('stroke', 'steelblue')
+          .attr('stroke', colorGen(i))
           .attr('stroke-width', 1.5)
           .attr('d', d3.line()
             .x((data) => xScale(data[0]))
             .y((data) => yScale(data[1])));
+        svg.append('path');
       });
+
+      this.generateLegend(svg, colorGen);
 
       const xAxis = d3.axisBottom(xScale);
       const yAxis = d3.axisLeft(yScale);
@@ -103,9 +111,7 @@ export default {
 
       // Process the labels into a proper latex string
       const xLabel = this.processLatexString(this.d3PlotData.plot_details.xlab);
-      console.log(xLabel);
       const yLabel = this.processLatexString(this.d3PlotData.plot_details.ylab);
-      console.log(yLabel);
 
       // x-Axis label initial placement
       svg.append('svg')
@@ -157,7 +163,42 @@ export default {
         // that as the starting point instead of the first array value.
         }, '');
     },
-
+    generateLegend(svg, colorGen) {
+      const dataSetNames = Object.keys(this.d3PlotData.plot_data);
+      const svgWidthInt = Number.parseInt(svg.style('width'), 10);
+      svg.append('g')
+        .attr('class', 'legendColor')
+        .attr('transform', `translate(${svgWidthInt / 2},20)`);
+      const colorLegend = legendColor()
+        .scale(colorGen)
+        .orient('veritcal')
+        .labels(({
+          i,
+        }) => dataSetNames[i])
+        .on('cellclick', () => {
+          console.log('clicked!');
+        });
+      svg
+        .selectAll('dataLegend')
+        .data(dataSetNames)
+        .enter()
+        .append('g')
+        .append('text')
+        .attr('x', (d, i) => 30 + i * 60)
+        .attr('y', (d, i) => 30 + i * 60)
+        .text((d) => d)
+        .style('fill', (d, i) => colorGen(i))
+        .style('font-size', 15)
+        .on('click', (d) => {
+          // is the element currently visible ?
+          const currentOpacity = d3.selectAll(`.${d}`).style('opacity');
+          // Change the opacity: from 0 to 1 or from 1 to 0
+          d3.selectAll(`.${d}`).transition().style('opacity', currentOpacity === 1 ? 0 : 1);
+        });
+      svg.select('.legendColor')
+        .call(colorLegend);
+      console.log(svg.style('width'));
+    },
   },
 };
 </script>
