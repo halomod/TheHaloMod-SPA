@@ -1,84 +1,68 @@
 <template>
-  <md-app id="create" md-mode="fixed">
-    <md-app-drawer
-      md-permanent="full"
-      class="md-primary"
-      md-fixed
-    >
-      <md-list v-for="(form, index) in forms" :key="index">
-        <md-list-item
-          :class="{'router-link-active': currentlyVisible == form.title}"
-          :to="`#${form.id}`">
-          {{form.title}}
-        </md-list-item>
-      </md-list>
-    </md-app-drawer>
-    <md-app-content>
-
-      <div v-for="(form, index) in forms" :key="index">
-        <FormWrapper
-          :id="form.id"
-          :title="form.title"
-          @currently-visible="() => setCurrentlyVisible(form.id, form.title)">
-          <component v-if="form.isMeta"
-            :is="form.component"
-            :modelName="modelName"
-            @onChange="updateModelName"
-          />
-          <component v-else
-            v-bind="form.props"
-            :is="form.component"
-            v-model="params[form.model]"/>
-        </FormWrapper>
-      </div>
-    </md-app-content>
-  </md-app>
+<div>
+  <Forms :init="initial" v-model="current"/>
+  <div
+  :style="{ position: 'fixed', zIndex: 1, display: 'block', bottom: '10px', right: '10px' }">
+  <md-button @click="showCancelDialog = true" class="md-raised">Cancel</md-button>
+  <md-button @click="showCreateDialog = true" class="md-raised md-primary">Create</md-button>
+  </div>
+  <md-dialog :md-active.sync="showCreateDialog">
+    <md-dialog-title>Save Model</md-dialog-title>
+    <md-content :style="{margin: '0 15px 0 15px'}">
+      <md-field>
+        <label>Model Name</label>
+        <md-input v-model="name" :value="name"/>
+      </md-field>
+    </md-content>
+    <md-dialog-actions>
+      <md-button @click="save">Save Model</md-button>
+      <md-button @click="showCreateDialog = false">Cancel</md-button>
+    </md-dialog-actions>
+  </md-dialog>
+  <md-dialog :md-active.sync="showCancelDialog">
+    <md-dialog-title>Discard Model</md-dialog-title>
+    <md-content :style="{margin: '0 15px 0 15px'}">
+      {{`Are you sure you want to leave the page without creating a new model?`}}
+    </md-content>
+    <md-dialog-actions>
+      <md-button @click="$router.push('/')">Confirm</md-button>
+      <md-button @click="showCancelDialog = false">Cancel</md-button>
+    </md-dialog-actions>
+  </md-dialog>
+</div>
 </template>
 
 <script>
-import FormWrapper from '@/components/FormWrapper.vue';
-import Debug from 'debug';
-import FORMS from '@/constants/forms.js';
+import INITIAL_STATE from '@/constants/initial_state.json';
+import clonedeep from 'lodash.clonedeep';
+import Forms from '@/components/Forms.vue';
 
-const debug = Debug('Create.vue');
-debug.enabled = true;
 export default {
   name: 'Create',
   components: {
-    FormWrapper,
-  },
-  props: {
-    params: {
-      type: Object,
-      required: true,
-    },
-    modelName: {
-      type: String,
-      required: true,
-    },
+    Forms,
   },
   data: () => ({
-    forms: FORMS,
-    currentlyVisible: null,
+    initial: clonedeep(INITIAL_STATE),
+    current: null,
+    loading: false,
+    showCreateDialog: false,
+    showCancelDialog: false,
+    name: null,
   }),
+  created() {
+    this.current = this.initial;
+  },
   methods: {
-    updateModelName(updatedName) {
-      this.$emit('update-model-name', updatedName);
-    },
-    setCurrentlyVisible(id, title, prefix = '/create') {
-      this.currentlyVisible = title;
-      window.history.replaceState({}, '', `${prefix}#${id}`);
+    async save() {
+      this.loading = true;
+      await this.$store.createModel(this.current, this.name);
+      this.loading = false;
+      this.$router.push('/');
     },
   },
 };
 </script>
 
 <style scoped>
-  #create {
-    height: 80vh;
-  }
-  .md-drawer {
-    width: 230px;
-    max-width: calc(100vw - 125px);
-  }
 </style>

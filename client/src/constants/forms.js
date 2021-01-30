@@ -4,7 +4,6 @@ import BiasForm from '@/components/BiasForm.vue';
 import HMFForm from '@/components/HMFForm.vue';
 import HODForm from '@/components/HODForm.vue';
 import Profile from '@/components/Profile.vue';
-import ModelMetadataForm from '@/components/ModelMetadataForm.vue';
 import CosmologyForm from '@/components/CosmologyForm.vue';
 import MassDefinitionForm from '@/components/MassDefinitionForm.vue';
 import GrowthForm from '@/components/GrowthForm.vue';
@@ -13,13 +12,6 @@ import FilterForm from '@/components/FilterForm.vue';
 import TransferForm from '@/components/TransferForm.vue';
 
 const FORMS = [
-  {
-    component: ModelMetadataForm,
-    isMeta: true,
-    title: 'Model Metadata',
-    id: 'model-metadata',
-
-  },
   {
     component: MassDefinitionForm,
     model: 'mass-definition',
