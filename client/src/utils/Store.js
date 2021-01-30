@@ -25,7 +25,6 @@ export default class API {
       models: {},
       modelNames: [],
       plotType: 'dndm',
-      chartJsPlotData: null,
       d3PlotData: null,
       plotDetails: {
         scale: '',
