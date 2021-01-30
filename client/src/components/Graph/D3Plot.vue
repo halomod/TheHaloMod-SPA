@@ -1,5 +1,5 @@
 <template>
-  <div id="test" class="plot"></div>
+  <div id="d3-chart" class="plot"></div>
 </template>
 <script>
 import * as d3 from 'd3';
@@ -29,10 +29,10 @@ export default {
   methods: {
     buildChart() {
       // Clear all SVGs within the main element if they exist
-      d3.select('#test').selectAll('svg').remove();
+      d3.select('#d3-chart').selectAll('svg').remove();
 
       // Build the svg where the plot will be placed
-      const svg = d3.select('#test')
+      const svg = d3.select('#d3-chart')
         .append('svg')
         .attr('id', 'plot')
         .attr('width', '100%')

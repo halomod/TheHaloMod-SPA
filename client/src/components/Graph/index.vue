@@ -20,10 +20,11 @@
         </md-select>
       </md-field>
       <D3Plot
+        id="d3-plot-component"
         v-if="READ_ONLY.d3PlotData !== null"
         :d3PlotData="READ_ONLY.d3PlotData"
       />
-      <p v-else>No graph has been generated yet</p>
+      <p id="no-graph-notification" v-else>No graph has been generated yet</p>
     </md-toolbar>
   </div>
 </template>
@@ -47,54 +48,6 @@ export default {
   components: {
     D3Plot,
   },
-  computed: {
-    chartStyles() {
-      return {
-        position: 'relative',
-        margin: '16px auto',
-        height: '70vh',
-        width: '50vw',
-      };
-    },
-    options() {
-      return {
-        responsive: true,
-        maintainAspectRatio: false,
-        legend: {
-          position: 'right',
-        },
-        elements: {
-          point: {
-            radius: 0,
-          },
-        },
-        scales: {
-          yAxes: [{
-            scaleLabel: {
-              display: true,
-              labelString: this.READ_ONLY.plotDetails.yLabel,
-            },
-            type: this.READ_ONLY.plotDetails.scale,
-            ticks: {
-              precision: 0,
-              beginAtZero: false,
-            },
-          }],
-          xAxes: [{
-            scaleLabel: {
-              display: true,
-              labelString: this.READ_ONLY.plotDetails.xLabel,
-            },
-            type: this.READ_ONLY.plotDetails.scale,
-            ticks: {
-              precision: 0,
-              beginAtZero: false,
-            },
-          }],
-        },
-      };
-    },
-  },
   async created() {
     let plotChoices = [];
     try {
@@ -110,7 +63,6 @@ export default {
     } else {
       [this.plotChoice] = plotChoices;
     }
-
     this.plotChoices = plotChoices;
   },
   watch: {
