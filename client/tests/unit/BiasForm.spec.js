@@ -1,7 +1,7 @@
 /* eslint-disable no-await-in-loop, no-restricted-syntax, no-continue */
 
 import { mount, createLocalVue } from '@vue/test-utils';
-import BiasForm from '@/components/BiasForm';
+import BiasForm from '@/components/forms/BiasForm';
 import BACKEND_CONSTANTS from '@/constants/backend_constants';
 
 describe('Mounted BiasForm', () => {

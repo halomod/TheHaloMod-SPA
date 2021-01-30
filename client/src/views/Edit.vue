@@ -32,7 +32,7 @@
 
 <script>
 // import clonedeep from 'lodash.clonedeep';
-import Forms from '@/components/Forms.vue';
+import Forms from '@/components/forms';
 
 export default {
   name: 'Edit',

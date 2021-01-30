@@ -1,15 +1,15 @@
-import Concentration from '@/components/Concentration.vue';
-import HaloExclusion from '@/components/HaloExclusion.vue';
-import BiasForm from '@/components/BiasForm.vue';
-import HMFForm from '@/components/HMFForm.vue';
-import HODForm from '@/components/HODForm.vue';
-import Profile from '@/components/Profile.vue';
-import CosmologyForm from '@/components/CosmologyForm.vue';
-import MassDefinitionForm from '@/components/MassDefinitionForm.vue';
-import GrowthForm from '@/components/GrowthForm.vue';
-import HaloModelForm from '@/components/HaloModelForm.vue';
-import FilterForm from '@/components/FilterForm.vue';
-import TransferForm from '@/components/TransferForm.vue';
+import Concentration from '@/components/forms/ConcentrationForm.vue';
+import HaloExclusion from '@/components/forms/HaloExclusionForm.vue';
+import BiasForm from '@/components/forms/BiasForm.vue';
+import HMFForm from '@/components/forms/HMFForm.vue';
+import HODForm from '@/components/forms/HODForm.vue';
+import Profile from '@/components/forms/ProfileForm.vue';
+import CosmologyForm from '@/components/forms/CosmologyForm.vue';
+import MassDefinitionForm from '@/components/forms/MassDefinitionForm.vue';
+import GrowthForm from '@/components/forms/GrowthForm.vue';
+import HaloModelForm from '@/components/forms/HaloModelForm.vue';
+import FilterForm from '@/components/forms/FilterForm.vue';
+import TransferForm from '@/components/forms/TransferForm.vue';
 
 const FORMS = [
   {

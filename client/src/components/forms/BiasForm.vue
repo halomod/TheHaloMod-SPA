@@ -23,8 +23,8 @@
 </template>
 
 <script>
-import DoubleField from './DoubleField.vue';
-import BACKEND_CONSTANTS from '../constants/backend_constants';
+import DoubleField from '@/components/DoubleField.vue';
+import BACKEND_CONSTANTS from '@/constants/backend_constants';
 
 const biasChoices = {
   'Tinker (2010)': 'Tinker10',

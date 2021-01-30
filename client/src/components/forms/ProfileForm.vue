@@ -36,8 +36,8 @@
 </template>
 
 <script>
-import DoubleField from './DoubleField.vue';
-import BACKEND_CONSTANTS from '../constants/backend_constants';
+import DoubleField from '@/components/DoubleField.vue';
+import BACKEND_CONSTANTS from '@/constants/backend_constants';
 
 const profileChoices = {
   'NFW (1997)': 'NFW',

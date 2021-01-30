@@ -42,7 +42,7 @@
 </template>
 
 <script>
-import InputField from './InputField.vue';
+import InputField from '@/components/InputField.vue';
 
 const haloProfileChoices = {
   NFW: 'NFW (1997)',
