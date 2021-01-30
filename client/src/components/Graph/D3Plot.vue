@@ -49,7 +49,8 @@ export default {
       // Build the color generator for the lines
       const colorGen = d3.scaleSequential()
         .domain([0, datasets.length - 1])
-        .interpolator(d3.interpolateRainbow);
+        // The different color options are here: https://github.com/d3/d3-scale-chromatic
+        .interpolator(d3.interpolateCool);
 
       const legendWidth = this.generateLegend(svg, colorGen);
 
