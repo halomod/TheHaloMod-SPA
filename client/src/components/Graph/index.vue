@@ -19,15 +19,11 @@
           </md-option>
         </md-select>
       </md-field>
-      <Chart v-if="READ_ONLY.chartJsPlotData !== null"
-          :chartData="READ_ONLY.chartJsPlotData"
-          :options="options"
-          :styles="chartStyles"/>
-      <p v-else>No graph has been generated yet</p>
-      <Example
+      <D3Plot
         v-if="READ_ONLY.d3PlotData !== null"
         :d3PlotData="READ_ONLY.d3PlotData"
       />
+      <p v-else>No graph has been generated yet</p>
     </md-toolbar>
   </div>
 </template>
@@ -35,8 +31,7 @@
 <script>
 import axios from 'axios';
 import baseurl from '@/env';
-import Chart from './Chart.vue';
-import Example from './Example';
+import D3Plot from './D3Plot.vue';
 
 axios.defaults.withCredentials = true;
 
@@ -50,8 +45,7 @@ export default {
     };
   },
   components: {
-    Chart,
-    Example,
+    D3Plot,
   },
   computed: {
     chartStyles() {
