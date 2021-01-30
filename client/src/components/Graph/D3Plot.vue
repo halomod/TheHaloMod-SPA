@@ -28,7 +28,7 @@ export default {
   },
   methods: {
     buildChart() {
-      // Clear all SVGs if they exist
+      // Clear all SVGs within the main element if they exist
       d3.select('#test').selectAll('svg').remove();
 
       // Build the svg where the plot will be placed
@@ -110,6 +110,34 @@ export default {
         .attr('id', 'y-axis')
         .attr('transform', `translate(${leftPadding},0)`)
         .call(yAxis);
+
+      // gridlines in x axis function
+      function make_x_gridlines() {
+        return d3.axisBottom(xScale)
+          .ticks(6);
+      }
+
+      // gridlines in y axis function
+      function make_y_gridlines() {
+        return d3.axisLeft(yScale)
+          .ticks(6);
+      }
+
+      // add the X gridlines
+      svg.append('g')
+        .attr('class', 'grid')
+        .attr('transform', `translate(0,${h - bottomPadding})`)
+        .call(make_x_gridlines()
+          .tickSize(-(h - bottomPadding * 2))
+          .tickFormat(''));
+
+      // add the Y gridlines
+      svg.append('g')
+        .attr('class', 'grid')
+        .attr('transform', `translate(${leftPadding},0)`)
+        .call(make_y_gridlines()
+          .tickSize(-(w - rightPadding - leftPadding))
+          .tickFormat(''));
     },
     /**
      * Processes a latex string from the server into something that MathJax
@@ -251,5 +279,14 @@ export default {
   align-items: center;
   flex-direction: column;
   width: 100%;
+}
+.grid line {
+  stroke: lightgrey;
+  stroke-opacity: 0.7;
+  shape-rendering: crispEdges;
+}
+
+.grid path {
+  stroke-width: 0;
 }
 </style>
