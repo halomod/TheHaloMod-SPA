@@ -66,28 +66,6 @@ export default class API {
   }
 
   /**
-   * Gets plot from server
-   * @param {String} fig_type, type of figure to be requested from server
-   * @return {String} image data base64 string, or null if request fails
-   */
-  createPlot = async (fig_type = this.state.plotType) => {
-    // may need to call createModel on all items before getting plot
-    try {
-      const { data } = await axios.post(`${baseurl}/plot`, {
-        fig_type,
-        img_type: 'png',
-      });
-      debug(`The data was retrieved with the baseurl of ${baseurl} and is: `,
-        data);
-      this.state.plot = `data:image/png;base64,${data.figure}`;
-      return this.state.plot;
-    } catch (error) {
-      console.error(error);
-      return null;
-    }
-  }
-
-  /**
    * gets the plot
    * @returns {String} plot base64 string
    */
@@ -202,7 +180,9 @@ export default class API {
   }
 
   /**
-   * Retrieves plot data for specified models, or all models
+   * Retrieves plot data for all models
+   *
+   * @returns {void}
    */
   getPlotData = async () => {
     let data = {};
@@ -210,51 +190,10 @@ export default class API {
       data = await axios.post(`${baseurl}/get_plot_data`, {
         fig_type: this.state.plotType,
       });
-      this.mapToChartData(data.data);
-      this.mapToD3Data(data.data);
+      this.state.d3PlotData = data.data;
     } catch (error) {
       console.error(error);
     }
-  }
-
-  /**
-   * Maps the plot data returned from the POST request to /get_plot_data
-   * to the format of the chartData prop in Chart.Vue:
-   * chartData {
-   *  datasets: [{
-   *    label: <dataset/model label>,
-   *    data: [
-   *      x:<x value>
-   *      y: <y value>
-   *    ]
-   *  }]
-   * }
-   * @param {Object} data the plot data returned from the body of the
-   * POST request to /get_plot_data
-   */
-  mapToChartData = (data) => {
-    const scale = (data.plot_details.yscale === 'log') ? 'logarithmic'
-      : data.plot_details.yscale;
-    this.state.plotDetails.scale = scale;
-    this.state.plotDetails.xLabel = data.plot_details.xlab;
-    this.state.plotDetails.yLabel = data.plot_details.ylab;
-    const chartdata = {};
-    chartdata.datasets = [];
-    Object.keys(data.plot_data).forEach((model_name, model_idx) => {
-      chartdata.datasets[model_idx] = {};
-      chartdata.datasets[model_idx].label = model_name;
-      chartdata.datasets[model_idx].data = [];
-      data.plot_data[model_name].xs.forEach((x, point_idx) => {
-        chartdata.datasets[model_idx].data[point_idx] = {};
-        chartdata.datasets[model_idx].data[point_idx].x = x;
-        chartdata.datasets[model_idx].data[point_idx].y = data.plot_data[model_name].ys[point_idx];
-      });
-    });
-    this.state.chartJsPlotData = chartdata;
-  }
-
-  mapToD3Data = (data) => {
-    this.state.d3PlotData = data;
   }
 
   /**

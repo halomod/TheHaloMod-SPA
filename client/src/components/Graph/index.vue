@@ -20,7 +20,7 @@
         </md-select>
       </md-field>
       <D3Plot
-        id="d3-plot-component"
+        id="d3-chart"
         v-if="READ_ONLY.d3PlotData !== null"
         :d3PlotData="READ_ONLY.d3PlotData"
       />

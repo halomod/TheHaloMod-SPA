@@ -52,7 +52,7 @@ describe('Graph tests', () => {
   test('When model data is provided, it renders a plot', async () => {
     expect(wrapper.vm.$store).toBeDefined();
     await wrapper.vm.$store.createModel(DEFAULT_MODEL, 'Some test model name');
-    const node = wrapper.find('#d3-plot-component');
+    const node = wrapper.find('#d3-chart');
     expect(node.exists()).toBe(true);
     expect(node.isVisible()).toBe(true);
   });
