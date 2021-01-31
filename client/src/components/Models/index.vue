@@ -43,7 +43,7 @@
 
 <script>
 import Debug from 'debug';
-import Model from './Model';
+import Model from './Model.vue';
 
 const debug = Debug('Models');
 debug.enabled = true;
