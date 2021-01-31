@@ -15,7 +15,7 @@ describe('Mounted MassDefinitionForm', () => {
   const options = Object.keys(BACKEND_CONSTANTS.MassDefinition_params);
 
   test('has correct default model', () => {
-    expect(wrapper.vm.model.mdef_model).toBe('SOGeneric');
+    expect(wrapper.vm.model.mdef_model).toBe('SOMean');
   });
 
   test('changes model parameters when model is changed', async () => {
