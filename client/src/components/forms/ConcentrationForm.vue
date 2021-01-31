@@ -47,7 +47,7 @@ export default {
   components: {
     DoubleField,
   },
-  props: ['defaultModel'],
+  props: ['init'],
   model: {
     event: 'onChange',
     prop: 'parent_model',
@@ -55,16 +55,11 @@ export default {
   data() {
     return {
       options: CONSTANTS.CMRelation_options,
-      model: {
-        tracer_concentration_model: this.defaultModel,
-        tracer_concentration_params: params[this.defaultModel],
-      },
+      model: this.init,
     };
   },
   created() {
     this.$emit('onChange', this.model);
-    // this.model.tracer_concentration_model = this.defaultModel;
-    // this.model.tracer_concentration_params = params[this.defaultModel];
   },
   watch: {
     model: {

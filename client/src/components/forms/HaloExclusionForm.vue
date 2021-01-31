@@ -16,16 +16,14 @@ import CONSTANTS from '@/constants/backend_constants';
 
 export default {
   name: 'HaloExclusion',
-  props: ['parent_model'],
+  props: ['parent_model', 'init'],
   model: {
     event: 'onChange',
     prop: 'parent_model',
   },
   data() {
     return {
-      model: {
-        exclusion_model: 'NoExclusion',
-      },
+      model: this.init,
       values: CONSTANTS.Exculsion_options,
     };
   },

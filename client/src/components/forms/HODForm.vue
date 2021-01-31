@@ -44,14 +44,11 @@ export default {
     event: 'onChange',
     prop: 'parent_model',
   },
-  props: ['parent_model'],
+  props: ['parent_model', 'init'],
   data() {
     return {
-      model: {
-        hod_model: 'Zehavi05',
-        hod_params: BACKEND_CONSTANTS.HOD_params.Zehavi05,
-      },
-      defaults: { ...BACKEND_CONSTANTS.HOD_params.Zehavi05 },
+      model: this.init,
+      defaults: this.init.hod_params,
       choices: hodChoices,
     };
   },

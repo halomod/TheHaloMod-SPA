@@ -73,22 +73,16 @@ export default {
     event: 'onChange',
     prop: 'parent_model',
   },
-  props: ['parent_model'],
+  props: ['parent_model', 'init'],
   data() {
     return {
-      model: {
-        Mmin: BACKEND_CONSTANTS.Mmin,
-        Mmax: BACKEND_CONSTANTS.Mmax,
-        dlog10m: BACKEND_CONSTANTS.dlog10m,
-        hmf_model: 'Tinker08',
-        hmf_params: BACKEND_CONSTANTS.FittingFunction_params.Tinker08,
-      },
+      model: this.init,
       core_defaults: {
-        Mmin: BACKEND_CONSTANTS.Mmin,
-        Mmax: BACKEND_CONSTANTS.Mmax,
-        dlog10m: BACKEND_CONSTANTS.dlog10m,
+        Mmin: this.init.Mmin,
+        Mmax: this.init.Mmax,
+        dlog10m: this.init.dlog10m,
       },
-      param_defaults: { ...BACKEND_CONSTANTS.FittingFunction_params.Tinker08 },
+      param_defaults: this.init.hmf_params,
       choices: hmfChoices,
     };
   },

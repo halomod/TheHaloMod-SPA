@@ -74,7 +74,6 @@
 </template>
 
 <script>
-import BACKEND_CONSTANTS from '@/constants/backend_constants';
 import DoubleField from '@/components/DoubleField.vue';
 import InputField from '@/components/InputField.vue';
 
@@ -134,10 +133,7 @@ export default {
   data() {
     return {
       choices: haloModelChoices,
-      model: {
-        hc_spectrum: 'linear',
-        ...BACKEND_CONSTANTS.halo_model_params,
-      },
+      model: this.init,
       haloModelDefaultModel,
     };
   },

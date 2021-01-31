@@ -48,22 +48,17 @@ const profileChoices = {
   'Cored NFW': 'CoredNFW',
 };
 
-const profileParams = BACKEND_CONSTANTS.Profile_params;
-
 export default {
   name: 'profile',
   model: {
     event: 'onChange',
     prop: 'parent_model',
   },
-  props: ['parent_model', 'title'],
+  props: ['parent_model', 'init', 'title'],
   data: () => ({
     profileChoices,
-    model: {
-      profile_model: profileChoices['NFW (1997)'],
-      profile_params: profileParams.NFW,
-    },
-    defaults: BACKEND_CONSTANTS.Profile_params.NFW,
+    model: this.init,
+    defaults: this.init[this.title === 'Tracer Profile' ? 'tracer_profile_params' : 'halo_profile_params'],
     choices: profileChoices,
   }),
   updated() {

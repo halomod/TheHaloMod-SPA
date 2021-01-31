@@ -3,11 +3,14 @@
 import { mount, createLocalVue } from '@vue/test-utils';
 import BiasForm from '@/components/forms/BiasForm';
 import BACKEND_CONSTANTS from '@/constants/backend_constants';
+import INITIAL_STATE from '@/constants/initial_state';
 
 describe('Mounted BiasForm', () => {
   const localVue = createLocalVue();
-  const wrapper = mount(BiasForm, localVue);
-
+  const wrapper = mount(BiasForm, {
+    propsData: { init: INITIAL_STATE.bias },
+    localVue,
+  });
   const options = Object.keys(BACKEND_CONSTANTS.Bias_params);
 
   test('has correct default model', () => {

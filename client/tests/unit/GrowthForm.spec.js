@@ -3,10 +3,14 @@
 import { mount, createLocalVue } from '@vue/test-utils';
 import GrowthForm from '@/components/forms/GrowthForm';
 import BACKEND_CONSTANTS from '@/constants/backend_constants';
+import INITIAL_STATE from '@/constants/initial_state';
 
 describe('Mounted GrowthForm', () => {
   const localVue = createLocalVue();
-  const wrapper = mount(GrowthForm, localVue);
+  const wrapper = mount(GrowthForm, {
+    propsData: { init: INITIAL_STATE.growth },
+    localVue,
+  });
 
   const options = Object.keys(BACKEND_CONSTANTS._GrowthFactor_params); // eslint-disable-line
 

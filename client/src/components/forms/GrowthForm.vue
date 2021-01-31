@@ -46,14 +46,11 @@ export default {
     event: 'onChange',
     prop: 'parent_model',
   },
-  props: ['parent_model'],
+  props: ['parent_model', 'init'],
   data() {
     return {
-      model: {
-        growth_model: 'GrowthFactor',
-        growth_params: BACKEND_CONSTANTS._GrowthFactor_params.GrowthFactor, // eslint-disable-line
-      },
-      defaults: { ...BACKEND_CONSTANTS._GrowthFactor_params.GrowthFactor }, // eslint-disable-line
+      model: this.init,
+      defaults: this.init.growth_params, // eslint-disable-line
       choices: growthChoices,
     };
   },

@@ -3,10 +3,14 @@
 import { mount, createLocalVue } from '@vue/test-utils';
 import HMFForm from '@/components/forms/HMFForm';
 import BACKEND_CONSTANTS from '@/constants/backend_constants';
+import INITIAL_STATE from '@/constants/initial_state';
 
 describe('Mounted HMFForm', () => {
   const localVue = createLocalVue();
-  const wrapper = mount(HMFForm, localVue);
+  const wrapper = mount(HMFForm, {
+    propsData: { init: INITIAL_STATE.hmf },
+    localVue,
+  });
 
   const options = Object.keys(BACKEND_CONSTANTS.FittingFunction_params);
 

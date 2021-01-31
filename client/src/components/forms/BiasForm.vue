@@ -47,14 +47,11 @@ export default {
     event: 'onChange',
     prop: 'parent_model',
   },
-  props: ['parent_model'],
+  props: ['parent_model', 'init'],
   data() {
     return {
-      model: {
-        bias_model: 'Tinker10',
-        bias_params: BACKEND_CONSTANTS.Bias_params.Tinker10,
-      },
-      defaults: { ...BACKEND_CONSTANTS.Bias_params.Tinker10 },
+      model: this.init,
+      defaults: this.init.bias_params,
       choices: biasChoices,
     };
   },

@@ -21,7 +21,7 @@
           :title="form.title"
           @currently-visible="() => setCurrentlyVisible(form.id, form.title)">
           <component
-            v-bind="form.props"
+            v-bind="buildProps(form)"
             :is="form.component"
             v-model="params[form.model]"/>
         </FormWrapper>
@@ -56,6 +56,7 @@ export default {
       forms: FORMS,
       currentlyVisible: null,
       params: clonedeep(this.init),
+      default: clonedeep(this.init),
     };
   },
   watch: {
@@ -70,6 +71,10 @@ export default {
     setCurrentlyVisible(id, title) {
       this.currentlyVisible = title;
       window.history.replaceState({}, '', `#${id}`);
+    },
+    buildProps(form) {
+      // console.log(this.default[form.id]);
+      return { ...form.props, init: this.default[form.id] };
     },
   },
 };
