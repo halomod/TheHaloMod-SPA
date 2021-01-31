@@ -40,6 +40,8 @@ describe('Mounted MassDefinitionForm', () => {
 
   test('emits onChange event whenever model selection is changed', async () => {
     const emitted = wrapper.emitted();
+    wrapper.vm.$emit('onChange');
+    await localVue.nextTick();
     let prevCount = 0;
     for (const option of options) {
       if (wrapper.vm.model.mass_definition_model === option) continue;
@@ -54,6 +56,8 @@ describe('Mounted MassDefinitionForm', () => {
 
   test('emits onChange event whenever the values of model params have changed', async () => {
     const emitted = wrapper.emitted();
+    wrapper.vm.$emit('onChange');
+    await localVue.nextTick();
     let prevCount = emitted.onChange.length;
     const params = Object.keys(wrapper.vm.model.mass_definition_params);
     for (const param of params) {
