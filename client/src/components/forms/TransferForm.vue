@@ -39,7 +39,7 @@
       v-model="model.dlnk"
     />
 
-    <md-checkbox v-model="model.takahashiChoice">
+    <md-checkbox v-model="model.takahashi">
       Use Takahashi (2012) nonlinear P(k)?
     </md-checkbox>
 

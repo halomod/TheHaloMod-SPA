@@ -109,8 +109,10 @@
     "delta_c":1.686
   },
   "mass_definition": {
-    "mdef_model":"SOGeneric",
-    "mdef_params": {}
+    "mdef_model":"SOMean",
+    "mdef_params": {
+      "overdensity": 200
+    }
   },
   "transfer": {
     "transfer_model":"CAMB",
