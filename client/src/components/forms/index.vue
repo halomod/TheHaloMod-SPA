@@ -45,6 +45,9 @@ export default {
     FormWrapper,
     Navbar,
   },
+  model: {
+    event: 'onChange',
+  },
   props: {
     init: {
       type: Object,
@@ -60,11 +63,16 @@ export default {
     };
   },
   watch: {
-    params() {
-      this.$emit('onChange', clonedeep(this.params));
+    params: {
+      deep: true,
+      handler() { this.$emit('onChange', clonedeep(this.params)); },
     },
-    init() {
-      this.params = this.init;
+    init: {
+      deep: true,
+      handler() {
+        this.params = clonedeep(this.init);
+        this.default = clonedeep(this.init);
+      },
     },
   },
   methods: {
@@ -74,7 +82,7 @@ export default {
     },
     buildProps(form) {
       // console.log(this.default[form.id]);
-      return { ...form.props, init: this.default[form.id] };
+      return { ...form.props, init: this.default[form.id], title: form.title };
     },
   },
 };

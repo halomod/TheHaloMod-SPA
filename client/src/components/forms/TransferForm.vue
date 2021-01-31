@@ -21,17 +21,6 @@
       :step="1"
       v-model = model.transfer_params[key]
     />
-    <div v-if="Object.keys(allTransferData[transferChoice]).length !== 0 &&
-      transferChoice !=='CAMB'">
-      <InputField
-        v-for="(input, inputName) in allTransferData[transferChoice]"
-        :labelHtml="'<label>' + inputName + '</label>'"
-        :key="inputName"
-        :step="1"
-        :currentValue="allTransferData[transferChoice][inputName]"
-        v-on:updateCurrentValue="createSetCurrentValueFunc(transferChoice, inputName)($event)"
-      />
-    </div>
 
     <DoubleField
       :param="'lnk_min'"
@@ -58,7 +47,6 @@
 </template>
 
 <script>
-import InputField from '@/components/InputField.vue';
 import DoubleField from '@/components/DoubleField.vue';
 import BACKEND_CONSTANTS from '@/constants/backend_constants';
 import clonedeep from 'lodash.clonedeep';
@@ -97,7 +85,6 @@ export default {
     this.$emit('updateTransfer', this.model);
   },
   components: {
-    InputField,
     DoubleField,
   },
 };

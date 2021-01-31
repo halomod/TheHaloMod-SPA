@@ -1,41 +1,50 @@
 /* eslint-disable no-await-in-loop, no-restricted-syntax, no-continue */
 
 import { mount, createLocalVue } from '@vue/test-utils';
-import HODForm from '@/components/forms/HODForm';
+import ConcentrationForm from '@/components/forms/ConcentrationForm';
 import BACKEND_CONSTANTS from '@/constants/backend_constants';
 import INITIAL_STATE from '@/constants/initial_state';
 
-describe('Mounted HODForm', () => {
+describe('Mounted ConcentrationForm', () => {
   const localVue = createLocalVue();
-  const wrapper = mount(HODForm, {
-    propsData: { init: INITIAL_STATE.hod },
+  const wrapper = mount(ConcentrationForm, {
+    propsData: {
+      title: 'Tracer Concentration',
+      init: INITIAL_STATE.tracer_concentration,
+    },
     localVue,
   });
 
-  const options = Object.keys(BACKEND_CONSTANTS.HOD_params);
+  const options = Object.keys(BACKEND_CONSTANTS.CMRelation_params);
 
-  test('has correct default model', () => {
-    expect(wrapper.vm.model.hod_model).toBe('Zehavi05');
+  test('has correct default model', async () => {
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.model.concentration_model).toBe('Bullock01');
+  });
+
+  test('renders correct title based on props', () => {
+    const { title } = wrapper.vm.$props;
+    expect(wrapper.html()).toEqual(expect.stringMatching(new RegExp(`.*${title}.*`)));
   });
 
   test('changes model parameters when model is changed', async () => {
     for (const option of options) {
-      if (wrapper.vm.model.hod_model === option) continue;
-      const oldParams = wrapper.vm.model.hod_params;
-      wrapper.vm.$data.model.hod_model = option;
+      if (wrapper.vm.model.concentration_model === option) continue;
+      const oldParams = wrapper.vm.model.concentration_params;
+      wrapper.vm.$data.model.concentration_model = option;
       await localVue.nextTick();
       await localVue.nextTick();
-      const newParams = wrapper.vm.model.hod_params;
+      const newParams = wrapper.vm.model.concentration_params;
       expect(oldParams).not.toBe(newParams);
     }
   });
 
   test('renders correct fields for each model selection', async () => {
     for (const option of options) {
-      wrapper.vm.$data.model.hod_model = option;
+      wrapper.vm.$data.model.concentration_model = option;
       await localVue.nextTick();
       await localVue.nextTick();
-      const params = Object.keys(BACKEND_CONSTANTS.HOD_params[option]);
+      const params = Object.keys(BACKEND_CONSTANTS.CMRelation_params[option]);
       for (const param of params) {
         expect(wrapper.html()).toEqual(expect.stringMatching(new RegExp(`.*${param}.*`)));
       }
@@ -44,13 +53,11 @@ describe('Mounted HODForm', () => {
 
   test('emits onChange event whenever model selection is changed', async () => {
     const emitted = wrapper.emitted();
-    wrapper.vm.$emit('onChange');
-    await localVue.nextTick();
     let prevCount = 0;
     for (const option of options) {
-      if (wrapper.vm.model.hod_model === option) continue;
+      if (wrapper.vm.model.concentration_model === option) continue;
       prevCount = emitted.onChange.length;
-      wrapper.vm.$data.model.hod_model = option;
+      wrapper.vm.$data.model.concentration_model = option;
       await localVue.nextTick();
       await localVue.nextTick();
       expect(emitted.onChange.length).toBeGreaterThan(prevCount);
@@ -63,9 +70,18 @@ describe('Mounted HODForm', () => {
     wrapper.vm.$emit('onChange');
     await localVue.nextTick();
     let prevCount = emitted.onChange.length;
-    const params = Object.keys(wrapper.vm.model.hod_params);
+    const params = Object.keys(wrapper.vm.model.concentration_params);
     for (const param of params) {
-      wrapper.vm.$data.model.hod_params[param] += 0.01;
+      const val = wrapper.vm.$data.model.concentration_params[param];
+      if (typeof val === 'string') {
+        if (val === 'full') {
+          wrapper.vm.$data.model.concentration_params[param] = 'relaxed';
+        } else {
+          wrapper.vm.$data.model.concentration_params[param] = 'full';
+        }
+      } else {
+        wrapper.vm.$data.model.concentration_params[param] += 0.1;
+      }
       await localVue.nextTick();
       await localVue.nextTick();
       expect(emitted.onChange.length).toBeGreaterThan(prevCount);

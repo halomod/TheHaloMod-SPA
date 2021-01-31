@@ -4,7 +4,7 @@
     <md-button @click="showCancelDialog = true" class="md-raised">Cancel</md-button>
     <md-button @click="showSaveDialog = true" class="md-raised md-primary">Save</md-button>
   </div>
-  <Forms :init="initial" v-model="current"/>
+  <Forms :init="initial" @onChange="(data) => current = data"/>
   <md-dialog v-if="!loading"
     :md-active.sync="showSaveDialog">
     <md-dialog-title>Confirm Edits</md-dialog-title>
@@ -39,6 +39,7 @@
 <script>
 // import clonedeep from 'lodash.clonedeep';
 import Forms from '@/components/forms';
+import clonedeep from 'lodash.clonedeep';
 
 export default {
   name: 'Edit',
@@ -58,14 +59,20 @@ export default {
   beforeRouteEnter(to, _, next) {
     next(async (instance) => {
       const vm = instance;
-      vm.initial = await vm.$store.getModel(to.params.id);
-      vm.current = vm.initial;
+      const initial = await vm.$store.getModel(to.params.id);
+      vm.initial = clonedeep(initial);
+      vm.current = clonedeep(vm.initial);
+      console.log('Entering route');
+      console.log(vm.initial);
       next();
     });
   },
   async beforeRouteUpdate(to, from, next) {
-    this.initial = await this.$store.getModel(this.$route.params.id);
-    this.current = this.initial;
+    console.log('happening');
+    const updated = await this.$store.getModel(this.$route.params.id);
+    Object.assign(this.initial, updated);
+    Object.assign(this.current, updated);
+    console.log(this.initial);
     next();
   },
   methods: {

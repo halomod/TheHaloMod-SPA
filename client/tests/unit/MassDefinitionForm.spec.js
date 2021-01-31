@@ -8,7 +8,7 @@ import INITIAL_STATE from '@/constants/initial_state';
 describe('Mounted MassDefinitionForm', () => {
   const localVue = createLocalVue();
   const wrapper = mount(MassDefinitionForm, {
-    propsData: { init: INITIAL_STATE.mdef },
+    propsData: { init: INITIAL_STATE.mass_definition },
     localVue,
   });
 
@@ -44,6 +44,8 @@ describe('Mounted MassDefinitionForm', () => {
 
   test('emits onChange event whenever model selection is changed', async () => {
     const emitted = wrapper.emitted();
+    wrapper.vm.$emit('onChange');
+    await localVue.nextTick();
     let prevCount = 0;
     for (const option of options) {
       if (wrapper.vm.model.mdef_model === option) continue;
@@ -58,6 +60,8 @@ describe('Mounted MassDefinitionForm', () => {
 
   test('emits onChange event whenever the values of model params have changed', async () => {
     const emitted = wrapper.emitted();
+    wrapper.vm.$emit('onChange');
+    await localVue.nextTick();
     let prevCount = emitted.onChange.length;
     const params = Object.keys(wrapper.vm.model.mdef_params);
     for (const param of params) {

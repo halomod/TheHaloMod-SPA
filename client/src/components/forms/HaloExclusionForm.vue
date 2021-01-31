@@ -1,7 +1,7 @@
 <template>
   <div class="halo-exclusion">
     <md-field>
-      <label>Halo Exclusion*</label>
+      <label>Halo Exclusion</label>
       <md-select v-model="model.exclusion_model">
         <div v-for="(value, key) in values" :key="key">
           <md-option :value="key">{{value}}</md-option>
@@ -24,7 +24,7 @@ export default {
   data() {
     return {
       model: this.init,
-      values: CONSTANTS.Exculsion_options,
+      values: CONSTANTS.Exclusion_options,
     };
   },
   watch: {
