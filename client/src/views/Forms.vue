@@ -18,7 +18,6 @@
         <md-button @click="showSaveDialog = false">Cancel</md-button>
       </md-dialog-actions>
     </md-dialog>
-
     <md-dialog :md-active.sync="showSaveDialog" v-else>
       <md-dialog-title>Save Model</md-dialog-title>
       <md-dialog-content>
@@ -49,9 +48,7 @@
       <md-button @click="$router.push('/')">Confirm</md-button>
       <md-button @click="showCancelDialog = false">Cancel</md-button>
     </md-dialog-actions>
-
   </md-dialog>
-
 </div>
 </template>
 
