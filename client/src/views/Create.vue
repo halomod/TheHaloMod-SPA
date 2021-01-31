@@ -13,8 +13,7 @@
         </md-list-item>
       </md-list>
     </md-app-drawer>
-    <md-app-content>
-
+    <md-app-content :style="{marginBottom: '250px'}">
       <div v-for="(form, index) in forms" :key="index">
         <FormWrapper
           :name="form.name"
@@ -143,7 +142,7 @@ export default {
           model: 'halo_profile',
           props: {
             title: 'Halo Profile',
-            id: 'Halo_profile',
+            id: 'halo_profile',
           },
         },
         {
