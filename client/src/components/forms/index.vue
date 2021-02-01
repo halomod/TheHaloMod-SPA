@@ -35,7 +35,7 @@ import FormWrapper from '@/components/FormWrapper.vue';
 import Navbar from '@/components/Navbar.vue';
 import clonedeep from 'lodash.clonedeep';
 import Debug from 'debug';
-import FORMS from '@/constants/forms.js';
+import FORMS from '@/constants/forms';
 
 const debug = Debug('Create.vue');
 debug.enabled = true;

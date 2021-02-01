@@ -98,4 +98,7 @@ export default {
   .md-field:after {
     height: 0px
   }
+  .md-field {
+    margin: 0px 0px 0px 0px
+  }
 </style>
