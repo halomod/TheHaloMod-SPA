@@ -1,6 +1,6 @@
 <template>
 <div>
-  <Forms :init="initial" @onChange="(data) => current = data"/>
+  <Forms :init="initial" @onChange="(data) => current = data" v-if="initial"/>
   <div id="float">
     <md-button @click="showCancelDialog = true" class="md-raised">Cancel</md-button>
     <md-button @click="showSaveDialog = true" class="md-raised md-primary">
@@ -64,7 +64,7 @@ export default {
   },
   data() {
     return {
-      initial: clonedeep(INITIAL_STATE),
+      initial: null,
       current: null,
       loading: false,
       showSaveDialog: false,
@@ -82,7 +82,7 @@ export default {
       const vm = instance;
       if (vm.$route.name === 'Edit') {
         vm.edit = true;
-        console.log(`Before getModel: ${JSON.stringify(vm.initial.bias)}`);
+        console.log(`Before getModel: ${JSON.stringify(vm.initial?.bias)}`);
         vm.initial = await vm.$store.getModel(to.params.id);
         console.log(`After getModel: ${JSON.stringify(vm.initial.bias)}`);
         vm.name = vm.$route.params.id;
@@ -91,13 +91,12 @@ export default {
         vm.cancelTitle = 'Discard Edits';
         vm.loadingTitle = 'Updating your Model';
         vm.$forceUpdate();
+      } else {
+        vm.initial = clonedeep(INITIAL_STATE);
       }
-      vm.current = vm.initial;
+      vm.current = clonedeep(vm.initial);
       next();
     });
-  },
-  created() {
-    console.log(`In created: ${JSON.stringify(this.initial.bias)}`);
   },
   async beforeRouteUpdate(to, from, next) {
     if (this.edit) {
