@@ -36,8 +36,8 @@
 </template>
 
 <script>
-import BACKEND_CONSTANTS from '../constants/backend_constants';
-import DoubleField from './DoubleField.vue';
+import BACKEND_CONSTANTS from '@/constants/backend_constants';
+import DoubleField from '@/components/DoubleField.vue';
 
 const filterChoices = {
   TopHat: 'Top-hat',
@@ -47,8 +47,6 @@ const filterChoices = {
 };
 export default {
   name: 'FilterForm',
-  title: 'Filter',
-  id: 'filter',
   model: {
     prop: 'filterData',
     event: 'updateFilter',

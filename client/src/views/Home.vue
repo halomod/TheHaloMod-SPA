@@ -1,10 +1,13 @@
 <template>
-  <div class="md-layout md-gutter md-alignment-top-space-around home">
-    <div class="md-layout-item md-small-size-100">
-      <Models/>
-    </div>
-    <div class="md-layout-item md-small-size-100 graph">
-      <Graph/>
+  <div>
+    <Navbar/>
+    <div class="md-layout md-gutter md-alignment-top-space-around home">
+      <div class="md-layout-item md-small-size-100">
+        <Models/>
+      </div>
+      <div class="md-layout-item md-small-size-100 graph">
+        <Graph/>
+      </div>
     </div>
   </div>
 </template>

@@ -1,7 +1,7 @@
 /* eslint-disable no-await-in-loop, no-restricted-syntax, no-continue */
 
 import { mount, createLocalVue } from '@vue/test-utils';
-import ProfileForm from '@/components/Profile';
+import ProfileForm from '@/components/forms/ProfileForm';
 import BACKEND_CONSTANTS from '@/constants/backend_constants';
 
 describe('Mounted ProfileForm', () => {

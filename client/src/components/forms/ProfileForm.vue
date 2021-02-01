@@ -36,10 +36,9 @@
 </template>
 
 <script>
+import DoubleField from '@/components/DoubleField.vue';
+import BACKEND_CONSTANTS from '@/constants/backend_constants';
 import clonedeep from 'lodash.clonedeep';
-
-import DoubleField from './DoubleField.vue';
-import BACKEND_CONSTANTS from '../constants/backend_constants';
 
 const profileChoices = {
   'NFW (1997)': 'NFW',

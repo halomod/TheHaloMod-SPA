@@ -69,6 +69,16 @@ describe('Store tests', () => {
     expect(modelNames).toContain(testModelName2);
   });
 
+  test('Renaming model should create one and remove the original', async () => {
+    const oldModelName = 'Model';
+    const newModelName = 'Renamed Model';
+    await store.createModel(DEFAULT_MODEL, oldModelName);
+    expect(store.getModelNames()).toContain(oldModelName);
+    await store.renameModel(oldModelName, newModelName);
+    expect(store.getModelNames()).not.toContain(oldModelName);
+    expect(store.getModelNames()).toContain(newModelName);
+  });
+
   test('Changing the plot type should reflect in state', async () => {
     const newPlotType = 'somePlotType';
     await store.setPlotType(newPlotType);

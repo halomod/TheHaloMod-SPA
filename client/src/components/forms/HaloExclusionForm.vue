@@ -15,9 +15,7 @@
 import CONSTANTS from '@/constants/backend_constants';
 
 export default {
-  title: 'Halo Exclusion',
   name: 'HaloExclusion',
-  id: 'halo-exclusion',
   props: ['parent_model'],
   model: {
     event: 'onChange',

@@ -9,9 +9,9 @@
         <div class="md-toolbar-section-end">
           <!-- At this moment, restarting causes some inconsistencies between
           the state held on the server and the state in the browser.
-          <md-button @click="handleRestartClick" class="md-accent">Restart</md-button>
+          <md-button @click="restart" class="md-accent">Restart</md-button>
           -->
-          <md-button @click="handleNewModelClick" class="md-primary">New Model</md-button>
+          <md-button @click="create" class="md-primary">New Model</md-button>
         </div>
       </div>
       <md-list v-if="STORE_STATE.modelNames.length > 0" class="model-list">
@@ -19,15 +19,18 @@
           v-for="modelName in STORE_STATE.modelNames"
           :key="modelName"
           :name="modelName"
-          :buttonsDisabled="loadingModel"
-          @delete-click="handleDeleteClick"
-          @edit-click="handleEditClick"
-          @copy-click="handleCopyClick"
+          :blocked="blocked"
+          @delete-click="del"
+          @edit-click="edit"
+          @copy-click="copy"
+          @rename-click="(newName) => rename(modelName, newName)"
+          @block="blocked = true"
+          @release="blocked = false"
         />
       </md-list>
       <p v-else>No models created yet. Please click "New Model"</p>
     </md-toolbar>
-    <div v-if="loadingModel"
+    <div v-if="loading"
       style="display: grid; height: 100%">
       <md-progress-spinner
         :md-diameter="100"
@@ -35,67 +38,23 @@
         md-mode="indeterminate"
         style="margin: auto;"/>
     </div>
-    <md-dialog :md-active.sync="showDialog">
-      <md-dialog-title>{{
-        currentOperation === OPERATIONS.create ?
-        'New Model' :
-        'Edit Model'
-      }}</md-dialog-title>
-      <Create
-        :params="currentModelParams"
-        @update-params="updateParams"
-        :modelName="currentModelName"
-        @update-model-name="updateModelName"
-      />
-
-      <md-dialog-actions>
-        <md-button class="md-primary" @click="showDialog = false">Close</md-button>
-        <md-button class="md-primary" @click="handleSaveClick">Save</md-button>
-      </md-dialog-actions>
-    </md-dialog>
   </div>
 </template>
 
 <script>
-import Create from '@/views/Create';
-import INITIAL_STATE from '@/constants/initial_state.json';
-import clonedeep from 'lodash.clonedeep';
 import Debug from 'debug';
-import Model from './Model';
+import Model from './Model.vue';
 
 const debug = Debug('Models');
 debug.enabled = true;
-
-/**
- * The operations enum.
- */
-const OPERATIONS = {
-  edit: 'edit',
-  create: 'create',
-};
 
 export default {
   name: 'Models',
   data() {
     return {
-      showDialog: false,
-      loadingModel: false,
-      /**
-       * Keeps track of the most recent operation on a model.
-       */
-      currentOperation: OPERATIONS.create,
-      OPERATIONS,
-      /**
-       * Starts out as new model params. But when a model is selected, this
-       * changes.
-       */
-      currentModelParams: clonedeep(INITIAL_STATE),
-      currentModelName: 'Model',
-      /**
-       * Used to determine what the model's name used to be if the name is
-       * updated.
-       */
-      currentModelStoredName: 'Model',
+      loading: false,
+      blocked: false,
+
       /**
        * Needs to stay as a direct reference to the state of the store so that
        * it updates automatically.
@@ -105,62 +64,40 @@ export default {
   },
   components: {
     Model,
-    Create,
   },
   methods: {
-    async handleRestartClick() {
+    async restart() {
       if (this.modelNames.length !== 0) {
-        this.loadingModel = true;
+        this.loading = true;
+        this.blocked = true;
         await Promise.all(this.modelNames.map((modelName) => this.$store.deleteModel(modelName)));
-        this.loadingModel = false;
+        this.blocked = false;
+        this.loading = false;
       }
     },
-    handleNewModelClick() {
-      this.currentOperation = OPERATIONS.create;
-      this.showDialog = true;
+    create() {
+      this.$router.push('/create');
     },
-    async handleSaveClick() {
-      this.showDialog = false;
-      this.loadingModel = true;
-
-      if (this.currentOperation === OPERATIONS.edit) {
-        if (this.currentModelName !== this.currentModelStoredName) {
-          // Changing the name of the model, once there is logic built into the
-          // API with this functionality, this process can be changed to that.
-          const oldName = this.currentModelStoredName;
-          const newName = this.currentModelName;
-          await this.$store.cloneModel(oldName, newName);
-          await this.$store.deleteModel(oldName);
-        } else {
-          await this.$store.updateModel(this.currentModelStoredName, this.currentModelParams);
-        }
-      } else if (this.currentOperation === OPERATIONS.create) {
-        await this.$store.createModel(this.currentModelParams, this.currentModelName);
-      }
-      this.loadingModel = false;
+    async rename(oldName, newName) {
+      if (oldName === newName) return;
+      this.blocked = true;
+      this.loading = true;
+      await this.$store.renameModel(oldName, newName);
+      this.loading = false;
+      this.blocked = false;
     },
-    async handleDeleteClick(modelName) {
+    async del(modelName) {
       await this.$store.deleteModel(modelName);
     },
-    async handleEditClick(modelName) {
-      this.loadingModel = true;
-      this.currentModelName = modelName;
-      this.currentModelStoredName = modelName;
-      this.currentModelParams = await this.$store.getModel(modelName);
-      this.currentOperation = OPERATIONS.edit;
-      this.loadingModel = false;
-      this.showDialog = true;
+    edit(modelName) {
+      this.$router.push(`/edit/${modelName}`);
     },
-    async handleCopyClick(modelName) {
-      this.loadingModel = true;
+    async copy(modelName) {
+      this.loading = true;
+      this.blocked = true;
       await this.$store.cloneModel(modelName, `${modelName} copy`);
-      this.loadingModel = false;
-    },
-    updateModelName(newModelName) {
-      this.currentModelName = newModelName;
-    },
-    updateParams(newParams) {
-      this.currentModelParams = newParams;
+      this.blocked = false;
+      this.loading = false;
     },
   },
 };
