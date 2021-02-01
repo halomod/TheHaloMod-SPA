@@ -5,12 +5,11 @@
         v-observe-visibility="{
           callback: visibilityChanged,
           intersection: {
-            rootMargin: '0px 0px -70% 0px',
+            rootMargin: '0px 0px -85% 0px',
             threshold: '.1',
           },
-
       }">
-      {{name}}
+      {{title}}
     </h2>
       <slot/>
     </div>
@@ -20,10 +19,10 @@
 <script>
 export default {
   name: 'formWrapper',
-  props: ['name'],
+  props: ['title'],
   methods: {
     visibilityChanged(isVisible) {
-      if (isVisible) this.$emit('currently-visible', this.name);
+      if (isVisible) this.$emit('currently-visible', this.title);
     },
   },
 };

@@ -1,7 +1,7 @@
 /* eslint-disable no-await-in-loop, no-restricted-syntax, no-continue */
 
 import { mount, createLocalVue } from '@vue/test-utils';
-import HaloExclusionForm from '@/components/HaloExclusion';
+import HaloExclusionForm from '@/components/forms/HaloExclusionForm';
 import BACKEND_CONSTANTS from '@/constants/backend_constants';
 
 describe('Mounted HaloExclusionForm', () => {

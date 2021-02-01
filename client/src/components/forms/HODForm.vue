@@ -23,8 +23,8 @@
 </template>
 
 <script>
-import DoubleField from './DoubleField.vue';
-import BACKEND_CONSTANTS from '../constants/backend_constants';
+import DoubleField from '@/components/DoubleField.vue';
+import BACKEND_CONSTANTS from '@/constants/backend_constants';
 
 const hodChoices = {
   'Zehavi (3-param), 2005': 'Zehavi05',
@@ -39,8 +39,6 @@ const hodChoices = {
 };
 
 export default {
-  title: 'HOD',
-  id: 'hod',
   name: 'HODForm',
   model: {
     event: 'onChange',

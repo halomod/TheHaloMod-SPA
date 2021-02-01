@@ -130,6 +130,31 @@ export default class API {
     }
   }
 
+  /** Renames a model
+   *
+   * @param {String} oldName
+   * @param {String} newName
+   */
+  renameModel = async (oldName, newName) => {
+    try {
+      await axios.post(`${baseurl}/rename`, {
+        model_name: oldName,
+        new_model_name: newName,
+      });
+      const model = this.state.models[oldName];
+      await Promise.all([
+        set(newName, model),
+        del(oldName),
+      ]);
+      this.state.models[newName] = model;
+      delete this.state.models[oldName];
+      this.state.modelNames = this.getModelNames();
+      this.getPlotData();
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   /**
    * Clones a model
    * @param {String} oldName

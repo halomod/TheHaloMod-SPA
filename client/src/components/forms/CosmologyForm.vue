@@ -29,13 +29,11 @@
 </template>
 
 <script>
-import BACKEND_CONSTANTS from '../constants/backend_constants';
-import DoubleField from './DoubleField.vue';
+import BACKEND_CONSTANTS from '@/constants/backend_constants';
+import DoubleField from '@/components/DoubleField.vue';
 
 export default {
   name: 'CosmologyForm',
-  title: 'Cosmology',
-  id: 'cosmology',
   props: {
     cosmoData: {
       type: Object,
