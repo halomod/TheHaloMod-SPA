@@ -40,8 +40,6 @@ import clonedeep from 'lodash.clonedeep';
 import DoubleField from '@/components/DoubleField.vue';
 import CONSTANTS from '@/constants/backend_constants';
 
-const concentrationParams = clonedeep(CONSTANTS.CMRelation_params);
-
 export default {
   name: 'concentration',
   components: {
@@ -59,7 +57,8 @@ export default {
         concentration_model: null,
         concentration_params: null,
       },
-      actualModel: this.init,
+      actualModel: clonedeep(this.init),
+      LOCAL_CONSTANTS: clonedeep(CONSTANTS.CMRelation_params),
     };
   },
   created() {
@@ -82,11 +81,12 @@ export default {
     this.$emit('onChange', this.actualModel);
   },
   watch: {
-    'model.concentration_model': function updateOptions(val) {
+    'model.concentration_model': function updateOptions(val, old) {
+      if (old == null) return;
       this.model.concentration_params = null;
       this.$nextTick(function saveNewOptions() {
-        this.model.concentration_params = concentrationParams[val];
-        this.defaults = concentrationParams[val];
+        this.model.concentration_params = this.LOCAL_CONSTANTS[val];
+        this.defaults = this.LOCAL_CONSTANTS[val];
       });
     },
   },

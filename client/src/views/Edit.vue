@@ -4,7 +4,7 @@
     <md-button @click="showCancelDialog = true" class="md-raised">Cancel</md-button>
     <md-button @click="showSaveDialog = true" class="md-raised md-primary">Save</md-button>
   </div>
-  <Forms :init="initial" @onChange="(data) => current = data"/>
+  <Forms v-if="initial" :init="initial" @onChange="(data) => current = data"/>
   <md-dialog v-if="!loading"
     :md-active.sync="showSaveDialog">
     <md-dialog-title>Confirm Edits</md-dialog-title>

@@ -1,6 +1,6 @@
 <template>
 <div>
-  <Forms :init="initial" v-model="current"/>
+  <Forms v-if="initial" :init="initial" v-model="current"/>
   <div id="float">
     <md-button @click="showCancelDialog = true" class="md-raised">Cancel</md-button>
     <md-button @click="showCreateDialog = true" class="md-raised md-primary">Create</md-button>
