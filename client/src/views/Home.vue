@@ -14,15 +14,16 @@
 
 <script>
 import Models from '@/components/Models';
-import Graph from '../components/Graph';
+import Graph from '@/components/Graph';
+import Navbar from '@/components/Navbar';
 
 export default {
   name: 'Home',
   components: {
     Models,
     Graph,
+    Navbar,
   },
-
 };
 
 </script>
