@@ -1,6 +1,6 @@
 <template>
 <div>
-  <Forms :init="initial" v-model="current"/>
+  <Forms :init="initial" @onChange="(data) => current = data"/>
   <div id="float">
     <md-button @click="showCancelDialog = true" class="md-raised">Cancel</md-button>
     <md-button @click="showSaveDialog = true" class="md-raised md-primary">
@@ -82,16 +82,22 @@ export default {
       const vm = instance;
       if (vm.$route.name === 'Edit') {
         vm.edit = true;
+        console.log(`Before getModel: ${JSON.stringify(vm.initial.bias)}`);
         vm.initial = await vm.$store.getModel(to.params.id);
+        console.log(`After getModel: ${JSON.stringify(vm.initial.bias)}`);
         vm.name = vm.$route.params.id;
         vm.saveButton = 'Save';
         vm.cancelMessage = `Are you sure you want to discard your changes to '${vm.name}?`;
         vm.cancelTitle = 'Discard Edits';
         vm.loadingTitle = 'Updating your Model';
+        vm.$forceUpdate();
       }
       vm.current = vm.initial;
       next();
     });
+  },
+  created() {
+    console.log(`In created: ${JSON.stringify(this.initial.bias)}`);
   },
   async beforeRouteUpdate(to, from, next) {
     if (this.edit) {
