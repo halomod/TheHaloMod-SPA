@@ -88,7 +88,6 @@ export default {
         vm.cancelMessage = `Are you sure you want to discard your changes to '${vm.name}?`;
         vm.cancelTitle = 'Discard Edits';
         vm.loadingTitle = 'Updating your Model';
-        vm.$forceUpdate();
       } else {
         vm.initial = clonedeep(INITIAL_STATE);
       }
