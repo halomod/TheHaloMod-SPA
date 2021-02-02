@@ -3,7 +3,7 @@ from . import utils
 import base64
 from halomod import TracerHaloModel
 import json
-import pickle
+import dill as pickle
 import codecs
 import hmf
 from flask_cors import CORS

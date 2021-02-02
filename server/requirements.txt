@@ -13,6 +13,7 @@ commonmark==0.9.1
 cycler==0.10.0
 dataclasses==0.6
 deprecation==2.1.0
+dill==0.3.3
 flake8==3.8.4
 Flask==1.1.2
 Flask-Cors==3.0.9
