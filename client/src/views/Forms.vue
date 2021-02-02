@@ -82,9 +82,7 @@ export default {
       const vm = instance;
       if (vm.$route.name === 'Edit') {
         vm.edit = true;
-        console.log(`Before getModel: ${JSON.stringify(vm.initial?.bias)}`);
         vm.initial = await vm.$store.getModel(to.params.id);
-        console.log(`After getModel: ${JSON.stringify(vm.initial.bias)}`);
         vm.name = vm.$route.params.id;
         vm.saveButton = 'Save';
         vm.cancelMessage = `Are you sure you want to discard your changes to '${vm.name}?`;
