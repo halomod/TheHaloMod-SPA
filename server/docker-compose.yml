@@ -1,16 +1,15 @@
 version: '3.5'
 
 services:
-  server:
+  thehalomod-server:
     build: .
     ports:
       - "5000:5000"
     links:
       - redis
-    environment: 
-      - REDIS_URL=redis://localhost
+    container_name: hmf-server
   redis:
     image: "redis"
-    container_name: redis-cache
+    container_name: hmf-redis-cache
     expose: 
       - 6379
