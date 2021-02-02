@@ -1,19 +1,23 @@
 <template>
-  <div id="d3-chart" class="plot"></div>
+  <div :id="plotElementId" class="plot"></div>
 </template>
 <script>
 import * as d3 from 'd3';
 import { legendColor } from 'd3-svg-legend';
 import Debug from 'debug';
 
-const debug = Debug('D3Plot.vue');
-debug.enabled = false;
+const debug = Debug('Plot.vue');
+debug.enabled = true;
 
 export default {
-  name: 'D3Plot',
+  name: 'Plot',
   props: {
-    d3PlotData: {
+    plotData: {
       type: Object,
+      required: true,
+    },
+    plotElementId: {
+      type: String,
       required: true,
     },
   },
@@ -21,7 +25,7 @@ export default {
     this.buildChart();
   },
   watch: {
-    d3PlotData() {
+    plotData() {
       debug('Data changed');
       this.buildChart();
     },
@@ -44,15 +48,15 @@ export default {
 
       const { yLabelWidth, xLabelHeight } = this.generateAxisLabels(svg);
 
-      const datasets = Object.values(this.d3PlotData.plot_data);
+      const datasets = Object.values(this.plotData.plot_data);
 
-      // Build the color generator for the lines
-      const colorGen = d3.scaleSequential()
+      // Build the color generator for the lines and legend
+      const colorGen = d3.scaleOrdinal()
         .domain([0, datasets.length - 1])
         // The different color options are here: https://github.com/d3/d3-scale-chromatic
         .interpolator(d3.interpolateCool);
 
-      const legendWidth = this.generateLegend(svg, colorGen);
+      const legendWidth = this.generateLegend(svg, colorGen, this.plotData);
 
       const leftPadding = yLabelWidth + 45;
       const bottomPadding = xLabelHeight + 30;
@@ -65,7 +69,7 @@ export default {
 
       let xScale;
       let yScale;
-      if (this.d3PlotData.plot_details.yscale === 'log') {
+      if (this.plotData.plot_details.yscale === 'log') {
         xScale = d3.scaleLog();
         yScale = d3.scaleLog();
       } else {
@@ -183,8 +187,8 @@ export default {
       MathJax.texReset();
 
       // Process the labels into a proper latex string
-      const xLabel = this.processLatexString(this.d3PlotData.plot_details.xlab);
-      const yLabel = this.processLatexString(this.d3PlotData.plot_details.ylab);
+      const xLabel = this.processLatexString(this.plotData.plot_details.xlab);
+      const yLabel = this.processLatexString(this.plotData.plot_details.ylab);
 
       // x-Axis label initial placement
       svg.append('svg')
@@ -240,19 +244,22 @@ export default {
      * @param {} colorGen the d3 color scale for the plot
      * @returns {Number} the width of the Legend
      */
-    generateLegend(svg, colorGen) {
-      const dataSetNames = Object.keys(this.d3PlotData.plot_data);
+    generateLegend(svg, colorGen, plotData) {
+      const dataSetNames = Object.keys(plotData.plot_data);
       const w = svg.node().getBoundingClientRect().width;
       const h = svg.node().getBoundingClientRect().height;
       svg.append('g')
         .attr('id', 'legendColor')
         .attr('transform', `translate(${w / 2},20)`);
       const colorLegend = legendColor()
-        .scale(colorGen)
+        .color()
         .orient('veritcal')
         .labels(({
           i,
-        }) => dataSetNames[i])
+        }) => {
+          debug('The data set index is: ', i);
+          return dataSetNames[i];
+        })
         .labelWrap(150)
         .on('cellclick', (event) => {
           const tspanNode = event.target.parentNode.querySelector('tspan');

@@ -19,10 +19,11 @@
           </md-option>
         </md-select>
       </md-field>
-      <D3Plot
-        id="d3-chart"
-        v-if="READ_ONLY.d3PlotData !== null"
-        :d3PlotData="READ_ONLY.d3PlotData"
+      <Plot
+        :id="plotElementId"
+        v-if="READ_ONLY.plotData !== null"
+        :plotData="READ_ONLY.plotData"
+        :plotElementId="plotElementId"
       />
       <p id="no-graph-notification" v-else>No graph has been generated yet</p>
     </md-toolbar>
@@ -32,7 +33,7 @@
 <script>
 import axios from 'axios';
 import baseurl from '@/env';
-import D3Plot from './D3Plot.vue';
+import Plot from './Plot.vue';
 
 axios.defaults.withCredentials = true;
 
@@ -43,10 +44,11 @@ export default {
       READ_ONLY: this.$store.state,
       plotChoices: null,
       plotChoice: null,
+      plotElementId: 'd3-chart',
     };
   },
   components: {
-    D3Plot,
+    Plot,
   },
   async created() {
     let plotChoices = [];

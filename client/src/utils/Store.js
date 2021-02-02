@@ -25,12 +25,7 @@ export default class API {
       models: {},
       modelNames: [],
       plotType: 'dndm',
-      d3PlotData: null,
-      plotDetails: {
-        scale: '',
-        xLabel: '',
-        yLabel: '',
-      },
+      plotData: null,
     };
   }
 
@@ -214,7 +209,7 @@ export default class API {
       data = await axios.post(`${baseurl}/get_plot_data`, {
         fig_type: this.state.plotType,
       });
-      this.state.d3PlotData = data.data;
+      this.state.plotData = data.data;
     } catch (error) {
       console.error(error);
     }
