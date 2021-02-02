@@ -13,6 +13,7 @@
 
 <script>
 import CONSTANTS from '@/constants/backend_constants';
+import clonedeep from 'lodash.clonedeep';
 
 export default {
   name: 'HaloExclusion',
@@ -30,7 +31,7 @@ export default {
   watch: {
     'model.exclusion_model': {
       handler() {
-        this.$emit('onChange', this.model);
+        this.$emit('onChange', clonedeep(this.model));
       },
     },
   },

@@ -53,6 +53,7 @@
 
 <script>
 import DoubleField from '@/components/DoubleField.vue';
+import clonedeep from 'lodash.clonedeep';
 
 const haloModelChoices = {
   linear: 'linear',
@@ -111,12 +112,12 @@ export default {
   data() {
     return {
       choices: haloModelChoices,
-      model: this.init,
+      model: clonedeep(this.init),
       haloModelDefaultModel,
     };
   },
   updated() {
-    this.$emit('onChange', this.model);
+    this.$emit('onChange', clonedeep(this.model));
   },
   computed: {
     log_r_model: {

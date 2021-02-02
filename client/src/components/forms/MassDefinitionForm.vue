@@ -33,6 +33,7 @@
 
 import BACKEND_CONSTANTS from '@/constants/backend_constants';
 import DoubleField from '@/components/DoubleField.vue';
+import clonedeep from 'lodash.clonedeep';
 
 const massDefinitionChoices = {
   'Use native definition of mass function': 'SOGeneric',
@@ -55,20 +56,20 @@ export default {
   props: ['init'],
   data() {
     return {
-      model: this.init,
+      model: clonedeep(this.init),
       defaults: this.init.mdef_params,
       choices: massDefinitionChoices,
     };
   },
   updated() {
-    this.$emit('onChange', this.model);
+    this.$emit('onChange', clonedeep(this.model));
   },
   watch: {
     'model.mdef_model': function updateOptions(val) {
       this.model.mdef_params = null;
       this.$nextTick(function saveNewOptions() {
-        this.model.mdef_params = BACKEND_CONSTANTS.MassDefinition_params[val];
-        this.defaults = BACKEND_CONSTANTS.MassDefinition_params[val];
+        this.model.mdef_params = clonedeep(BACKEND_CONSTANTS.MassDefinition_params[val]);
+        this.defaults = clonedeep(BACKEND_CONSTANTS.MassDefinition_params[val]);
       });
     },
   },

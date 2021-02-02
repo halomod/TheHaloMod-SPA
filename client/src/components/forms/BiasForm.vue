@@ -25,6 +25,7 @@
 <script>
 import DoubleField from '@/components/DoubleField.vue';
 import BACKEND_CONSTANTS from '@/constants/backend_constants';
+import clonedeep from 'lodash.clonedeep';
 
 const biasChoices = {
   'Tinker (2010)': 'Tinker10',
@@ -56,14 +57,14 @@ export default {
     };
   },
   updated() {
-    this.$emit('onChange', this.model);
+    this.$emit('onChange', clonedeep(this.model));
   },
   watch: {
     'model.bias_model': function updateOptions(val) {
       this.model.bias_params = null;
       this.$nextTick(function saveNewOptions() {
-        this.model.bias_params = BACKEND_CONSTANTS.Bias_params[val];
-        this.defaults = BACKEND_CONSTANTS.Bias_params[val];
+        this.model.bias_params = clonedeep(BACKEND_CONSTANTS.Bias_params[val]);
+        this.defaults = clonedeep(BACKEND_CONSTANTS.Bias_params[val]);
       });
     },
   },

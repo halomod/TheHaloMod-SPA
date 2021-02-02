@@ -69,9 +69,9 @@ export default {
   data() {
     return {
       choices: transferChoices,
-      model: this.init,
+      model: clonedeep(this.init),
       allTransferData: {
-        ...BACKEND_CONSTANTS.TransferComponent_params,
+        ...clonedeep(BACKEND_CONSTANTS.TransferComponent_params),
       },
     };
   },
@@ -82,7 +82,7 @@ export default {
     },
   },
   updated() {
-    this.$emit('updateTransfer', this.model);
+    this.$emit('updateTransfer', clonedeep(this.model));
   },
   components: {
     DoubleField,

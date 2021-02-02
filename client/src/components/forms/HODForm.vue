@@ -25,6 +25,7 @@
 <script>
 import DoubleField from '@/components/DoubleField.vue';
 import BACKEND_CONSTANTS from '@/constants/backend_constants';
+import clonedeep from 'lodash.clonedeep';
 
 const hodChoices = {
   'Zehavi (3-param), 2005': 'Zehavi05',
@@ -47,20 +48,20 @@ export default {
   props: ['parent_model', 'init'],
   data() {
     return {
-      model: this.init,
+      model: clonedeep(this.init),
       defaults: this.init.hod_params,
       choices: hodChoices,
     };
   },
   updated() {
-    this.$emit('onChange', this.model);
+    this.$emit('onChange', clonedeep(this.model));
   },
   watch: {
     'model.hod_model': function updateOptions(val) {
       this.model.hod_params = null;
       this.$nextTick(function saveNewOptions() {
-        this.model.hod_params = BACKEND_CONSTANTS.HOD_params[val];
-        this.defaults = BACKEND_CONSTANTS.HOD_params[val];
+        this.model.hod_params = clonedeep(BACKEND_CONSTANTS.HOD_params[val]);
+        this.defaults = clonedeep(BACKEND_CONSTANTS.HOD_params[val]);
       });
     },
   },

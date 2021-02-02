@@ -65,7 +65,7 @@ export default {
     },
   },
   updated() {
-    this.$emit('updateFilter', this.model);
+    this.$emit('updateFilter', clonedeep(this.model));
   },
 };
 </script>

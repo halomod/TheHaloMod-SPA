@@ -43,6 +43,7 @@
 <script>
 import DoubleField from '@/components/DoubleField.vue';
 import BACKEND_CONSTANTS from '@/constants/backend_constants';
+import clonedeep from 'lodash.clonedeep';
 
 const hmfChoices = {
   'Press-Schechter (1974)': 'PS',
@@ -76,7 +77,7 @@ export default {
   props: ['parent_model', 'init'],
   data() {
     return {
-      model: this.init,
+      model: clonedeep(this.init),
       core_defaults: {
         Mmin: this.init.Mmin,
         Mmax: this.init.Mmax,
@@ -87,14 +88,14 @@ export default {
     };
   },
   updated() {
-    this.$emit('onChange', this.model);
+    this.$emit('onChange', clonedeep(this.model));
   },
   watch: {
     'model.hmf_model': function updateOptions(val) {
       this.model.hmf_params = null;
       this.$nextTick(function saveNewOptions() {
-        this.model.hmf_params = BACKEND_CONSTANTS.FittingFunction_params[val];
-        this.param_defaults = BACKEND_CONSTANTS.FittingFunction_params[val];
+        this.model.hmf_params = clonedeep(BACKEND_CONSTANTS.FittingFunction_params[val]);
+        this.param_defaults = clonedeep(BACKEND_CONSTANTS.FittingFunction_params[val]);
       });
     },
   },

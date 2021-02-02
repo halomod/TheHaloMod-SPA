@@ -78,7 +78,7 @@ export default {
       this.actualModel.halo_concentration_model = this.model.concentration_model;
       this.actualModel.halo_concentration_params = this.model.concentration_params;
     }
-    this.$emit('onChange', this.actualModel);
+    this.$emit('onChange', clonedeep(this.actualModel));
   },
   watch: {
     'model.concentration_model': function updateOptions(val, old) {

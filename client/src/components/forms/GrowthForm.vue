@@ -32,6 +32,7 @@
 <script>
 import BACKEND_CONSTANTS from '@/constants/backend_constants';
 import DoubleField from '@/components/DoubleField.vue';
+import clonedeep from 'lodash.clonedeep';
 
 const growthChoices = {
   Integral: 'GrowthFactor',
@@ -49,19 +50,19 @@ export default {
   props: ['parent_model', 'init'],
   data() {
     return {
-      model: this.init,
+      model: clonedeep(this.init),
       defaults: this.init.growth_params, // eslint-disable-line
       choices: growthChoices,
     };
   },
   updated() {
-    this.$emit('onChange', this.model);
+    this.$emit('onChange', clonedeep(this.model));
   },
   watch: {
     'model.growth_model': function updateOptions(val) {
       this.model.growth_params = null;
       this.$nextTick(function saveNewOptions() {
-        this.model.growth_params = BACKEND_CONSTANTS._GrowthFactor_params[val]; // eslint-disable-line
+        this.model.growth_params = clonedeep(BACKEND_CONSTANTS._GrowthFactor_params[val]); // eslint-disable-line
         this.defaults = BACKEND_CONSTANTS._GrowthFactor_params[val]; // eslint-disable-line
       });
     },

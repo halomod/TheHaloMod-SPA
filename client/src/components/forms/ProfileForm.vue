@@ -39,8 +39,6 @@ import DoubleField from '@/components/DoubleField.vue';
 import BACKEND_CONSTANTS from '@/constants/backend_constants';
 import clonedeep from 'lodash.clonedeep';
 
-const profileParams = clonedeep(BACKEND_CONSTANTS.Profile_params);
-
 const profileChoices = {
   'NFW (1997)': 'NFW',
   Hernquist: 'Hernquist',
@@ -64,7 +62,7 @@ export default {
         profile_model: null,
         profile_params: null,
       },
-      actualModel: this.init,
+      actualModel: clonedeep(this.init),
       choices: profileChoices,
     };
   },
@@ -85,14 +83,14 @@ export default {
       this.actualModel.halo_profile_model = this.model.profile_model;
       this.actualModel.halo_profile_params = this.model.profile_params;
     }
-    this.$emit('onChange', this.actualModel);
+    this.$emit('onChange', clonedeep(this.actualModel));
   },
   watch: {
     'model.profile_model': function updateOptions(val) {
       this.model.profile_params = null;
       this.$nextTick(function saveNewOptions() {
-        this.model.profile_params = profileParams[val];
-        this.defaults = profileParams[val];
+        this.model.profile_params = clonedeep(BACKEND_CONSTANTS.Profile_params)[val];
+        this.defaults = clonedeep(BACKEND_CONSTANTS.Profile_params)[val];
       });
     },
   },
