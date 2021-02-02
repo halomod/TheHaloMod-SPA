@@ -3,13 +3,33 @@ version: '3.5'
 services:
   thehalomod-server:
     build: .
-    ports:
-      - "5000:5000"
+    ports: ${FLASK_PORT}
     links:
       - redis
     container_name: hmf-server
+    env_file: '${ENV}'
+    networks:
+      - nginx_network
+
+  nginx:
+    image: nginx:1.13
+    env_file:
+      - '${ENV}'
+    ports: 443:443
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+      - /home/locoadmin/webhost/:/webhost
+    depends_on:
+      - app
+    networks:
+      - nginx_network
+
   redis:
     image: "redis"
     container_name: hmf-redis-cache
     expose: 
       - 6379
+
+networks:
+  nginx_network:
+    driver: bridge
