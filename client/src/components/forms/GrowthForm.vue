@@ -30,8 +30,8 @@
 </template>
 
 <script>
-import BACKEND_CONSTANTS from '../constants/backend_constants';
-import DoubleField from './DoubleField.vue';
+import BACKEND_CONSTANTS from '@/constants/backend_constants';
+import DoubleField from '@/components/DoubleField.vue';
 
 const growthChoices = {
   Integral: 'GrowthFactor',
@@ -42,8 +42,6 @@ const growthChoices = {
 // Objects used in the html
 export default {
   name: 'GrowthForm',
-  title: 'Growth',
-  id: 'growth',
   model: {
     event: 'onChange',
     prop: 'parent_model',

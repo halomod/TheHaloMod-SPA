@@ -41,8 +41,8 @@
 </template>
 
 <script>
-import DoubleField from './DoubleField.vue';
-import BACKEND_CONSTANTS from '../constants/backend_constants';
+import DoubleField from '@/components/DoubleField.vue';
+import BACKEND_CONSTANTS from '@/constants/backend_constants';
 
 const hmfChoices = {
   'Press-Schechter (1974)': 'PS',
@@ -68,8 +68,6 @@ const hmfChoices = {
 };
 
 export default {
-  title: 'HMF',
-  id: 'hmf',
   name: 'HMFForm',
   model: {
     event: 'onChange',

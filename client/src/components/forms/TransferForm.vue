@@ -54,9 +54,9 @@
 </template>
 
 <script>
-import InputField from './InputField.vue';
-import DoubleField from './DoubleField.vue';
-import BACKEND_CONSTANTS from '../constants/backend_constants';
+import InputField from '@/components/InputField.vue';
+import DoubleField from '@/components/DoubleField.vue';
+import BACKEND_CONSTANTS from '@/constants/backend_constants';
 
 const transferChoices = {
   CAMB: 'CAMB',
@@ -67,8 +67,6 @@ const transferChoices = {
 };
 export default {
   name: 'TransferForm',
-  title: 'Transfer',
-  id: 'transfer',
   model: {
     prop: 'transferData',
     event: 'updateTransfer',
