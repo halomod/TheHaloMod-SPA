@@ -136,10 +136,6 @@ export default (elementId, plotData) => {
   // Clear all SVGs within the main element if they exist
   d3.select(`#${elementId}`).selectAll('svg').remove();
 
-  console.log(elementId);
-
-  console.log(window);
-
   // Build the svg where the plot will be placed
   const svg = d3.select(`#${elementId}`)
     .append('svg')
@@ -147,8 +143,6 @@ export default (elementId, plotData) => {
     .attr('width', '100%')
     .attr('height', 500)
     .attr('margin', '16px');
-
-  console.log(svg);
 
   const w = svg.node().getBoundingClientRect().width;
   const h = svg.node().getBoundingClientRect().height;
