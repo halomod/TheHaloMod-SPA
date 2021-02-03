@@ -12,7 +12,7 @@ import {
 axios.defaults.withCredentials = true;
 
 const debug = Debug('Store.js');
-debug.enabled = false;
+debug.enabled = true;
 
 /**
  * This store is initialized at the beginning of the application startup. It
@@ -26,6 +26,7 @@ export default class API {
       modelNames: [],
       plotType: 'dndm',
       plotData: null,
+      plotTypes: [],
     };
   }
 
@@ -43,6 +44,7 @@ export default class API {
 
     this.state.models = Object.fromEntries(models);
     this.state.modelNames = this.getModelNames();
+    this.state.plotTypes = await this.getPlotTypes();
     this.getPlotData();
   }
 
@@ -64,6 +66,17 @@ export default class API {
    * @returns {String} plot base64 string
    */
   getPlot = () => this.plot;
+
+  /**
+   * Gets the different plot types.
+   *
+   * @returns {string[]} the array of plot types
+   */
+  getPlotTypes = async () => {
+    const result = await axios.get(`${baseurl}/get_plot_types`);
+    const plotTypes = result.data;
+    return Object.keys(plotTypes);
+  }
 
   /**
    * Sends model data to server to create Tracer Halo Model Object

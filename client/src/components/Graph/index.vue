@@ -31,11 +31,7 @@
 </template>
 
 <script>
-import axios from 'axios';
-import baseurl from '@/env';
 import Plot from './Plot.vue';
-
-axios.defaults.withCredentials = true;
 
 export default {
   name: 'Graph',
@@ -51,15 +47,7 @@ export default {
     Plot,
   },
   async created() {
-    let plotChoices = [];
-    try {
-      const result = await axios.get(`${baseurl}/get_plot_types`);
-      const plotTypes = result.data;
-      plotChoices = Object.keys(plotTypes);
-    } catch (error) {
-      // Might be better to tell the user here once the snackbar is ready.
-      // console.error(error);
-    }
+    const plotChoices = [...this.READ_ONLY.plotTypes];
     if (plotChoices.includes('dndm')) {
       this.plotChoice = 'dndm';
     } else {
