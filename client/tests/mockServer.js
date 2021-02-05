@@ -1,6 +1,7 @@
 import { createServer, Model } from 'miragejs';
 import baseurl from '@/env';
 import plotData from './example_data/plotData.json';
+import plotTypes from './example_data/plotTypes.json';
 
 /**
  * Creates a mock server for use in tests on the front-end.
@@ -69,6 +70,8 @@ export default function makeServer(environment) {
         const modelName = request.requestBody.model_name;
         return schema.haloModels.findBy({ name: modelName }).destroy();
       });
+
+      this.get(`${baseurl}/get_plot_types`, () => plotTypes);
     },
   });
 }
