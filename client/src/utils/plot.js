@@ -1,6 +1,10 @@
 import * as d3 from 'd3';
+import Debug from 'debug';
 import { legendColor } from 'd3-svg-legend';
 import processLatexString from './stringUtils';
+
+const debug = Debug('plot.js');
+debug.enabled = false;
 
 /**
  * Creates the legend for the plot.
@@ -18,9 +22,7 @@ function generateLegend(svg, colorGen, plotData) {
   const colorLegend = legendColor()
     .scale(colorGen)
     .orient('veritcal')
-    .labels(({
-      i,
-    }) => dataSetNames[i])
+    .labels(dataSetNames)
     .labelWrap(150)
     .on('cellclick', (event) => {
       const tspanNode = event.target.parentNode.querySelector('tspan');
@@ -152,12 +154,13 @@ export default (elementId, plotData) => {
   const datasets = Object.values(plotData.plot_data);
 
   // Build the color generator for the lines and legend
-  const colors = datasets.map((val, i, arr) => d3.rgb(
+  const colors = datasets.map((val, i) => d3.rgb(
     // The different color options are here: https://github.com/d3/d3-scale-chromatic
-    d3.interpolateCool(i / arr.length),
+    d3.interpolateCool(i / datasets.length),
   ).formatHex());
+  debug('colors are: ', colors);
   const colorGen = d3.scaleOrdinal()
-    .domain([0, datasets.length - 1])
+    .domain(Object.keys(plotData.plot_data))
     .range(colors);
 
   const legendWidth = generateLegend(svg, colorGen, plotData);

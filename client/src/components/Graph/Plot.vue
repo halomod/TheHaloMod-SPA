@@ -8,7 +8,7 @@ import debounce from 'lodash.debounce';
 import buildPlot from '../../utils/plot';
 
 const debug = Debug('Plot.vue');
-debug.enabled = true;
+debug.enabled = false;
 
 export default {
   name: 'Plot',
@@ -27,7 +27,7 @@ export default {
     this.generatePlot();
     /* Debounce only runs the function, even after many calls, once every
     so many ms listed in the second arg. This helps speed up the UI on
-    resize. */
+    resize. https://lodash.com/docs/4.17.15#debounce */
     window.addEventListener('resize', debounce(this.generatePlot, 400));
   },
   watch: {
