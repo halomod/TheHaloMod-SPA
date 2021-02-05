@@ -31,6 +31,8 @@ export default class API {
         xLabel: '',
         yLabel: '',
       },
+      error: false,
+      errorMessage: '',
     };
   }
 
@@ -75,7 +77,14 @@ export default class API {
       const { data } = await axios.post(`${baseurl}/plot`, {
         fig_type,
         img_type: 'png',
-      });
+      })
+        .then(() => {
+          this.error = false;
+        })
+        .catch((error) => {
+          this.error = true;
+          if (error.response) this.errorMessage = error.response.data;
+        });
       debug(`The data was retrieved with the baseurl of ${baseurl} and is: `,
         data);
       this.state.plot = `data:image/png;base64,${data.figure}`;
@@ -104,7 +113,14 @@ export default class API {
       await axios.post(`${baseurl}/create`, {
         params: this.flatten(model),
         label: name,
-      });
+      })
+        .then(() => {
+          this.error = false;
+        })
+        .catch((error) => {
+          this.error = true;
+          if (error.response) this.errorMessage = error.response.data;
+        });
       await Promise.all([this.setModel(name, model), this.getPlotData()]);
     } catch (error) {
       console.error(error);
@@ -122,7 +138,14 @@ export default class API {
       await axios.post(`${baseurl}/update`, {
         params: this.flatten(model),
         model_name: name,
-      });
+      })
+        .then(() => {
+          this.error = false;
+        })
+        .catch((error) => {
+          this.error = true;
+          if (error.response) this.errorMessage = error.response.data;
+        });
       await Promise.all([this.setModel(name, model), this.getPlotData()]);
     } catch (error) {
       console.error(error);
@@ -141,7 +164,14 @@ export default class API {
       await axios.post(`${baseurl}/clone`, {
         model_name: oldName,
         new_model_name: newName,
-      });
+      })
+        .then(() => {
+          this.error = false;
+        })
+        .catch((error) => {
+          this.error = true;
+          if (error.response) this.errorMessage = error.response.data;
+        });
       const model = await this.getModel(oldName);
       await Promise.all([this.setModel(newName, model), this.getPlotData()]);
     } catch (error) {
@@ -188,7 +218,14 @@ export default class API {
     try {
       await axios.post(`${baseurl}/delete`, {
         model_name: name,
-      });
+      })
+        .then(() => {
+          this.error = false;
+        })
+        .catch((error) => {
+          this.error = true;
+          if (error.response) this.errorMessage = error.response.data;
+        });
       await del(name);
       /* eslint-disable */
       delete this?.state.models[name];
@@ -208,7 +245,14 @@ export default class API {
     try {
       data = await axios.post(`${baseurl}/get_plot_data`, {
         fig_type: this.state.plotType,
-      });
+      })
+        .then(() => {
+          this.error = false;
+        })
+        .catch((error) => {
+          this.error = true;
+          if (error.response) this.errorMessage = error.response.data;
+        });
       this.mapToChartData(data.data);
     } catch (error) {
       console.error(error);
