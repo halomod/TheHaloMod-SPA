@@ -72,6 +72,9 @@ export default {
         this.defaults = clonedeep(BACKEND_CONSTANTS.MassDefinition_params[val]);
       });
     },
+    init() {
+      this.model = clonedeep(this.init);
+    },
   },
 };
 </script>
