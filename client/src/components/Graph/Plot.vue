@@ -4,10 +4,11 @@
 <script>
 
 import Debug from 'debug';
+import debounce from 'lodash.debounce';
 import buildPlot from '../../utils/plot';
 
 const debug = Debug('Plot.vue');
-debug.enabled = false;
+debug.enabled = true;
 
 export default {
   name: 'Plot',
@@ -22,13 +23,27 @@ export default {
     },
   },
   mounted() {
-    buildPlot(this.plotElementId, this.plotData);
+    // Init
+    this.generatePlot();
+    /* Debounce only runs the function, even after many calls, once every
+    so many ms listed in the second arg. This helps speed up the UI on
+    resize. */
+    window.addEventListener('resize', debounce(this.generatePlot, 400));
   },
   watch: {
     plotData() {
       debug('Data changed');
+      this.generatePlot();
+    },
+  },
+  methods: {
+    generatePlot() {
+      debug('plot being built');
       buildPlot(this.plotElementId, this.plotData);
     },
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', debounce(this.generatePlot, 150));
   },
 };
 </script>
