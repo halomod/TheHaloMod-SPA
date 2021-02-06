@@ -13,26 +13,25 @@
 
 <script>
 import CONSTANTS from '@/constants/backend_constants';
+import clonedeep from 'lodash.clonedeep';
 
 export default {
   name: 'HaloExclusion',
-  props: ['parent_model'],
+  props: ['parent_model', 'init'],
   model: {
     event: 'onChange',
     prop: 'parent_model',
   },
   data() {
     return {
-      model: {
-        exclusion_model: 'NoExclusion',
-      },
+      model: clonedeep(this.init),
       values: CONSTANTS.Exclusion_options,
     };
   },
   watch: {
     'model.exclusion_model': {
       handler() {
-        this.$emit('onChange', this.model);
+        this.$emit('onChange', clonedeep(this.model));
       },
     },
   },

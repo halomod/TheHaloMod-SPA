@@ -3,24 +3,22 @@
 import { mount, createLocalVue } from '@vue/test-utils';
 import ConcentrationForm from '@/components/forms/ConcentrationForm';
 import BACKEND_CONSTANTS from '@/constants/backend_constants';
+import INITIAL_STATE from '@/constants/initial_state';
 
 describe('Mounted ConcentrationForm', () => {
   const localVue = createLocalVue();
-  const wrapper = mount(
-    ConcentrationForm,
-    {
-      propsData: {
-        title: 'Tracer Concentration',
-        id: 'tracer-concentration',
-        defaultModel: 'Bullock01',
-      },
-      localVue,
+  const wrapper = mount(ConcentrationForm, {
+    propsData: {
+      title: 'Tracer Concentration',
+      init: INITIAL_STATE.tracer_concentration,
     },
-  );
+    localVue,
+  });
 
   const options = Object.keys(BACKEND_CONSTANTS.CMRelation_params);
 
-  test('has correct default model', () => {
+  test('has correct default model', async () => {
+    await wrapper.vm.$nextTick();
     expect(wrapper.vm.model.concentration_model).toBe('Bullock01');
   });
 

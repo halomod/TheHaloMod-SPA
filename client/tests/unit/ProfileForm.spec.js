@@ -3,19 +3,17 @@
 import { mount, createLocalVue } from '@vue/test-utils';
 import ProfileForm from '@/components/forms/ProfileForm';
 import BACKEND_CONSTANTS from '@/constants/backend_constants';
+import INITIAL_STATE from '@/constants/initial_state';
 
 describe('Mounted ProfileForm', () => {
   const localVue = createLocalVue();
-  const wrapper = mount(
-    ProfileForm,
-    {
-      propsData: {
-        title: 'Halo Profile',
-        id: 'halo-profile',
-      },
-      localVue,
+  const wrapper = mount(ProfileForm, {
+    propsData: {
+      title: 'Halo Profile',
+      init: INITIAL_STATE.halo_profile,
     },
-  );
+    localVue,
+  });
 
   const options = Object.keys(BACKEND_CONSTANTS.Profile_params);
 

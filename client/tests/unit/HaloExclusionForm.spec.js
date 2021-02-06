@@ -3,13 +3,14 @@
 import { mount, createLocalVue } from '@vue/test-utils';
 import HaloExclusionForm from '@/components/forms/HaloExclusionForm';
 import BACKEND_CONSTANTS from '@/constants/backend_constants';
+import INITIAL_STATE from '@/constants/initial_state';
 
 describe('Mounted HaloExclusionForm', () => {
   const localVue = createLocalVue();
-  const wrapper = mount(
-    HaloExclusionForm,
+  const wrapper = mount(HaloExclusionForm, {
+    propsData: { init: INITIAL_STATE.halo_exclusion },
     localVue,
-  );
+  });
   const options = Object.keys(BACKEND_CONSTANTS.Exclusion_options);
 
   test('has correct default model', () => {

@@ -28,7 +28,6 @@
           :value="value"
           :param="key"
           range=false
-          :placeholder="value"
         />
       </div>
     </div>
@@ -40,14 +39,12 @@ import clonedeep from 'lodash.clonedeep';
 import DoubleField from '@/components/DoubleField.vue';
 import CONSTANTS from '@/constants/backend_constants';
 
-const concentrationParams = clonedeep(CONSTANTS.CMRelation_params);
-
 export default {
   name: 'concentration',
   components: {
     DoubleField,
   },
-  props: ['defaultModel', 'id', 'title'],
+  props: ['init', 'title'],
   model: {
     event: 'onChange',
     prop: 'parent_model',
@@ -56,28 +53,38 @@ export default {
     return {
       options: CONSTANTS.CMRelation_options,
       model: {
-        concentration_model: this.defaultModel,
-        concentration_params: concentrationParams[this.defaultModel],
+        concentration_model: null,
+        concentration_params: null,
       },
+      actualModel: clonedeep(this.init),
+      LOCAL_CONSTANTS: clonedeep(CONSTANTS.CMRelation_params),
     };
   },
-  updated() {
-    const payload = {};
-    if (this.id === 'tracer-concentration') {
-      payload.tracer_concentration_model = this.model.concentration_model;
-      payload.tracer_concentration_params = this.model.concentration_params;
+  created() {
+    if (this.title === 'Tracer Concentration') {
+      this.model.concentration_model = this.actualModel.tracer_concentration_model;
+      this.model.concentration_params = this.actualModel.tracer_concentration_params;
     } else {
-      payload.halo_concentration_model = this.model.concentration_model;
-      payload.halo_concentration_params = this.model.concentration_params;
+      this.model.concentration_model = this.actualModel.halo_concentration_model;
+      this.model.concentration_params = this.actualModel.halo_concentration_params;
     }
-    this.$emit('onChange', this.payload);
+  },
+  updated() {
+    if (this.title === 'Tracer Concentration') {
+      this.actualModel.tracer_concentration_model = this.model.concentration_model;
+      this.actualModel.tracer_concentration_params = this.model.concentration_params;
+    } else {
+      this.actualModel.halo_concentration_model = this.model.concentration_model;
+      this.actualModel.halo_concentration_params = this.model.concentration_params;
+    }
+    this.$emit('onChange', clonedeep(this.actualModel));
   },
   watch: {
-    'model.concentration_model': function updateOptions(val) {
+    'model.concentration_model': function updateOptions(val, old) {
+      if (old == null) return;
       this.model.concentration_params = null;
       this.$nextTick(function saveNewOptions() {
-        this.model.concentration_params = concentrationParams[val];
-        this.defaults = concentrationParams[val];
+        this.model.concentration_params = this.LOCAL_CONSTANTS[val];
       });
     },
   },

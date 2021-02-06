@@ -1,6 +1,6 @@
 <template>
 <div>
-  <Forms :init="initial" v-model="current"/>
+  <Forms :init="initial" @onChange="(data) => current = data" v-if="initial"/>
   <div id="float">
     <md-button @click="showCancelDialog = true" class="md-raised">Cancel</md-button>
     <md-button @click="showSaveDialog = true" class="md-raised md-primary">
@@ -64,7 +64,7 @@ export default {
   },
   data() {
     return {
-      initial: clonedeep(INITIAL_STATE),
+      initial: null,
       current: null,
       loading: false,
       showSaveDialog: false,
@@ -88,8 +88,10 @@ export default {
         vm.cancelMessage = `Are you sure you want to discard your changes to '${vm.name}?`;
         vm.cancelTitle = 'Discard Edits';
         vm.loadingTitle = 'Updating your Model';
+      } else {
+        vm.initial = clonedeep(INITIAL_STATE);
       }
-      vm.current = vm.initial;
+      vm.current = clonedeep(vm.initial);
       next();
     });
   },
