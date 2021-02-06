@@ -131,9 +131,12 @@ function generateAxisLabels(svg, plotData) {
  * become the parent of the SVG plot
  * @param {} plotData the plot data which should be held in state of the
  * `$store` of the Vue instance
+ * @param {string | undefined} plotType the type of plot being made. Such as
+ * `dndm`. This is only used in edge cases for determining the scale of the
+ * x-axis.
  * @returns {void}
  */
-export default (elementId, plotData) => {
+export default (elementId, plotData, plotType) => {
   // Clear all SVGs within the main element if they exist
   d3.select(`#${elementId}`).selectAll('svg').remove();
 
@@ -147,8 +150,6 @@ export default (elementId, plotData) => {
 
   const w = svg.node().getBoundingClientRect().width;
   const h = svg.node().getBoundingClientRect().height;
-
-  debug(plotData);
 
   const { yLabelWidth, xLabelHeight } = generateAxisLabels(svg, plotData);
 
@@ -178,7 +179,16 @@ export default (elementId, plotData) => {
   let xScale;
   let yScale;
 
-  if (plotData.plot_details.yscale === 'log') {
+  const logScaleXPlotTypes = [
+    'sigma',
+    'fsigma',
+    'lnsigma',
+  ];
+
+  if (plotType && logScaleXPlotTypes.includes(plotType)) {
+    xScale = d3.scaleLog();
+    yScale = d3.scaleLinear();
+  } else if (plotData.plot_details.yscale === 'log') {
     xScale = d3.scaleLog();
     yScale = d3.scaleLog();
   } else {
