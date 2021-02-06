@@ -62,6 +62,9 @@ export default {
   updated() {
     this.$emit('onChange', clonedeep(this.model));
   },
+  activated() {
+    this.model = clonedeep(this.init);
+  },
   watch: {
     'model.mdef_model': function updateOptions(val) {
       this.model.mdef_params = null;

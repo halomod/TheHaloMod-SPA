@@ -79,6 +79,9 @@ export default {
     }
     this.$emit('onChange', clonedeep(this.actualModel));
   },
+  activated() {
+    this.actualModel = clonedeep(this.init);
+  },
   watch: {
     'model.concentration_model': function updateOptions(val, old) {
       if (old == null) return;

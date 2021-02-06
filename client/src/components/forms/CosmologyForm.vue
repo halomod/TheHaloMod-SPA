@@ -100,7 +100,7 @@ export default {
           },
         },
       },
-      model: this.init,
+      model: clonedeep(this.init),
       /**
        * Represents the different selections of the cosmo model and saves the
        * users' inputs for each.
@@ -111,6 +111,9 @@ export default {
   },
   components: {
     DoubleField,
+  },
+  activated() {
+    this.model = clonedeep(this.init);
   },
   watch: {
     'model.cosmo_model': function updateOptions(newValue, oldValue) {

@@ -85,6 +85,9 @@ export default {
     }
     this.$emit('onChange', clonedeep(this.actualModel));
   },
+  activated() {
+    this.actualModel = clonedeep(this.init);
+  },
   watch: {
     'model.profile_model': function updateOptions(val) {
       this.model.profile_params = null;

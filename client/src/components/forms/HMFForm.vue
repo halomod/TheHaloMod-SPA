@@ -85,6 +85,9 @@ export default {
       choices: hmfChoices,
     };
   },
+  activated() {
+    this.model = clonedeep(this.init);
+  },
   updated() {
     this.$emit('onChange', clonedeep(this.model));
   },
