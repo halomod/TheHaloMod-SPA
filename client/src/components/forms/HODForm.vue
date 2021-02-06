@@ -17,7 +17,6 @@
       :key="param"
       :param="param"
       range=false
-      :placeholder="String(defaults[param])"
       v-model="model.hod_params[param]"/>
   </form>
 </template>
@@ -49,7 +48,6 @@ export default {
   data() {
     return {
       model: clonedeep(this.init),
-      defaults: this.init.hod_params,
       choices: hodChoices,
     };
   },
@@ -61,7 +59,6 @@ export default {
       this.model.hod_params = null;
       this.$nextTick(function saveNewOptions() {
         this.model.hod_params = clonedeep(BACKEND_CONSTANTS.HOD_params[val]);
-        this.defaults = clonedeep(BACKEND_CONSTANTS.HOD_params[val]);
       });
     },
   },

@@ -28,7 +28,6 @@
           :value="value"
           :param="key"
           range=false
-          :placeholder="value"
         />
       </div>
     </div>
@@ -86,7 +85,6 @@ export default {
       this.model.concentration_params = null;
       this.$nextTick(function saveNewOptions() {
         this.model.concentration_params = this.LOCAL_CONSTANTS[val];
-        this.defaults = this.LOCAL_CONSTANTS[val];
       });
     },
   },

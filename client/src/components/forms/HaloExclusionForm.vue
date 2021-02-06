@@ -24,7 +24,7 @@ export default {
   },
   data() {
     return {
-      model: this.init,
+      model: clonedeep(this.init),
       values: CONSTANTS.Exclusion_options,
     };
   },

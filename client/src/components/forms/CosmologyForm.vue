@@ -114,7 +114,7 @@ export default {
   },
   watch: {
     'model.cosmo_model': function updateOptions(newValue, oldValue) {
-      this.allCosmoData[oldValue] = { ...clonedeep(this.model) };
+      this.allCosmoData[oldValue] = clonedeep(this.model);
       this.model.cosmo_params = this.allCosmoData[newValue].cosmo_params;
       this.model.z = this.allCosmoData[newValue].z;
       this.model.n = this.allCosmoData[newValue].n;

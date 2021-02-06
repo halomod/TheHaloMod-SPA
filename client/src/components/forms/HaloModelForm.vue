@@ -33,7 +33,7 @@
           />
         </div>
         <md-checkbox
-          v-else-if="inputName === 'force 1halo turnover'"
+          v-else-if="inputName === 'force_1halo_turnover'"
           v-model="model[inputName]">
           Force 1-halo turnover?
         </md-checkbox>
