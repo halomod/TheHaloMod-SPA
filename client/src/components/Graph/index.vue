@@ -21,7 +21,7 @@
       </md-field>
       <Plot
         :id="plotElementId"
-        v-if="READ_ONLY.plotData !== null"
+        v-if="plotDataExists()"
         :plotData="READ_ONLY.plotData"
         :plotElementId="plotElementId"
       />
@@ -60,6 +60,17 @@ export default {
       if (newPlotChoice !== null && newPlotChoice !== oldPlotChoice) {
         this.$store.setPlotType(newPlotChoice);
       }
+    },
+  },
+  methods: {
+    /**
+     * Determines if plot data exists.
+     *
+     * @returns {boolean} true if it does
+     */
+    plotDataExists() {
+      return this.READ_ONLY.plotData !== null
+        && Object.values(this.READ_ONLY.plotData.plot_data).length !== 0;
     },
   },
 };

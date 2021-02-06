@@ -4,7 +4,7 @@ import { legendColor } from 'd3-svg-legend';
 import processLatexString from './stringUtils';
 
 const debug = Debug('plot.js');
-debug.enabled = false;
+debug.enabled = true;
 
 /**
  * Creates the legend for the plot.
@@ -148,6 +148,8 @@ export default (elementId, plotData) => {
   const w = svg.node().getBoundingClientRect().width;
   const h = svg.node().getBoundingClientRect().height;
 
+  debug(plotData);
+
   const { yLabelWidth, xLabelHeight } = generateAxisLabels(svg, plotData);
 
   const datasets = Object.values(plotData.plot_data);
@@ -175,6 +177,7 @@ export default (elementId, plotData) => {
 
   let xScale;
   let yScale;
+
   if (plotData.plot_details.yscale === 'log') {
     xScale = d3.scaleLog();
     yScale = d3.scaleLog();
