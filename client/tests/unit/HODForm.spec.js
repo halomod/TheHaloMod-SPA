@@ -3,10 +3,14 @@
 import { mount, createLocalVue } from '@vue/test-utils';
 import HODForm from '@/components/forms/HODForm';
 import BACKEND_CONSTANTS from '@/constants/backend_constants';
+import INITIAL_STATE from '@/constants/initial_state';
 
 describe('Mounted HODForm', () => {
   const localVue = createLocalVue();
-  const wrapper = mount(HODForm, localVue);
+  const wrapper = mount(HODForm, {
+    propsData: { init: INITIAL_STATE.hod },
+    localVue,
+  });
 
   const options = Object.keys(BACKEND_CONSTANTS.HOD_params);
 

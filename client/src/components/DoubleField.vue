@@ -1,6 +1,6 @@
 <template>
   <md-field :class="validationClass">
-    <label v-if="htmlParam !== undefined" v-html="htmlParam"/>
+    <label v-if="html !== undefined" v-html="html"/>
     <label v-else>{{param}}</label>
     <md-input
       v-model="my_value"
@@ -20,7 +20,7 @@ export default {
     prop: 'value',
     event: 'input',
   },
-  props: ['value', 'min', 'max', 'htmlParam', 'placeholder', 'param', 'range'],
+  props: ['value', 'min', 'max', 'html', 'placeholder', 'param', 'range'],
   data() {
     return {
       my_value: this.value,

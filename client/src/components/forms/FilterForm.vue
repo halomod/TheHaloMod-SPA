@@ -1,43 +1,38 @@
 <template>
   <div>
     <md-field>
-      <label for="filterChoices">Filter Model</label>
+      <label for="choices">Filter Model</label>
       <md-select
-        v-model="filterChoice"
+        v-model="model.filter_model"
         id="filterChoices"
-        name="filterChoice"
-      >
+        name="filterChoices">
         <md-option
-          v-for="(value, key) in filterChoices"
+          v-for="(value, key) in choices"
           :key="key"
-          :value="key"
-        >
+          :value="key">
           {{value}}
         </md-option>
       </md-select>
     </md-field>
-    <div v-if="Object.keys(allFilterData[filterChoice]).length !== 0">
-      <DoubleField
-        v-for="(input, inputName) in filterData.filter_params"
-        :key="inputName"
-        :param="inputName"
-        :value="input"
-        v-on:input="createSetParamValueFunc(filterChoice, inputName)($event)"
-      />
-    </div>
     <DoubleField
-      :htmlParam="'&#948;<sub>c</sub>'"
+      v-for="(input, inputName) in model.filter_params"
+      :key="inputName"
+      :param="inputName"
+      :value="input"
+      v-model="model.filter_params[inputName]"/>
+    <DoubleField
+      :html="'&#948;<sub>c</sub>'"
       :min="1"
       :max="3"
-      :value="filterData.delta_c"
-      v-on:input="createSetValueFunc('delta_c')($event)"
-    />
+      :value="model.delta_c"
+      v-model="model.delta_c"/>
   </div>
 </template>
 
 <script>
 import BACKEND_CONSTANTS from '@/constants/backend_constants';
 import DoubleField from '@/components/DoubleField.vue';
+import clonedeep from 'lodash.clonedeep';
 
 const filterChoices = {
   TopHat: 'Top-hat',
@@ -51,63 +46,26 @@ export default {
     prop: 'filterData',
     event: 'updateFilter',
   },
-  props: {
-    filterData: {
-      type: Object,
-      required: true,
-    },
-  },
+  props: ['init'],
+
   data() {
     return {
-      allFilterData: BACKEND_CONSTANTS.Filter_params,
-      filterChoices,
-      filterChoice: BACKEND_CONSTANTS.filter_model,
+      model: this.init,
+      allFilterData: clonedeep(BACKEND_CONSTANTS.Filter_params),
+      choices: filterChoices,
     };
   },
   components: {
     DoubleField,
   },
-  methods: {
-    createSetParamValueFunc(filterType, varName) {
-      return (newValue) => {
-        const newFilterObj = {
-          ...this.filterData,
-          filter_params: {
-            ...this.filterData.filter_params,
-          },
-        };
-        newFilterObj.filter_params[varName] = newValue;
-        this.allFilterData[filterType][varName] = newValue;
-        this.$emit('updateFilter', newFilterObj);
-      };
-    },
-    /**
-     * Sets a value at the top level of filterData.
-     */
-    createSetValueFunc(varName) {
-      return (newValue) => {
-        const newFilterObj = {
-          ...this.filterData,
-        };
-        newFilterObj[varName] = newValue;
-        this.$emit('updateFilter', newFilterObj);
-      };
+  watch: {
+    'model.filter_model': function updateOptions(newValue, oldValue) {
+      this.allFilterData[oldValue] = clonedeep(this.model.filter_params);
+      this.model.filter_params = this.allFilterData[newValue];
     },
   },
-  watch: {
-    filterChoice(newChoice) {
-      const newFilterObj = {
-        ...this.filterData,
-      };
-      // If the new choice doesn't have extra params
-      if (Object.keys(this.allFilterData[newChoice]).length === 0) {
-        delete newFilterObj.filter_params;
-      } else {
-        newFilterObj.filter_params = this.allFilterData[newChoice];
-      }
-      newFilterObj.filter_model = newChoice;
-      this.$emit('updateFilter', newFilterObj);
-    },
+  updated() {
+    this.$emit('updateFilter', clonedeep(this.model));
   },
 };
 </script>

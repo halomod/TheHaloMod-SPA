@@ -46,7 +46,7 @@ const BACKEND_CONSTANTS = {
     hc_spectrum: 'nonlinear',
     force_1halo_turnover: true,
   },
-  cosmo_params: {
+  Cosmo_params: {
     Planck13: {
       cosmo_params: {
         H0: 67.77,
