@@ -100,8 +100,6 @@ export default {
   methods: {
     leave() {
       this.showCancelDialog = false;
-      this.initial = null;
-      this.current = null;
       this.$router.push('/');
     },
     async save() {
