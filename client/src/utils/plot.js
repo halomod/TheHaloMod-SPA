@@ -106,7 +106,6 @@ function generateAxisLabels(svg, plotData) {
     .firstChild;
 
   yAxisNode.append(yAxisLatexSvg);
-  // yAxisNode.setAttribute('transform-origin', 'center center');
 
   // Rotation happens at the pivot point of the top left corner by default
   yAxisNode.setAttribute('transform', 'rotate(-90)');
