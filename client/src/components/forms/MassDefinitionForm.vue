@@ -23,7 +23,6 @@
         :key="param"
         :param="param"
         range=false
-        :placeholder="String(defaults[param])"
         v-model="model.mdef_params[param]"/>
     </div>
   </form>
@@ -57,7 +56,6 @@ export default {
   data() {
     return {
       model: clonedeep(this.init),
-      defaults: this.init.mdef_params,
       choices: massDefinitionChoices,
     };
   },
@@ -69,7 +67,6 @@ export default {
       this.model.mdef_params = null;
       this.$nextTick(function saveNewOptions() {
         this.model.mdef_params = clonedeep(BACKEND_CONSTANTS.MassDefinition_params[val]);
-        this.defaults = clonedeep(BACKEND_CONSTANTS.MassDefinition_params[val]);
       });
     },
   },

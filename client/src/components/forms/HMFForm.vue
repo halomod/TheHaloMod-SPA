@@ -35,7 +35,6 @@
       :key="param"
       :param="param"
       range=false
-      :placeholder="String(param_defaults[param])"
       v-model="model.hmf_params[param]"/>
   </form>
 </template>
@@ -83,7 +82,6 @@ export default {
         Mmax: this.init.Mmax,
         dlog10m: this.init.dlog10m,
       },
-      param_defaults: this.init.hmf_params,
       choices: hmfChoices,
     };
   },
@@ -95,7 +93,6 @@ export default {
       this.model.hmf_params = null;
       this.$nextTick(function saveNewOptions() {
         this.model.hmf_params = clonedeep(BACKEND_CONSTANTS.FittingFunction_params[val]);
-        this.param_defaults = clonedeep(BACKEND_CONSTANTS.FittingFunction_params[val]);
       });
     },
   },

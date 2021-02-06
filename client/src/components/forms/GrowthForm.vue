@@ -23,7 +23,6 @@
         :key="param"
         :param="param"
         range=false
-        :placeholder="String(defaults[param])"
         v-model="model.growth_params[param]"/>
     </div>
   </form>
@@ -51,7 +50,6 @@ export default {
   data() {
     return {
       model: clonedeep(this.init),
-      defaults: this.init.growth_params, // eslint-disable-line
       choices: growthChoices,
     };
   },
@@ -63,7 +61,6 @@ export default {
       this.model.growth_params = null;
       this.$nextTick(function saveNewOptions() {
         this.model.growth_params = clonedeep(BACKEND_CONSTANTS._GrowthFactor_params[val]); // eslint-disable-line
-        this.defaults = BACKEND_CONSTANTS._GrowthFactor_params[val]; // eslint-disable-line
       });
     },
   },

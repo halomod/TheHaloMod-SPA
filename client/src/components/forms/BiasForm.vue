@@ -17,7 +17,6 @@
       :key="param"
       :param="param"
       range=false
-      :placeholder="String(defaults[param])"
       v-model="model.bias_params[param]"/>
   </form>
 </template>
@@ -51,8 +50,7 @@ export default {
   props: ['parent_model', 'init'],
   data() {
     return {
-      model: this.init,
-      defaults: this.init.bias_params,
+      model: clonedeep(this.init),
       choices: biasChoices,
     };
   },
@@ -64,7 +62,6 @@ export default {
       this.model.bias_params = null;
       this.$nextTick(function saveNewOptions() {
         this.model.bias_params = clonedeep(BACKEND_CONSTANTS.Bias_params[val]);
-        this.defaults = clonedeep(BACKEND_CONSTANTS.Bias_params[val]);
       });
     },
   },

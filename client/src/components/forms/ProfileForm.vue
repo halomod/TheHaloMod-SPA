@@ -90,7 +90,6 @@ export default {
       this.model.profile_params = null;
       this.$nextTick(function saveNewOptions() {
         this.model.profile_params = clonedeep(BACKEND_CONSTANTS.Profile_params)[val];
-        this.defaults = clonedeep(BACKEND_CONSTANTS.Profile_params)[val];
       });
     },
   },

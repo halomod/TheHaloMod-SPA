@@ -60,7 +60,7 @@ export default {
   },
   watch: {
     'model.filter_model': function updateOptions(newValue, oldValue) {
-      this.allFilterData[oldValue] = { ...clonedeep(this.model.filter_params) };
+      this.allFilterData[oldValue] = clonedeep(this.model.filter_params);
       this.model.filter_params = this.allFilterData[newValue];
     },
   },
