@@ -77,20 +77,16 @@ export default class API {
       const { data } = await axios.post(`${baseurl}/plot`, {
         fig_type,
         img_type: 'png',
-      })
-        .then(() => {
-          this.error = false;
-        })
-        .catch((error) => {
-          this.error = true;
-          if (error.response) this.errorMessage = error.response.data;
-        });
+      });
+      this.error = false;
       debug(`The data was retrieved with the baseurl of ${baseurl} and is: `,
         data);
       this.state.plot = `data:image/png;base64,${data.figure}`;
       return this.state.plot;
     } catch (error) {
       console.error(error);
+      this.error = true;
+      if (error.response) this.errorMessage = error.response.data;
       return null;
     }
   }
@@ -113,17 +109,13 @@ export default class API {
       await axios.post(`${baseurl}/create`, {
         params: this.flatten(model),
         label: name,
-      })
-        .then(() => {
-          this.error = false;
-        })
-        .catch((error) => {
-          this.error = true;
-          if (error.response) this.errorMessage = error.response.data;
-        });
+      });
+      this.error = false;
       await Promise.all([this.setModel(name, model), this.getPlotData()]);
     } catch (error) {
       console.error(error);
+      this.error = true;
+      if (error.response) this.errorMessage = error.response.data;
       // better error messaging here
     }
   }
@@ -138,17 +130,13 @@ export default class API {
       await axios.post(`${baseurl}/update`, {
         params: this.flatten(model),
         model_name: name,
-      })
-        .then(() => {
-          this.error = false;
-        })
-        .catch((error) => {
-          this.error = true;
-          if (error.response) this.errorMessage = error.response.data;
-        });
+      });
+      this.error = false;
       await Promise.all([this.setModel(name, model), this.getPlotData()]);
     } catch (error) {
       console.error(error);
+      this.error = true;
+      if (error.response) this.errorMessage = error.response.data;
       // better error handling here, some vue event?
     }
   }
@@ -164,18 +152,14 @@ export default class API {
       await axios.post(`${baseurl}/clone`, {
         model_name: oldName,
         new_model_name: newName,
-      })
-        .then(() => {
-          this.error = false;
-        })
-        .catch((error) => {
-          this.error = true;
-          if (error.response) this.errorMessage = error.response.data;
-        });
+      });
+      this.error = false;
       const model = await this.getModel(oldName);
       await Promise.all([this.setModel(newName, model), this.getPlotData()]);
     } catch (error) {
       console.error(error);
+      this.error = true;
+      if (error.response) this.errorMessage = error.response.data;
     }
   }
 
@@ -218,14 +202,8 @@ export default class API {
     try {
       await axios.post(`${baseurl}/delete`, {
         model_name: name,
-      })
-        .then(() => {
-          this.error = false;
-        })
-        .catch((error) => {
-          this.error = true;
-          if (error.response) this.errorMessage = error.response.data;
-        });
+      });
+      this.error = false;
       await del(name);
       /* eslint-disable */
       delete this?.state.models[name];
@@ -234,6 +212,8 @@ export default class API {
       await this.getPlotData();
     } catch (error) {
       console.error(error);
+      this.error = true;
+      if (error.response) this.errorMessage = error.response.data;
     }
   }
 
@@ -245,17 +225,13 @@ export default class API {
     try {
       data = await axios.post(`${baseurl}/get_plot_data`, {
         fig_type: this.state.plotType,
-      })
-        .then(() => {
-          this.error = false;
-        })
-        .catch((error) => {
-          this.error = true;
-          if (error.response) this.errorMessage = error.response.data;
-        });
+      });
+      this.error = false;
       this.mapToChartData(data.data);
     } catch (error) {
       console.error(error);
+      this.error = true;
+      if (error.response) this.errorMessage = error.response.data;
     }
   }
 

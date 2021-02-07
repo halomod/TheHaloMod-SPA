@@ -24,6 +24,7 @@
           :options="options"
           :styles="chartStyles"/>
       <p v-else>No graph has been generated yet</p>
+      <Error v-if="READ_ONLY.error" :message="READ_ONLY.errorMessage"/>
     </md-toolbar>
   </div>
 </template>
@@ -32,6 +33,7 @@
 import axios from 'axios';
 import baseurl from '@/env';
 import Chart from './Chart.vue';
+import Error from './Error.vue';
 
 axios.defaults.withCredentials = true;
 
@@ -46,6 +48,7 @@ export default {
   },
   components: {
     Chart,
+    Error,
   },
   computed: {
     chartStyles() {
