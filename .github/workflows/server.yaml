@@ -12,42 +12,21 @@ jobs:
         working-directory: server
     runs-on: ubuntu-latest
 
+    # Service containers to run with `container-job`
     services:
-      thehalomod-server:
-        build: .
-        ports: 
-          - 5000:5000
-        links:
-          - redis
-        container_name: hmf-server
-        environment: 
-          - FLASK_RUN_PORT=5000
-          - FLASK_RUN_HOST=127.0.0.1
-        networks:
-          - nginx_network
-
-      nginx:
-        image: nginx:1.13
-        ports: 
-          - 443:443
-        volumes:
-          - ./nginx:/etc/nginx/conf.d
-          - /home/locoadmin/webhost/:/webhost
-        depends_on:
-          - thehalomod-server
-        networks:
-          - nginx_network
-
+      # Label used to access the service container
       redis:
-        image: "redis"
-        container_name: hmf-redis-cache
-        expose: 
-          - 6379
-
-    networks:
-      nginx_network:
-        driver: bridge
-
+        # Docker Hub image
+        image: redis
+        # Set health checks to wait until redis has started
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+            # Maps port 6379 on service container to the host
+            - 6379:6379
 
     steps:
     - uses: actions/checkout@v2
