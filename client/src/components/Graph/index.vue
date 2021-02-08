@@ -26,12 +26,14 @@
         :plotElementId="plotElementId"
       />
       <p id="no-graph-notification" v-else>No graph has been generated yet</p>
+      <Error v-if="READ_ONLY.error" :message="READ_ONLY.errorMessage"/>
     </md-toolbar>
   </div>
 </template>
 
 <script>
 import Plot from './Plot.vue';
+import Error from '../Error.vue';
 
 export default {
   name: 'Graph',
@@ -45,6 +47,7 @@ export default {
   },
   components: {
     Plot,
+    Error,
   },
   async created() {
     const plotChoices = [...this.READ_ONLY.plotTypes];
