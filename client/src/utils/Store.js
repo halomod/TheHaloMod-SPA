@@ -78,15 +78,15 @@ export default class API {
         fig_type,
         img_type: 'png',
       });
-      this.error = false;
+      this.state.error = false;
       debug(`The data was retrieved with the baseurl of ${baseurl} and is: `,
         data);
       this.state.plot = `data:image/png;base64,${data.figure}`;
       return this.state.plot;
     } catch (error) {
       console.error(error);
-      this.error = true;
-      if (error.response) this.errorMessage = error.response.data;
+      this.state.error = true;
+      if (error.response) this.state.errorMessage = error.response.data.description;
       return null;
     }
   }
@@ -110,12 +110,13 @@ export default class API {
         params: this.flatten(model),
         label: name,
       });
-      this.error = false;
+      this.state.error = false;
       await Promise.all([this.setModel(name, model), this.getPlotData()]);
     } catch (error) {
       console.error(error);
-      this.error = true;
-      if (error.response) this.errorMessage = error.response.data;
+      this.state.error = true;
+      console.log('ERROR OCCURRED');
+      if (error.response) this.state.errorMessage = error.response.data.description;
       // better error messaging here
     }
   }
@@ -131,12 +132,12 @@ export default class API {
         params: this.flatten(model),
         model_name: name,
       });
-      this.error = false;
+      this.state.error = false;
       await Promise.all([this.setModel(name, model), this.getPlotData()]);
     } catch (error) {
       console.error(error);
-      this.error = true;
-      if (error.response) this.errorMessage = error.response.data;
+      this.state.error = true;
+      if (error.response) this.state.errorMessage = error.response.data.decription;
       // better error handling here, some vue event?
     }
   }
@@ -153,13 +154,13 @@ export default class API {
         model_name: oldName,
         new_model_name: newName,
       });
-      this.error = false;
+      this.state.error = false;
       const model = await this.getModel(oldName);
       await Promise.all([this.setModel(newName, model), this.getPlotData()]);
     } catch (error) {
       console.error(error);
-      this.error = true;
-      if (error.response) this.errorMessage = error.response.data;
+      this.state.error = true;
+      if (error.response) this.state.errorMessage = error.response.data.description;
     }
   }
 
@@ -203,7 +204,7 @@ export default class API {
       await axios.post(`${baseurl}/delete`, {
         model_name: name,
       });
-      this.error = false;
+      this.state.error = false;
       await del(name);
       /* eslint-disable */
       delete this?.state.models[name];
@@ -212,8 +213,8 @@ export default class API {
       await this.getPlotData();
     } catch (error) {
       console.error(error);
-      this.error = true;
-      if (error.response) this.errorMessage = error.response.data;
+      this.state.error = true;
+      if (error.response) this.state.errorMessage = error.response.data.description;
     }
   }
 
@@ -226,12 +227,12 @@ export default class API {
       data = await axios.post(`${baseurl}/get_plot_data`, {
         fig_type: this.state.plotType,
       });
-      this.error = false;
+      this.state.error = false;
       this.mapToChartData(data.data);
     } catch (error) {
       console.error(error);
-      this.error = true;
-      if (error.response) this.errorMessage = error.response.data;
+      this.state.error = true;
+      if (error.response) this.state.errorMessage = error.response.data.description;
     }
   }
 

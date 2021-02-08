@@ -1,4 +1,4 @@
-from flask import Flask, url_for, redirect, jsonify, request, session
+from flask import Flask, url_for, redirect, jsonify, request, session, abort
 from . import utils
 import base64
 from halomod import TracerHaloModel
@@ -11,7 +11,7 @@ import jsonpickle
 import time
 import redis
 from flask_session import Session
-
+from werkzeug.exceptions import InternalServerError, HTTPException
 sess = Session()
 
 
@@ -24,6 +24,25 @@ def create_app(test_config=None):
     CORS(app, origins="http://localhost:*", supports_credentials=True)  # enable CORS
     sess.init_app(app)  # enable Sessions
 
+    @app.errorhandler(InternalServerError)
+    def handle_500(e):
+        original = getattr(e, "original_exception", None)
+
+        return jsonify(original)
+
+    @app.errorhandler(HTTPException)
+    def handle_exception(e):
+        """Return JSON instead of HTML for HTTP errors."""
+        # start with the correct headers and status code from the error
+        response = e.get_response()
+        # replace the body with JSON
+        response.data = json.dumps({
+            "code": e.code,
+            "name": e.name,
+            "description": e.description,
+        })
+        response.content_type = "application/json"
+        return response
     # Helper function that abstracts logic for getting names of all models
     # associated with the function
     def get_model_names():
@@ -44,19 +63,18 @@ def create_app(test_config=None):
     # outputs: {"model_names": <list_of_model_names_in_session>}
     @app.route('/create', methods=["POST"])
     def create():
-
         params = request.get_json()["params"]
         label = request.get_json()["label"]
 
         models = None
         if 'models' in session:
-            models = pickle.loads(session.get('models'))
+                models = pickle.loads(session.get('models'))
         else:
             models = {}
 
         models[label] = utils.hmf_driver(**params)  # creates model from params
         session["models"] = pickle.dumps(models)  # writes updated model dict to session
-
+       
         # returns new list of model names
         return jsonify({"model_names": get_model_names()})
 
@@ -124,6 +142,7 @@ def create_app(test_config=None):
                 data["ys"] = list(ys[mask])  # apply mask and save ys into data dict
                 data["xs"] = list(xs[mask])  # apply mask and save xs into data dict
             except Exception as e:
+                abort(400, f"Error encountered getting {fig_type} for model {name}")
                 print(f"Error encountered getting {fig_type} for model {name}")
                 print(e)
 
