@@ -54,6 +54,9 @@ export default {
   updated() {
     this.$emit('onChange', clonedeep(this.model));
   },
+  activated() {
+    this.model = clonedeep(this.init);
+  },
   watch: {
     'model.hod_model': function updateOptions(val) {
       this.model.hod_params = null;

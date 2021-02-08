@@ -119,6 +119,9 @@ export default {
   updated() {
     this.$emit('onChange', clonedeep(this.model));
   },
+  activated() {
+    this.model = clonedeep(this.init);
+  },
   computed: {
     log_r_model: {
       get() {
