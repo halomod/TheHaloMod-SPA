@@ -156,6 +156,32 @@ def create_app(test_config=None):
 
         return jsonify(res)
 
+    # This endpoint renames a model based on name and new name
+    #
+    # expects: {"model_name": <model_name_to_rename>, "new_model_name": <new_model_name>}
+    # outputs: {"model_names": <list_of_model_names_in_session>}
+    @app.route('/rename', methods=["POST"])
+    def rename():
+
+        request_json = request.get_json()
+        name = request_json["model_name"]
+        new_name = request_json["new_model_name"]
+
+        models = None
+        if 'models' in session:
+            models = pickle.loads(session["models"])
+        else:
+            models = {}
+
+        if name in models:
+            models[new_name] = models[name]
+            del models[name]
+
+        session["models"] = pickle.dumps(models)
+
+        res = {"model_names": get_model_names()}
+        return jsonify(res)
+
     # This endpoint clones a model based on name and adds the new model to the session
     #
     # expects: {"model_name": <model_name_to_clone>, "new_model_name": <name_for_new_model>}

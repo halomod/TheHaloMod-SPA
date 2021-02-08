@@ -17,14 +17,14 @@
       :key="param"
       :param="param"
       range=false
-      :placeholder="String(defaults[param])"
       v-model="model.bias_params[param]"/>
   </form>
 </template>
 
 <script>
-import DoubleField from './DoubleField.vue';
-import BACKEND_CONSTANTS from '../constants/backend_constants';
+import DoubleField from '@/components/DoubleField.vue';
+import BACKEND_CONSTANTS from '@/constants/backend_constants';
+import clonedeep from 'lodash.clonedeep';
 
 const biasChoices = {
   'Tinker (2010)': 'Tinker10',
@@ -42,33 +42,26 @@ const biasChoices = {
 };
 
 export default {
-  title: 'Bias',
-  id: 'bias',
   name: 'BiasForm',
   model: {
     event: 'onChange',
     prop: 'parent_model',
   },
-  props: ['parent_model'],
+  props: ['parent_model', 'init'],
   data() {
     return {
-      model: {
-        bias_model: 'Tinker10',
-        bias_params: BACKEND_CONSTANTS.Bias_params.Tinker10,
-      },
-      defaults: { ...BACKEND_CONSTANTS.Bias_params.Tinker10 },
+      model: clonedeep(this.init),
       choices: biasChoices,
     };
   },
   updated() {
-    this.$emit('onChange', this.model);
+    this.$emit('onChange', clonedeep(this.model));
   },
   watch: {
     'model.bias_model': function updateOptions(val) {
       this.model.bias_params = null;
       this.$nextTick(function saveNewOptions() {
-        this.model.bias_params = BACKEND_CONSTANTS.Bias_params[val];
-        this.defaults = BACKEND_CONSTANTS.Bias_params[val];
+        this.model.bias_params = clonedeep(BACKEND_CONSTANTS.Bias_params[val]);
       });
     },
   },

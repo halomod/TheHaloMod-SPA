@@ -47,6 +47,21 @@ def test_clone(client):
     assert "NewModel" in names
 
 
+def test_rename(client):
+    with client.session_transaction() as sess:
+        sess["models"] = pickle.dumps({"TheModel": TracerHaloModel()})
+    response = client.post('/rename', json={
+        "model_name": "TheModel",
+        "new_model_name": "NewModel"
+    })
+    assert response is not None
+    assert response.status_code == 200
+    assert "model_names" in response.json
+    names = response.json["model_names"]
+    assert "TheModel" not in names
+    assert "NewModel" in names
+
+
 def test_update(client):
     with client.session_transaction() as sess:
         sess["models"] = pickle.dumps({"TheModel": TracerHaloModel()})

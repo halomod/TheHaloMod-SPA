@@ -23,15 +23,15 @@
         :key="param"
         :param="param"
         range=false
-        :placeholder="String(defaults[param])"
         v-model="model.growth_params[param]"/>
     </div>
   </form>
 </template>
 
 <script>
-import BACKEND_CONSTANTS from '../constants/backend_constants';
-import DoubleField from './DoubleField.vue';
+import BACKEND_CONSTANTS from '@/constants/backend_constants';
+import DoubleField from '@/components/DoubleField.vue';
+import clonedeep from 'lodash.clonedeep';
 
 const growthChoices = {
   Integral: 'GrowthFactor',
@@ -42,32 +42,25 @@ const growthChoices = {
 // Objects used in the html
 export default {
   name: 'GrowthForm',
-  title: 'Growth',
-  id: 'growth',
   model: {
     event: 'onChange',
     prop: 'parent_model',
   },
-  props: ['parent_model'],
+  props: ['parent_model', 'init'],
   data() {
     return {
-      model: {
-        growth_model: 'GrowthFactor',
-        growth_params: BACKEND_CONSTANTS._GrowthFactor_params.GrowthFactor, // eslint-disable-line
-      },
-      defaults: { ...BACKEND_CONSTANTS._GrowthFactor_params.GrowthFactor }, // eslint-disable-line
+      model: clonedeep(this.init),
       choices: growthChoices,
     };
   },
   updated() {
-    this.$emit('onChange', this.model);
+    this.$emit('onChange', clonedeep(this.model));
   },
   watch: {
     'model.growth_model': function updateOptions(val) {
       this.model.growth_params = null;
       this.$nextTick(function saveNewOptions() {
-        this.model.growth_params = BACKEND_CONSTANTS._GrowthFactor_params[val]; // eslint-disable-line
-        this.defaults = BACKEND_CONSTANTS._GrowthFactor_params[val]; // eslint-disable-line
+        this.model.growth_params = clonedeep(BACKEND_CONSTANTS._GrowthFactor_params[val]); // eslint-disable-line
       });
     },
   },

@@ -16,9 +16,10 @@
       </div>
       <div v-for="(input, inputName) in haloModelDefaultModel"
         :key="input.id" class="md-layout-item">
-        <div v-if="inputName === 'log_r_range'" >
+        <div v-if="inputName === 'log_r_range' || inputName === 'log_k_range'">
           <label style="font-size:12px;opacity:1;color:rgba(0,0,0,0.54)">
-            {{input.label}}</label>
+            {{input.label}}
+          </label>
           <ejs-slider
             style="width:300px;min-height:45px;padding-top:16px;"
             :value="input.value"
@@ -28,38 +29,15 @@
             :step="input.step"
             :ticks="{ placement: 'Before', largeStep: 1, smallStep: 0.5, showSmallTicks: true }"
             :type="'Range'"
-            v-model="log_r_model"
+            v-model="input.model"
           />
         </div>
-        <div v-else-if="inputName === 'log_k_range'">
-          <label style="font-size:12px;opacity:1;color:rgba(0,0,0,0.54)">
-            {{input.label}}</label>
-          <ejs-slider
-            style="width:300px;min-height:45px;padding-top:16px;"
-            :value="input.value"
-            :tooltip="{ showOn: 'Hover', isVisible: true }"
-            :min="input.min"
-            :max="input.max"
-            :step="input.step"
-            :ticks="{ placement: 'Before', largeStep: 1, smallStep: 0.5, showSmallTicks: true }"
-            :type="'Range'"
-            v-model="log_k_model"
-          />
-        </div>
-        <InputField v-else-if="inputName === 'force_1halo_turnover'"
-          :key="inputName"
-          :label="input.label"
-          :step="input.step"
-          :currentValue="input.value"
-          :min="input.min"
-          :max="input.max"
-          :inputName="inputName"
-          :inputType="input.inputType"
-          :options="input.options"
-          :setCurrentValue="null"
-          v-model="model[inputName]"
-        />
-        <double-field v-else
+        <md-checkbox
+          v-else-if="inputName === 'force_1halo_turnover'"
+          v-model="model[inputName]">
+          Force 1-halo turnover?
+        </md-checkbox>
+        <DoubleField v-else
           :key="inputName"
           :param="input.label"
           :value='input.value'
@@ -74,9 +52,8 @@
 </template>
 
 <script>
-import BACKEND_CONSTANTS from '../constants/backend_constants';
-import DoubleField from './DoubleField.vue';
-import InputField from './InputField.vue';
+import DoubleField from '@/components/DoubleField.vue';
+import clonedeep from 'lodash.clonedeep';
 
 const haloModelChoices = {
   linear: 'linear',
@@ -92,6 +69,7 @@ const haloModelDefaultModel = {
     max: 3.0,
     value: [-2.0, 2.1],
     step: 0.05,
+    model: 'log_r_model',
   },
   rnum: {
     label: 'Number of r bins',
@@ -105,6 +83,7 @@ const haloModelDefaultModel = {
     max: 3.0,
     value: [-2.0, 2.0],
     step: 0.05,
+    model: 'log_k_model',
   },
   hm_dlog10k: {
     label: 'Halo Model k bin size',
@@ -122,13 +101,10 @@ const haloModelDefaultModel = {
 // Objects used in the html
 export default {
   name: 'HaloModelForm',
-  title: 'Halo Model',
-  id: 'halo_model',
   components: {
-    InputField,
     DoubleField,
   },
-  props: ['parent_model'],
+  props: ['parent_model', 'init'],
   model: {
     event: 'onChange',
     prop: 'parent_model',
@@ -136,15 +112,12 @@ export default {
   data() {
     return {
       choices: haloModelChoices,
-      model: {
-        hc_spectrum: 'linear',
-        ...BACKEND_CONSTANTS.halo_model_params,
-      },
+      model: clonedeep(this.init),
       haloModelDefaultModel,
     };
   },
   updated() {
-    this.$emit('onChange', this.model);
+    this.$emit('onChange', clonedeep(this.model));
   },
   computed: {
     log_r_model: {
@@ -172,9 +145,8 @@ export default {
 </script>
 
 <style scoped>
-  @import "../../node_modules/@syncfusion/ej2-base/styles/material.css";
-  @import "../../node_modules/@syncfusion/ej2-buttons/styles/material.css";
-  @import "../../node_modules/@syncfusion/ej2-popups/styles/material.css";
-  @import "../../node_modules/@syncfusion/ej2-inputs/styles/material.css";
-
+  @import "../../../node_modules/@syncfusion/ej2-base/styles/material.css";
+  @import "../../../node_modules/@syncfusion/ej2-buttons/styles/material.css";
+  @import "../../../node_modules/@syncfusion/ej2-popups/styles/material.css";
+  @import "../../../node_modules/@syncfusion/ej2-inputs/styles/material.css";
 </style>

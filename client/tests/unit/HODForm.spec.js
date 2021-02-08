@@ -1,12 +1,16 @@
 /* eslint-disable no-await-in-loop, no-restricted-syntax, no-continue */
 
 import { mount, createLocalVue } from '@vue/test-utils';
-import HODForm from '@/components/HODForm';
+import HODForm from '@/components/forms/HODForm';
 import BACKEND_CONSTANTS from '@/constants/backend_constants';
+import INITIAL_STATE from '@/constants/initial_state';
 
 describe('Mounted HODForm', () => {
   const localVue = createLocalVue();
-  const wrapper = mount(HODForm, localVue);
+  const wrapper = mount(HODForm, {
+    propsData: { init: INITIAL_STATE.hod },
+    localVue,
+  });
 
   const options = Object.keys(BACKEND_CONSTANTS.HOD_params);
 
@@ -40,6 +44,8 @@ describe('Mounted HODForm', () => {
 
   test('emits onChange event whenever model selection is changed', async () => {
     const emitted = wrapper.emitted();
+    wrapper.vm.$emit('onChange');
+    await localVue.nextTick();
     let prevCount = 0;
     for (const option of options) {
       if (wrapper.vm.model.hod_model === option) continue;
@@ -54,6 +60,8 @@ describe('Mounted HODForm', () => {
 
   test('emits onChange event whenever the values of model params have changed', async () => {
     const emitted = wrapper.emitted();
+    wrapper.vm.$emit('onChange');
+    await localVue.nextTick();
     let prevCount = emitted.onChange.length;
     const params = Object.keys(wrapper.vm.model.hod_params);
     for (const param of params) {
