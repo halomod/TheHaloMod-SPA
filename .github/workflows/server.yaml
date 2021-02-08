@@ -16,17 +16,15 @@ jobs:
       thehalomod-server:
         build: .
         ports: 
-          - ${FLASK_RUN_PORT}:${FLASK_RUN_PORT}
+          - 5000:5000
         links:
           - redis
         container_name: hmf-server
         environment: 
-          - FLASK_RUN_PORT=${FLASK_RUN_PORT}
-          - FLASK_RUN_HOST=${FLASK_RUN_HOST}
+          - FLASK_RUN_PORT=5000
+          - FLASK_RUN_HOST=127.0.0.1
         networks:
           - nginx_network
-        env_file: 
-          - '${ENV_FILE}'
 
       nginx:
         image: nginx:1.13
