@@ -28,6 +28,9 @@ export default {
       values: CONSTANTS.Exclusion_options,
     };
   },
+  activated() {
+    this.model = clonedeep(this.init);
+  },
   watch: {
     'model.exclusion_model': {
       handler() {

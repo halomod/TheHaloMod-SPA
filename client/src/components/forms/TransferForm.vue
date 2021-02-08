@@ -81,6 +81,9 @@ export default {
       this.model.transfer_params = this.allTransferData[newValue];
     },
   },
+  activated() {
+    this.model = clonedeep(this.init);
+  },
   updated() {
     this.$emit('updateTransfer', clonedeep(this.model));
   },

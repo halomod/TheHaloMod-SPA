@@ -50,13 +50,16 @@ export default {
 
   data() {
     return {
-      model: this.init,
+      model: clonedeep(this.init),
       allFilterData: clonedeep(BACKEND_CONSTANTS.Filter_params),
       choices: filterChoices,
     };
   },
   components: {
     DoubleField,
+  },
+  activated() {
+    this.model = clonedeep(this.init);
   },
   watch: {
     'model.filter_model': function updateOptions(newValue, oldValue) {

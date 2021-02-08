@@ -45,7 +45,7 @@
       {{cancelMessage}}
     </md-dialog-content>
     <md-dialog-actions>
-      <md-button @click="$router.push('/')">Confirm</md-button>
+      <md-button @click="leave">Confirm</md-button>
       <md-button @click="showCancelDialog = false">Cancel</md-button>
     </md-dialog-actions>
   </md-dialog>
@@ -58,7 +58,7 @@ import clonedeep from 'lodash.clonedeep';
 import Forms from '@/components/forms/index.vue';
 
 export default {
-  name: 'Edit',
+  name: 'FormView',
   components: {
     Forms,
   },
@@ -77,32 +77,31 @@ export default {
       loadingTitle: 'Creating your model...',
     };
   },
-  beforeRouteEnter(to, _, next) {
-    next(async (instance) => {
-      const vm = instance;
-      if (vm.$route.name === 'Edit') {
-        vm.edit = true;
-        vm.initial = await vm.$store.getModel(to.params.id);
-        vm.name = vm.$route.params.id;
-        vm.saveButton = 'Save';
-        vm.cancelMessage = `Are you sure you want to discard your changes to '${vm.name}?`;
-        vm.cancelTitle = 'Discard Edits';
-        vm.loadingTitle = 'Updating your Model';
-      } else {
-        vm.initial = clonedeep(INITIAL_STATE);
-      }
-      vm.current = clonedeep(vm.initial);
-      next();
-    });
-  },
-  async beforeRouteUpdate(to, from, next) {
-    if (this.edit) {
+  async activated() {
+    if (this.$route.name === 'Edit') {
+      this.edit = true;
       this.initial = await this.$store.getModel(this.$route.params.id);
+      this.name = this.$route.params.id;
+      this.saveButton = 'Save';
+      this.cancelMessage = `Are you sure you want to discard your changes to '${this.name}?`;
+      this.cancelTitle = 'Discard Edits';
+      this.loadingTitle = 'Updating your Model';
+    } else {
+      this.edit = false;
+      this.name = null;
+      this.saveButton = 'Create';
+      this.cancelMessage = 'Are you sure you want to leave the page without creating a new model?';
+      this.cancelTitle = 'Discard Model';
+      this.loadingTitle = 'Creating your model...';
+      this.initial = clonedeep(INITIAL_STATE);
     }
-    this.current = this.initial;
-    next();
+    this.current = clonedeep(this.initial);
   },
   methods: {
+    leave() {
+      this.showCancelDialog = false;
+      this.$router.push('/');
+    },
     async save() {
       this.loading = true;
       if (this.edit) {
@@ -111,6 +110,7 @@ export default {
         await this.$store.createModel(this.current, this.name);
       }
       this.loading = false;
+      this.showSaveDialog = false;
       this.$router.push('/');
     },
   },
