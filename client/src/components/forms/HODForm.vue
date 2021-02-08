@@ -17,7 +17,6 @@
       :key="param"
       :param="param"
       range=false
-      :placeholder="String(defaults[param])"
       v-model="model.hod_params[param]"/>
   </form>
 </template>
@@ -25,6 +24,7 @@
 <script>
 import DoubleField from '@/components/DoubleField.vue';
 import BACKEND_CONSTANTS from '@/constants/backend_constants';
+import clonedeep from 'lodash.clonedeep';
 
 const hodChoices = {
   'Zehavi (3-param), 2005': 'Zehavi05',
@@ -44,26 +44,24 @@ export default {
     event: 'onChange',
     prop: 'parent_model',
   },
-  props: ['parent_model'],
+  props: ['parent_model', 'init'],
   data() {
     return {
-      model: {
-        hod_model: 'Zehavi05',
-        hod_params: BACKEND_CONSTANTS.HOD_params.Zehavi05,
-      },
-      defaults: { ...BACKEND_CONSTANTS.HOD_params.Zehavi05 },
+      model: clonedeep(this.init),
       choices: hodChoices,
     };
   },
   updated() {
-    this.$emit('onChange', this.model);
+    this.$emit('onChange', clonedeep(this.model));
+  },
+  activated() {
+    this.model = clonedeep(this.init);
   },
   watch: {
     'model.hod_model': function updateOptions(val) {
       this.model.hod_params = null;
       this.$nextTick(function saveNewOptions() {
-        this.model.hod_params = BACKEND_CONSTANTS.HOD_params[val];
-        this.defaults = BACKEND_CONSTANTS.HOD_params[val];
+        this.model.hod_params = clonedeep(BACKEND_CONSTANTS.HOD_params[val]);
       });
     },
   },

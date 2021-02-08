@@ -14,8 +14,8 @@
 
 <script>
 import Models from '@/components/Models';
-import Graph from '@/components/Graph.vue';
-import Navbar from '@/components/Navbar.vue';
+import Graph from '@/components/Graph';
+import Navbar from '@/components/Navbar';
 
 export default {
   name: 'Home',
@@ -24,7 +24,6 @@ export default {
     Graph,
     Navbar,
   },
-
 };
 
 </script>

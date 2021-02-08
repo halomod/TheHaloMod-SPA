@@ -1,5 +1,5 @@
 import { shallowMount, createLocalVue } from '@vue/test-utils';
-import Create from '@/views/Create.vue';
+import Forms from '@/views/Forms.vue';
 import Concentration from '@/components/forms/ConcentrationForm.vue';
 import HaloExclusion from '@/components/forms/HaloExclusionForm.vue';
 import BiasForm from '@/components/forms/BiasForm.vue';
@@ -16,7 +16,7 @@ import constants from '@/constants/initial_state.json';
 import VueMaterial from 'vue-material';
 import VueObserveVisibility from 'vue-observe-visibility';
 
-describe('Mounted Create', () => {
+describe('Mounted Forms', () => {
   // creates a Vue instance locally so plugins can be used; required to import
   // plugins in use from libraries and avoid warnings
   const localVue = createLocalVue();
@@ -25,7 +25,7 @@ describe('Mounted Create', () => {
 
   // shallowMount only renders top level component and uses stubs for everything
   // below
-  const wrapper = shallowMount(Create /* the component you're trying to test */, {
+  const wrapper = shallowMount(Forms /* the component you're trying to test */, {
     localVue, // a reference to the Vue instance from above
     // any props that need to be passed to the component for it to function / avoid warnings
     propsData: {

@@ -14,33 +14,27 @@ import TransferForm from '@/components/forms/TransferForm.vue';
 const FORMS = [
   {
     component: MassDefinitionForm,
-    model: 'mass-definition',
+    model: 'mass_definition',
     title: 'Mass Definition',
-    id: 'mass-definition',
+    id: 'mass_definition',
   },
   {
     component: Concentration,
-    model: 'tracer-concentration',
+    model: 'tracer_concentration',
     title: 'Tracer Concentration',
-    id: 'tracer-concentration',
-    props: {
-      defaultModel: 'Bullock01',
-    },
+    id: 'tracer_concentration',
   },
   {
     component: Concentration,
-    model: 'halo-concentration',
+    model: 'halo_concentration',
     title: 'Halo Concentration',
-    id: 'halo-concentration',
-    props: {
-      defaultModel: 'Duffy08',
-    },
+    id: 'halo_concentration',
   },
   {
     component: HaloExclusion,
     model: 'exclusion',
     title: 'Halo Exclusion',
-    id: 'halo-exclusion',
+    id: 'halo_exclusion',
   },
   {
     component: BiasForm,
@@ -62,15 +56,15 @@ const FORMS = [
   },
   {
     component: Profile,
-    model: 'tracer-profile',
+    model: 'tracer_profile',
     title: 'Tracer Profile',
-    id: 'tracer-profile',
+    id: 'tracer_profile',
   },
   {
     component: Profile,
-    model: 'halo-profile',
+    model: 'halo_profile',
     title: 'Halo Profile',
-    id: 'Halo-profile',
+    id: 'halo_profile',
   },
   {
     component: CosmologyForm,
@@ -80,9 +74,9 @@ const FORMS = [
   },
   {
     component: HaloModelForm,
-    model: 'halo-model',
+    model: 'halo_model',
     title: 'Halo Model',
-    id: 'halo-model',
+    id: 'halo_model',
   },
   {
     component: GrowthForm,

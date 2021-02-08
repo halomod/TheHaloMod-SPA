@@ -3,50 +3,43 @@
     <md-field>
       <label for="transferChoices">Transfer Model</label>
       <md-select
-        v-model="transferChoice"
+        v-model="model.transfer_model"
         id="transferChoices"
-        name="transferChoice"
-      >
+        name="transferChoice">
         <md-option
-          v-for="(value, key) in transferChoices"
+          v-for="(value, key) in choices"
           :key="key"
-          :value="key"
-        >
+          :value="key">
           {{value}}
         </md-option>
       </md-select>
     </md-field>
 
-    <div v-if="Object.keys(allTransferData[transferChoice]).length !== 0 &&
-      transferChoice !=='CAMB'">
-      <InputField
-        v-for="(input, inputName) in allTransferData[transferChoice]"
-        :labelHtml="'<label>' + inputName + '</label>'"
-        :key="inputName"
-        :step="1"
-        :currentValue="allTransferData[transferChoice][inputName]"
-        v-on:updateCurrentValue="createSetCurrentValueFunc(transferChoice, inputName)($event)"
-      />
-    </div>
+    <DoubleField v-for="(value, key) in model.transfer_params"
+      :key = "key"
+      :value = "value"
+      :step="1"
+      v-model = model.transfer_params[key]
+    />
 
     <DoubleField
       :param="'lnk_min'"
-      v-model="transferData.lnk_min"
+      v-model="model.lnk_min"
       :min="Math.log(1 * Math.pow(10, -10))"
     />
     <DoubleField
       :param="'lnk_max'"
-      v-model="transferData.lnk_max"
+      v-model="model.lnk_max"
       :max="Math.log(2 * Math.pow(10, 6))"
     />
     <DoubleField
       :param="'dlnk'"
       :min="0.005"
       :max="0.5"
-      v-model="transferData.dlnk"
+      v-model="model.dlnk"
     />
 
-    <md-checkbox v-model="transferData.takahashiChoice">
+    <md-checkbox v-model="model.takahashi">
       Use Takahashi (2012) nonlinear P(k)?
     </md-checkbox>
 
@@ -54,9 +47,9 @@
 </template>
 
 <script>
-import InputField from '@/components/InputField.vue';
 import DoubleField from '@/components/DoubleField.vue';
 import BACKEND_CONSTANTS from '@/constants/backend_constants';
+import clonedeep from 'lodash.clonedeep';
 
 const transferChoices = {
   CAMB: 'CAMB',
@@ -65,58 +58,40 @@ const transferChoices = {
   BBKS: 'BBKS (1986)',
   BondEfs: 'Bond-Efstathiou',
 };
+
 export default {
   name: 'TransferForm',
   model: {
     prop: 'transferData',
     event: 'updateTransfer',
   },
-  props: {
-    transferData: {
-      type: Object,
-      required: true,
-    },
-  },
+  props: ['init'],
   data() {
     return {
-      transferChoices,
-      transferChoice: this.transferData.transfer_model,
+      choices: transferChoices,
+      model: clonedeep(this.init),
       allTransferData: {
-        ...BACKEND_CONSTANTS.TransferComponent_params,
+        ...clonedeep(BACKEND_CONSTANTS.TransferComponent_params),
       },
     };
   },
+  watch: {
+    'model.transfer_model': function updateOptions(newValue, oldValue) {
+      this.allTransferData[oldValue] = { ...clonedeep(this.model.transfer_params) };
+      this.model.transfer_params = this.allTransferData[newValue];
+    },
+  },
+  activated() {
+    this.model = clonedeep(this.init);
+  },
+  updated() {
+    this.$emit('updateTransfer', clonedeep(this.model));
+  },
   components: {
-    InputField,
     DoubleField,
   },
-  methods: {
-    /**
-     * Creates a current value setter for the given transfer type and variable
-     * name. This just applies to two transfer types at the moment.
-     */
-    createSetCurrentValueFunc(transferType, varName) {
-      return (newValue) => {
-        this.allTransferData[transferType][varName] = newValue;
-        const newTransferObj = {
-          ...this.transferData,
-        };
-        newTransferObj[varName] = newValue;
-        this.$emit('updateTransfer', newTransferObj);
-      };
-    },
-  },
-  watch: {
-    transferChoice(newChoice) {
-      const newTransferObj = {
-        ...this.transferData,
-        ...this.allTransferData[newChoice],
-        transfer_model: newChoice,
-      };
-      this.$emit('updateTransfer', newTransferObj);
-    },
-  },
 };
+
 </script>
 
 <style>

@@ -27,7 +27,6 @@
         :value="value"
         :param="param"
         range=false
-        :placeholder="String(defaults[param])"
         v-model="model.profile_params[param]"/>
 
       </div>
@@ -49,41 +48,51 @@ const profileChoices = {
   'Cored NFW': 'CoredNFW',
 };
 
-const profileParams = clonedeep(BACKEND_CONSTANTS.Profile_params);
-
 export default {
   name: 'profile',
   model: {
     event: 'onChange',
     prop: 'parent_model',
   },
-  props: ['parent_model', 'title'],
-  data: () => ({
-    profileChoices,
-    model: {
-      profile_model: 'NFW',
-      profile_params: profileParams.NFW,
-    },
-    defaults: profileParams.NFW,
-    choices: profileChoices,
-  }),
-  updated() {
-    const payload = {};
-    if (this.id === 'tracer-profile') {
-      payload.tracer_profile_model = this.model.profile_model;
-      payload.tracer_profile_params = this.model.profile_params;
+  props: ['parent_model', 'init', 'title'],
+  data() {
+    return {
+      profileChoices,
+      model: {
+        profile_model: null,
+        profile_params: null,
+      },
+      actualModel: clonedeep(this.init),
+      choices: profileChoices,
+    };
+  },
+  created() {
+    if (this.title === 'Tracer Profile') {
+      this.model.profile_model = this.actualModel.tracer_profile_model;
+      this.model.profile_params = this.actualModel.tracer_profile_params;
     } else {
-      payload.halo_profile_model = this.model.profile_model;
-      payload.halo_profile_params = this.model.profile_params;
+      this.model.profile_model = this.actualModel.halo_profile_model;
+      this.model.profile_params = this.actualModel.halo_profile_params;
     }
-    this.$emit('onChange', this.payload);
+  },
+  updated() {
+    if (this.title === 'Tracer Profile') {
+      this.actualModel.tracer_profile_model = this.model.profile_model;
+      this.actualModel.tracer_profile_params = this.model.profile_params;
+    } else {
+      this.actualModel.halo_profile_model = this.model.profile_model;
+      this.actualModel.halo_profile_params = this.model.profile_params;
+    }
+    this.$emit('onChange', clonedeep(this.actualModel));
+  },
+  activated() {
+    this.actualModel = clonedeep(this.init);
   },
   watch: {
     'model.profile_model': function updateOptions(val) {
       this.model.profile_params = null;
       this.$nextTick(function saveNewOptions() {
-        this.model.profile_params = profileParams[val];
-        this.defaults = profileParams[val];
+        this.model.profile_params = clonedeep(BACKEND_CONSTANTS.Profile_params)[val];
       });
     },
   },

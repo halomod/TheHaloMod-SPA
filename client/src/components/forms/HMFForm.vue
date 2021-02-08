@@ -35,7 +35,6 @@
       :key="param"
       :param="param"
       range=false
-      :placeholder="String(param_defaults[param])"
       v-model="model.hmf_params[param]"/>
   </form>
 </template>
@@ -43,6 +42,7 @@
 <script>
 import DoubleField from '@/components/DoubleField.vue';
 import BACKEND_CONSTANTS from '@/constants/backend_constants';
+import clonedeep from 'lodash.clonedeep';
 
 const hmfChoices = {
   'Press-Schechter (1974)': 'PS',
@@ -73,34 +73,29 @@ export default {
     event: 'onChange',
     prop: 'parent_model',
   },
-  props: ['parent_model'],
+  props: ['parent_model', 'init'],
   data() {
     return {
-      model: {
-        Mmin: BACKEND_CONSTANTS.Mmin,
-        Mmax: BACKEND_CONSTANTS.Mmax,
-        dlog10m: BACKEND_CONSTANTS.dlog10m,
-        hmf_model: 'Tinker08',
-        hmf_params: BACKEND_CONSTANTS.FittingFunction_params.Tinker08,
-      },
+      model: clonedeep(this.init),
       core_defaults: {
-        Mmin: BACKEND_CONSTANTS.Mmin,
-        Mmax: BACKEND_CONSTANTS.Mmax,
-        dlog10m: BACKEND_CONSTANTS.dlog10m,
+        Mmin: this.init.Mmin,
+        Mmax: this.init.Mmax,
+        dlog10m: this.init.dlog10m,
       },
-      param_defaults: { ...BACKEND_CONSTANTS.FittingFunction_params.Tinker08 },
       choices: hmfChoices,
     };
   },
+  activated() {
+    this.model = clonedeep(this.init);
+  },
   updated() {
-    this.$emit('onChange', this.model);
+    this.$emit('onChange', clonedeep(this.model));
   },
   watch: {
     'model.hmf_model': function updateOptions(val) {
       this.model.hmf_params = null;
       this.$nextTick(function saveNewOptions() {
-        this.model.hmf_params = BACKEND_CONSTANTS.FittingFunction_params[val];
-        this.param_defaults = BACKEND_CONSTANTS.FittingFunction_params[val];
+        this.model.hmf_params = clonedeep(BACKEND_CONSTANTS.FittingFunction_params[val]);
       });
     },
   },
