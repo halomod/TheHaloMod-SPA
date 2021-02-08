@@ -23,7 +23,7 @@ class Config:
         FLASK_ENV = environ.get("FLASK_ENV")
 
     ''' If the flask debug is not defined then use false '''
-    if not environ.get("FLASK_DEBUG"):
+    if environ.get("FLASK_DEBUG") is None:
         FLASK_DEBUG = False
     else:
         FLASK_DEBUG = environ.get("FLASK_DEBUG")

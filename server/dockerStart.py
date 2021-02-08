@@ -24,7 +24,7 @@ def main(argv):
 
     # Default values
     ENV_FILE = ENV_BASE
-    FLASK_URL = "0.0.0.0"
+    FLASK_URL = "127.0.0.1"
     FLASK_PORT = "5000"
 
     try:
@@ -50,17 +50,20 @@ def main(argv):
         else:
             printHelp()
             sys.exit()
-    #set env vars before calling docker-compose
+    # set env vars before calling docker-compose
     my_env = os.environ.copy()
-    my_env['FLASK_URL'] = FLASK_URL
-    my_env['FLASKPORT'] = FLASK_PORT
+    my_env['FLASK_RUN_HOST'] = FLASK_URL
+    my_env['FLASK_RUN_PORT'] = FLASK_PORT
+    my_env['ENV_FILE'] = ENV_FILE
     cmd = "docker-compose --env-file " + ENV_FILE + " up"
-    subprocess.run(cmd.split(), check=True, shell=True, env=my_env)
-
+    print("Command:"+cmd)
+    try:
+        subprocess.run(cmd, check=True, shell=True, env=my_env)
+    except Exception:
+        subprocess.run("docker-compose down", check=True, shell=True, env=my_env)
 
 if __name__ == "__main__":
     main(sys.argv[1:])
-
 
 
 #docker - compose up - -build - -remove - orphans
