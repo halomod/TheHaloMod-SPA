@@ -1,19 +1,41 @@
 # Docker
 Run docker using the provided script:
 
-`./dockerStart.sh`
+`./dockerStart.py`
 
-Or just run:
+## dockerStart Usage
 
-`docker-compose up --build --remove-orphans`
+
+```
+USAGE: dockerStart.py [OPTIONS]
+
+  Running dockerStart.py with no options is equivalent to:
+  dockerStart.py -b --port=5000 --url=0.0.0.0
+
+Options:     
+     -h, --help       Show this command list
+     -d, --dev        Enable development mode (Turns on debug mode for Flask)
+     -p, --prod       For production (Enables nginx)
+     -b, --base       Base install (No nginx, no pytest, yes debug mode)
+     --port=[port]    Set the port for Flask
+     --url=[url]      Set the url for Flask
+```
+
+If you dont want to use the above you can start the container with:
+
+```
+export ENV_FILE=settings/base.env
+export FLASK_RUN_HOST=0.0.0.0
+export FLASK_RUN_PORT=5000
+docker-compose up --build --remove-orphans
+```
 
 To stop the container:
 
 `docker-compose down`
 
-Run tests:
 
-``
+
 
 # Manual Start
 
