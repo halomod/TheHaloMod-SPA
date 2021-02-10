@@ -8,6 +8,9 @@
       <div class="md-layout-item md-small-size-100 graph">
         <Graph/>
       </div>
+      <div class="md-layout-item md-small-size-100">
+        <Download/>
+      </div>
     </div>
   </div>
 </template>
@@ -16,6 +19,7 @@
 import Models from '@/components/Models';
 import Graph from '@/components/Graph';
 import Navbar from '@/components/Navbar';
+import Download from '@/components/Download';
 
 export default {
   name: 'Home',
@@ -23,6 +27,7 @@ export default {
     Models,
     Graph,
     Navbar,
+    Download,
   },
 };
 
