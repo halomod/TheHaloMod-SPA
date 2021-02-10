@@ -222,6 +222,7 @@ export default class API {
       await clear();
       this.state.models = {};
       this.state.modelNames = this.getModelNames();
+      await this.getPlotData();
     } catch (error) {
       console.log(error);
     }
