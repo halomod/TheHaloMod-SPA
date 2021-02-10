@@ -2,6 +2,7 @@ import { createServer, Model } from 'miragejs';
 import baseurl from '@/env';
 import plotData from './example_data/plotData.json';
 import plotTypes from './example_data/plotTypes.json';
+import { schemeAccent } from 'd3';
 
 /**
  * Creates a mock server for use in tests on the front-end.
@@ -58,6 +59,7 @@ export default function makeServer(environment) {
         const newModelName = request.requestBody.new_model_name;
         return schema.haloModels.create(newModelName);
       });
+      
 
       this.post(`${baseurl}/rename`, (schema, request) => {
         const newModelName = request.requestBody.new_model_name;
@@ -70,6 +72,10 @@ export default function makeServer(environment) {
         const modelName = request.requestBody.model_name;
         return schema.haloModels.findBy({ name: modelName }).destroy();
       });
+
+      this.post(`${baseurl}/clear`, (schema, _request) => {
+        return schema.haloModels.all().destroy();
+      })
 
       this.get(`${baseurl}/get_plot_types`, () => plotTypes);
     },
