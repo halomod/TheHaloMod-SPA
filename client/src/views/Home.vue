@@ -2,13 +2,13 @@
   <div>
     <Navbar/>
     <div class="md-gutter md-alignment-top-space-around home">
-      <div class="md-layout-item md-small-size-100 models">
+      <div class="models">
         <Models/>
       </div>
-      <div class="md-layout-item md-small-size-100 graph">
+      <div class="graph">
         <Graph/>
       </div>
-      <div class="md-layout-item md-small-size-100 download">
+      <div class="download">
         <Download/>
       </div>
     </div>
@@ -34,6 +34,7 @@ export default {
 </script>
 
 <style scoped>
+
   .home {
     display: grid;
     grid-template-columns: 1fr 2fr;
@@ -45,6 +46,21 @@ export default {
     column-gap: 16px;
     row-gap: 16px;
     margin: 16px;
+    padding-bottom: 16px;
+  }
+  /* 959px is the same as md-small in vue material */
+  @media (max-width: 959px) {
+    .home {
+      display: grid;
+      grid-template-columns: 1fr;
+      grid-template-rows: auto;
+      grid-template-areas:
+        "models"
+        "graph"
+        "download";
+      row-gap: 16px;
+      margin: 16px;
+    }
   }
   .graph {
     grid-area: graph;
