@@ -239,7 +239,7 @@ def create_app(test_config=None):
     # This endpoint clears all models from the session
     #
     # expects: None
-    # outputs: {"model_names": <list_of_model_names_in_session>} 
+    # outputs: {"model_names": <list_of_model_names_in_session>}
     @app.route('/clear', methods=["POST"])
     def clear():
         session["models"] = pickle.dumps({})

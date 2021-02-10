@@ -79,11 +79,10 @@ describe('Store tests', () => {
     expect(store.getModelNames()).toContain(newModelName);
   });
 
-
   test('Clearing models should remove all existing models', async () => {
-    await store.createModel(DEFAULT_MODEL, "MyModel");
-    await store.createModel(DEFAULT_MODEL, "AnotherModel");
-    await store.createModel(DEFAULT_MODEL, "AndAnotherOne");
+    await store.createModel(DEFAULT_MODEL, 'MyModel');
+    await store.createModel(DEFAULT_MODEL, 'AnotherModel');
+    await store.createModel(DEFAULT_MODEL, 'AndAnotherOne');
     expect(store.getModelNames()).toHaveLength(3);
     await store.clearModels();
     expect(store.getModelNames()).toHaveLength(0);
