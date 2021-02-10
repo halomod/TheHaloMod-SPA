@@ -11,7 +11,6 @@
       <div class="md-layout-item md-small-size-100 download">
         <Download/>
       </div>
-
     </div>
   </div>
 </template>
@@ -56,12 +55,4 @@ export default {
   .download {
     grid-area: download;
   }
-  /*
-  .graph {
-    flex-grow: 2;
-  }
-  .home {
-    margin-left: 16px;
-    margin-right: 16px;
-  }*/
 </style>

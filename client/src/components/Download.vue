@@ -4,8 +4,9 @@
       <div class="md-toolbar-section-start">
         <h3 class="md-title">Download</h3>
       </div>
-      <md-content>
-        <md-field>
+    </div>
+    <div class="download-container">
+      <md-field class='download-select'>
         <md-select v-model="downloadChoice" id="downloadChoices">
           <md-option
             v-for="choice in downloadChoices"
@@ -16,7 +17,9 @@
           </md-option>
         </md-select>
       </md-field>
-      </md-content>
+      <md-button class="md-icon-button download-button md-raised md-primary">
+        <md-icon>download</md-icon>
+      </md-button>
     </div>
   </md-toolbar>
 </template>
@@ -39,5 +42,16 @@ export default {
 </script>
 
 <style>
-
+.download-container {
+  margin-bottom: 16px;
+  padding: 0 8px;
+  width: 100%;
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.download-button {
+  margin-left: 16px;
+}
 </style>
