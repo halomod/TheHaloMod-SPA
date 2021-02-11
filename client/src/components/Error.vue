@@ -2,7 +2,7 @@
     <md-card class="md-accent">
         <md-card-header>
             <md-icon>error_outline</md-icon>
-            <div class="md-title">Graph Error</div>
+            <div class="md-title">Model Error</div>
         </md-card-header>
         <md-card-content>{{ message }}</md-card-content>
     </md-card>

@@ -243,6 +243,7 @@ export default class API {
         fig_type: this.state.plotType,
       });
       this.state.plotData = data.data;
+      this.state.error = false;
     } catch (error) {
       console.error(error);
       this.state.error = true;
