@@ -21,6 +21,10 @@ export default {
       type: String,
       required: true,
     },
+    plotSvgElementId: {
+      type: String,
+      required: true,
+    },
     /**
      * Used to just determine edge cases for logarithmic scales in the x-axis.
      * This data could likely be stored at a higher level about each plot type.
@@ -49,7 +53,7 @@ export default {
   methods: {
     generatePlot() {
       debug('plot being built');
-      buildPlot(this.plotElementId, this.plotData, this.plotType);
+      buildPlot(this.plotElementId, this.plotSvgElementId, this.plotData, this.plotType);
     },
   },
   beforeDestroy() {

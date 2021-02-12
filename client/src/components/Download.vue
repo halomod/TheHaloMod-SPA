@@ -10,14 +10,14 @@
         <md-select v-model="downloadChoice" id="downloadChoices">
           <md-option
             v-for="choice in downloadChoices"
-            :key="choice"
-            :value="choice"
+            :key="choice.name"
+            :value="choice.name"
           >
-            {{choice}}
+            {{choice.displayName}}
           </md-option>
         </md-select>
       </md-field>
-      <md-button class="md-icon-button download-button md-raised md-primary">
+      <md-button class="md-icon-button download-button md-raised md-primary" @click="handleClick">
         <md-icon>download</md-icon>
       </md-button>
     </div>
@@ -25,18 +25,50 @@
 </template>
 
 <script>
-const downloadChoices = [
-  'PDF Thang',
-  'ASCII',
-  'Other stuff',
-];
+import pdfSvgDownload from '@/utils/download.js';
+
+const downloadChoiceObjs = {
+  plotPdf: {
+    clickAction(plotSvgElementId) {
+      const svgHtmlString = document.getElementById(plotSvgElementId).outerHTML;
+      pdfSvgDownload(svgHtmlString);
+    },
+    displayName: 'PDF of Plot',
+    name: 'plotPdf',
+  },
+  ascii: {
+    clickAction() {
+      console.log('Download ascii');
+    },
+    displayName: 'ASCII',
+    name: 'ascii',
+  },
+  paramVals: {
+    clickAction() {
+      console.log('Download param vals');
+    },
+    displayName: 'Parameter Values',
+    name: 'paramVals',
+  },
+};
 export default {
   name: 'Download',
+  props: {
+    plotSvgElementId: {
+      type: String,
+      required: true,
+    },
+  },
   data() {
     return {
-      downloadChoices,
-      downloadChoice: downloadChoices[0],
+      downloadChoices: Object.values(downloadChoiceObjs),
+      downloadChoice: Object.values(downloadChoiceObjs)[0].name,
     };
+  },
+  methods: {
+    handleClick() {
+      downloadChoiceObjs[this.downloadChoice].clickAction(this.plotSvgElementId);
+    },
   },
 };
 </script>
