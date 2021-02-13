@@ -30,7 +30,10 @@ export default {
 
 <style scoped>
 .wrapper {
-  margin: 10px;
-  margin-bottom: 10vh;
+  margin-bottom: 5vh;
+  margin-top: 5vh
+}
+.md-title {
+  padding-top: 10px;
 }
 </style>

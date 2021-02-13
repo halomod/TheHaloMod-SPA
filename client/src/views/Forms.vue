@@ -1,6 +1,10 @@
 <template>
 <div>
-  <Forms :init="initial" @onChange="(data) => current = data" v-if="initial"/>
+  <Forms
+    :init="initial"
+    :contextPrimary="contextPrimary"
+    :contextSecondary="contextSecondary"
+    @onChange="(data) => current = data" v-if="initial"/>
   <div id="float">
     <md-button @click="showCancelDialog = true" class="md-raised">Cancel</md-button>
     <md-button @click="showSaveDialog = true" class="md-raised md-primary">
@@ -75,6 +79,8 @@ export default {
       cancelMessage: 'Are you sure you want to leave the page without creating a new model?',
       cancelTitle: 'Discard Model',
       loadingTitle: 'Creating your model...',
+      contextPrimary: 'Create',
+      contextSecondary: 'New Model',
     };
   },
   async activated() {
@@ -86,6 +92,8 @@ export default {
       this.cancelMessage = `Are you sure you want to discard your changes to '${this.name}?`;
       this.cancelTitle = 'Discard Edits';
       this.loadingTitle = 'Updating your Model';
+      this.contextPrimary = 'Edit';
+      this.contextSecondary = this.name;
     } else {
       this.edit = false;
       this.name = null;
@@ -93,6 +101,8 @@ export default {
       this.cancelMessage = 'Are you sure you want to leave the page without creating a new model?';
       this.cancelTitle = 'Discard Model';
       this.loadingTitle = 'Creating your model...';
+      this.contextPrimary = 'Create';
+      this.contextSecondary = 'New Model';
       this.initial = clonedeep(INITIAL_STATE);
     }
     this.current = clonedeep(this.initial);
