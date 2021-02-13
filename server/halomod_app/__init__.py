@@ -24,15 +24,29 @@ def create_app(test_config=None):
     CORS(app, origins="http://localhost:*", supports_credentials=True)  # enable CORS
     sess.init_app(app)  # enable Sessions
 
-    @app.errorhandler(InternalServerError)
-    def handle_500(e):
-        original = getattr(e, "original_exception", None)
+    # Generic Exception handler for 500 Internal Server Error
+    # Returns manually formatted JSON response object with 500 code,
+    # exception name, and description
+    @app.errorhandler(Exception)
+    def handle_generic_exception(e):
+        # pass HTTPExceptions to HTTPException handler
+        if isinstance(e, HTTPException):
+            return e
 
-        return jsonify(original)
-
+        response = {}
+        # replace the body with JSON
+        response.data = json.dumps({
+            "code": '500',
+            "name": e.name,
+            "description": e.description,
+        })
+        response.content_type = "application/json"
+        return response
+        
+    # HTTP Exception Handler for error codes 400-499
+    # Returns JSON object with error code, exception name, and description
     @app.errorhandler(HTTPException)
     def handle_exception(e):
-        """Return JSON instead of HTML for HTTP errors."""
         # start with the correct headers and status code from the error
         response = e.get_response()
         # replace the body with JSON
@@ -43,6 +57,7 @@ def create_app(test_config=None):
         })
         response.content_type = "application/json"
         return response
+    
     # Helper function that abstracts logic for getting names of all models
     # associated with the function
     def get_model_names():

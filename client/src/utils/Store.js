@@ -32,6 +32,7 @@ export default class API {
         yLabel: '',
       },
       error: false,
+      errorType: '',
       errorMessage: '',
       plotTypes: [],
     };
@@ -104,7 +105,10 @@ export default class API {
       console.error(error);
       this.state.error = true;
       console.log('ERROR OCCURRED');
-      if (error.response) this.state.errorMessage = error.response.data.description;
+      if (error.response) {
+        this.state.errorMessage = error.response.data.description;
+        this.state.errorType = (error.response.data.code >= 500) ? 'Server' : 'Model';
+      }
       // better error messaging here
     }
   }
@@ -125,7 +129,10 @@ export default class API {
     } catch (error) {
       console.error(error);
       this.state.error = true;
-      if (error.response) this.state.errorMessage = error.response.data.decription;
+      if (error.response) {
+        this.state.errorMessage = error.response.data.description;
+        this.state.errorType = (error.response.data.code >= 500) ? 'Server' : 'Model';
+      }
       // better error handling here, some vue event?
     }
   }
@@ -173,7 +180,10 @@ export default class API {
     } catch (error) {
       console.error(error);
       this.state.error = true;
-      if (error.response) this.state.errorMessage = error.response.data.description;
+      if (error.response) {
+        this.state.errorMessage = error.response.data.description;
+        this.state.errorType = (error.response.data.code >= 500) ? 'Server' : 'Model';
+      }
     }
   }
 
@@ -227,7 +237,10 @@ export default class API {
     } catch (error) {
       console.error(error);
       this.state.error = true;
-      if (error.response) this.state.errorMessage = error.response.data.description;
+      if (error.response) {
+        this.state.errorMessage = error.response.data.description;
+        this.state.errorType = (error.response.data.code >= 500) ? 'Server' : 'Model';
+      }
     }
   }
 
@@ -247,7 +260,10 @@ export default class API {
     } catch (error) {
       console.error(error);
       this.state.error = true;
-      if (error.response) this.state.errorMessage = error.response.data.description;
+      if (error.response) {
+        this.state.errorMessage = error.response.data.description;
+        this.state.errorType = (error.response.data.code === 500) ? 'Server' : 'Model';
+      }
     }
   }
 

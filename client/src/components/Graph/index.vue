@@ -26,7 +26,7 @@
         :plotElementId="plotElementId"
       />
       <p id="no-graph-notification" v-else>No graph has been generated yet</p>
-      <Error v-if="READ_ONLY.error" :message="READ_ONLY.errorMessage"/>
+      <Error v-if="READ_ONLY.error" :type="READ_ONLY.errorType" :message="READ_ONLY.errorMessage"/>
     </md-toolbar>
   </div>
 </template>

@@ -2,7 +2,7 @@
     <md-card class="md-accent">
         <md-card-header>
             <md-icon>error_outline</md-icon>
-            <div class="md-title">Model Error</div>
+            <div class="md-title">{{ type }} Error</div>
         </md-card-header>
         <md-card-content>{{ message }}</md-card-content>
     </md-card>
@@ -12,6 +12,7 @@
 export default {
   name: 'Error',
   props: {
+    type: String,
     message: String,
   },
 };
@@ -22,8 +23,8 @@ export default {
     display: inline-flex;
   }
   .md-card {
-    width: 40vw;
+    width: 30vw;
     height: 15vh;
-    margin: 20px auto;
+    margin: 10px auto;
   }
 </style>
