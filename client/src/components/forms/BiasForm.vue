@@ -1,23 +1,29 @@
 <template>
   <form novalidate>
-    <md-field>
-      <label>Bias</label>
-      <md-select v-model="model.bias_model">
-        <md-option
-          v-for="(value, choice) in choices"
-          :key="choice"
-          :value="value">
-          {{choice}}
-        </md-option>
-      </md-select>
-    </md-field>
-    <double-field
-      v-for="(value, param) in model.bias_params"
-      :value="value"
-      :key="param"
-      :param="param"
-      range=false
-      v-model="model.bias_params[param]"/>
+    <div class="md-layout md-gutter">
+      <div class="md-layout-item">
+        <md-field>
+          <label>Bias</label>
+          <md-select v-model="model.bias_model">
+            <md-option
+              v-for="(value, choice) in choices"
+              :key="choice"
+              :value="value">
+              {{choice}}
+            </md-option>
+          </md-select>
+        </md-field>
+      </div>
+      <div class="md-layout-item">
+        <double-field
+          v-for="(value, param) in model.bias_params"
+          :value="value"
+          :key="param"
+          :param="param"
+          range=false
+          v-model="model.bias_params[param]"/>
+      </div>
+    </div>
   </form>
 </template>
 

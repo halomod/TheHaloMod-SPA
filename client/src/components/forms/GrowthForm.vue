@@ -16,14 +16,16 @@
           </md-select>
         </md-field>
       </div>
-      <double-field
-        v-for="(value, param) in model.growth_params"
-        class="md-layout-item"
-        :value="value"
-        :key="param"
-        :param="param"
-        range=false
-        v-model="model.growth_params[param]"/>
+      <div class="md-layout-item">
+        <double-field
+          v-for="(value, param) in model.growth_params"
+          class="md-layout-item"
+          :value="value"
+          :key="param"
+          :param="param"
+          range=false
+          v-model="model.growth_params[param]"/>
+      </div>
     </div>
   </form>
 </template>
