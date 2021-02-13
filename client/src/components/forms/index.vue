@@ -15,16 +15,23 @@
       </md-list>
     </md-app-drawer>
     <md-app-content>
-      <div v-for="(form, index) in forms" :key="index">
-        <FormWrapper
-          :id="form.id"
-          :title="form.title"
-          @currently-visible="() => setCurrentlyVisible(form.id, form.title)">
-          <component
-            v-bind="buildProps(form)"
-            :is="form.component"
-            v-model="params[form.model]"/>
-        </FormWrapper>
+      <div class="md-layout">
+        <div class="md-layout-item md-size-15 md-small-size-5 md-xsmall-size-0"/>
+        <div class="md-layout-item">
+          <div v-for="(form, index) in forms" :key="index">
+            <FormWrapper
+              :id="form.id"
+              :title="form.title"
+              @currently-visible="() => setCurrentlyVisible(form.id, form.title)">
+              <component
+                v-bind="buildProps(form)"
+                :is="form.component"
+                v-model="params[form.model]"/>
+            </FormWrapper>
+            <md-divider/>
+          </div>
+        </div>
+        <div class="md-layout-item md-size-30 md-small-size-0"/>
       </div>
     </md-app-content>
   </md-app>
