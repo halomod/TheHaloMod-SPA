@@ -79,6 +79,27 @@ export default class API {
   }
 
   /**
+   * Gets plot from server
+   * @param {String} fig_type, type of figure to be requested from server
+   * @return {String} image data base64 string, or null if request fails
+   */
+  createPlot = async (fig_type = this.state.plotType) => {
+    try {
+      const { data } = await axios.post(`${baseurl}/plot`, {
+        fig_type,
+        img_type: 'png',
+      });
+      debug(`The data was retrieved with the baseurl of ${baseurl} and is: `,
+        data);
+      this.state.plot = `data:image/png;base64,${data.figure}`;
+      return this.state.plot;
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  }
+
+  /**
    * Sends model data to server to create Tracer Halo Model Object
    * Also saves model into indexed db
    * @param {Object} model model data

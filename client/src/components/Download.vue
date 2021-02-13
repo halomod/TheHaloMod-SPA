@@ -17,38 +17,34 @@
           </md-option>
         </md-select>
       </md-field>
-      <md-button class="md-icon-button download-button md-raised md-primary" @click="handleClick">
+      <md-button
+        class="md-icon-button download-button md-raised md-primary"
+        @click="handleClick"
+      >
         <md-icon>download</md-icon>
       </md-button>
     </div>
+    <a id="download-element"/>
   </md-toolbar>
 </template>
 
 <script>
-import pdfSvgDownload from '@/utils/download.js';
 
 const downloadChoiceObjs = {
-  plotPdf: {
-    clickAction(plotSvgElementId) {
-      const svgHtmlString = document.getElementById(plotSvgElementId).outerHTML;
-      pdfSvgDownload(svgHtmlString);
-    },
-    displayName: 'PDF of Plot',
-    name: 'plotPdf',
+  plotImage: {
+    displayName: 'Image of Plot',
+    name: 'plotImage',
+    downloadName: 'plotImage',
   },
   ascii: {
-    clickAction() {
-      console.log('Download ascii');
-    },
     displayName: 'ASCII',
     name: 'ascii',
+    downloadName: 'asciiThings',
   },
   paramVals: {
-    clickAction() {
-      console.log('Download param vals');
-    },
     displayName: 'Parameter Values',
     name: 'paramVals',
+    downloadName: 'paramVals',
   },
 };
 export default {
@@ -66,8 +62,25 @@ export default {
     };
   },
   methods: {
-    handleClick() {
-      downloadChoiceObjs[this.downloadChoice].clickAction(this.plotSvgElementId);
+    async handleClick() {
+      const downloadNode = document.getElementById('download-element');
+      const { downloadName, name } = downloadChoiceObjs[this.downloadChoice];
+      const href = await this[`download_${name}`]();
+      downloadNode.setAttribute('href', href);
+      downloadNode.setAttribute('download', downloadName);
+      downloadNode.click();
+    },
+    async download_plotImage() {
+      await this.$store.createPlot();
+      return this.$store.state.plot;
+    },
+    async download_ascii() {
+      console.log('Download ascii');
+      return '';
+    },
+    async download_paramVals() {
+      console.log('Download param vals');
+      return '';
     },
   },
 };
@@ -85,5 +98,8 @@ export default {
 }
 .download-button {
   margin-left: 16px;
+}
+#download-element {
+  display: none;
 }
 </style>

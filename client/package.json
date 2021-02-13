@@ -20,8 +20,6 @@
     "idb-keyval": "^3.2.0",
     "lodash.clonedeep": "^4.5.0",
     "lodash.debounce": "^4.0.8",
-    "pdfkit": "^0.11.0",
-    "svg-to-pdfkit": "^0.1.8",
     "vue": "^2.6.11",
     "vue-chartjs": "^3.5.1",
     "vue-jest": "^3.0.7",
