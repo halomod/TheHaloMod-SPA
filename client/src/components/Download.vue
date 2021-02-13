@@ -45,7 +45,7 @@ const downloadChoiceObjs = {
   paramVals: {
     displayName: 'Parameter Values',
     name: 'paramVals',
-    downloadName: 'paramVals',
+    downloadName: 'paramVals.json',
   },
 };
 export default {
@@ -73,8 +73,9 @@ export default {
       return `${baseUrl}/ascii`;
     },
     async download_paramVals() {
-      console.log('Download param vals');
-      return '';
+      const modelsJsonString = JSON.stringify(await this.$store.getModels(), null, 2);
+      const dataStr = `data:text/json;charset=utf-8,${encodeURIComponent(modelsJsonString)}`;
+      return dataStr;
     },
   },
 };

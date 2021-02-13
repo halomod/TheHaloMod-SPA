@@ -189,6 +189,24 @@ export default class API {
   getModel = async (name) => clonedeep(await this?.state.models[name]);
 
   /**
+   * Gets (clones) all models.
+   *
+   * @returns {{
+   *  [modelName: String]: Object
+   * } | undefined} A copy of all the models with their names or undefined
+   */
+  getModels = async () => {
+    const modelNames = this.getModelNames();
+    const modelPromises = modelNames.map((modelName) => this?.state.models[modelName]);
+    const allModelObjs = clonedeep(await Promise.all(modelPromises));
+    const allModels = {};
+    modelNames.forEach((modelName, index) => {
+      allModels[modelName] = allModelObjs[index];
+    });
+    return allModels;
+  };
+
+  /**
    * Sets a model at name
    * @param {String} name the name of the model
    * @param {Object} model the model to set
