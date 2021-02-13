@@ -56,6 +56,9 @@ export default {
   updated() {
     this.$emit('onChange', clonedeep(this.model));
   },
+  activated() {
+    this.model = clonedeep(this.init);
+  },
   watch: {
     'model.growth_model': function updateOptions(val) {
       this.model.growth_params = null;

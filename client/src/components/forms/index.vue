@@ -62,6 +62,9 @@ export default {
       default: clonedeep(this.init),
     };
   },
+  activated() {
+    this.currentlyVisible = null;
+  },
   watch: {
     params: {
       deep: true,

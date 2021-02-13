@@ -79,6 +79,16 @@ export default {
     }
     this.$emit('onChange', clonedeep(this.actualModel));
   },
+  activated() {
+    this.actualModel = clonedeep(this.init);
+    if (this.title === 'Tracer Concentration') {
+      this.model.concentration_model = this.actualModel.tracer_concentration_model;
+      this.model.concentration_params = this.actualModel.tracer_concentration_params;
+    } else {
+      this.model.concentration_model = this.actualModel.halo_concentration_model;
+      this.model.concentration_params = this.actualModel.halo_concentration_params;
+    }
+  },
   watch: {
     'model.concentration_model': function updateOptions(val, old) {
       if (old == null) return;
