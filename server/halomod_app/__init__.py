@@ -42,7 +42,7 @@ def create_app(test_config=None):
         })
         response.content_type = "application/json"
         return response
-        
+
     # HTTP Exception Handler for error codes 400-499
     # Returns JSON object with error code, exception name, and description
     @app.errorhandler(HTTPException)
@@ -57,7 +57,7 @@ def create_app(test_config=None):
         })
         response.content_type = "application/json"
         return response
-    
+
     # Helper function that abstracts logic for getting names of all models
     # associated with the function
     def get_model_names():
@@ -83,13 +83,13 @@ def create_app(test_config=None):
 
         models = None
         if 'models' in session:
-                models = pickle.loads(session.get('models'))
+            models = pickle.loads(session.get('models'))
         else:
             models = {}
 
         models[label] = utils.hmf_driver(**params)  # creates model from params
         session["models"] = pickle.dumps(models)  # writes updated model dict to session
-       
+
         # returns new list of model names
         return jsonify({"model_names": get_model_names()})
 
