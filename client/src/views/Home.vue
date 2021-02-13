@@ -6,10 +6,10 @@
         <Models/>
       </div>
       <div class="graph">
-        <Graph :plotSvgElementId="plotSvgElementId"/>
+        <Graph/>
       </div>
       <div class="download">
-        <Download :plotSvgElementId="plotSvgElementId"/>
+        <Download/>
       </div>
     </div>
   </div>
@@ -28,14 +28,6 @@ export default {
     Graph,
     Navbar,
     Download,
-  },
-  data() {
-    return {
-      /**
-       * Defined at the top level because of its usage across components
-       */
-      plotSvgElementId: 'plot-svg',
-    };
   },
 };
 

@@ -25,7 +25,6 @@
         :plotData="READ_ONLY.plotData"
         :plotType="READ_ONLY.plotType"
         :plotElementId="plotElementId"
-        :plotSvgElementId="plotSvgElementId"
       />
       <p id="no-graph-notification" v-else>No graph has been generated yet</p>
     </md-toolbar>
@@ -44,12 +43,6 @@ export default {
       plotChoice: null,
       plotElementId: 'd3-chart',
     };
-  },
-  props: {
-    plotSvgElementId: {
-      type: String,
-      required: true,
-    },
   },
   components: {
     Plot,

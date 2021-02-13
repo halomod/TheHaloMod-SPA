@@ -29,6 +29,7 @@
 </template>
 
 <script>
+import baseUrl from '@/env';
 
 const downloadChoiceObjs = {
   plotImage: {
@@ -49,12 +50,6 @@ const downloadChoiceObjs = {
 };
 export default {
   name: 'Download',
-  props: {
-    plotSvgElementId: {
-      type: String,
-      required: true,
-    },
-  },
   data() {
     return {
       downloadChoices: Object.values(downloadChoiceObjs),
@@ -75,8 +70,7 @@ export default {
       return this.$store.state.plot;
     },
     async download_ascii() {
-      console.log('Download ascii');
-      return '';
+      return `${baseUrl}/ascii`;
     },
     async download_paramVals() {
       console.log('Download param vals');

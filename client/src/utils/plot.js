@@ -129,7 +129,6 @@ function generateAxisLabels(svg, plotData) {
  *
  * @param {string} elementId the ID of the element to manipulate which will
  * become the parent of the SVG plot
- * @param {string} plotSvgElementId the ID of the actual SVG of the plot
  * @param {} plotData the plot data which should be held in state of the
  * `$store` of the Vue instance
  * @param {string | undefined} plotType the type of plot being made. Such as
@@ -137,14 +136,14 @@ function generateAxisLabels(svg, plotData) {
  * x-axis.
  * @returns {void}
  */
-export default (elementId, plotSvgElementId, plotData, plotType) => {
+export default (elementId, plotData, plotType) => {
   // Clear all SVGs within the main element if they exist
   d3.select(`#${elementId}`).selectAll('svg').remove();
 
   // Build the svg where the plot will be placed
   const svg = d3.select(`#${elementId}`)
     .append('svg')
-    .attr('id', plotSvgElementId)
+    .attr('id', 'svg-plot')
     .attr('width', '100%')
     .attr('height', 500)
     .attr('margin', '16px');
