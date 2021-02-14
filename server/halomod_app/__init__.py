@@ -254,6 +254,16 @@ def create_app(test_config=None):
         res = {"model_names": get_model_names()}
         return jsonify(res)
 
+    # This endpoint clears all models from the session
+    #
+    # expects: None
+    # outputs: {"model_names": <list_of_model_names_in_session>}
+    @app.route('/clear', methods=["POST"])
+    def clear():
+        session["models"] = pickle.dumps({})
+        res = {"model_names": get_model_names()}
+        return jsonify(res)
+
     # Generates a figure using session data & matplotlib rendering and
     # returns it to client
     #

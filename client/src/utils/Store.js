@@ -7,6 +7,7 @@ import {
   keys,
   del,
   get,
+  clear,
 } from 'idb-keyval';
 
 axios.defaults.withCredentials = true;
@@ -208,6 +209,22 @@ export default class API {
       await this.getPlotData();
     } catch (error) {
       console.error(error);
+    }
+  }
+
+  /**
+   * Clears all existing models
+   * @returns {void}
+   */
+  clearModels = async () => {
+    try {
+      await axios.post(`${baseurl}/clear`);
+      await clear();
+      this.state.models = {};
+      this.state.modelNames = this.getModelNames();
+      await this.getPlotData();
+    } catch (error) {
+      console.log(error);
     }
   }
 
