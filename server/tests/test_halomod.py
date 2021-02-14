@@ -84,6 +84,20 @@ def test_delete(client):
     assert "TheModel" not in names
 
 
+def test_clear(client):
+    with client.session_transaction() as sess:
+        sess["models"] = pickle.dumps({
+            "TheModel": TracerHaloModel(),
+            "AnotherModel": TracerHaloModel(),
+            "AndAnotherOne": TracerHaloModel()})
+    response = client.post('/clear')
+    assert response is not None
+    assert response.status_code == 200
+    assert "model_names" in response.json
+    names = response.json["model_names"]
+    assert not names
+
+
 def test_get_plot_data(client):
     with client.session_transaction() as sess:
         sess["models"] = pickle.dumps({"TheModel": TracerHaloModel()})

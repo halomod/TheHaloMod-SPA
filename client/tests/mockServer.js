@@ -1,5 +1,6 @@
 import { createServer, Model } from 'miragejs';
 import baseurl from '@/env';
+// import { schemeAccent } from 'd3';
 import plotData from './example_data/plotData.json';
 import plotTypes from './example_data/plotTypes.json';
 
@@ -70,6 +71,8 @@ export default function makeServer(environment) {
         const modelName = request.requestBody.model_name;
         return schema.haloModels.findBy({ name: modelName }).destroy();
       });
+
+      this.post(`${baseurl}/clear`, (schema) => schema.haloModels.all().destroy());
 
       this.get(`${baseurl}/get_plot_types`, () => plotTypes);
     },

@@ -12,11 +12,29 @@ import numpy as np
 import redis
 from flask_session import Session
 import io
+import sentry_sdk
+from sentry_sdk.integrations.flask import FlaskIntegration
 
 sess = Session()
 
 
 def create_app(test_config=None):
+    # add sentry sdk
+    sentry_sdk.init(
+        dsn="https://27537774b9d949b7ab5dcbe3ba4496c9@o516709.ingest.sentry.io/5624184",
+        integrations=[FlaskIntegration()],
+
+        # Set traces_sample_rate to 1.0 to capture 100%
+        # of transactions for performance monitoring.
+        # We recommend adjusting this value in production.
+        traces_sample_rate=1.0,
+
+        # By default the SDK will try to use the SENTRY_RELEASE
+        # environment variable, or infer a git commit
+        # SHA as release, however you may want to set
+        # something more human-readable.
+        # release="myapp@1.0.0",
+    )
     app = Flask(__name__, instance_relative_config=True)
 
     # Everything in config.py Config class is loaded into the Flask app config
@@ -234,6 +252,16 @@ def create_app(test_config=None):
 
         session["models"] = pickle.dumps(models)
 
+        res = {"model_names": get_model_names()}
+        return jsonify(res)
+
+    # This endpoint clears all models from the session
+    #
+    # expects: None
+    # outputs: {"model_names": <list_of_model_names_in_session>}
+    @app.route('/clear', methods=["POST"])
+    def clear():
+        session["models"] = pickle.dumps({})
         res = {"model_names": get_model_names()}
         return jsonify(res)
 
