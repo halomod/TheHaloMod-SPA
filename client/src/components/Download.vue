@@ -20,6 +20,7 @@
       <md-button
         class="md-icon-button download-button md-raised md-primary"
         @click="handleClick"
+        id="download-button"
       >
         <md-icon>download</md-icon>
       </md-button>
