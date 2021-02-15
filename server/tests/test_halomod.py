@@ -3,7 +3,6 @@ import imghdr
 import base64
 from halomod import TracerHaloModel
 import pickle
-from pprint import pprint
 import zipfile
 import io
 
