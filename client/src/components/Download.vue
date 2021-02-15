@@ -36,17 +36,17 @@ const downloadChoiceObjs = {
   plotImage: {
     displayName: 'Image of Plot',
     name: 'plotImage',
-    downloadName: 'plotImage',
+    downloadName: 'PlotImage',
   },
   ascii: {
     displayName: 'ASCII',
     name: 'ascii',
-    downloadName: 'asciiThings',
+    downloadName: 'AllData',
   },
   paramVals: {
     displayName: 'Parameter Values',
     name: 'paramVals',
-    downloadName: 'paramVals.json',
+    downloadName: 'ParameterValues.json',
   },
 };
 export default {
