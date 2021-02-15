@@ -1,31 +1,40 @@
 <template>
-  <div>
-    <md-field>
-      <label for="choices">Filter Model</label>
-      <md-select
-        v-model="model.filter_model"
-        id="filterChoices"
-        name="filterChoices">
-        <md-option
-          v-for="(value, key) in choices"
-          :key="key"
-          :value="key">
-          {{value}}
-        </md-option>
-      </md-select>
-    </md-field>
-    <DoubleField
-      v-for="(input, inputName) in model.filter_params"
-      :key="inputName"
-      :param="inputName"
-      :value="input"
-      v-model="model.filter_params[inputName]"/>
-    <DoubleField
-      :html="'&#948;<sub>c</sub>'"
-      :min="1"
-      :max="3"
-      :value="model.delta_c"
-      v-model="model.delta_c"/>
+  <div class="md-layout md-gutter">
+    <div class="md-layout-item">
+      <DoubleField
+        :html="'&#948;<sub>c</sub>'"
+        :min="1"
+        :max="3"
+        :value="model.delta_c"
+        v-model="model.delta_c"/>
+      <div class="md-layout md-gutter">
+        <div class="md-layout-item">
+          <md-field>
+            <label for="choices">Filter Model</label>
+            <md-select
+              v-model="model.filter_model"
+              id="filterChoices"
+              name="filterChoices">
+              <md-option
+                v-for="(value, key) in choices"
+                :key="key"
+                :value="key">
+                {{value}}
+              </md-option>
+            </md-select>
+          </md-field>
+        </div>
+        <div
+          class="md-layout-item">
+          <DoubleField
+            v-for="(input, inputName) in model.filter_params"
+            :key="inputName"
+            :param="inputName"
+            :value="input"
+            v-model="model.filter_params[inputName]"/>
+        </div>
+    </div>
+    </div>
   </div>
 </template>
 
