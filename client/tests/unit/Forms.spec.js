@@ -5,7 +5,7 @@ import HaloExclusion from '@/components/forms/HaloExclusionForm.vue';
 import BiasForm from '@/components/forms/BiasForm.vue';
 import HMFForm from '@/components/forms/HMFForm.vue';
 import HODForm from '@/components/forms/HODForm.vue';
-import Profile from '@/components/forms/ProfileForm.vue';
+import ProfileForm from '@/components/forms/ProfileForm.vue';
 import CosmologyForm from '@/components/forms/CosmologyForm.vue';
 import MassDefinitionForm from '@/components/forms/MassDefinitionForm.vue';
 import GrowthForm from '@/components/forms/GrowthForm.vue';
@@ -44,7 +44,7 @@ describe('Mounted Forms', () => {
     expect(wrapper.findComponent(GrowthForm)).toBeTruthy();
     expect(wrapper.findComponent(HaloExclusion)).toBeTruthy();
     expect(wrapper.findComponent(HaloModelForm)).toBeTruthy();
-    expect(wrapper.findComponent(Profile)).toBeTruthy();
+    expect(wrapper.findComponent(ProfileForm)).toBeTruthy();
     expect(wrapper.findComponent(HMFForm)).toBeTruthy();
     expect(wrapper.findComponent(HODForm)).toBeTruthy();
     expect(wrapper.findComponent(MassDefinitionForm)).toBeTruthy();
