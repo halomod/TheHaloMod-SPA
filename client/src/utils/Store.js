@@ -27,6 +27,14 @@ export default class API {
       modelNames: [],
       plotType: 'dndm',
       plotData: null,
+      plotDetails: {
+        scale: '',
+        xLabel: '',
+        yLabel: '',
+      },
+      error: false,
+      errorType: '',
+      errorMessage: '',
       plotTypes: [],
     };
   }
@@ -92,9 +100,16 @@ export default class API {
         params: this.flatten(model),
         label: name,
       });
+      this.state.error = false;
       await Promise.all([this.setModel(name, model), this.getPlotData()]);
     } catch (error) {
       console.error(error);
+      this.state.error = true;
+      console.log('ERROR OCCURRED');
+      if (error.response) {
+        this.state.errorMessage = error.response.data.description;
+        this.state.errorType = (error.response.data.code >= 500) ? 'Server' : 'Model';
+      }
       // better error messaging here
     }
   }
@@ -110,9 +125,15 @@ export default class API {
         params: this.flatten(model),
         model_name: name,
       });
+      this.state.error = false;
       await Promise.all([this.setModel(name, model), this.getPlotData()]);
     } catch (error) {
       console.error(error);
+      this.state.error = true;
+      if (error.response) {
+        this.state.errorMessage = error.response.data.description;
+        this.state.errorType = (error.response.data.code >= 500) ? 'Server' : 'Model';
+      }
       // better error handling here, some vue event?
     }
   }
@@ -154,10 +175,16 @@ export default class API {
         model_name: oldName,
         new_model_name: newName,
       });
+      this.state.error = false;
       const model = await this.getModel(oldName);
       await Promise.all([this.setModel(newName, model), this.getPlotData()]);
     } catch (error) {
       console.error(error);
+      this.state.error = true;
+      if (error.response) {
+        this.state.errorMessage = error.response.data.description;
+        this.state.errorType = (error.response.data.code >= 500) ? 'Server' : 'Model';
+      }
     }
   }
 
@@ -201,6 +228,7 @@ export default class API {
       await axios.post(`${baseurl}/delete`, {
         model_name: name,
       });
+      this.state.error = false;
       await del(name);
       /* eslint-disable */
       delete this?.state.models[name];
@@ -209,6 +237,11 @@ export default class API {
       await this.getPlotData();
     } catch (error) {
       console.error(error);
+      this.state.error = true;
+      if (error.response) {
+        this.state.errorMessage = error.response.data.description;
+        this.state.errorType = (error.response.data.code >= 500) ? 'Server' : 'Model';
+      }
     }
   }
 
@@ -240,8 +273,14 @@ export default class API {
         fig_type: this.state.plotType,
       });
       this.state.plotData = data.data;
+      this.state.error = false;
     } catch (error) {
       console.error(error);
+      this.state.error = true;
+      if (error.response) {
+        this.state.errorMessage = error.response.data.description;
+        this.state.errorType = (error.response.data.code === 500) ? 'Server' : 'Model';
+      }
     }
   }
 

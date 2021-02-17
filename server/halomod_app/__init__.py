@@ -1,9 +1,9 @@
-from flask import Flask, url_for, redirect, jsonify, request, session
+from flask import Flask, url_for, redirect, jsonify, request, session, abort
 from . import utils
 import base64
 from halomod import TracerHaloModel
 import json
-import pickle
+import dill as pickle
 import codecs
 import hmf
 from flask_cors import CORS
@@ -11,6 +11,7 @@ import jsonpickle
 import time
 import redis
 from flask_session import Session
+from werkzeug.exceptions import InternalServerError, HTTPException
 import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
 
@@ -42,6 +43,40 @@ def create_app(test_config=None):
     CORS(app, origins="http://localhost:*", supports_credentials=True)  # enable CORS
     sess.init_app(app)  # enable Sessions
 
+    # Generic Exception handler for 500 Internal Server Error
+    # Returns manually formatted JSON response object with 500 code,
+    # exception name, and description
+    @app.errorhandler(Exception)
+    def handle_generic_exception(e):
+        # pass HTTPExceptions to HTTPException handler
+        if isinstance(e, HTTPException):
+            return e
+
+        response = {}
+        # replace the body with JSON
+        response.data = json.dumps({
+            "code": '500',
+            "name": e.name,
+            "description": e.description,
+        })
+        response.content_type = "application/json"
+        return response
+
+    # HTTP Exception Handler for error codes 400-499
+    # Returns JSON object with error code, exception name, and description
+    @app.errorhandler(HTTPException)
+    def handle_exception(e):
+        # start with the correct headers and status code from the error
+        response = e.get_response()
+        # replace the body with JSON
+        response.data = json.dumps({
+            "code": e.code,
+            "name": e.name,
+            "description": e.description,
+        })
+        response.content_type = "application/json"
+        return response
+
     # Helper function that abstracts logic for getting names of all models
     # associated with the function
     def get_model_names():
@@ -62,7 +97,6 @@ def create_app(test_config=None):
     # outputs: {"model_names": <list_of_model_names_in_session>}
     @app.route('/create', methods=["POST"])
     def create():
-
         params = request.get_json()["params"]
         label = request.get_json()["label"]
 
@@ -142,6 +176,7 @@ def create_app(test_config=None):
                 data["ys"] = list(ys[mask])  # apply mask and save ys into data dict
                 data["xs"] = list(xs[mask])  # apply mask and save xs into data dict
             except Exception as e:
+                abort(400, f"Error encountered getting {fig_type} for model {name}")
                 print(f"Error encountered getting {fig_type} for model {name}")
                 print(e)
 
