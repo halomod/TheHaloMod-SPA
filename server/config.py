@@ -13,3 +13,5 @@ class Config:
     SESSION_TYPE = 'redis'  # environ.get('SESSION_TYPE')
     # redis.from_url(environ.get('SESSION_REDIS'))
     SESSION_REDIS = redis.from_url('redis://localhost:6379')
+
+    PROPOGATE_EXCEPTIONS = True
