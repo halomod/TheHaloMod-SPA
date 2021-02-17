@@ -104,7 +104,9 @@ export default {
     },
     buildProps(form) {
       // console.log(this.default[form.id]);
-      return { ...form.props, init: this.default[form.id], title: form.title, subform_id: form.id };
+      return {
+        ...form.props, init: this.default[form.id], title: form.title, subform_id: form.id,
+      };
     },
   },
 };

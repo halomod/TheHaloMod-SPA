@@ -1,7 +1,7 @@
 import { mount, createLocalVue } from '@vue/test-utils';
 import FormView from '@/views/Forms.vue';
 import Forms from '@/components/forms';
-import BiasForm from '@/components/forms/BiasForm.vue'
+import BiasForm from '@/components/forms/BiasForm.vue';
 import ConcentrationForm from '@/components/forms/ConcentrationForm.vue';
 import HaloExclusion from '@/components/forms/HaloExclusionForm.vue';
 import HMFForm from '@/components/forms/HMFForm.vue';
@@ -24,27 +24,27 @@ const $route = {
 };
 
 const subforms = [
-  ["BiasForm", BiasForm, "Seljack04Cosmo"],
-  ["ConcentrationForm", ConcentrationForm, "Zehavi11"],
-  ["HaloExclusionForm", HaloExclusion, "DblSphere"],
-  ["HMFForm", HMFForm, "Reed07"],
-  ["HODForm", HODForm, "Contreras13"],
-  ["ProfileForm", ProfileForm, "Einasto"],
-  ["MassDefinitionForm", MassDefinitionForm, "SOCritical"],
-  ["GrowthForm", GrowthForm, "GenMFGrowth"],
-  ["HaloModelForm", HaloModelForm, "filtered_lin"],
-  ["FilterForm", FilterForm, "SharpK"],
-  ["TransferForm", TransferForm, "BondEfs"],
-  ["CosmologyForm", CosmologyForm, "WMAP5"],
+  ['BiasForm', BiasForm, 'Seljack04Cosmo'],
+  ['ConcentrationForm', ConcentrationForm, 'Zehavi11'],
+  ['HaloExclusionForm', HaloExclusion, 'DblSphere'],
+  ['HMFForm', HMFForm, 'Reed07'],
+  ['HODForm', HODForm, 'Contreras13'],
+  ['ProfileForm', ProfileForm, 'Einasto'],
+  ['MassDefinitionForm', MassDefinitionForm, 'SOCritical'],
+  ['GrowthForm', GrowthForm, 'GenMFGrowth'],
+  ['HaloModelForm', HaloModelForm, 'filtered_lin'],
+  ['FilterForm', FilterForm, 'SharpK'],
+  ['TransferForm', TransferForm, 'BondEfs'],
+  ['CosmologyForm', CosmologyForm, 'WMAP5'],
 ];
 
-describe ('Mounted FormView', () => {
+describe('Mounted FormView', () => {
   const localVue = createLocalVue();
   localVue.use(VueMaterial);
 
   let wrapper;
 
-  beforeAll( async () => {
+  beforeAll(async () => {
     wrapper = mount(FormView, {
       localVue,
       mocks: {
@@ -68,46 +68,39 @@ describe ('Mounted FormView', () => {
     expect(wrapper.findComponent(Forms).exists()).toBe(true);
   });
 
-  test.each(subforms)
-    ('renders %s subform.', 
+  test.each(subforms)('renders %s subform.',
     async (_, component) => {
       expect(wrapper.findComponent(component).exists()).toBe(true);
-    }
-  );
+    });
 
-  test.each(subforms)
-    ('updates composite form state whenever %s subform state changes', 
+  test.each(subforms)('updates composite form state whenever %s subform state changes',
     async (_, component, newOption) => {
       const originalState = wrapper.vm.current;
       const subform = wrapper.findComponent(component);
       const keys = Object.keys(subform.vm.model);
       const modelKey = component === HaloModelForm
         ? 'hc_spectrum'
-        : keys.filter(key => key.includes('model'))[0];
+        : keys.filter((key) => key.includes('model'))[0];
       subform.vm.model[modelKey] = newOption;
       await wrapper.vm.$nextTick();
       expect(wrapper.vm.current).not.toBe(originalState);
-    }
-  );
+    });
 
-  test.each(subforms)
-    ('does not update %s subform state when composite form state changes', 
+  test.each(subforms)('does not update %s subform state when composite form state changes',
     async (_, component, newOption) => {
       const subform = wrapper.findComponent(component);
       const subformId = subform.vm.subform_id;
       const keys = Object.keys(subform.vm.model);
       const modelKey = component === HaloModelForm
         ? 'hc_spectrum'
-        : keys.filter(key => key.includes('model'))[0];
+        : keys.filter((key) => key.includes('model'))[0];
       const originalState = subform.vm.model[modelKey];
       wrapper.vm.current[subformId][modelKey] = newOption;
       await wrapper.vm.$nextTick();
       expect(subform.vm.model[modelKey]).toBe(originalState);
-    }
-  );
+    });
 
-  test.each(subforms)
-    ('does not expose top-level state objects to direct manipulation from %s subform', 
+  test.each(subforms)('does not expose top-level state objects to direct manipulation from %s subform',
     async (_, component, newOption) => {
       const subform = wrapper.findComponent(component);
       const subformId = subform.vm.subform_id;
@@ -115,11 +108,9 @@ describe ('Mounted FormView', () => {
       const keys = Object.keys(subform.vm.model);
       const modelKey = component === HaloModelForm
         ? 'hc_spectrum'
-        : keys.filter(key => key.includes('model'))[0];
-      const originalState = subform.vm.model[modelKey];
-      wrapper.vm.current[subformId][modelKey] = newOption;
+        : keys.filter((key) => key.includes('model'))[0];
+      subform.vm.model[modelKey] = newOption;
       await wrapper.vm.$nextTick();
       expect(subform.vm.model).not.toBe(wrapper.vm.current[subformId]);
-    }
-  );
+    });
 });
