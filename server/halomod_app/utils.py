@@ -1,6 +1,7 @@
 """Plotting and driving utilities for halomod."""
 import io
 import logging
+from typing import Union
 import matplotlib.ticker as tick
 
 from halomod import TracerHaloModel
@@ -17,7 +18,7 @@ import pickle
 logger = logging.getLogger(__name__)
 
 
-def hmf_driver(cls=TracerHaloModel, previous: [None, TracerHaloModel] = None, **kwargs):
+def hmf_driver(cls=TracerHaloModel, previous: Union[None, TracerHaloModel] = None, **kwargs):
     if previous is None:
         return cls(**kwargs)
     elif "wdm_model" in kwargs and not isinstance(previous, HaloModelWDM):
