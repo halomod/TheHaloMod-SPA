@@ -1,4 +1,4 @@
-import { mount } from '@vue/test-utils';
+import { mount, createLocalVue } from '@vue/test-utils';
 import FormView from '@/views/Forms.vue';
 import Forms from '@/components/forms';
 import BiasForm from '@/components/forms/BiasForm.vue'
@@ -13,35 +13,50 @@ import GrowthForm from '@/components/forms/GrowthForm.vue';
 import HaloModelForm from '@/components/forms/HaloModelForm.vue';
 import FilterForm from '@/components/forms/FilterForm.vue';
 import TransferForm from '@/components/forms/TransferForm.vue';
+import VueMaterial from 'vue-material';
 
 const $route = {
   path: '/create',
+  name: 'Create',
   hash: '',
   params: null,
   query: null,
 };
 
-const subforms = {
-  BiasForm,
-  ConcentrationForm,
-  HaloExclusion,
-  HMFForm,
-  HODForm,
-  ProfileForm,
-  MassDefinitionForm,
-  GrowthForm,
-  HaloModelForm,
-  FilterForm,
-  TransferForm,
-  CosmologyForm,
-};
+const subforms = [
+  ["BiasForm", BiasForm, "Seljack04Cosmo"],
+  ["ConcentrationForm", ConcentrationForm, "Zehavi11"],
+  ["HaloExclusionForm", HaloExclusion, "DblSphere"],
+  ["HMFForm", HMFForm, "Reed07"],
+  ["HODForm", HODForm, "Contreras13"],
+  ["ProfileForm", ProfileForm, "Einasto"],
+  ["MassDefinitionForm", MassDefinitionForm, "SOCritical"],
+  ["GrowthForm", GrowthForm, "GenMFGrowth"],
+  ["HaloModelForm", HaloModelForm, "filtered_lin"],
+  ["FilterForm", FilterForm, "SharpK"],
+  ["TransferForm", TransferForm, "BondEfs"],
+  ["CosmologyForm", CosmologyForm, "WMAP5"],
+];
 
 describe ('Mounted FormView', () => {
+  const localVue = createLocalVue();
+  localVue.use(VueMaterial);
+
   let wrapper;
 
   beforeAll( async () => {
-    wrapper = mount(FormView);
-    await wrapper.vm.$nextTick();
+    wrapper = mount(FormView, {
+      localVue,
+      mocks: {
+        $route,
+      },
+      stubs: {
+        'vue-observe-visibility': true,
+        'router-link': true,
+        'ejs-slider': true,
+      },
+    });
+    wrapper.vm.$options.activated[0].call(wrapper.vm);
     await wrapper.vm.$nextTick();
   });
 
@@ -50,38 +65,43 @@ describe ('Mounted FormView', () => {
   });
 
   test('renders composite form', () => {
-    expect(wrapper.findComponent(FormView).exists()).toBe(true);
-    expect(wrapper.findComponent(FormView).findComponent(Forms).exists()).toBe(true);
+    expect(wrapper.findComponent(Forms).exists()).toBe(true);
   });
 
-  test.each(Object.entries(subforms))
+  test.each(subforms)
     ('renders %s subform.', 
     async (_, component) => {
       expect(wrapper.findComponent(component).exists()).toBe(true);
     }
   );
 
-  test.each(Object.entries(subforms))
+  test.each(subforms)
     ('updates composite form state whenever %s subform state changes', 
-    (_, component) => {
+    async (_, component, newOption) => {
       const originalState = wrapper.vm.current;
       const subform = wrapper.findComponent(component);
       const keys = Object.keys(subform.vm.model);
-      const modelKey = keys.filter(key => key.includes('model'))[0];
-      subform.vm.model[modelKey] = 'New Option';
+      const modelKey = component === HaloModelForm
+        ? 'hc_spectrum'
+        : keys.filter(key => key.includes('model'))[0];
+      subform.vm.model[modelKey] = newOption;
+      await wrapper.vm.$nextTick();
       expect(wrapper.vm.current).not.toBe(originalState);
     }
   );
 
-  test.each(Object.entries(subforms))
+  test.each(subforms)
     ('does not update %s subform state when composite form state changes', 
-    (_, component) => {
+    async (_, component, newOption) => {
       const subform = wrapper.findComponent(component);
-      const subformId = subform.vm.id;
+      const subformId = subform.vm.subform_id;
       const keys = Object.keys(subform.vm.model);
-      const modelKey = keys.filter(key => key.includes('model'))[0];
+      const modelKey = component === HaloModelForm
+        ? 'hc_spectrum'
+        : keys.filter(key => key.includes('model'))[0];
       const originalState = subform.vm.model[modelKey];
-      wrapper.vm.current[modelKey] = 'New Option';
-      expect(subform.vm.model[subformId][modelKey].toBe(originalState));
+      wrapper.vm.current[subformId][modelKey] = newOption;
+      await wrapper.vm.$nextTick();
+      expect(subform.vm.model[modelKey]).toBe(originalState);
     })
 });

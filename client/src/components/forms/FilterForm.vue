@@ -55,7 +55,7 @@ export default {
     prop: 'filterData',
     event: 'updateFilter',
   },
-  props: ['init'],
+  props: ['init', 'subform_id'],
 
   data() {
     return {

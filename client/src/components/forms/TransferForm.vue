@@ -70,7 +70,7 @@ export default {
     prop: 'transferData',
     event: 'updateTransfer',
   },
-  props: ['init'],
+  props: ['init', 'subform_id'],
   data() {
     return {
       choices: transferChoices,
