@@ -1,34 +1,44 @@
 <template>
   <div>
-    <md-field>
-      <label for="cosmologyChoices">Cosmology</label>
-      <md-select v-model="model.cosmo_model" id="cosmologyChoices" name="cosmologyChoice">
-        <md-option
-          v-for="(value, choice) in choices"
-          :key="choice"
-          :value="value">
-          {{choice}}
-        </md-option>
-      </md-select>
-    </md-field>
-    <DoubleField v-for="(input, key) in inputs.core"
-      :key="key"
-      :html="input.html"
-      :step="input.step"
-      :min="input.min"
-      :max="input.max"
-      :value="model[key]"
-      v-model="model[key]"
-      />
-    <DoubleField v-for="(input, key) in inputs.sub"
-      :key="key"
-      :html="input.html"
-      :step="input.step"
-      :min="input.min"
-      :max="input.max"
-      :value="model.cosmo_params[key]"
-      v-model="model.cosmo_params[key]"
-      />
+    <div class="md-layout md-gutter">
+      <div class="md-layout-item">
+        <DoubleField v-for="(input, key) in inputs.core"
+          :key="key"
+          :html="input.html"
+          :step="input.step"
+          :min="input.min"
+          :max="input.max"
+          :value="model[key]"
+          v-model="model[key]"
+          />
+        <div class="md-layout md-gutter">
+          <div class="md-layout-item">
+            <md-field>
+              <label for="cosmologyChoices">Cosmology</label>
+              <md-select v-model="model.cosmo_model" id="cosmologyChoices" name="cosmologyChoice">
+                <md-option
+                  v-for="(value, choice) in choices"
+                  :key="choice"
+                  :value="value">
+                  {{choice}}
+                </md-option>
+              </md-select>
+            </md-field>
+          </div>
+          <div class="md-layout-item">
+            <DoubleField v-for="(input, key) in inputs.sub"
+              :key="key"
+              :html="input.html"
+              :step="input.step"
+              :min="input.min"
+              :max="input.max"
+              :value="model.cosmo_params[key]"
+              v-model="model.cosmo_params[key]"
+              />
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 

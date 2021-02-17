@@ -1,4 +1,6 @@
-const BACKEND_CONSTANTS = {
+import deepFreeze from 'deep-freeze';
+
+export default deepFreeze({
   cosmo_model: 'Planck15',
   n: 0.9667,
   sigma_8: 0.8159,
@@ -754,6 +756,4 @@ const BACKEND_CONSTANTS = {
       R_sc: 0,
     },
   },
-};
-
-export default BACKEND_CONSTANTS;
+});

@@ -1,13 +1,16 @@
 <template>
-  <div class="halo-exclusion">
-    <md-field>
-      <label>Halo Exclusion</label>
-      <md-select v-model="model.exclusion_model">
-        <div v-for="(value, key) in values" :key="key">
-          <md-option :value="key">{{value}}</md-option>
-        </div>
-      </md-select>
-    </md-field>
+  <div class="md-layout md-gutter">
+    <div class="md-layout-item">
+      <md-field>
+        <label>Halo Exclusion</label>
+        <md-select v-model="model.exclusion_model">
+          <div v-for="(value, key) in values" :key="key">
+            <md-option :value="key">{{value}}</md-option>
+          </div>
+        </md-select>
+      </md-field>
+    </div>
+    <div class="md-layout-item"/>
   </div>
 </template>
 
