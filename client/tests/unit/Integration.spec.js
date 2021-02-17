@@ -60,11 +60,11 @@ describe ('Mounted FormView', () => {
     await wrapper.vm.$nextTick();
   });
 
-  test('contains FormView', () => {
+  test('renders top level view FormView component', () => {
     expect(wrapper.findComponent(FormView).exists()).toBe(true);
   });
 
-  test('renders composite form', () => {
+  test('renders composite Forms component', () => {
     expect(wrapper.findComponent(Forms).exists()).toBe(true);
   });
 
@@ -103,5 +103,23 @@ describe ('Mounted FormView', () => {
       wrapper.vm.current[subformId][modelKey] = newOption;
       await wrapper.vm.$nextTick();
       expect(subform.vm.model[modelKey]).toBe(originalState);
-    })
+    }
+  );
+
+  test.each(subforms)
+    ('does not expose top-level state objects to direct manipulation from %s subform', 
+    async (_, component, newOption) => {
+      const subform = wrapper.findComponent(component);
+      const subformId = subform.vm.subform_id;
+      expect(subform.vm.model).not.toBe(wrapper.vm.current[subformId]);
+      const keys = Object.keys(subform.vm.model);
+      const modelKey = component === HaloModelForm
+        ? 'hc_spectrum'
+        : keys.filter(key => key.includes('model'))[0];
+      const originalState = subform.vm.model[modelKey];
+      wrapper.vm.current[subformId][modelKey] = newOption;
+      await wrapper.vm.$nextTick();
+      expect(subform.vm.model).not.toBe(wrapper.vm.current[subformId]);
+    }
+  );
 });
