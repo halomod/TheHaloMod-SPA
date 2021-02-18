@@ -31,6 +31,7 @@ describe('Mounted CosmologyForm', () => {
       await localVue.nextTick();
       const newParams = wrapper.vm.model.cosmo_params;
       expect(oldParams).not.toBe(newParams);
+      console.log(option);
     }
   });
 
@@ -40,30 +41,16 @@ describe('Mounted CosmologyForm', () => {
       await localVue.nextTick();
       await localVue.nextTick();
       const params = Object.keys(BACKEND_CONSTANTS.Cosmo_params[option].cosmo_params);
+      const htmlStrings = {
+        H0: 'H<sub>0</sub>',
+        Ob0: 'Ω<sub>b</sub>',
+        Om0: 'Ω<sub>m</sub>',
+        z: 'Redshift',
+        n: 'n<sub>s</sub>',
+        sigma_8: 'σ<sub>8</sub>',
+      }
       for (const param of params) {
-        switch (param) {
-          case 'H0':
-            expect(wrapper.html()).toEqual(expect.stringMatching(new RegExp('.*H<sub>0</sub>.*')));
-            break;
-          case 'Ob0':
-            expect(wrapper.html()).toEqual(expect.stringMatching(new RegExp('.*Ω<sub>b</sub>.*')));
-            break;
-          case 'Om0':
-            expect(wrapper.html()).toEqual(expect.stringMatching(new RegExp('.*Ω<sub>m</sub>.*')));
-            break;
-          case 'z':
-            expect(wrapper.html()).toEqual(expect.stringMatching(new RegExp('.*Redshift.*')));
-            break;
-          case 'n':
-            expect(wrapper.html()).toEqual(expect.stringMatching(new RegExp('.*n<sub>s</sub>.*')));
-            break;
-          case 'sigma_8':
-            expect(wrapper.html()).toEqual(expect.stringMatching(new RegExp('.*σ<sub>8</sub>.*')));
-            break;
-          default:
-            expect(wrapper.html()).toEqual(expect.stringMatching(new RegExp(`.*${param}.*`)));
-            break;
-        }
+        expect(wrapper.html()).toEqual(expect.stringMatching(new RegExp(`.*${htmlStrings[param] || param}.*`)));
       }
     }
   });
