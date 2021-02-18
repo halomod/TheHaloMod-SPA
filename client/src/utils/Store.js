@@ -22,25 +22,20 @@ debug.enabled = false;
 export default class API {
   constructor() {
     this.state = {
-      plot: '',
       models: {},
       modelNames: [],
+      plotTypes: {},
       plotType: 'dndm',
       plotData: null,
-      plotDetails: {
-        scale: '',
-        xLabel: '',
-        yLabel: '',
-      },
+      plot: '',
       error: false,
       errorType: '',
       errorMessage: '',
-      plotTypes: [],
     };
   }
 
   /**
-   * initializes cache
+   * Initializes cache.
    */
   init = async () => {
     const k = await keys();
@@ -77,14 +72,32 @@ export default class API {
   getPlot = () => this.plot;
 
   /**
+   * The way that data is formatted for each plot option.
+   *
+   * @typedef PlotDetails
+   * @type {{
+   *  xlab: string,
+   *  ylab: string,
+   *  yScale: string
+   * }}
+   */
+
+  /**
    * Gets the different plot types.
    *
-   * @returns {string[]} the array of plot types
+   * @returns {{
+   *  xLabels: {
+   *    [labelName: string]: string
+   *  },
+   *  plotOptions: {
+   *    [plotName: string]: PlotDetails
+   *  }
+   * }} an object containing the different plot options and x labels
    */
   getPlotTypes = async () => {
     const result = await axios.get(`${baseurl}/get_plot_types`);
     const plotTypes = result.data;
-    return Object.keys(plotTypes);
+    return plotTypes;
   }
 
   /**
