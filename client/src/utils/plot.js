@@ -4,7 +4,7 @@ import { legendColor } from 'd3-svg-legend';
 import createLatexSvgFromString from './latex';
 
 const debug = Debug('plot.js');
-debug.enabled = false;
+debug.enabled = true;
 
 /**
  * Creates the legend for the plot.
@@ -118,6 +118,7 @@ function generateAxisLabels(svg, plotData) {
  * @returns {void}
  */
 export default (elementId, plotData) => {
+  debug('Generate plot triggered with the following plotData', plotData);
   // Clear all SVGs within the main element if they exist
   d3.select(`#${elementId}`).selectAll('svg').remove();
 

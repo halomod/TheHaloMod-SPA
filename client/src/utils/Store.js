@@ -25,7 +25,7 @@ export default class API {
       models: {},
       modelNames: [],
       plotTypes: {},
-      plotType: 'dndm',
+      plotType: '',
       plotData: null,
       plot: '',
       error: false,
@@ -285,14 +285,16 @@ export default class API {
   }
 
   /**
-   * Retrieves plot data for all models
+   * Retrieves plot data for all models if a plotType is specified in state.
    *
    * @returns {void}
    */
   getPlotData = async () => {
-    let data = {};
+    if (this.state.plotType === '') {
+      return;
+    }
     try {
-      data = await axios.post(`${baseurl}/get_plot_data`, {
+      const data = await axios.post(`${baseurl}/get_plot_data`, {
         fig_type: this.state.plotType,
       });
       this.state.plotData = data.data;

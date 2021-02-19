@@ -17,6 +17,9 @@
             {{xLabelNames[choice]}}
           </md-option>
         </md-select>
+
+      </md-field>
+      <md-field>
         <label for="yAxisChoice">Y-Axis</label>
         <md-select v-if="xAxisChosen" v-model="yAxisChoice" id="yAxisChoices" name="yAxisChoice">
           <md-option
@@ -94,13 +97,6 @@ export default {
     }
     [this.xAxisChoice] = xAxisChoices;
     this.plotOptions = plotOptions;
-
-    const plotOptionKeys = Object.keys(plotOptions);
-    if (plotOptionKeys.includes('dndm')) {
-      this.yAxisChoice = 'dndm';
-    } else {
-      [this.yAxisChoice] = plotOptionKeys;
-    }
   },
   watch: {
     xAxisChoice(newXAxisChoice) {
