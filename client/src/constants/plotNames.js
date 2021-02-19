@@ -48,7 +48,7 @@ const plotNames = {
 };
 
 const xLabelNames = {
-  'Mass $(M_{\odot}h^{-1})$': 'Mass Function',
+  'Mass $(M_{\\odot}h^{-1})$': 'Mass Function',
   'Wavenumber, $k$ [$h$/Mpc]': 'Wavenumber',
   'Scale, $r$ [Mpc/$h$]': 'Scale',
   'Fourier Scale, $k$ [$h$/Mpc]': 'Fourier Scale',

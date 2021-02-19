@@ -10,11 +10,11 @@
         <label for="xAxisChoice">X-Axis</label>
         <md-select v-model="xAxisChoice" id="xAxisChoices" name="xAxisChoice">
           <md-option
-            v-for="(choice, index) in xAxisChoices"
+            v-for="choice in xAxisChoices"
             :key="choice"
             :value="choice"
           >
-            <div v-html="xAxisDisplayElements[index]"></div>
+            {{xLabelNames[choice]}}
           </md-option>
         </md-select>
         <label for="yAxisChoice">Y-Axis</label>
@@ -46,7 +46,6 @@ import clonedeep from 'lodash.clonedeep';
 import Error from '@/components/Error.vue';
 import { plotNames, xLabelNames } from '@/constants/plotNames.js';
 import Plot from './Plot.vue';
-import createLatexSvgFromString from '../../utils/latex';
 
 export default {
   name: 'Graph',
@@ -57,7 +56,6 @@ export default {
        * @type {string[] | null}
        */
       xAxisChoices: null,
-      xAxisDisplayElements: null,
       /**
        * @type {string | null}
        */
@@ -72,6 +70,7 @@ export default {
       yAxisChoice: null,
       plotOptions: null,
       plotElementId: 'd3-chart',
+      xLabelNames: clonedeep(xLabelNames),
       plotNames: clonedeep(plotNames),
     };
   },
@@ -87,10 +86,6 @@ export default {
   async created() {
     const { plotOptions, xLabels } = clonedeep(this.READ_ONLY.plotTypes);
     const xAxisChoices = Object.values(xLabels);
-
-    // Create the svgs of Latex from the x axis labels
-    this.xAxisDisplayElements = xAxisChoices
-      .map((xLabel) => createLatexSvgFromString(xLabel).outerHTML);
     this.xAxisChoices = xAxisChoices;
     if (xAxisChoices.length === 0) {
       this.$store.setError('Plot Choices Error', 'The x axis choices are not'
@@ -113,7 +108,6 @@ export default {
       const yAxisChoices = Object.entries(this.plotOptions)
         .reduce((returnArr, [plotName, plotDetails]) => {
           if (plotDetails.xlab === newXAxisChoice) {
-            console.log('one y axis choice is being added.');
             returnArr.push(plotName);
             return returnArr;
           }
@@ -124,7 +118,7 @@ export default {
         [this.yAxisChoice] = yAxisChoices;
       }
     },
-    plotChoice(newYAxisChoice, oldYAxisChoice) {
+    yAxisChoice(newYAxisChoice, oldYAxisChoice) {
       if (newYAxisChoice !== null && newYAxisChoice !== oldYAxisChoice) {
         this.$store.setPlotType(newYAxisChoice);
       }
@@ -140,7 +134,6 @@ export default {
       return this.READ_ONLY.plotData !== null
         && Object.values(this.READ_ONLY.plotData.plot_data).length !== 0;
     },
-
   },
 };
 </script>
