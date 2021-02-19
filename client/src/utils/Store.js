@@ -223,8 +223,11 @@ export default class API {
    *  [modelName: String]: Object
    * } | undefined} A copy of all the models with their names or undefined
    */
-  getModels = async () => {
+  getAllModels = async () => {
     const modelNames = this.getModelNames();
+
+    /* Pull all models out of state and process because they are stored as
+    promises. */
     const modelPromises = modelNames.map((modelName) => this?.state.models[modelName]);
     const allModelObjs = clonedeep(await Promise.all(modelPromises));
     const allModels = {};

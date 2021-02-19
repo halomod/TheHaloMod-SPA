@@ -116,7 +116,7 @@ describe('Store tests', () => {
     expect(store.getModelNames().length === 1).toBeTruthy();
     await store.createModel(DEFAULT_MODEL, testModelName2);
     expect(store.getModelNames()).toContain(testModelName2);
-    const allModels = await store.getModels();
+    const allModels = await store.getAllModels();
     expect(typeof allModels === 'object').toBeTruthy();
     expect(allModels[testModelName1]).toBeDefined();
     expect(allModels[testModelName2]).toBeDefined();

@@ -98,7 +98,7 @@ export default {
       return `${baseUrl}/ascii`;
     },
     async download_paramVals() {
-      const modelsJsonString = JSON.stringify(await this.$store.getModels(), null, 2);
+      const modelsJsonString = JSON.stringify(await this.$store.getAllModels(), null, 2);
       const dataStr = `data:text/json;charset=utf-8,${encodeURIComponent(modelsJsonString)}`;
       return dataStr;
     },
