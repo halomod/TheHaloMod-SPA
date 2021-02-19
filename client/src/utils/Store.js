@@ -123,7 +123,6 @@ export default class API {
         this.state.errorMessage = error.response.data.description;
         this.state.errorType = (error.response.data.code >= 500) ? 'Server' : 'Model';
       }
-      // better error messaging here
     }
   }
 
@@ -147,7 +146,6 @@ export default class API {
         this.state.errorMessage = error.response.data.description;
         this.state.errorType = (error.response.data.code >= 500) ? 'Server' : 'Model';
       }
-      // better error handling here, some vue event?
     }
   }
 
@@ -199,6 +197,18 @@ export default class API {
         this.state.errorType = (error.response.data.code >= 500) ? 'Server' : 'Model';
       }
     }
+  }
+
+  /**
+   * Sets an erorr for the application. This becomes visible to the user.
+   *
+   * @param {string} errorType the type of error
+   * @param {string} errorMessage the message for the error
+   */
+  setError = (errorType, errorMessage) => {
+    this.state.error = true;
+    this.state.errorType = errorType;
+    this.state.errorMessage = errorMessage;
   }
 
   /**

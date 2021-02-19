@@ -10,11 +10,11 @@
         <label for="xAxisChoice">X-Axis</label>
         <md-select v-model="xAxisChoice" id="xAxisChoices" name="xAxisChoice">
           <md-option
-            v-for="choice in xAxisChoices"
+            v-for="(choice, index) in xAxisChoices"
             :key="choice"
             :value="choice"
           >
-            {{choice}}
+            <div v-html="xAxisDisplayElements[index]"></div>
           </md-option>
         </md-select>
         <label for="yAxisChoice">Y-Axis</label>
@@ -24,7 +24,7 @@
             :key="choice"
             :value="choice"
           >
-            {{choice}}
+            {{plotNames[choice]}}
           </md-option>
         </md-select>
       </md-field>
@@ -43,8 +43,10 @@
 
 <script>
 import clonedeep from 'lodash.clonedeep';
+import Error from '@/components/Error.vue';
+import { plotNames, xLabelNames } from '@/constants/plotNames.js';
 import Plot from './Plot.vue';
-import Error from '../Error.vue';
+import createLatexSvgFromString from '../../utils/latex';
 
 export default {
   name: 'Graph',
@@ -55,6 +57,7 @@ export default {
        * @type {string[] | null}
        */
       xAxisChoices: null,
+      xAxisDisplayElements: null,
       /**
        * @type {string | null}
        */
@@ -69,6 +72,7 @@ export default {
       yAxisChoice: null,
       plotOptions: null,
       plotElementId: 'd3-chart',
+      plotNames: clonedeep(plotNames),
     };
   },
   components: {
@@ -82,30 +86,47 @@ export default {
   },
   async created() {
     const { plotOptions, xLabels } = clonedeep(this.READ_ONLY.plotTypes);
-    this.xAxisChoices = Object.values(xLabels);
+    const xAxisChoices = Object.values(xLabels);
+
+    // Create the svgs of Latex from the x axis labels
+    this.xAxisDisplayElements = xAxisChoices
+      .map((xLabel) => createLatexSvgFromString(xLabel).outerHTML);
+    this.xAxisChoices = xAxisChoices;
+    if (xAxisChoices.length === 0) {
+      this.$store.setError('Plot Choices Error', 'The x axis choices are not'
+      + ' avaialble from the server.');
+      return;
+    }
+    [this.xAxisChoice] = xAxisChoices;
     this.plotOptions = plotOptions;
 
     const plotOptionKeys = Object.keys(plotOptions);
     if (plotOptionKeys.includes('dndm')) {
-      this.plotChoice = 'dndm';
+      this.yAxisChoice = 'dndm';
     } else {
-      [this.plotChoice] = plotOptionKeys;
+      [this.yAxisChoice] = plotOptionKeys;
     }
   },
   watch: {
     xAxisChoice(newXAxisChoice) {
       console.log('X axis was changed to ', newXAxisChoice);
-      this.yAxisChoices = Object.values(this.plotOptions).reduce((returnArr, plotOption) => {
-        if (plotOption.xlab === newXAxisChoice) {
-          returnArr.push(plotOption.ylab);
+      const yAxisChoices = Object.entries(this.plotOptions)
+        .reduce((returnArr, [plotName, plotDetails]) => {
+          if (plotDetails.xlab === newXAxisChoice) {
+            console.log('one y axis choice is being added.');
+            returnArr.push(plotName);
+            return returnArr;
+          }
           return returnArr;
-        }
-        return returnArr;
-      });
+        }, []);
+      this.yAxisChoices = yAxisChoices;
+      if (yAxisChoices.length !== 0) {
+        [this.yAxisChoice] = yAxisChoices;
+      }
     },
-    plotChoice(newPlotChoice, oldPlotChoice) {
-      if (newPlotChoice !== null && newPlotChoice !== oldPlotChoice) {
-        this.$store.setPlotType(newPlotChoice);
+    plotChoice(newYAxisChoice, oldYAxisChoice) {
+      if (newYAxisChoice !== null && newYAxisChoice !== oldYAxisChoice) {
+        this.$store.setPlotType(newYAxisChoice);
       }
     },
   },
