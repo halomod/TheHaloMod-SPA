@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
     /* Makes it so we can use `@` notation in imports and have vscode understand
     it */
     "paths": {
