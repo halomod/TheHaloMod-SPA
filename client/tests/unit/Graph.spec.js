@@ -64,4 +64,28 @@ describe('Graph tests', () => {
     await wrapper.vm.$nextTick();
     expect(wrapper.find('#yAxisChoices').exists()).toBeFalsy();
   });
+
+  test('Whenever an X axis is chosen, a different set of Y values are set as options', async () => {
+    // Set the xAxisChoice to the first choice of X Axis choices
+    const { xAxisChoices } = wrapper.vm.$data;
+    expect(xAxisChoices).toBeDefined();
+    expect(xAxisChoices.length).toBeGreaterThanOrEqual(1);
+    [wrapper.vm.$data.xAxisChoice] = xAxisChoices;
+
+    /* Loop through each x axis choice and make sure each corresponding Y axis
+    option is different. */
+    let previousYAxisChoice = wrapper.vm.$data.yAxisChoice;
+    expect(previousYAxisChoice).toBeDefined();
+    for (let xIndex = 1; xIndex < xAxisChoices.length; xIndex += 1) {
+      wrapper.vm.$data.xAxisChoice = xAxisChoices[xIndex];
+      // It seems that await has to be used here to allow the render to occur
+      // eslint-disable-next-line no-await-in-loop
+      await wrapper.vm.$nextTick();
+      const { yAxisChoices } = wrapper.vm.$data;
+      expect(yAxisChoices).toBeDefined();
+      expect(yAxisChoices.length).toBeGreaterThanOrEqual(1);
+      expect(previousYAxisChoice !== yAxisChoices[0]);
+      [previousYAxisChoice] = yAxisChoices;
+    }
+  });
 });
