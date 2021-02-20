@@ -4,7 +4,7 @@ import { legendColor } from 'd3-svg-legend';
 import createLatexSvgFromString from './latex';
 
 const debug = Debug('plot.js');
-debug.enabled = true;
+debug.enabled = false;
 
 /**
  * Creates the legend for the plot.

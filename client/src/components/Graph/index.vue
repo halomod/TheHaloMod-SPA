@@ -100,7 +100,6 @@ export default {
   },
   watch: {
     xAxisChoice(newXAxisChoice) {
-      console.log('X axis was changed to ', newXAxisChoice);
       const yAxisChoices = Object.entries(this.plotOptions)
         .reduce((returnArr, [plotName, plotDetails]) => {
           if (plotDetails.xlab === newXAxisChoice) {

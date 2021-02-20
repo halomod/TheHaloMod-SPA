@@ -67,7 +67,7 @@ import Debug from 'debug';
 import Model from './Model.vue';
 
 const debug = Debug('Models');
-debug.enabled = true;
+debug.enabled = false;
 
 export default {
   name: 'Models',
