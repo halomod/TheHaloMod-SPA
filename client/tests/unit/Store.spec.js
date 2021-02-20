@@ -108,4 +108,17 @@ describe('Store tests', () => {
     const returnedValue2 = await store.getModel('Some other model');
     expect(returnedValue2).toBeUndefined();
   });
+
+  test('Adding models and getting all models should return all of the models', async () => {
+    const testModelName1 = 'Some test model';
+    const testModelName2 = 'Some other test model';
+    await store.createModel(DEFAULT_MODEL, testModelName1);
+    expect(store.getModelNames().length === 1).toBeTruthy();
+    await store.createModel(DEFAULT_MODEL, testModelName2);
+    expect(store.getModelNames()).toContain(testModelName2);
+    const allModels = await store.getAllModels();
+    expect(typeof allModels === 'object').toBeTruthy();
+    expect(allModels[testModelName1]).toBeDefined();
+    expect(allModels[testModelName2]).toBeDefined();
+  });
 });

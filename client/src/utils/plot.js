@@ -143,7 +143,7 @@ export default (elementId, plotData, plotType) => {
   // Build the svg where the plot will be placed
   const svg = d3.select(`#${elementId}`)
     .append('svg')
-    .attr('id', 'plot')
+    .attr('id', 'svg-plot')
     .attr('width', '100%')
     .attr('height', 500)
     .attr('margin', '16px');
