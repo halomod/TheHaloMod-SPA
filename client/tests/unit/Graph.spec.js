@@ -56,4 +56,12 @@ describe('Graph tests', () => {
     expect(node.exists()).toBe(true);
     expect(node.isVisible()).toBe(true);
   });
+
+  test('When an X axis is not chosen, the y axis dropdown does not render', async () => {
+    // Set the xAxisChoice to null
+    wrapper.vm.$data.xAxisChoice = null;
+    expect(wrapper.vm.$data.xAxisChoice === null).toBeTruthy();
+    await wrapper.vm.$nextTick();
+    expect(wrapper.find('#yAxisChoices').exists()).toBeFalsy();
+  });
 });
