@@ -48,7 +48,7 @@ describe('Mounted CosmologyForm', () => {
         z: 'Redshift',
         n: 'n<sub>s</sub>',
         sigma_8: 'σ<sub>8</sub>',
-      }
+      };
       for (const param of params) {
         expect(wrapper.html()).toEqual(expect.stringMatching(new RegExp(`.*${htmlStrings[param] || param}.*`)));
       }
