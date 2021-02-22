@@ -14,7 +14,6 @@ USAGE: dockerStart.py [OPTIONS]
 
 Options:     
      -h, --help       Show this command list
-     -d, --dev        Enable development mode (Turns on debug mode for Flask)
      -p, --prod       For production (Enables nginx)
      -b, --base       Base install (No nginx, no pytest, yes debug mode)
      --port=[port]    Set the port for Flask

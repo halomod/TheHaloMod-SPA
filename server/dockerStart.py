@@ -9,7 +9,6 @@ def printHelp():
           "  Running dockerStart.py with no options is equivalent to:\n" +
           "  dockerStart.py -b --port=5000 --url=0.0.0.0\n\nOptions:" +
           "     -h, --help       Show this command list\n" +
-          "     -d, --dev        Enable development mode " +
           "(Turns on debug mode for Flask, and installs pytest)\n" +
           "     -p, --prod       For production (Enables nginx)\n" +
           "     -b, --base       Base install (No nginx, no pytest, yes debug mode)\n" +
@@ -18,7 +17,6 @@ def printHelp():
 
 def main(argv):
     #static
-    ENV_DEV = "./settings/dev.env"
     ENV_PROD = "./settings/prod.env"
     ENV_BASE = "./settings/base.env"
 
@@ -29,7 +27,7 @@ def main(argv):
 
     try:
         opts, args = getopt.getopt(
-            argv, "hdpb", ["help", "dev", "prod", "port=", "url="])
+            argv, "hdpb", ["help", "prod", "port=", "url="])
     except getopt.GetoptError:
         print("Not a valid command\nUse 'dockerStart.py -h' for available commands")
         sys.exit(2)
@@ -37,8 +35,6 @@ def main(argv):
         if opt in ('-h', "--help"):
             printHelp()
             sys.exit()
-        elif opt in ("-d", "--dev"):
-            ENV_FILE = ENV_DEV
         elif opt in ("-p", "--prod"):
             ENV_FILE = ENV_PROD
         elif opt in ("-b", "--base"):
