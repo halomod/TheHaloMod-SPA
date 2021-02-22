@@ -56,7 +56,7 @@ def main(argv):
     try:
         subprocess.run(cmd, check=True, shell=True, env=my_env)
     except Exception:
-        subprocess.run("docker-compose down", check=True, shell=True, env=my_env)
+        subprocess.run("docker-compose down --remove-orphans", check=True, shell=True, env=my_env)
 
 if __name__ == "__main__":
     main(sys.argv[1:])

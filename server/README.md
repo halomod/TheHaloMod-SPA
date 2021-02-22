@@ -23,7 +23,7 @@ Options:
 If you dont want to use the above you can start the container with:
 
 ```
-export ENV_FILE=settings/base.env
+export ENV_FILE=settings/base.conf
 export FLASK_RUN_HOST=0.0.0.0
 export FLASK_RUN_PORT=5000
 docker-compose up --build --remove-orphans

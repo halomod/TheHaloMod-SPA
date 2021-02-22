@@ -11,12 +11,12 @@ services:
     environment: 
       - FLASK_RUN_PORT=${FLASK_RUN_PORT}
       - FLASK_RUN_HOST=${FLASK_RUN_HOST}
-    networks:
-      - nginx_network
+#    networks:
+#      - nginx_network
     env_file: 
       - '${ENV_FILE}'
 
-  nginx:
+'''  nginx:
     image: nginx:1.13
     ports: 
       - 443:443
@@ -27,6 +27,7 @@ services:
       - thehalomod-server
     networks:
       - nginx_network
+'''
 
   redis:
     image: "redis"
@@ -34,6 +35,8 @@ services:
     expose: 
       - 6379
 
+'''
 networks:
   nginx_network:
     driver: bridge
+'''
