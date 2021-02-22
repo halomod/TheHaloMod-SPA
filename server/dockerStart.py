@@ -17,8 +17,8 @@ def printHelp():
 
 def main(argv):
     #static
-    ENV_PROD = "./settings/prod.env"
-    ENV_BASE = "./settings/base.env"
+    ENV_PROD = "./settings/prod.conf"
+    ENV_BASE = "./settings/base.conf"
 
     # Default values
     ENV_FILE = ENV_BASE
