@@ -1,12 +1,15 @@
 <template>
   <div>
     <Navbar/>
-    <div class="md-layout md-gutter md-alignment-top-space-around home">
-      <div class="md-layout-item md-small-size-100">
+    <div class="md-gutter md-alignment-top-space-around home">
+      <div class="models">
         <Models/>
       </div>
-      <div class="md-layout-item md-small-size-100 graph">
+      <div class="graph">
         <Graph/>
+      </div>
+      <div class="download">
+        <Download/>
       </div>
     </div>
   </div>
@@ -16,6 +19,7 @@
 import Models from '@/components/Models';
 import Graph from '@/components/Graph';
 import Navbar from '@/components/Navbar';
+import Download from '@/components/Download';
 
 export default {
   name: 'Home',
@@ -23,21 +27,48 @@ export default {
     Models,
     Graph,
     Navbar,
+    Download,
   },
 };
 
 </script>
 
 <style scoped>
-  .md-layout-item {
-    margin-top: 16px;
-    margin-bottom: 16px;
+
+  .home {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    grid-template-rows: auto;
+    grid-template-areas:
+      "models graph"
+      "download graph"
+      ". graph";
+    column-gap: 16px;
+    row-gap: 16px;
+    margin: 16px;
+    padding-bottom: 16px;
+  }
+  /* 959px is the same as md-small in vue material */
+  @media (max-width: 959px) {
+    .home {
+      display: grid;
+      grid-template-columns: 1fr;
+      grid-template-rows: auto;
+      grid-template-areas:
+        "models"
+        "graph"
+        "download";
+      row-gap: 16px;
+      margin: 16px;
+    }
   }
   .graph {
-    flex-grow: 2;
+    grid-area: graph;
   }
-  .home {
-    margin-left: 16px;
-    margin-right: 16px;
+  .models {
+    grid-area: models;
+  }
+  .download {
+    grid-area: download;
   }
 </style>

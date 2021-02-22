@@ -1,16 +1,18 @@
-from flask import Flask, url_for, redirect, jsonify, request, session
+from flask import Flask, url_for, redirect, jsonify, request, session, abort, send_file
 from . import utils
 import base64
 from halomod import TracerHaloModel
 import json
-import pickle
+import zipfile
+import dill as pickle
 import codecs
 import hmf
 from flask_cors import CORS
-import jsonpickle
-import time
+import numpy as np
 import redis
 from flask_session import Session
+import io
+from werkzeug.exceptions import InternalServerError, HTTPException
 import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
 
@@ -42,6 +44,40 @@ def create_app(test_config=None):
     CORS(app, origins="http://localhost:*", supports_credentials=True)  # enable CORS
     sess.init_app(app)  # enable Sessions
 
+    # Generic Exception handler for 500 Internal Server Error
+    # Returns manually formatted JSON response object with 500 code,
+    # exception name, and description
+    @app.errorhandler(Exception)
+    def handle_generic_exception(e):
+        # pass HTTPExceptions to HTTPException handler
+        if isinstance(e, HTTPException):
+            return e
+
+        response = {}
+        # replace the body with JSON
+        response.data = json.dumps({
+            "code": '500',
+            "name": e.name,
+            "description": e.description,
+        })
+        response.content_type = "application/json"
+        return response
+
+    # HTTP Exception Handler for error codes 400-499
+    # Returns JSON object with error code, exception name, and description
+    @app.errorhandler(HTTPException)
+    def handle_exception(e):
+        # start with the correct headers and status code from the error
+        response = e.get_response()
+        # replace the body with JSON
+        response.data = json.dumps({
+            "code": e.code,
+            "name": e.name,
+            "description": e.description,
+        })
+        response.content_type = "application/json"
+        return response
+
     # Helper function that abstracts logic for getting names of all models
     # associated with the function
     def get_model_names():
@@ -62,7 +98,6 @@ def create_app(test_config=None):
     # outputs: {"model_names": <list_of_model_names_in_session>}
     @app.route('/create', methods=["POST"])
     def create():
-
         params = request.get_json()["params"]
         label = request.get_json()["label"]
 
@@ -142,6 +177,7 @@ def create_app(test_config=None):
                 data["ys"] = list(ys[mask])  # apply mask and save ys into data dict
                 data["xs"] = list(xs[mask])  # apply mask and save xs into data dict
             except Exception as e:
+                abort(400, f"Error encountered getting {fig_type} for model {name}")
                 print(f"Error encountered getting {fig_type} for model {name}")
                 print(e)
 
@@ -296,5 +332,69 @@ def create_app(test_config=None):
         response["figure"] = base64_png
 
         return jsonify(response)
+
+    # Builds and sends the text data for each model stored in the session
+    # outputs {}
+    @app.route('/ascii', methods=['GET'])
+    def ascii():
+        """ Builds and sends the text data for each model stored in the session.
+
+        get:
+          responses:
+            200:
+              description: "Returns the zip file containining the different data files for each model in the user's session"
+              content:
+                application/zip:
+        """
+        models = None
+        if 'models' in session:
+            models = pickle.loads(session.get("models"))
+        else:
+            models = {}
+
+        labels = list(models.keys())
+        objects = list(models.values())
+
+        # Open up file-like objects for response
+        buff = io.BytesIO()
+        archive = zipfile.ZipFile(buff, "w", zipfile.ZIP_DEFLATED)
+
+        # Write out mass-based, k-based and r-based data files
+        for index, object in enumerate(objects):
+            for kind in utils.XLABELS:
+
+                s = io.BytesIO()
+
+                s.write(f"# [0] {utils.XLABELS[kind]}".encode())
+
+                items = {
+                    k: utils.KEYMAP[k]["ylab"]
+                    for k in utils.KEYMAP
+                    if utils.KEYMAP[k]["xlab"] == utils.XLABELS[kind]
+                }
+
+                for j, (label, ylab) in enumerate(items.items()):
+                    if getattr(object, label) is not None:
+                        s.write(f"# [{j+1}] {ylab}".encode())
+
+                out = np.array(
+                    [getattr(object, kind)] + [
+                        getattr(object, label)
+                        for label in items
+                        if getattr(object, label) is not None
+                    ]
+                ).T
+                np.savetxt(s, out)
+
+                archive.writestr(f"{kind}Vector_{labels[index]}.txt", s.getvalue())
+
+                s.close()
+
+        archive.close()
+
+        # Reset the location of the buffer to the beginning
+        buff.seek(0)
+
+        return send_file(buff, as_attachment=True, attachment_filename="all_plots.zip")
 
     return app
