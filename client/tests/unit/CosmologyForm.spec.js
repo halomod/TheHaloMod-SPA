@@ -75,7 +75,6 @@ describe('Mounted CosmologyForm', () => {
     let prevCount = emitted.updateCosmo.length;
     const params = Object.keys(wrapper.vm.model.cosmo_params);
     for (const param of params) {
-      const val = wrapper.vm.$data.model.cosmo_params[param];
       wrapper.vm.$data.model.cosmo_params[param] += 0.1;
       await localVue.nextTick();
       await localVue.nextTick();
