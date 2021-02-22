@@ -1,41 +1,51 @@
 <template>
   <form novalidate>
-    <double-field
-      param="Mass Range Min (log10)"
-      v-model="model.Mmin"
-      :value="model.Mmin"
-      :placeholder="core_defaults.Mmin"
-      range=true min=0 max=20 />
-    <double-field
-      param="Mass Range Max (log10)"
-      v-model="model.Mmax"
-      :value="model.Mmax"
-      :placeholder="core_defaults.Mmax"
-      range=true min=0 max=20 />
-    <double-field
-      param="Mass resolution (log10)"
-      v-model="model.dlog10m"
-      :value="model.dlog10m"
-      :placeholder="core_defaults.dlog10m"
-      range=true min=0.005 max=1 />
-    <md-field>
-      <label>HMF</label>
-      <md-select v-model="model.hmf_model">
-        <md-option
-          v-for="(value, choice) in choices"
-          :key="choice"
-          :value="value">
-          {{choice}}
-        </md-option>
-      </md-select>
-    </md-field>
-    <double-field
-      v-for="(value, param) in model.hmf_params"
-      :value="value"
-      :key="param"
-      :param="param"
-      range=false
-      v-model="model.hmf_params[param]"/>
+    <div class="md-layout md-gutter">
+      <div class="md-layout-item">
+        <double-field
+          param="Mass Range Min (log10)"
+          v-model="model.Mmin"
+          :value="model.Mmin"
+          :placeholder="core_defaults.Mmin"
+          range=true min=0 max=20 />
+        <double-field
+          param="Mass Range Max (log10)"
+          v-model="model.Mmax"
+          :value="model.Mmax"
+          :placeholder="core_defaults.Mmax"
+          range=true min=0 max=20 />
+        <double-field
+          param="Mass resolution (log10)"
+          v-model="model.dlog10m"
+          :value="model.dlog10m"
+          :placeholder="core_defaults.dlog10m"
+          range=true min=0.005 max=1 />
+        <div class="md-layout md-gutter">
+          <div class="md-layout-item">
+            <md-field>
+              <label>HMF</label>
+              <md-select v-model="model.hmf_model">
+                <md-option
+                  v-for="(value, choice) in choices"
+                  :key="choice"
+                  :value="value">
+                  {{choice}}
+                </md-option>
+              </md-select>
+            </md-field>
+          </div>
+          <div class="md-layout-item">
+            <double-field
+              v-for="(value, param) in model.hmf_params"
+              :value="value"
+              :key="param"
+              :param="param"
+              range=false
+              v-model="model.hmf_params[param]"/>
+          </div>
+        </div>
+      </div>
+    </div>
   </form>
 </template>
 

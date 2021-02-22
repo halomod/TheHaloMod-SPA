@@ -40,3 +40,6 @@ class Config:
     else:
         # Docker resolves the container name into the URL
         SESSION_REDIS = redis.Redis(host=environ.get("REDIS_URL"), port=6379)
+
+    PROPOGATE_EXCEPTIONS = True
+

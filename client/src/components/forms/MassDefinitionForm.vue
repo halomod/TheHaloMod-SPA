@@ -16,14 +16,15 @@
           </md-select>
         </md-field>
       </div>
+      <div class="md-layout-item">
       <double-field
         v-for="(value, param) in model.mdef_params"
-        class="md-layout-item"
         :value="value"
         :key="param"
         :param="param"
         range=false
         v-model="model.mdef_params[param]"/>
+      </div>
     </div>
   </form>
 </template>

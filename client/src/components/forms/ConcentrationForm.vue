@@ -1,6 +1,6 @@
 <template>
   <div class="md-layout md-gutter">
-    <div class="md-layout-item md-size-50">
+    <div class="md-layout-item">
       <md-field>
         <label>{{title}}</label>
         <md-select v-model="model.concentration_model">
@@ -13,7 +13,7 @@
         </md-select>
       </md-field>
     </div>
-    <div class="md-layout-item md-size-25">
+    <div class="md-layout-item">
       <div v-for="(value, key) in model.concentration_params" :key="key">
         <md-field v-if="key === 'sample'">
           <label>{{key}}</label>

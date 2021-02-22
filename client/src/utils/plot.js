@@ -1,6 +1,10 @@
 import * as d3 from 'd3';
+import Debug from 'debug';
 import { legendColor } from 'd3-svg-legend';
 import processLatexString from './stringUtils';
+
+const debug = Debug('plot.js');
+debug.enabled = false;
 
 /**
  * Creates the legend for the plot.
@@ -18,9 +22,7 @@ function generateLegend(svg, colorGen, plotData) {
   const colorLegend = legendColor()
     .scale(colorGen)
     .orient('veritcal')
-    .labels(({
-      i,
-    }) => dataSetNames[i])
+    .labels(dataSetNames)
     .labelWrap(150)
     .on('cellclick', (event) => {
       const tspanNode = event.target.parentNode.querySelector('tspan');
@@ -104,7 +106,6 @@ function generateAxisLabels(svg, plotData) {
     .firstChild;
 
   yAxisNode.append(yAxisLatexSvg);
-  // yAxisNode.setAttribute('transform-origin', 'center center');
 
   // Rotation happens at the pivot point of the top left corner by default
   yAxisNode.setAttribute('transform', 'rotate(-90)');
@@ -130,16 +131,19 @@ function generateAxisLabels(svg, plotData) {
  * become the parent of the SVG plot
  * @param {} plotData the plot data which should be held in state of the
  * `$store` of the Vue instance
+ * @param {string | undefined} plotType the type of plot being made. Such as
+ * `dndm`. This is only used in edge cases for determining the scale of the
+ * x-axis.
  * @returns {void}
  */
-export default (elementId, plotData) => {
+export default (elementId, plotData, plotType) => {
   // Clear all SVGs within the main element if they exist
   d3.select(`#${elementId}`).selectAll('svg').remove();
 
   // Build the svg where the plot will be placed
   const svg = d3.select(`#${elementId}`)
     .append('svg')
-    .attr('id', 'plot')
+    .attr('id', 'svg-plot')
     .attr('width', '100%')
     .attr('height', 500)
     .attr('margin', '16px');
@@ -152,12 +156,13 @@ export default (elementId, plotData) => {
   const datasets = Object.values(plotData.plot_data);
 
   // Build the color generator for the lines and legend
-  const colors = datasets.map((val, i, arr) => d3.rgb(
+  const colors = datasets.map((val, i) => d3.rgb(
     // The different color options are here: https://github.com/d3/d3-scale-chromatic
-    d3.interpolateCool(i / arr.length),
+    d3.interpolateCool(i / datasets.length),
   ).formatHex());
+  debug('colors are: ', colors);
   const colorGen = d3.scaleOrdinal()
-    .domain([0, datasets.length - 1])
+    .domain(Object.keys(plotData.plot_data))
     .range(colors);
 
   const legendWidth = generateLegend(svg, colorGen, plotData);
@@ -173,7 +178,17 @@ export default (elementId, plotData) => {
 
   let xScale;
   let yScale;
-  if (plotData.plot_details.yscale === 'log') {
+
+  const logScaleXPlotTypes = [
+    'sigma',
+    'fsigma',
+    'lnsigma',
+  ];
+
+  if (plotType && logScaleXPlotTypes.includes(plotType)) {
+    xScale = d3.scaleLog();
+    yScale = d3.scaleLinear();
+  } else if (plotData.plot_details.yscale === 'log') {
     xScale = d3.scaleLog();
     yScale = d3.scaleLog();
   } else {

@@ -10,6 +10,8 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@sentry/tracing": "^6.1.0",
+    "@sentry/vue": "^6.1.0",
     "@syncfusion/ej2-vue-inputs": "^18.3.52",
     "axios": "^0.21.0",
     "chart.js": "^2.9.4",
@@ -17,8 +19,10 @@
     "d3": "^6.5.0",
     "d3-svg-legend": "^2.25.6",
     "debug": "^4.3.1",
+    "deep-freeze": "0.0.1",
     "idb-keyval": "^3.2.0",
     "lodash.clonedeep": "^4.5.0",
+    "lodash.debounce": "^4.0.8",
     "vue": "^2.6.11",
     "vue-chartjs": "^3.5.1",
     "vue-jest": "^3.0.7",

@@ -11,7 +11,16 @@
           the state held on the server and the state in the browser.
           <md-button @click="restart" class="md-accent">Restart</md-button>
           -->
-          <md-button @click="create" class="md-primary">New Model</md-button>
+          <md-button @click="create" class="md-icon-button">
+            <md-icon>add</md-icon>
+            <md-tooltip>New Model</md-tooltip>
+          </md-button>
+          <md-button @click="showDeleteAllDialog = true"
+            v-if="STORE_STATE.modelNames.length > 0"
+            class="md-icon-button">
+            <md-icon>delete_forever</md-icon>
+            <md-tooltip>Delete All</md-tooltip>
+          </md-button>
         </div>
       </div>
       <md-list v-if="STORE_STATE.modelNames.length > 0" class="model-list">
@@ -29,6 +38,19 @@
         />
       </md-list>
       <p v-else>No models created yet. Please click "New Model"</p>
+      <md-dialog
+        :md-active.sync="showDeleteAllDialog"
+        :md-close-on-esc="false"
+        :md-click-outside-to-close="false">
+        <md-dialog-title>Confirm Delete All</md-dialog-title>
+        <md-dialog-content>
+          Are you sure you want to delete all of your models and start from scratch?
+        </md-dialog-content>
+        <md-dialog-actions>
+          <md-button @click="deleteAll">Delete Everything</md-button>
+          <md-button @click="showDeleteAllDialog = false">Cancel</md-button>
+        </md-dialog-actions>
+      </md-dialog>
     </md-toolbar>
     <div v-if="loading"
       style="display: grid; height: 100%">
@@ -54,6 +76,7 @@ export default {
     return {
       loading: false,
       blocked: false,
+      showDeleteAllDialog: false,
 
       /**
        * Needs to stay as a direct reference to the state of the store so that
@@ -91,6 +114,10 @@ export default {
     },
     edit(modelName) {
       this.$router.push(`/edit/${modelName}`);
+    },
+    async deleteAll() {
+      await this.$store.clearModels();
+      this.showDeleteAllDialog = false;
     },
     async copy(modelName) {
       this.loading = true;

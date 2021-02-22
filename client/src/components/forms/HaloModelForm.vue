@@ -14,38 +14,40 @@
           </md-select>
         </md-field>
       </div>
-      <div v-for="(input, inputName) in haloModelDefaultModel"
-        :key="input.id" class="md-layout-item">
-        <div v-if="inputName === 'log_r_range' || inputName === 'log_k_range'">
-          <label style="font-size:12px;opacity:1;color:rgba(0,0,0,0.54)">
-            {{input.label}}
-          </label>
-          <ejs-slider
-            style="width:300px;min-height:45px;padding-top:16px;"
-            :value="input.value"
-            :tooltip="{ showOn: 'Hover', isVisible: true }"
+      <div class="md-layout-item">
+        <div v-for="(input, inputName) in haloModelDefaultModel"
+          :key="input.id">
+          <div v-if="inputName === 'log_r_range' || inputName === 'log_k_range'">
+            <label style="font-size:12px;opacity:1;color:rgba(0,0,0,0.54)">
+              {{input.label}}
+            </label>
+            <ejs-slider
+              style="width:300px;min-height:45px;padding-top:16px;"
+              :value="input.value"
+              :tooltip="{ showOn: 'Hover', isVisible: true }"
+              :min="input.min"
+              :max="input.max"
+              :step="input.step"
+              :ticks="{ placement: 'Before', largeStep: 1, smallStep: 0.5, showSmallTicks: true }"
+              :type="'Range'"
+              v-model="input.model"
+            />
+          </div>
+          <md-checkbox
+            v-else-if="inputName === 'force_1halo_turnover'"
+            v-model="model[inputName]">
+            Force 1-halo turnover?
+          </md-checkbox>
+          <DoubleField v-else
+            :key="inputName"
+            :param="input.label"
+            :value='input.value'
             :min="input.min"
             :max="input.max"
-            :step="input.step"
-            :ticks="{ placement: 'Before', largeStep: 1, smallStep: 0.5, showSmallTicks: true }"
-            :type="'Range'"
-            v-model="input.model"
-          />
+            range=true
+            v-model="model[inputName]"
+            />
         </div>
-        <md-checkbox
-          v-else-if="inputName === 'force_1halo_turnover'"
-          v-model="model[inputName]">
-          Force 1-halo turnover?
-        </md-checkbox>
-        <DoubleField v-else
-          :key="inputName"
-          :param="input.label"
-          :value='input.value'
-          :min="input.min"
-          :max="input.max"
-          range=true
-          v-model="model[inputName]"
-          />
       </div>
     </div>
   </form>

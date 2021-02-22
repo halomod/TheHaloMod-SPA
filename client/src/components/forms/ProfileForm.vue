@@ -1,34 +1,38 @@
 <template>
   <form novalidate>
-    <md-field>
-      <label>{{title}}</label>
-      <md-select v-model="model.profile_model">
-        <md-option
-          v-for="(value, choice) in choices"
-          :key="choice"
-          :value="value">
-          {{choice}}
-        </md-option>
-      </md-select>
-    </md-field>
-    <div class="md-layout-item">
-      <div v-for="(value, param) in model.profile_params"
-        :key="param"
-      >
-      <md-checkbox
-        v-if="typeof value === 'boolean'"
-        class="md-primary"
-        v-model="model.profile_params[param]"
-      >
-        {{param}}
-      </md-checkbox>
-      <double-field
-        v-else
-        :value="value"
-        :param="param"
-        range=false
-        v-model="model.profile_params[param]"/>
+    <div class="md-layout md-gutter">
+      <div class="md-layout-item">
+        <md-field>
+          <label>{{title}}</label>
+          <md-select v-model="model.profile_model">
+            <md-option
+              v-for="(value, choice) in choices"
+              :key="choice"
+              :value="value">
+              {{choice}}
+            </md-option>
+          </md-select>
+        </md-field>
+      </div>
+      <div class="md-layout-item">
+        <div v-for="(value, param) in model.profile_params"
+          :key="param"
+        >
+        <md-checkbox
+          v-if="typeof value === 'boolean'"
+          class="md-primary"
+          v-model="model.profile_params[param]"
+        >
+          {{param}}
+        </md-checkbox>
+        <double-field
+          v-else
+          :value="value"
+          :param="param"
+          range=false
+          v-model="model.profile_params[param]"/>
 
+        </div>
       </div>
     </div>
   </form>

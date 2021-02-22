@@ -1,11 +1,10 @@
-import os
 import pytest
-import json
 import imghdr
 import base64
 from halomod import TracerHaloModel
 import pickle
-import codecs
+import zipfile
+import io
 
 
 def test_home(client):
@@ -84,6 +83,20 @@ def test_delete(client):
     assert "TheModel" not in names
 
 
+def test_clear(client):
+    with client.session_transaction() as sess:
+        sess["models"] = pickle.dumps({
+            "TheModel": TracerHaloModel(),
+            "AnotherModel": TracerHaloModel(),
+            "AndAnotherOne": TracerHaloModel()})
+    response = client.post('/clear')
+    assert response is not None
+    assert response.status_code == 200
+    assert "model_names" in response.json
+    names = response.json["model_names"]
+    assert not names
+
+
 def test_get_plot_data(client):
     with client.session_transaction() as sess:
         sess["models"] = pickle.dumps({"TheModel": TracerHaloModel()})
@@ -126,6 +139,16 @@ def test_create(client, create_payload):
     assert "model_names" in json_response
     assert "TheModel" in json_response["model_names"]
     assert "THE_BEST_MODEL_EVER" in json_response["model_names"]
+
+
+def test_ascii(client):
+    with client.session_transaction() as sess:
+        sess["models"] = pickle.dumps({"TheModel": TracerHaloModel()})
+    response = client.get('/ascii')
+    assert response is not None
+    assert response.status_code == 200
+    returnFile = io.BytesIO(response.data)
+    assert zipfile.is_zipfile(returnFile)
 
 
 def home(client):
