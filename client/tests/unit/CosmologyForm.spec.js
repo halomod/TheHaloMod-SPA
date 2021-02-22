@@ -31,7 +31,6 @@ describe('Mounted CosmologyForm', () => {
       await localVue.nextTick();
       const newParams = wrapper.vm.model.cosmo_params;
       expect(oldParams).not.toBe(newParams);
-      console.log(option);
     }
   });
 
@@ -77,15 +76,7 @@ describe('Mounted CosmologyForm', () => {
     const params = Object.keys(wrapper.vm.model.cosmo_params);
     for (const param of params) {
       const val = wrapper.vm.$data.model.cosmo_params[param];
-      if (typeof val === 'string') {
-        if (val === 'full') {
-          wrapper.vm.$data.model.cosmo_params[param] = 'relaxed';
-        } else {
-          wrapper.vm.$data.model.cosmo_params[param] = 'full';
-        }
-      } else {
-        wrapper.vm.$data.model.cosmo_params[param] += 0.1;
-      }
+      wrapper.vm.$data.model.cosmo_params[param] += 0.1;
       await localVue.nextTick();
       await localVue.nextTick();
       expect(emitted.updateCosmo.length).toBeGreaterThan(prevCount);
