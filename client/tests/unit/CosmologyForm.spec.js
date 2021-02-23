@@ -23,17 +23,17 @@ describe('Mounted CosmologyForm', () => {
   });
 
   test('changes model values when values are changed', async () => {
-    const model = wrapper.vm.$data.model;
-    Object.keys(model).forEach(async (key) => {
+    const { model } = wrapper.vm.$data;
+    for (const key of Object.keys(model)) {
       if (typeof model[key] === 'number') {
         const o = wrapper.vm.model[key];
         model[key] += 1;
         await localVue.nextTick();
         await localVue.nextTick();
         const n = wrapper.vm.model[key];
-        expect(n).toBe(o+1);
+        expect(n).toBe(o + 1);
       }
-    })
+    }
   });
 
   test('changes model parameters when model is changed', async () => {
@@ -68,7 +68,7 @@ describe('Mounted CosmologyForm', () => {
     }
   });
 
-  test('emits onChange event whenever model selection is changed', async () => {
+  test('emits onChange event whenever model is changed', async () => {
     const emitted = wrapper.emitted();
     let prevCount = 0;
     for (const option of options) {
@@ -79,6 +79,17 @@ describe('Mounted CosmologyForm', () => {
       await localVue.nextTick();
       expect(emitted.updateCosmo.length).toBeGreaterThan(prevCount);
       prevCount = emitted.updateCosmo.length;
+    }
+    const { model } = wrapper.vm;
+    for (const key of Object.keys(model)) {
+      if (typeof model[key] === 'number') {
+        prevCount = emitted.updateCosmo.length;
+        wrapper.vm.$data.model[key] += 1;
+        await localVue.nextTick();
+        await localVue.nextTick();
+        expect(emitted.updateCosmo.length).toBeGreaterThan(prevCount);
+        prevCount = emitted.updateCosmo.length;
+      }
     }
   });
 
