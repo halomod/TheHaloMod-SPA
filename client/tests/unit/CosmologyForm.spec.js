@@ -22,28 +22,14 @@ describe('Mounted CosmologyForm', () => {
     expect(wrapper.vm.model.cosmo_model).toBe('Planck15');
   });
 
-  test('changes model values when values are changed', async () => {
-    const { model } = wrapper.vm.$data;
-    for (const key of Object.keys(model)) {
-      if (typeof model[key] === 'number') {
-        const o = wrapper.vm.model[key];
-        model[key] += 1;
-        await localVue.nextTick();
-        await localVue.nextTick();
-        const n = wrapper.vm.model[key];
-        expect(n).toBe(o + 1);
-      }
-    }
-  });
-
   test('changes model parameters when model is changed', async () => {
     for (const option of options) {
       if (wrapper.vm.model.cosmo_model === option) continue;
-      const oldParams = wrapper.vm.model.cosmo_params;
+      const oldParams = JSON.stringify(wrapper.vm.model);
       wrapper.vm.$data.model.cosmo_model = option;
       await localVue.nextTick();
       await localVue.nextTick();
-      const newParams = wrapper.vm.model.cosmo_params;
+      const newParams = JSON.stringify(wrapper.vm.model);
       expect(oldParams).not.toBe(newParams);
     }
   });
