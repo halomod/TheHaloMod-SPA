@@ -66,7 +66,12 @@ describe('Mounted CosmologyForm', () => {
       expect(emitted.updateCosmo.length).toBeGreaterThan(prevCount);
       prevCount = emitted.updateCosmo.length;
     }
+  });
+
+  test('emits onChange event whenever model subparams is changed', async () => {
+    const emitted = wrapper.emitted();
     const { model } = wrapper.vm;
+    let prevCount = 0;
     for (const key of Object.keys(model)) {
       if (typeof model[key] === 'number') {
         prevCount = emitted.updateCosmo.length;
