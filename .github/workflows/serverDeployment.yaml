@@ -26,10 +26,14 @@ jobs:
         password: ${{ secrets.PASSWORD }}
         port: ${{ secrets.PORT }}
         script:  |
-          mkdir /opt/HaloModServer-SPA
-          cd /opt/HaloModServer-SPA
-          git clone https://github.com/halomod/TheHaloMod-SPA
-          git pull origin master
-          git status
+          ls /home
+          whoami
+          echo $PATH
+          python --version
+          #mkdir /home/steven-murray/HaloModServer-SPA
+          #cd /home/steven-murray/HaloModServer-SPA
+          #git clone https://github.com/halomod/TheHaloMod-SPA
+          #git pull origin master
+          #git status
           # Stop the server with docker-compose down
           # start the server with python3 dockerStart.py -p --url localhost --port 5000
