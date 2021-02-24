@@ -1,5 +1,8 @@
 module.exports = {
   preset: '@vue/cli-plugin-unit-jest',
+  testPathIgnorePatterns: [
+    "<rootDir>/tests/unit/.*Form.spec.js",
+  ],
   moduleFileExtensions: ['js', 'json', 'vue'],
   transform: {
     '.*\\.(vue)$': 'vue-jest',
