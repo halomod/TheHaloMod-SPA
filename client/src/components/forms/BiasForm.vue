@@ -17,7 +17,7 @@
       <div class="md-layout-item">
         <double-field
           v-for="(value, param) in model.bias_params"
-          :value="value"
+          :init="defaults.bias_params[param]"
           :key="param"
           :param="param"
           range=false
@@ -57,21 +57,28 @@ export default {
   data() {
     return {
       model: clonedeep(this.init),
+      defaults: clonedeep(this.init),
       choices: biasChoices,
     };
   },
-  updated() {
-    this.$emit('onChange', clonedeep(this.model));
-  },
-  activated() {
-    this.model = clonedeep(this.init);
-  },
   watch: {
-    'model.bias_model': function updateOptions(val) {
-      this.model.bias_params = null;
-      this.$nextTick(function saveNewOptions() {
-        this.model.bias_params = clonedeep(BACKEND_CONSTANTS.Bias_params[val]);
-      });
+    model: {
+      deep: true,
+      handler() {
+        this.$emit('onChange', clonedeep(this.model));
+      },
+    },
+    'model.bias_model': function updateOptions(newVal, oldVal) {
+      if (oldVal === newVal) return;
+      this.model.bias_params = clonedeep(BACKEND_CONSTANTS.Bias_params[newVal]);
+      this.defaults.bias_params = clonedeep(BACKEND_CONSTANTS.Bias_params[newVal]);
+    },
+    init: {
+      deep: true,
+      handler() {
+        this.model = clonedeep(this.init);
+        this.defaults = clonedeep(this.init);
+      },
     },
   },
   components: {
