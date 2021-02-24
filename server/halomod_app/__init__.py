@@ -1,20 +1,18 @@
-from flask import Flask, url_for, redirect, jsonify, request, session, abort, send_file
+from flask import Flask, jsonify, request, session, abort, send_file
 from . import utils
 import base64
-from halomod import TracerHaloModel
 import json
 import zipfile
 import dill as pickle
-import codecs
-import hmf
 from flask_cors import CORS
 import numpy as np
-import redis
 from flask_session import Session
 import io
-from werkzeug.exceptions import InternalServerError, HTTPException
+from werkzeug.exceptions import HTTPException
 import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
+from halomod_app.routes.constants import constantsBP
+from halomod_app.routes.plot_types import plotTypesBP
 
 sess = Session()
 
@@ -44,9 +42,15 @@ def create_app(test_config=None):
     CORS(app, origins="http://localhost:*", supports_credentials=True)  # enable CORS
     sess.init_app(app)  # enable Sessions
 
+    # Mount the routes. Each prefix is shown here so that it is easier to notice
+    # conflicts.
+    app.register_blueprint(constantsBP)
+    app.register_blueprint(plotTypesBP, url_prefix='/get_plot_types')
+
     # Generic Exception handler for 500 Internal Server Error
     # Returns manually formatted JSON response object with 500 code,
     # exception name, and description
+
     @app.errorhandler(Exception)
     def handle_generic_exception(e):
         # pass HTTPExceptions to HTTPException handler
@@ -123,16 +127,6 @@ def create_app(test_config=None):
         res = {"model_names": get_model_names()}
         return jsonify(res)  # returns list of model names
 
-    # This endpoint returns the details of all the different plot types that
-    # can be used to represent a halo model.
-    #
-    # expects: None
-    # outputs: KEYMAP as defined in `utils.py`
-    @app.route('/get_plot_types', methods=["GET"])
-    def get_plot_types():
-        res = utils.KEYMAP
-        return jsonify(res)  # returns full key map of plot types
-
     # This endpoint returns plot data required for front-end plotting from session data
     #
     # expects: {"fig_type": <choice_from_KEYMAP>, (OPTIONAL) "model_names": <array_of_model_names_to_consider> }
@@ -142,6 +136,7 @@ def create_app(test_config=None):
     #              <model_label>: {"xs": <array_of_xs>, "ys": <array_of_ys>},
     #              ...
     #           }}
+
     @app.route('/get_plot_data', methods=["POST"])
     def get_plot_data():
 
