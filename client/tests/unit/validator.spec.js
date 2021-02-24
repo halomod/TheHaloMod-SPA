@@ -24,6 +24,12 @@ describe('Between Validator', () => {
     expect(between(5, 5, 10)).toBe(true);
     expect(between(10, 5, 10)).toBe(true);
   });
+
+  test('handles case with \'e\' exponent indicator', () => {
+    expect(between('10e5', '10e5', '10e10')).toBe(true);
+    expect(between('10e4', '10e5', '10e10')).toBe(false);
+    expect(between('10e11', '10e5', '10e10')).toBe(false);
+  });
 });
 
 describe('Numeric Validator', () => {
@@ -42,6 +48,16 @@ describe('Numeric Validator', () => {
   test('returns false if value has leading 0s, excepting decimal 0.* case', () => {
     expect(numeric('004')).toBe(false);
     expect(numeric('0.12')).toBe(true);
+  });
+
+  test('returns true if number has exponent like 1e10', () => {
+    expect(numeric('1.0e+10')).toBe(true);
+    expect(numeric('1.0e10')).toBe(true);
+  });
+
+  test('returns false if \'e\' is used in an invalid way', () => {
+    expect(numeric('1e10e10')).toBe(false);
+    expect(numeric('e10')).toBe(false);
   });
 });
 
