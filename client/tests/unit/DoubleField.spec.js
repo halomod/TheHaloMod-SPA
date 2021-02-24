@@ -4,13 +4,13 @@ import DoubleField from '@/components/DoubleField.vue';
 describe('Mounted DoubleField', () => {
   let wrapper;
   let localVue;
-  let propsData = {
+  const propsData = {
     init: 7,
     range: true,
     min: 5,
     max: 10,
-    param: "field_name",
-    html: "<b>field_html<b>",
+    param: 'field_name',
+    html: '<b>field_html<b>',
   };
 
   beforeEach(() => {
@@ -30,7 +30,7 @@ describe('Mounted DoubleField', () => {
     expect(wrapper.html()).toEqual(expect.not.stringContaining('Value must be defined'));
     expect(wrapper.html()).toEqual(expect.not.stringContaining('Value must be a numeric'));
     expect(wrapper.html()).toEqual(expect.not.stringContaining('Value must be between 5 and 10'));
-  }),
+  });
 
   test('displays \'not defined\' error if current is not defined', async () => {
     wrapper.vm.current = '';
