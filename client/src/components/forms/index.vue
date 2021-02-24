@@ -103,7 +103,9 @@ export default {
       window.history.replaceState({}, '', `#${id}`);
     },
     buildProps(form) {
-      return { ...form.props, init: this.default[form.id], title: form.title };
+      return {
+        ...form.props, init: this.default[form.id], title: form.title, subform_id: form.id,
+      };
     },
   },
 };

@@ -20,7 +20,7 @@ import clonedeep from 'lodash.clonedeep';
 
 export default {
   name: 'HaloExclusion',
-  props: ['parent_model', 'init'],
+  props: ['parent_model', 'init', 'subform_id'],
   model: {
     event: 'onChange',
     prop: 'parent_model',
