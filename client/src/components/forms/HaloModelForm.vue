@@ -106,7 +106,7 @@ export default {
   components: {
     DoubleField,
   },
-  props: ['parent_model', 'init'],
+  props: ['parent_model', 'init', 'subform_id'],
   model: {
     event: 'onChange',
     prop: 'parent_model',

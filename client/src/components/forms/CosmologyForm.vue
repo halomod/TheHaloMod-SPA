@@ -57,7 +57,7 @@ const cosmoChoices = {
 
 export default {
   name: 'CosmologyForm',
-  props: ['init'],
+  props: ['init', 'subform_id'],
   model: {
     prop: 'cosmoData',
     event: 'updateCosmo',
@@ -135,7 +135,7 @@ export default {
     },
   },
   updated() {
-    this.$emit('updateCosmo', this.model);
+    this.$emit('updateCosmo', clonedeep(this.model));
   },
 };
 </script>
