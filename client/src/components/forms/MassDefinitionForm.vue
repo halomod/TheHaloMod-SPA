@@ -53,7 +53,7 @@ export default {
     event: 'onChange',
     prop: 'parent_model',
   },
-  props: ['init'],
+  props: ['init', 'subform_id'],
   data() {
     return {
       model: clonedeep(this.init),

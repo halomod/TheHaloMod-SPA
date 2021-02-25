@@ -5,7 +5,6 @@
         <div class="md-toolbar-section-start">
           <h3 class="md-title">Models</h3>
         </div>
-
         <div class="md-toolbar-section-end">
           <!-- At this moment, restarting causes some inconsistencies between
           the state held on the server and the state in the browser.
@@ -68,7 +67,7 @@ import Debug from 'debug';
 import Model from './Model.vue';
 
 const debug = Debug('Models');
-debug.enabled = true;
+debug.enabled = false;
 
 export default {
   name: 'Models',

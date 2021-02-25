@@ -12,6 +12,7 @@ When a code reviewer has a more complete understanding of how and why a particul
 - [ ] My code has been developer-tested and includes unit tests
 - [ ] I have considered proper use of exceptions
 - [ ] I have eliminated IDE warnings
+- [ ] I have included tasks associated with this pull request in the Sprint Progress Sheet.
 
 ### Notes:
 - Talk about alternative solutions you considered, any potential breaking changes, integration testing strategies, motivation or reasoning for the introduced changes, and/or any other pertinent information which would better inform a code reviewer of your changes.
