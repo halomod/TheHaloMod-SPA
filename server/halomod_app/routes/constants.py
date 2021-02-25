@@ -4,6 +4,7 @@ from hmf._internals import Component, get_base_components
 from hmf.cosmology import Cosmology
 import numpy as np
 from astropy.cosmology import FlatLambdaCDM
+from contextlib import redirect_stdout
 
 
 def generate_constants() -> dict:
@@ -14,7 +15,11 @@ def generate_constants() -> dict:
 
     backend_constants = {}
 
-    defaults = TracerHaloModel.get_all_parameter_defaults()
+    # Caputer the no attribute print statements from
+    # `get_all_parameter_defaults`.
+    with redirect_stdout():
+        defaults = TracerHaloModel.get_all_parameter_defaults()
+
     for k, v in defaults.items():
         # SKip the component parameters for now.
         if k.endswith('_params'):
@@ -40,7 +45,8 @@ def generate_constants() -> dict:
                 this[name] = getattr(defaults['cosmo_model'], name)
         else:
             for name, model in models.items():
-                backend_constants[cmp.__name__ + "_params"][name] = model._defaults
+                if hasattr(model, "_defaults"):
+                    backend_constants[cmp.__name__ + "_params"][name] = model._defaults
 
     return backend_constants
 
