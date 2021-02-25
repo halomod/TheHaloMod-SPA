@@ -21,16 +21,6 @@ export default {
       type: String,
       required: true,
     },
-    /**
-     * Used to just determine edge cases for logarithmic scales in the x-axis.
-     * This data could likely be stored at a higher level about each plot type.
-     * Right now, only the y-axis has some kind of indicator that it is
-     * logarithmic.
-     */
-    plotType: {
-      type: String,
-      required: false,
-    },
   },
   mounted() {
     // Init
@@ -49,7 +39,7 @@ export default {
   methods: {
     generatePlot() {
       debug('plot being built');
-      buildPlot(this.plotElementId, this.plotData, this.plotType);
+      buildPlot(this.plotElementId, this.plotData);
     },
   },
   beforeDestroy() {
