@@ -12,3 +12,10 @@ export function numeric(value) {
   const result = regex.exec(String(value));
   return (result[result.index] === String(value));
 }
+
+export function defined(value) {
+  if ((value !== null) && (value !== '')) {
+    return true;
+  }
+  return false;
+}
