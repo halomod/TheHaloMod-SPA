@@ -11,8 +11,8 @@ import io
 from werkzeug.exceptions import HTTPException
 import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
-from halomod_app.routes.constants import constantsBP
-from halomod_app.routes.plot_types import plotTypesBP
+from halomod_app.routes.constants import constants_bp
+from halomod_app.routes.plot_types import plot_types_bp
 
 sess = Session()
 
@@ -44,8 +44,8 @@ def create_app(test_config=None):
 
     # Mount the routes. Each prefix is shown here so that it is easier to notice
     # conflicts.
-    app.register_blueprint(constantsBP)
-    app.register_blueprint(plotTypesBP, url_prefix='/get_plot_types')
+    app.register_blueprint(constants_bp, url_prefix='/constants')
+    app.register_blueprint(plot_types_bp, url_prefix='/get_plot_types')
 
     # Generic Exception handler for 500 Internal Server Error
     # Returns manually formatted JSON response object with 500 code,
