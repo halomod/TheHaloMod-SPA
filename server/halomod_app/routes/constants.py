@@ -5,6 +5,7 @@ from hmf.cosmology import Cosmology
 import numpy as np
 from astropy.cosmology import FlatLambdaCDM
 from contextlib import redirect_stdout
+from io import StringIO
 
 
 def generate_constants() -> dict:
@@ -15,9 +16,10 @@ def generate_constants() -> dict:
 
     backend_constants = {}
 
-    # Caputer the no attribute print statements from
+    # Capture the no attribute print statements from
     # `get_all_parameter_defaults`.
-    with redirect_stdout():
+    throw_away_string = StringIO()
+    with redirect_stdout(throw_away_string):
         defaults = TracerHaloModel.get_all_parameter_defaults()
 
     for k, v in defaults.items():
