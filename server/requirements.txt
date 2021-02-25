@@ -19,7 +19,7 @@ flake8==3.8.4
 Flask==1.1.2
 Flask-Cors==3.0.9
 Flask-Session==0.3.2
-halomod==1.5.0
+halomod==2.0.0
 hankel==1.1.0
 hmf==3.3.4
 importlib-metadata==2.0.0

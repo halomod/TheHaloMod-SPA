@@ -42,6 +42,8 @@ def generate_constants() -> dict:
             for name, model in models.items():
                 backend_constants[cmp.__name__ + "_params"][name] = model._defaults
 
+    return backend_constants
+
 
 backend_constants = generate_constants()
 
