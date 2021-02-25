@@ -6,6 +6,7 @@ import numpy as np
 from astropy.cosmology import FlatLambdaCDM
 from contextlib import redirect_stdout
 from io import StringIO
+import hmf
 
 
 def generate_constants() -> dict:
@@ -49,6 +50,30 @@ def generate_constants() -> dict:
             for name, model in models.items():
                 if hasattr(model, "_defaults"):
                     backend_constants[cmp.__name__ + "_params"][name] = model._defaults
+
+    # Build the Cosmo defaults, because those are separate
+    cosmo_defaults = {}
+
+    # The different cosmological variants in HMF. This could be refactored
+    # somewhere more visible / configurable in case they change. Or pulled
+    # readily from the library somehow.
+    cosmo_choices = [
+        "Planck15",
+        "Planck13",
+        "WMAP9",
+        "WMAP7",
+        "WMAP5"
+    ]
+
+    # Build the models so that the constants can be pulled
+    for choice in cosmo_choices:
+        cosmo_model = hmf.cosmo.Cosmology(cosmo_model=getattr(hmf.cosmo, choice))
+        cosmo_defaults.setdefault(choice, {
+            "H0": cosmo_model.cosmo.H0.value,
+            "Ob0": cosmo_model.cosmo.Ob0,
+            "Om0": cosmo_model.cosmo.Om0
+        })
+        print(cosmo_model)
 
     return backend_constants
 

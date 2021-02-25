@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, request, session, abort, send_file
 from . import utils
+from halomod_app.utils import get_model_names
 import base64
 import json
 import zipfile
@@ -13,6 +14,8 @@ import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
 from halomod_app.routes.constants import constants_bp
 from halomod_app.routes.plot_types import plot_types_bp
+from halomod_app.routes.create import create_bp
+
 
 sess = Session()
 
@@ -46,6 +49,7 @@ def create_app(test_config=None):
     # conflicts.
     app.register_blueprint(constants_bp, url_prefix='/constants')
     app.register_blueprint(plot_types_bp, url_prefix='/get_plot_types')
+    app.register_blueprint(create_bp, url_prefix='/create')
 
     # Generic Exception handler for 500 Internal Server Error
     # Returns manually formatted JSON response object with 500 code,
@@ -82,40 +86,9 @@ def create_app(test_config=None):
         response.content_type = "application/json"
         return response
 
-    # Helper function that abstracts logic for getting names of all models
-    # associated with the function
-    def get_model_names():
-        if 'models' in session:
-            models = pickle.loads(session.get('models'))
-        else:
-            models = {}
-        return list(models.keys())
-
     @app.route('/')
     def home():
         return jsonify({"start": 'This is the HaloModApp'})
-
-    # This endpoint handles the creation of models and saving the created model to
-    # the session
-    #
-    # expects: {"params": <dictionary of params>, "label": <model_name>}
-    # outputs: {"model_names": <list_of_model_names_in_session>}
-    @app.route('/create', methods=["POST"])
-    def create():
-        params = request.get_json()["params"]
-        label = request.get_json()["label"]
-
-        models = None
-        if 'models' in session:
-            models = pickle.loads(session.get('models'))
-        else:
-            models = {}
-
-        models[label] = utils.hmf_driver(**params)  # creates model from params
-        session["models"] = pickle.dumps(models)  # writes updated model dict to session
-
-        # returns new list of model names
-        return jsonify({"model_names": get_model_names()})
 
     # This endpoint returns the names of all the models associated with the current
     # session

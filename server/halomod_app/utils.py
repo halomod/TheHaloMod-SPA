@@ -3,6 +3,7 @@ import io
 import logging
 from typing import Union
 import matplotlib.ticker as tick
+from flask import session
 
 from halomod import TracerHaloModel
 from halomod.wdm import HaloModelWDM
@@ -16,6 +17,16 @@ import pickle
 
 
 logger = logging.getLogger(__name__)
+
+
+def get_model_names():
+    """Helper function that abstracts logic for getting names of all models
+    associated with the function"""
+    if 'models' in session:
+        models = pickle.loads(session.get('models'))
+    else:
+        models = {}
+    return list(models.keys())
 
 
 def hmf_driver(cls=TracerHaloModel, previous: Union[None, TracerHaloModel] = None, **kwargs):
