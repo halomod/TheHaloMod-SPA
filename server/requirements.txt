@@ -1,7 +1,7 @@
 astroid==2.4.2
-astropy==4.0.3
+astropy==4.2
 attrs==20.2.0
-autopep8==1.5.4
+autopep8==1.5.5
 blinker==1.4
 cached-property==1.5.2
 cachelib==0.1.1
