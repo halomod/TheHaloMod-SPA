@@ -54,7 +54,7 @@ describe('Mounted CosmologyForm', () => {
     }
   });
 
-  test('emits onChange event whenever model is changed', async () => {
+  test('emits onChange event whenever model selection is changed', async () => {
     const emitted = wrapper.emitted();
     let prevCount = 0;
     for (const option of options) {
@@ -68,7 +68,7 @@ describe('Mounted CosmologyForm', () => {
     }
   });
 
-  test('emits onChange event whenever model subparams is changed', async () => {
+  test('emits onChange event whenever model core params are changed', async () => {
     const emitted = wrapper.emitted();
     const { model } = wrapper.vm;
     let prevCount = 0;
