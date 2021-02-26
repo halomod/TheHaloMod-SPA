@@ -1,15 +1,18 @@
-// import Concentration from '@/components/forms/ConcentrationForm.vue';
-// import HaloExclusion from '@/components/forms/HaloExclusionForm.vue';
-import BiasForm from '@/components/forms/BiasForm.vue';
-// import HMFForm from '@/components/forms/HMFForm.vue';
-// import HODForm from '@/components/forms/HODForm.vue';
-// import Profile from '@/components/forms/ProfileForm.vue';
-// import CosmologyForm from '@/components/forms/CosmologyForm.vue';
-// import MassDefinitionForm from '@/components/forms/MassDefinitionForm.vue';
-// import GrowthForm from '@/components/forms/GrowthForm.vue';
-// import HaloModelForm from '@/components/forms/HaloModelForm.vue';
-// import FilterForm from '@/components/forms/FilterForm.vue';
-// import TransferForm from '@/components/forms/TransferForm.vue';
+import MODEL_CHOICES from '@/constants/model_choices.json';
+import BACKEND_CONSTANTS from '@/constants/backend_constants.js';
+
+// Very Basic
+//    Description: Just numeric fields with no core parameters or special styling
+//    Examples: Growth, HOD, Bias, Mass Definition, Halo Exclusion
+// Basic
+//    Description: Mostly numeric fields with no core parameters or special styling
+//    Examples: TracerProfile, HaloProfile, Tracer Concentration, Halo Concentration
+// Complex
+//    Description: Has core parameters with defined ranges
+//    Examples: HMF
+// Very Complex
+//    Description: Has core parameters with defined ranges, special styling, and/or special types
+//    Examples: Halo Model, Cosmology, Transfer,  Filter
 
 const FORMS = [
   // {
@@ -18,12 +21,16 @@ const FORMS = [
   //   title: 'Cosmology',
   //   id: 'cosmology',
   // },
-  // {
-  //   component: MassDefinitionForm,
-  //   model: 'mass_definition',
-  //   title: 'Mass Definition',
-  //   id: 'mass_definition',
-  // },
+  {
+    id: 'mdef',
+    title: 'Mass Definition',
+    props: {
+      model_key: 'mdef_model',
+      choices: MODEL_CHOICES.mdef,
+      params_key: 'mdef_params',
+      all_data: BACKEND_CONSTANTS.mdef_params,
+    },
+  },
   // {
   //   component: TransferForm,
   //   model: 'transfer',
@@ -36,12 +43,16 @@ const FORMS = [
   //   title: 'Filter',
   //   id: 'filter',
   // },
-  // {
-  //   component: GrowthForm,
-  //   model: 'growth',
-  //   title: 'Growth',
-  //   id: 'growth',
-  // },
+  {
+    id: 'growth',
+    title: 'Growth',
+    props: {
+      model_key: 'growth_model',
+      choices: MODEL_CHOICES.growth,
+      params_key: 'growth_params',
+      all_data: BACKEND_CONSTANTS.growth_params,
+    },
+  },
   // {
   //   component: HMFForm,
   //   model: 'hmf',
@@ -54,48 +65,76 @@ const FORMS = [
   //   title: 'Halo Model',
   //   id: 'halo_model',
   // },
-  // {
-  //   component: HODForm,
-  //   model: 'hod',
-  //   title: 'HOD',
-  //   id: 'hod',
-  // },
   {
-    component: BiasForm,
-    model: 'bias',
-    title: 'Bias',
-    id: 'bias',
+    id: 'hod',
+    title: 'HOD',
+    props: {
+      model_key: 'hod_model',
+      choices: MODEL_CHOICES.hod,
+      params_key: 'hod_params',
+      all_data: BACKEND_CONSTANTS.hod_params,
+    },
   },
-  // {
-  //   component: Concentration,
-  //   model: 'halo_concentration',
-  //   title: 'Halo Concentration',
-  //   id: 'halo_concentration',
-  // },
-  // {
-  //   component: Concentration,
-  //   model: 'tracer_concentration',
-  //   title: 'Tracer Concentration',
-  //   id: 'tracer_concentration',
-  // },
-  // {
-  //   component: Profile,
-  //   model: 'halo_profile',
-  //   title: 'Halo Profile',
-  //   id: 'halo_profile',
-  // },
-  // {
-  //   component: Profile,
-  //   model: 'tracer_profile',
-  //   title: 'Tracer Profile',
-  //   id: 'tracer_profile',
-  // },
-  // {
-  //   component: HaloExclusion,
-  //   model: 'exclusion',
-  //   title: 'Halo Exclusion',
-  //   id: 'halo_exclusion',
-  // },
+  {
+    id: 'bias',
+    title: 'Bias',
+    props: {
+      model_key: 'bias_model',
+      choices: MODEL_CHOICES.bias,
+      params_key: 'bias_params',
+      all_data: BACKEND_CONSTANTS.bias_params,
+    },
+  },
+  {
+    id: 'halo_concentration',
+    title: 'Halo Concentration',
+    props: {
+      model_key: 'halo_concentration_model',
+      choices: MODEL_CHOICES.concentration,
+      params_key: 'halo_concentration_params',
+      all_data: BACKEND_CONSTANTS.concentration_params,
+    },
+  },
+  {
+    id: 'tracer_concentration',
+    title: 'Tracer Concentration',
+    props: {
+      model_key: 'tracer_concentration_model',
+      choices: MODEL_CHOICES.concentration,
+      params_key: 'tracer_concentration_params',
+      all_data: BACKEND_CONSTANTS.concentration_params,
+    },
+  },
+  {
+    id: 'halo_profile',
+    title: 'Halo Profile',
+    props: {
+      model_key: 'halo_profile_model',
+      choices: MODEL_CHOICES.profile,
+      params_key: 'halo_profile_params',
+      all_data: BACKEND_CONSTANTS.profile_params,
+    },
+  },
+  {
+    id: 'tracer_profile',
+    title: 'Tracer Profile',
+    props: {
+      model_key: 'tracer_profile_model',
+      choices: MODEL_CHOICES.profile,
+      params_key: 'tracer_profile_params',
+      all_data: BACKEND_CONSTANTS.profile_params,
+    },
+  },
+  {
+    id: 'halo_exclusion',
+    title: 'Halo Exclusion',
+    props: {
+      model_key: 'exclusion_model',
+      choices: MODEL_CHOICES.halo_exclusion,
+      params_key: 'exclusion_params',
+      all_data: BACKEND_CONSTANTS.exclusion_params,
+    },
+  },
 ];
 
 export default FORMS;
