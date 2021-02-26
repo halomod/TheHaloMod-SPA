@@ -1,5 +1,7 @@
 # TheHaloMod-SPA Client
 
+[![Github Actions Client CI Workflow](https://img.shields.io/github/workflow/status/halomod/TheHaloMod-SPA/Client%20CI?label=Client%20CI)](https://github.com/halomod/TheHaloMod-SPA/actions/workflows/client.yaml)
+
 ## Table of Contents
 
 - [Usage](#usage)

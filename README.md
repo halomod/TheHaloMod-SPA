@@ -1,8 +1,8 @@
 # TheHaloMod-SPA
 A single-page application to act as a GUI for [HaloMod](https://github.com/halomod/halomod). A spiritual successor to [TheHaloMod](https://github.com/halomod/TheHaloMod).
 
-[![Github Actions Server CI Workflow](https://img.shields.io/github/workflow/status/halomod/TheHaloMod-SPA/Client%20CI?label=Client%20CI)](https://github.com/halomod/TheHaloMod-SPA/actions/workflows/client.yaml)
 [![Github Actions Server CI Workflow](https://img.shields.io/github/workflow/status/halomod/TheHaloMod-SPA/Server%20CI?label=Server%20CI)](https://github.com/halomod/TheHaloMod-SPA/actions/workflows/server.yaml)
+[![Github Actions Client CI Workflow](https://img.shields.io/github/workflow/status/halomod/TheHaloMod-SPA/Client%20CI?label=Client%20CI)](https://github.com/halomod/TheHaloMod-SPA/actions/workflows/client.yaml)
 [![Github License](https://img.shields.io/github/license/halomod/TheHaloMod-SPA)]()
 
 ## Table of Contents
