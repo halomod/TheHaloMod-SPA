@@ -32,3 +32,18 @@
 
 
 ## Architecture
+
+The `client` is the front-end to TheHaloMod-SPA. It makes requests to the api (the server) and communicates the responses to the user. The most important thing to keep in mind is that the `client` is built with [Vue](https://vuejs.org/). So much of the folder structure and files are built according to the standards of Vue. Some other key aspects of the site are below, with some details:
+
+- Testing: This is handled by [vue-test-utils](https://vue-test-utils.vuejs.org/). All of the tests are currently held in `client/tests`.
+- Routing: Routing is how the website handles different urls in the url bar of the browser. This is handled by [vue-router](https://router.vuejs.org/). The routing logic is currently contained in [`client/src/router/index.js`](src/router/index.js), while the "views" that the routes point to are located in `client/src/views`. 
+- Client-side Storage: Data is stored on the client side using [idb-keyval](https://github.com/jakearchibald/idb-keyval). This is used to store things like model parameters, and plot information so that a trip doesn't need to be made to the server on every page refresh. This information can be cleared by having the user clear their browser cache for the site. All of the local storage operations are coordinated by the `Store` which is located at [`client/src/utils/Store.js`](src/utils/Store.js)
+
+Some folder descriptions are below:
+
+- `client/src/assets`: Holds images and other static assets for the site
+- `client/src/components`: Holds the different UI components that are used in views. 
+- `client/src/constants`: Holds values and settings that are not modified during the application run-time, but are useful as a single file. 
+- `client/src/utils`: Holds JavaScript files that provide some kind of utility to the application, but do not house any Vue functionality themselves.
+
+Besides the things mentioned here, documentation exists in each file to provide guidance on what each does. 
