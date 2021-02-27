@@ -9,13 +9,14 @@ A single-page application to act as a GUI for [HaloMod](https://github.com/halom
 
 - [How to run it locally](#how-to-run-it-locally)
 - [Architecture](#architecture)
+  - [Github Actions](#github-actions)
 
 ## How to run it locally
 
 1. Clone the repo locally.
 1. Run `cd TheHaloMod-SPA`. In other words, move into that directory in your shell of choice. 
-1. Get the server up and running. Instructions are in [the server readme](server/README.md).
-1. Startup the client. Instructions are in [the client readme](client/README.md).
+1. Get the server up and running. Instructions are in [the server readme](server).
+1. Startup the client. Instructions are in [the client readme](client).
 
 ## Architecture
 
@@ -23,8 +24,8 @@ The overall architecture of TheHaloMod-SPA is broken up into two parts: `server`
 
 Each part, the server and the client, have their own documentation on their architecutre in their readmes. This includes info on the package managers they use, general thought and design considerations, as well as other aspects.
 
-- [`server` architecture](server/README.md#architecture)
-- [`client` architecture](client/README.md#architecture)
+- [`server` architecture](server#architecture)
+- [`client` architecture](client#architecture)
 
 ### GitHub Actions
 
