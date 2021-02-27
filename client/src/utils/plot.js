@@ -8,8 +8,11 @@ debug.enabled = false;
 
 /**
  * Creates the legend for the plot.
- * @param {} svg the d3 svg representing the plot svg
- * @param {} colorGen the d3 color scale for the plot
+ *
+ * @param {d3.Selection<d3.BaseType, any, HTMLElement, any>} svg the d3 svg
+ * representing the plot svg
+ * @param {d3.ScaleOrdinal<string, any, never>} colorGen the d3 color scale
+ * for the plot
  * @returns {Number} the width of the Legend
  */
 function generateLegend(svg, colorGen, plotData) {
@@ -54,9 +57,10 @@ function generateLegend(svg, colorGen, plotData) {
 }
 
 /**
- * Generates the axis labels for the plot
+ * Generates the axis labels for the plot.
  *
- * @param {} svg the d3 svg representing the plot svg
+ * @param {d3.Selection<d3.BaseType, any, HTMLElement, any>} svg the d3 svg
+ * representing the plot svg
  * @returns {{
  *  yLabelWidth: Number,
  *  xLabelHeight: Number
@@ -115,7 +119,6 @@ function generateAxisLabels(svg, plotData) {
  * become the parent of the SVG plot
  * @param {} plotData the plot data which should be held in state of the
  * `$store` of the Vue instance
- * @returns {void}
  */
 export default (elementId, plotData) => {
   debug('Generate plot triggered with the following plotData', plotData);
