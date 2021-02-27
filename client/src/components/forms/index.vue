@@ -27,10 +27,9 @@
               :id="form.id"
               :title="form.title"
               @currently-visible="() => setCurrentlyVisible(form.id, form.title)">
-              <component
+              <GenericForm
                 v-bind="buildProps(form)"
-                :is="form.component"
-                v-model="params[form.model]"/>
+                v-model="params[form.id]"/>
             </FormWrapper>
             <md-divider/>
           </div>
@@ -47,6 +46,7 @@ import Navbar from '@/components/Navbar.vue';
 import clonedeep from 'lodash.clonedeep';
 import Debug from 'debug';
 import FORMS from '@/constants/forms';
+import GenericForm from '@/components/forms/GenericForm.vue';
 
 const debug = Debug('Create.vue');
 debug.enabled = true;
@@ -55,6 +55,7 @@ export default {
   components: {
     FormWrapper,
     Navbar,
+    GenericForm,
   },
   model: {
     event: 'onChange',
@@ -104,7 +105,7 @@ export default {
     },
     buildProps(form) {
       // console.log(this.default[form.id]);
-      return { ...form.props, init: this.default[form.id], title: form.title };
+      return { ...form.props, initial_data: this.default[form.id], title: form.title };
     },
   },
 };

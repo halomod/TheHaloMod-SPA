@@ -100,7 +100,7 @@ export default deepFreeze({
       sigma_8: 0.817,
     },
   },
-  _GrowthFactor_params: {
+  growth_params: {
     GrowthFactor: {
       dlna: 0.01,
       amin: 1e-8,
@@ -155,7 +155,7 @@ export default deepFreeze({
       c: 2,
     },
   },
-  MassDefinition_params: {
+  mdef_params: {
     SphericalOverdensity: {},
     SOGeneric: {},
     SOMean: {
@@ -465,7 +465,7 @@ export default deepFreeze({
       gamma: 2.7,
     },
   },
-  Profile_params: {
+  profile_params: {
     NFW: {},
     NFWInf: {},
     Hernquist: {},
@@ -485,7 +485,7 @@ export default deepFreeze({
     },
     CoredNFW: {},
   },
-  CMRelation_params: {
+  concentration_params: {
     Bullock01: {
       F: 0.01,
       K: 3.4,
@@ -542,7 +542,7 @@ export default deepFreeze({
     Ludlow16: 'Ludlow (2016)',
     Ludlow16Empirical: 'Ludlow (2016) Empirical',
   },
-  HOD_params: {
+  hod_params: {
     Zehavi05: {
       M_min: 11.6222,
       M_1: 12.851,
@@ -611,14 +611,7 @@ export default deepFreeze({
       sigma_A: 0,
     },
   },
-  Exclusion_options: {
-    NoExclusion: 'No Exclusion',
-    Sphere: 'Spherical Halos',
-    DblSphere_: 'Spherical Overlapping Halos',
-    DblEllipsoid_: 'Ellipsoidal Halos',
-    NgMatched_: 'Density-Matched (Tinker 2005)',
-  },
-  Exclusion_params: {
+  exclusion_params: {
     NoExclusion: {},
     Sphere: {},
     DblSphere: {},
@@ -628,7 +621,7 @@ export default deepFreeze({
     NgMatched: {},
     NgMatched_: {},
   },
-  Bias_params: {
+  bias_params: {
     UnityBias: {},
     Mo96: {},
     Jing98: {

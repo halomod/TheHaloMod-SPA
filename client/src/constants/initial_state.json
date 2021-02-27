@@ -1,5 +1,5 @@
 {
-  "cosmology": {
+  "cosmo": {
     "cosmo_model":"Planck15",
     "cosmo_params":{
        "H0":67.74,
@@ -108,7 +108,7 @@
     "filter_params": {},
     "delta_c":1.686
   },
-  "mass_definition": {
+  "mdef": {
     "mdef_model":"SOMean",
     "mdef_params": {
       "overdensity": 200
@@ -122,12 +122,15 @@
     "takahashi":true
   },
   "tracer_profile": {
-    "tracer_profile_model":"NFW"
+    "tracer_profile_model":"NFW",
+    "tracer_profile_params": {}
   },
   "halo_profile": {
-    "halo_profile_model":"NFW"
+    "halo_profile_model":"NFW",
+    "halo_profile_params": {}
   },
   "halo_exclusion": {
-    "exclusion_model":"NoExclusion"
+    "exclusion_model":"NoExclusion",
+    "exclusion_params": {}
   }
 }
