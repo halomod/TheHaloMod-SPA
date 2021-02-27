@@ -22,7 +22,8 @@ jobs:
       uses: JimCronqvist/action-ssh@master
       with:
         debug: true
-        hosts: '${{ secrets.USERNAME }}@${{ secrets.HOST }}:${{ secrets.PORT }}'
+        hosts: '${{ secrets.USERNAME }}@${{ secrets.HOST }}'
+        port: ${{ secrets.PORT }}
         privateKey: ${{ secrets.SERVERKEY }}
         command:  |
           ls /home
