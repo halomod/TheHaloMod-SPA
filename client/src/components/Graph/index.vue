@@ -48,6 +48,7 @@
 import clonedeep from 'lodash.clonedeep';
 import Error from '@/components/Error.vue';
 import { plotNames, xLabelNames } from '@/constants/plotNames.js';
+import PLOT_TYPES from '@/constants/plotTypes.js';
 import Plot from './Plot.vue';
 
 export default {
@@ -87,7 +88,7 @@ export default {
     },
   },
   async created() {
-    const { plotOptions, xLabels } = clonedeep(this.READ_ONLY.plotTypes);
+    const { plotOptions, xLabels } = clonedeep(PLOT_TYPES);
     const xAxisChoices = Object.values(xLabels);
     this.xAxisChoices = xAxisChoices;
     if (xAxisChoices.length === 0) {

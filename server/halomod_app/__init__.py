@@ -123,22 +123,6 @@ def create_app(test_config=None):
         res = {"model_names": get_model_names()}
         return jsonify(res)  # returns list of model names
 
-    # This endpoint returns the details of all the different plot types that
-    # can be used to represent a halo model.
-    #
-    # expects: None
-    # outputs: {
-    #   xLabels: <data from utils.py>,
-    #   plotOptions: <data from KEYMAP in utils.py>
-    # }
-    @app.route('/get_plot_types', methods=["GET"])
-    def get_plot_types():
-        res = {
-            'xLabels': utils.XLABELS,
-            'plotOptions': utils.KEYMAP
-        }
-        return jsonify(res)  # returns full key map of plot types
-
     # This endpoint returns plot data required for front-end plotting from session data
     #
     # expects: {"fig_type": <choice_from_KEYMAP>, (OPTIONAL) "model_names": <array_of_model_names_to_consider> }

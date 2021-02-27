@@ -24,7 +24,6 @@ export default class API {
     this.state = {
       models: {},
       modelNames: [],
-      plotTypes: {},
       plotType: '',
       plotData: null,
       plot: '',
@@ -48,7 +47,6 @@ export default class API {
 
     this.state.models = Object.fromEntries(models);
     this.state.modelNames = this.getModelNames();
-    this.state.plotTypes = await this.getPlotTypes();
     this.getPlotData();
   }
 
@@ -81,24 +79,6 @@ export default class API {
    *  yScale: string
    * }}
    */
-
-  /**
-   * Gets the different plot types.
-   *
-   * @returns {{
-   *  xLabels: {
-   *    [labelName: string]: string
-   *  },
-   *  plotOptions: {
-   *    [plotName: string]: PlotDetails
-   *  }
-   * }} an object containing the different plot options and x labels
-   */
-  getPlotTypes = async () => {
-    const result = await axios.get(`${baseurl}/get_plot_types`);
-    const plotTypes = result.data;
-    return plotTypes;
-  }
 
   /**
    * Gets plot from server
