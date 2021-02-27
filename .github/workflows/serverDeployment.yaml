@@ -23,7 +23,7 @@ jobs:
       with:
         debug: true
         hosts: '${{ secrets.USERNAME }}@${{ secrets.HOST }}'
-        port: ${{ secrets.PORT }}
+        #port: ${{ secrets.PORT }}
         privateKey: ${{ secrets.SERVERKEY }}
         command:  |
           ls /home
