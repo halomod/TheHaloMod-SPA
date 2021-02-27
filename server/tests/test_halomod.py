@@ -1,3 +1,5 @@
+"""Houses the tests for the server."""
+
 import pytest
 import imghdr
 import base64
