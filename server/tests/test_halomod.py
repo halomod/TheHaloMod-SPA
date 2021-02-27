@@ -28,7 +28,8 @@ def test_get_plot_types(client):
     response = client.get('/get_plot_types')
     assert response is not None
     assert response.status_code == 200
-    assert "dndm" in response.json
+    assert "xLabels" in response.json
+    assert "plotOptions" in response.json
 
 
 def test_clone(client):

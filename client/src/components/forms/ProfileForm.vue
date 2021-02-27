@@ -58,7 +58,7 @@ export default {
     event: 'onChange',
     prop: 'parent_model',
   },
-  props: ['parent_model', 'init', 'title'],
+  props: ['parent_model', 'init', 'title', 'subform_id'],
   data() {
     return {
       profileChoices,

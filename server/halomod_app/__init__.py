@@ -127,10 +127,16 @@ def create_app(test_config=None):
     # can be used to represent a halo model.
     #
     # expects: None
-    # outputs: KEYMAP as defined in `utils.py`
+    # outputs: {
+    #   xLabels: <data from utils.py>,
+    #   plotOptions: <data from KEYMAP in utils.py>
+    # }
     @app.route('/get_plot_types', methods=["GET"])
     def get_plot_types():
-        res = utils.KEYMAP
+        res = {
+            'xLabels': utils.XLABELS,
+            'plotOptions': utils.KEYMAP
+        }
         return jsonify(res)  # returns full key map of plot types
 
     # This endpoint returns plot data required for front-end plotting from session data
@@ -177,7 +183,7 @@ def create_app(test_config=None):
                 data["ys"] = list(ys[mask])  # apply mask and save ys into data dict
                 data["xs"] = list(xs[mask])  # apply mask and save xs into data dict
             except Exception as e:
-                abort(400, f"Error encountered getting {fig_type} for model {name}")
+                abort(400, f"Error encountered getting {fig_type} for model {name}. {str(e)}.")
                 print(f"Error encountered getting {fig_type} for model {name}")
                 print(e)
 

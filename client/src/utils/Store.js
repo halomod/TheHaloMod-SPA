@@ -22,25 +22,20 @@ debug.enabled = false;
 export default class API {
   constructor() {
     this.state = {
-      plot: '',
       models: {},
       modelNames: [],
-      plotType: 'dndm',
+      plotTypes: {},
+      plotType: '',
       plotData: null,
-      plotDetails: {
-        scale: '',
-        xLabel: '',
-        yLabel: '',
-      },
+      plot: '',
       error: false,
       errorType: '',
       errorMessage: '',
-      plotTypes: [],
     };
   }
 
   /**
-   * initializes cache
+   * Initializes cache.
    */
   init = async () => {
     const k = await keys();
@@ -77,14 +72,32 @@ export default class API {
   getPlot = () => this.plot;
 
   /**
+   * The way that data is formatted for each plot option.
+   *
+   * @typedef PlotDetails
+   * @type {{
+   *  xlab: string,
+   *  ylab: string,
+   *  yScale: string
+   * }}
+   */
+
+  /**
    * Gets the different plot types.
    *
-   * @returns {string[]} the array of plot types
+   * @returns {{
+   *  xLabels: {
+   *    [labelName: string]: string
+   *  },
+   *  plotOptions: {
+   *    [plotName: string]: PlotDetails
+   *  }
+   * }} an object containing the different plot options and x labels
    */
   getPlotTypes = async () => {
     const result = await axios.get(`${baseurl}/get_plot_types`);
     const plotTypes = result.data;
-    return Object.keys(plotTypes);
+    return plotTypes;
   }
 
   /**
@@ -131,7 +144,6 @@ export default class API {
         this.state.errorMessage = error.response.data.description;
         this.state.errorType = (error.response.data.code >= 500) ? 'Server' : 'Model';
       }
-      // better error messaging here
     }
   }
 
@@ -155,7 +167,6 @@ export default class API {
         this.state.errorMessage = error.response.data.description;
         this.state.errorType = (error.response.data.code >= 500) ? 'Server' : 'Model';
       }
-      // better error handling here, some vue event?
     }
   }
 
@@ -207,6 +218,18 @@ export default class API {
         this.state.errorType = (error.response.data.code >= 500) ? 'Server' : 'Model';
       }
     }
+  }
+
+  /**
+   * Sets an erorr for the application. This becomes visible to the user.
+   *
+   * @param {string} errorType the type of error
+   * @param {string} errorMessage the message for the error
+   */
+  setError = (errorType, errorMessage) => {
+    this.state.error = true;
+    this.state.errorType = errorType;
+    this.state.errorMessage = errorMessage;
   }
 
   /**
@@ -304,14 +327,16 @@ export default class API {
   }
 
   /**
-   * Retrieves plot data for all models
+   * Retrieves plot data for all models if a plotType is specified in state.
    *
    * @returns {void}
    */
   getPlotData = async () => {
-    let data = {};
+    if (this.state.plotType === '') {
+      return;
+    }
     try {
-      data = await axios.post(`${baseurl}/get_plot_data`, {
+      const data = await axios.post(`${baseurl}/get_plot_data`, {
         fig_type: this.state.plotType,
       });
       this.state.plotData = data.data;

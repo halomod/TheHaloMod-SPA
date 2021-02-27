@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
 import Debug from 'debug';
 import { legendColor } from 'd3-svg-legend';
-import processLatexString from './stringUtils';
+import createLatexSvgFromString from './latex';
 
 const debug = Debug('plot.js');
 debug.enabled = false;
@@ -64,27 +64,15 @@ function generateLegend(svg, colorGen, plotData) {
  * the y label and the height from the bottom to get past the x label
  */
 function generateAxisLabels(svg, plotData) {
-  // Get the MathJax obect, which is inserted in the `public/index.html` file
-  const { MathJax } = window;
-
   const h = svg.node().getBoundingClientRect().height;
   const w = svg.node().getBoundingClientRect().width;
-
-  // Reset MathJax for numbering reasons in equations
-  MathJax.texReset();
-
-  // Process the labels into a proper latex string
-  const xLabel = processLatexString(plotData.plot_details.xlab);
-  const yLabel = processLatexString(plotData.plot_details.ylab);
 
   // x-Axis label initial placement
   svg.append('svg')
     .attr('id', 'x-axis-label')
     .attr('y', h - 24);
   const xAxisNode = document.getElementById('x-axis-label');
-  const xAxisLatexOptions = MathJax.getMetricsFor(xAxisNode);
-  const xAxisLatexSvg = MathJax.tex2svg(xLabel, xAxisLatexOptions)
-    .firstChild;
+  const xAxisLatexSvg = createLatexSvgFromString(plotData.plot_details.xlab);
   xAxisNode.append(xAxisLatexSvg);
 
   // Center the x-axis
@@ -100,11 +88,7 @@ function generateAxisLabels(svg, plotData) {
   const yAxisNode = document.getElementById('y-axis-label');
   const yAxisContainer = document.getElementById('y-axis-container');
   yAxisContainer.append(yAxisNode);
-
-  const yAxisLatexOptions = MathJax.getMetricsFor(yAxisNode);
-  const yAxisLatexSvg = MathJax.tex2svg(yLabel, yAxisLatexOptions)
-    .firstChild;
-
+  const yAxisLatexSvg = createLatexSvgFromString(plotData.plot_details.ylab);
   yAxisNode.append(yAxisLatexSvg);
 
   // Rotation happens at the pivot point of the top left corner by default
@@ -131,12 +115,10 @@ function generateAxisLabels(svg, plotData) {
  * become the parent of the SVG plot
  * @param {} plotData the plot data which should be held in state of the
  * `$store` of the Vue instance
- * @param {string | undefined} plotType the type of plot being made. Such as
- * `dndm`. This is only used in edge cases for determining the scale of the
- * x-axis.
  * @returns {void}
  */
-export default (elementId, plotData, plotType) => {
+export default (elementId, plotData) => {
+  debug('Generate plot triggered with the following plotData', plotData);
   // Clear all SVGs within the main element if they exist
   d3.select(`#${elementId}`).selectAll('svg').remove();
 
@@ -176,23 +158,13 @@ export default (elementId, plotData, plotType) => {
   const maxXVal = d3.max(datasets, (d) => d3.max(d.xs));
   const maxYVal = d3.max(datasets, (d) => d3.max(d.ys));
 
-  let xScale;
+  // x-scale is always logarithmic
+  let xScale = d3.scaleLog();
   let yScale;
 
-  const logScaleXPlotTypes = [
-    'sigma',
-    'fsigma',
-    'lnsigma',
-  ];
-
-  if (plotType && logScaleXPlotTypes.includes(plotType)) {
-    xScale = d3.scaleLog();
-    yScale = d3.scaleLinear();
-  } else if (plotData.plot_details.yscale === 'log') {
-    xScale = d3.scaleLog();
+  if (plotData.plot_details.yscale === 'log') {
     yScale = d3.scaleLog();
   } else {
-    xScale = d3.scaleLinear();
     yScale = d3.scaleLinear();
   }
   xScale = xScale

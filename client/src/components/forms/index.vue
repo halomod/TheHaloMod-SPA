@@ -49,7 +49,7 @@ import Debug from 'debug';
 import FORMS from '@/constants/forms';
 
 const debug = Debug('Create.vue');
-debug.enabled = true;
+debug.enabled = false;
 export default {
   name: 'Forms',
   components: {
@@ -103,8 +103,9 @@ export default {
       window.history.replaceState({}, '', `#${id}`);
     },
     buildProps(form) {
-      // console.log(this.default[form.id]);
-      return { ...form.props, init: this.default[form.id], title: form.title };
+      return {
+        ...form.props, init: this.default[form.id], title: form.title, subform_id: form.id,
+      };
     },
   },
 };
