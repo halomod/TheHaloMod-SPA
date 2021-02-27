@@ -24,7 +24,7 @@ jobs:
         debug: true
         hosts: '${{ secrets.USERNAME }}@${{ secrets.HOST }}:${{ secrets.PORT }}'
         privateKey: ${{ secrets.SERVERKEY }}
-        script:  |
+        command:  |
           ls /home
           whoami
           echo $PATH
