@@ -19,13 +19,11 @@ jobs:
 
     steps:
     - name: DeployServer
-      uses: appleboy/ssh-action@master
+      uses: JimCronqvist/action-ssh@master
       with:
         debug: true
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        key: ${{ secrets.SERVERKEY }}
-        port: ${{ secrets.PORT }}
+        hosts: '${{ secrets.USERNAME }}@${{ secrets.HOST }}:${{ secrets.PORT }}'
+        privateKey: ${{ secrets.SERVERKEY }}
         script:  |
           ls /home
           whoami
