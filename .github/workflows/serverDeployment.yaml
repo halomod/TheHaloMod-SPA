@@ -22,18 +22,11 @@ jobs:
       uses: appleboy/ssh-action@master
       with:
         debug: true
-<<<<<<< HEAD
-        hosts: '${{ secrets.USERNAME }}@${{ secrets.HOST }}'
-        port: ${{ secrets.PORT }}
-        privateKey: ${{ secrets.SERVERKEY }}
-        command:  |
-=======
         host: ${{ secrets.HOST }}
         username: ${{ secrets.USERNAME }}
         key: ${{ secrets.SERVERKEY }}
         port: ${{ secrets.PORT }}
         script:  |
->>>>>>> parent of 18fd465 (Changed ssh action repo)
           ls /home
           whoami
           echo $PATH
