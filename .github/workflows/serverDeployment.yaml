@@ -12,13 +12,13 @@ jobs:
   build:
     runs-on: ubuntu-latest
     # Require that the 'test' job completes first
-    needs: test
-    defaults:
-      run:
-        working-directory: server
+    #needs: test
+    #defaults:
+    #  run:
+    #    working-directory: server
 
     steps:
-    - name: Deploy
+    - name: DeployServer
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.HOST }}
