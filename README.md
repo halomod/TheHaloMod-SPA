@@ -15,8 +15,8 @@ A single-page application to act as a GUI for [HaloMod](https://github.com/halom
 
 1. Clone the repo locally.
 1. Run `cd TheHaloMod-SPA`. In other words, move into that directory in your shell of choice. 
-1. Get the server up and running. Instructions are in [the server readme](server).
-1. Startup the client. Instructions are in [the client readme](client).
+1. Get the server up and running. Instructions are in [the server readme](server#thehalomod-spa-server).
+1. Startup the client. Instructions are in [the client readme](client#thehalomod-spa-client).
 
 ## Architecture
 
