@@ -9,7 +9,7 @@ on:
       - testServerDeployment
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
     # Require that the 'test' job completes first
     needs: test
@@ -22,7 +22,7 @@ jobs:
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.HOST }}
-        username: "steven-murray"
+        username: ${{ secrets.USERNAME }}
         password: ${{ secrets.SERVERKEY }}
         port: ${{ secrets.PORT }}
         script:  |
