@@ -28,6 +28,15 @@
     "vue-observe-visibility": "^0.4.6",
     "vue-router": "^3.4.9"
   },
+  "dependenciesDoc": {
+    "@sentry": "Used to hook up sentry.io to the site for tracking of errors.",
+    "axios": "Used for network requests.",
+    "d3": "Used to generate the plot.",
+    "debug": "Used to put helpful annotations to debugging messages in files.",
+    "deep-freeze": "A utility to freeze a JavaScript object.",
+    "lodash": "A very common JavaScript utility library.",
+    "vue-material": "A material design UI and CSS framework for Vue. It makes things look good 😁."
+  },
   "devDependencies": {
     "@babel/plugin-proposal-optional-chaining": "^7.12.7",
     "@types/d3": "^6.3.0",
