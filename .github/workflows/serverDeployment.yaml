@@ -6,7 +6,7 @@ name: Server Deployment
 on: 
   push:
     branches:
-      - main
+      - testServerDeployment
 
 jobs:
   build-and-deploy:
@@ -22,8 +22,8 @@ jobs:
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        password: ${{ secrets.PASSWORD }}
+        username: "steven-murray"
+        password: ${{ secrets.SERVERKEY }}
         port: ${{ secrets.PORT }}
         script:  |
           ls /home
