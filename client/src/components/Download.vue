@@ -35,10 +35,10 @@
     <md-dialog-title>{{loadingTitle}}</md-dialog-title>
     <md-dialog-content><md-progress-bar md-mode="indeterminate"/></md-dialog-content>
   </md-dialog>
-  <md-dialog v-if="asciiDialogVisible"
-    :md-active.sync="asciiDialogVisible">
-    <md-dialog-title>ASCII data will download soon...</md-dialog-title>
-    <md-button @click="asciiDialogVisible = false">Close</md-button>
+  <md-dialog v-if="serverDownloadDialogVisible"
+    :md-active.sync="serverDownloadDialogVisible">
+    <md-dialog-title>{{loadingTitle}}</md-dialog-title>
+    <md-button @click="serverDownloadDialogVisible = false">Close</md-button>
   </md-dialog>
   </div>
 </template>
@@ -57,13 +57,19 @@ const downloadChoiceObjs = {
     displayName: 'ASCII',
     name: 'ascii',
     downloadName: 'AllData.zip',
-    loadingTitle: 'Retrieving ASCII data...',
+    loadingTitle: 'ASCII data will download soon...',
   },
-  paramVals: {
-    displayName: 'Parameter Values',
-    name: 'paramVals',
+  jsonParamVals: {
+    displayName: 'Parameter Values in JSON Format',
+    name: 'jsonParamVals',
     downloadName: 'ParameterValues.json',
     loadingTitle: 'Loading parameter values...',
+  },
+  tomlParamVals: {
+    displayName: 'Parameter Values in TOML Format',
+    name: 'tomlParamVals',
+    downloadName: 'AllModelParemeterValues.zip',
+    loadingTitle: 'Parameter value data will download soon...',
   },
 };
 export default {
@@ -74,7 +80,7 @@ export default {
       downloadChoice: Object.values(downloadChoiceObjs)[0].name,
       loading: false,
       loadingTitle: '',
-      asciiDialogVisible: false,
+      serverDownloadDialogVisible: false,
     };
   },
   methods: {
@@ -94,13 +100,17 @@ export default {
       return this.$store.state.plot;
     },
     async download_ascii() {
-      this.asciiDialogVisible = true;
+      this.serverDownloadDialogVisible = true;
       return `${baseUrl}/ascii`;
     },
-    async download_paramVals() {
+    async download_jsonParamVals() {
       const modelsJsonString = JSON.stringify(await this.$store.getAllModels(), null, 2);
       const dataStr = `data:text/json;charset=utf-8,${encodeURIComponent(modelsJsonString)}`;
       return dataStr;
+    },
+    async download_tomlParamVals() {
+      this.serverDownloadDialogVisible = true;
+      return `${baseUrl}/toml`;
     },
   },
 };

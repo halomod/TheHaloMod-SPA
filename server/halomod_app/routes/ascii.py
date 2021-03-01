@@ -68,4 +68,8 @@ def ascii():
     # Reset the location of the buffer to the beginning
     buff.seek(0)
 
-    return send_file(buff, as_attachment=True, attachment_filename="all_plots.zip")
+    # Cache timeout set to 3 seconds, which seems like enough time for the user
+    # to change a paremeter and try to download again, but prevents spamming.
+    return send_file(buff, as_attachment=True,
+                     attachment_filename="all_plots.zip",
+                     cache_timeout=3)

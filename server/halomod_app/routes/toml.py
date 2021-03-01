@@ -27,16 +27,11 @@ def toml_route():
     else:
         models = {}
 
-    print(type(models))
-    print(models)
-
     # Open up file-like objects for response
     buff = io.BytesIO()
     archive = zipfile.ZipFile(buff, "w", zipfile.ZIP_DEFLATED)
 
     for label, object in models.items():
-        print(label)
-        print(object)
         s = io.BytesIO()
         s.write(toml.dumps(framework_to_dict(object)).encode())
         archive.writestr(f"{label}.toml", s.getvalue())
@@ -47,5 +42,8 @@ def toml_route():
     # Reset the location of the buffer to the beginning
     buff.seek(0)
 
+    # Cache timeout set to 3 seconds, which seems like enough time for the user
+    # to change a paremeter and try to download again, but prevents spamming.
     return send_file(buff, as_attachment=True,
-                     attachment_filename="all_plots_toml.zip")
+                     attachment_filename="all_plots_toml.zip",
+                     cache_timeout=3)
