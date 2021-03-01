@@ -24,6 +24,7 @@ export default class API {
     this.state = {
       models: {},
       modelNames: [],
+      x: '',
       plotType: '',
       plotData: null,
       plot: '',
@@ -339,9 +340,9 @@ export default class API {
    * example: `dndm`.
    * @returns {void}
    */
-  setPlotType = async (newPlotType) => {
-    if (newPlotType !== this.state.plotType) {
-      this.state.plotType = newPlotType;
+  setPlotType = async (y) => {
+    if (y !== this.state.plotType) {
+      this.state.plotType = y;
       await this.getPlotData();
     }
   }
