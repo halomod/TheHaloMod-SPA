@@ -2,6 +2,7 @@ from halomod_app.routes.create import create_bp
 from halomod_app.routes.plot_types import plot_types_bp
 from halomod_app.routes.constants import constants_bp
 from halomod_app.routes.ascii import ascii_bp
+from halomod_app.routes.toml import toml_bp
 from sentry_sdk.integrations.flask import FlaskIntegration
 import sentry_sdk
 from werkzeug.exceptions import HTTPException
@@ -49,6 +50,7 @@ def create_app(test_config=None):
     app.register_blueprint(plot_types_bp, url_prefix='/get_plot_types')
     app.register_blueprint(create_bp, url_prefix='/create')
     app.register_blueprint(ascii_bp, url_prefix='/ascii')
+    app.register_blueprint(toml_bp, url_prefix='/toml')
 
     # Generic Exception handler for 500 Internal Server Error
     # Returns manually formatted JSON response object with 500 code,
@@ -61,13 +63,21 @@ def create_app(test_config=None):
             return e
 
         response = {}
+        description = ""
+        if hasattr(e, 'description'):
+            description = e.description
+        elif hasattr(e, 'args'):
+            description = e.args
+        else:
+            description = 'Error has no description'
+
         # replace the body with JSON
-        response.data = json.dumps({
+        response.setdefault('data', json.dumps({
             "code": '500',
-            "name": e.name,
-            "description": e.description,
-        })
-        response.content_type = "application/json"
+            "name": e.name if hasattr(e, 'name') else str(type(e)),
+            "description": description,
+        }))
+        response.setdefault('content_type', "application/json")
         return response
 
     # HTTP Exception Handler for error codes 400-499
