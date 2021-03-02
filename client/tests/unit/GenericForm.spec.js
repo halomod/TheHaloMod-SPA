@@ -111,7 +111,7 @@ describe('Mounted GenericForm', () => {
   test('renders correct values and names for fields even when model selection changes',
     async () => {
       let params = Object.entries(wrapper.vm.model.bias_params);
-      params.forEach(([key, value], _) => {
+      params.forEach(([key, value]) => {
         expect(wrapper.html()).toEqual(expect.stringMatching(new RegExp(`.*${key}.*`)));
         expect(wrapper.html()).toEqual(expect.stringMatching(new RegExp(`.*${value}.*`)));
       });
@@ -119,7 +119,7 @@ describe('Mounted GenericForm', () => {
       await localVue.nextTick();
       await localVue.nextTick();
       params = Object.entries(wrapper.vm.model.bias_params);
-      params.forEach(([key, value], _) => {
+      params.forEach(([key, value]) => {
         expect(wrapper.html()).toEqual(expect.stringMatching(new RegExp(`.*${key}.*`)));
         expect(wrapper.html()).toEqual(expect.stringMatching(new RegExp(`.*${value}.*`)));
       });
