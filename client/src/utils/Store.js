@@ -25,7 +25,7 @@ export default class API {
       models: {},
       modelNames: [],
       x: '',
-      plotType: '',
+      y: '',
       plotData: null,
       plot: '',
       error: false,
@@ -86,10 +86,11 @@ export default class API {
    * @param {String} fig_type, type of figure to be requested from server
    * @return {String} image data base64 string, or null if request fails
    */
-  createPlot = async (fig_type = this.state.plotType) => {
+  createPlot = async (x = this.state.x, y = this.state.y) => {
     try {
       const { data } = await axios.post(`${baseurl}/plot`, {
-        fig_type,
+        x,
+        y,
         img_type: 'png',
       });
       debug(`The data was retrieved with the baseurl of ${baseurl} and is: `,
@@ -313,12 +314,13 @@ export default class API {
    * @returns {void}
    */
   getPlotData = async () => {
-    if (this.state.plotType === '') {
+    if (this.state.y === '' || this.state.x === '') {
       return;
     }
     try {
       const data = await axios.post(`${baseurl}/get_plot_data`, {
-        fig_type: this.state.plotType,
+        x: this.state.x,
+        y: this.state.y,
       });
       this.state.plotData = data.data;
       this.state.error = false;
@@ -336,14 +338,16 @@ export default class API {
    * Sets the plot type for the plot, and generates a new plot if it is
    * different.
    *
-   * @param {string} newPlotType the identifier of the new plot type. For
+   * @param {string} plotType the identifier of the new plot type. For
    * example: `dndm`.
+   * @param {string} axis the axis to change. For example: `x`.
+   * @param {boolean} refresh if true, gets new plot data
    * @returns {void}
    */
-  setPlotType = async (y) => {
-    if (y !== this.state.plotType) {
-      this.state.plotType = y;
-      await this.getPlotData();
+  setPlotType = async (plotType, axis, refresh) => {
+    if (plotType !== this.state[axis]) {
+      this.state[axis] = plotType;
+      if (refresh) await this.getPlotData();
     }
   }
 }

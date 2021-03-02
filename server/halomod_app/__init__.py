@@ -134,25 +134,16 @@ def create_app(test_config=None):
     #           }}
     @app.route('/get_plot_data', methods=["POST"])
     def get_plot_data():
-
+        res = {"plot_data": {}}
         request_json = request.get_json()
-        fig_type = request_json["fig_type"]
-
-        # below gets correct x attr key ( pulled from create_canvas in utils )
-        for x, label in utils.XLABELS.items():
-            if utils.KEYMAP[fig_type]["xlab"] == label:
-                break
-
-        x_param = x
-        y_param = fig_type
+        x_param = request_json["x"]
+        y_param = request_json["y"]
 
         models = None
-        res = {"plot_data": {}}
         if 'models' in session:
             models = pickle.loads(session.get("models"))
         else:
             models = {}
-
         # if model_names in json use those else use all
         names = request_json["model_names"] if "model_names" in request_json else list(
             models.keys())
@@ -167,14 +158,14 @@ def create_app(test_config=None):
                 data["ys"] = list(ys[mask])  # apply mask and save ys into data dict
                 data["xs"] = list(xs[mask])  # apply mask and save xs into data dict
             except Exception as e:
-                abort(400, f"Error encountered getting {fig_type} for model {name}. {str(e)}.")
-                print(f"Error encountered getting {fig_type} for model {name}")
+                abort(400, f"Error encountered getting {y_param} for model {name}. {str(e)}.")
+                print(f"Error encountered getting {y_param} for model {name}")
                 print(e)
 
             res["plot_data"][name] = data  # put data in response object
 
         # put figure metadata into response
-        res["plot_details"] = utils.KEYMAP[fig_type]
+        res["plot_details"] = utils.KEYMAP[y_param]
 
         # save post-calculation models to session to take advantage of compute
         session["models"] = pickle.dumps(models)
@@ -299,7 +290,8 @@ def create_app(test_config=None):
     @app.route('/plot', methods=["POST"])
     def plot():
         request_json = request.get_json()
-        fig_type = request_json["fig_type"]
+        x = request_json["x"]
+        y = request_json["y"]
         img_type = request_json["img_type"]
 
         if 'models' in session:
@@ -307,9 +299,9 @@ def create_app(test_config=None):
         else:
             models = {}
 
-        # generates figure/plot
+        # generates figure/plot not working!
         buf, errors = utils.create_canvas(
-            models, fig_type, utils.KEYMAP[fig_type], img_type)
+            models, y, x, img_type)
 
         # serializes image so it can be sent via JSON
         png_base64_bytes = base64.b64encode(buf.getvalue())

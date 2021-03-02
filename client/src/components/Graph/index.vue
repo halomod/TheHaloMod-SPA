@@ -10,11 +10,11 @@
         <label for="xAxisChoice">X-Axis</label>
         <md-select v-model="xAxisChoice" id="xAxisChoices" name="xAxisChoice">
           <md-option
-            v-for="choice in xAxisChoices"
-            :key="choice"
-            :value="choice"
+            v-for="(_, key) in xAxisChoices"
+            :key="key"
+            :value="key"
           >
-            {{xLabelNames[choice]}}
+            {{plotData[key].name}}
           </md-option>
         </md-select>
 
@@ -27,7 +27,7 @@
             :key="choice"
             :value="choice"
           >
-            {{plotNames[choice]}}
+            {{plotData[choice].name}}
           </md-option>
         </md-select>
       </md-field>
@@ -45,11 +45,18 @@
 </template>
 
 <script>
-import clonedeep from 'lodash.clonedeep';
+// import clonedeep from 'lodash.clonedeep';
 import Error from '@/components/Error.vue';
-import { plotNames, xLabelNames } from '@/constants/plotNames.js';
-import PLOT_TYPES from '@/constants/plotTypes.js';
+import plotTypes from '@/constants/plotTypes.js';
+import PLOT_DATA from '@/constants/plotData.js';
 import Plot from './Plot.vue';
+
+const xChoices = {};
+Object.entries(plotTypes).forEach((entry) => {
+  entry[1].x.forEach((item) => {
+    [xChoices[item]] = entry;
+  });
+});
 
 export default {
   name: 'Graph',
@@ -59,7 +66,7 @@ export default {
       /**
        * @type {string[] | null}
        */
-      xAxisChoices: null,
+      xAxisChoices: xChoices,
       /**
        * @type {string | null}
        */
@@ -72,10 +79,8 @@ export default {
        * @type {string | null}
        */
       yAxisChoice: null,
-      plotOptions: null,
       plotElementId: 'd3-chart',
-      xLabelNames: clonedeep(xLabelNames),
-      plotNames: clonedeep(plotNames),
+      plotData: PLOT_DATA,
     };
   },
   components: {
@@ -88,35 +93,17 @@ export default {
     },
   },
   async created() {
-    const { plotOptions, xLabels } = clonedeep(PLOT_TYPES);
-    const xAxisChoices = Object.values(xLabels);
-    this.xAxisChoices = xAxisChoices;
-    if (xAxisChoices.length === 0) {
-      this.$store.setError('Plot Choices Error', 'The x axis choices are not'
-      + ' avaialble from the server.');
-      return;
-    }
-    [this.xAxisChoice] = xAxisChoices;
-    this.plotOptions = plotOptions;
+    [this.xAxisChoice] = Object.keys(this.xAxisChoices);
   },
   watch: {
-    xAxisChoice(newXAxisChoice) {
-      const yAxisChoices = Object.entries(this.plotOptions)
-        .reduce((returnArr, [plotName, plotDetails]) => {
-          if (plotDetails.xlab === newXAxisChoice) {
-            returnArr.push(plotName);
-            return returnArr;
-          }
-          return returnArr;
-        }, []);
-      this.yAxisChoices = yAxisChoices;
-      if (yAxisChoices.length !== 0) {
-        [this.yAxisChoice] = yAxisChoices;
-      }
+    xAxisChoice(newXAxisChoice, oldXAxisChoice) {
+      this.yAxisChoices = plotTypes[xChoices[newXAxisChoice]]?.y;
+      [this.yAxisChoice] = this.yAxisChoices;
+      this.$store.setPlotType(newXAxisChoice, 'x', xChoices[newXAxisChoice] === xChoices[oldXAxisChoice]);
     },
     yAxisChoice(newYAxisChoice, oldYAxisChoice) {
       if (newYAxisChoice !== null && newYAxisChoice !== oldYAxisChoice) {
-        this.$store.setPlotType(newYAxisChoice);
+        this.$store.setPlotType(newYAxisChoice, 'y', true);
       }
     },
   },
@@ -128,7 +115,7 @@ export default {
      */
     plotDataExists() {
       return this.READ_ONLY.plotData !== null
-        && Object.values(this.READ_ONLY.plotData.plot_data).length !== 0;
+        && Object.values(this.READ_ONLY.plotData).length !== 0;
     },
   },
 };
