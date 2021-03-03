@@ -1,4 +1,5 @@
-"""Plotting and driving utilities for halomod."""
+"""Plotting and driving utilities for TheHaloMod-SPA."""
+
 import io
 import logging
 from typing import Union

@@ -61,6 +61,12 @@ import INITIAL_STATE from '@/constants/initial_state.json';
 import clonedeep from 'lodash.clonedeep';
 import Forms from '@/components/forms/index.vue';
 
+/**
+ * Represents the view of the forms for each type of data entered into halomod.
+ *
+ * This component changes based on the context, being an "Edit" operation or
+ * a "Create" operation.
+ */
 export default {
   name: 'FormView',
   components: {

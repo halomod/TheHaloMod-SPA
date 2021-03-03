@@ -10,8 +10,10 @@
 </template>
 
 <script>
-// @ is an alias to /src
 
+/**
+ * Holds the primary nav bar for the application.
+ */
 export default {
   name: 'Navbar',
   components: {
