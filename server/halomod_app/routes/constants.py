@@ -1,3 +1,4 @@
+from typing import Union, Dict
 from astropy.cosmology.core import Cosmology
 from flask import Blueprint, jsonify
 from halomod import TracerHaloModel
@@ -11,15 +12,44 @@ from contextlib import redirect_stdout
 from io import StringIO
 import hmf
 
+# Types
+ParameterName = str
+ModelName = str
+BackendConstantsKey = Union[ParameterName, ModelName]
+Model = Union[object, None]
+Parameters = Union[dict, bool, int, float, str]
+BackendConstantsValue = Union[Model, Parameters]
+BackendConstants = Dict[BackendConstantsKey, BackendConstantsValue]
 
-def generate_constants() -> dict:
+
+def generate_constants() -> BackendConstants:
     """Builds the constants that a front-end can use to build forms or interactive
     pages for the calculations in HMF.
 
     Note that the constants for `z`, `n`, and `sigma_8` were previously set
     manually on the front-end. See https://github.com/halomod/TheHaloMod/blob/master/halomod_app/static/halomod_app/js/HideShowRules.js
 
-    This should be ran once on server startup."""
+    This should be ran once on server startup.
+
+    Following format is OpenAPI 3.0. Very standard in API writing for REST style endpoints.
+
+    get:
+      responses:
+        200:
+          description: "Returns the backend constants as a JSON object"
+          content:
+            application/json:
+              schema:
+                description: "The built constants object. It has many different possible types for each key, but it generally either has `componentType_params` then the params for that component, or `componentType_model` and the chosen model name for that component."
+                type: object
+                addtionalProperties:
+                  type:
+                  - object
+                  - bool
+                  - number
+                  - str
+                  - null
+    """
 
     backend_constants = {}
 
@@ -27,31 +57,32 @@ def generate_constants() -> dict:
     # `get_all_parameter_defaults`.
     throw_away_string = StringIO()
     with redirect_stdout(throw_away_string):
-        defaults = TracerHaloModel.get_all_parameter_defaults()
+        tracer_halo_defaults = TracerHaloModel.get_all_parameter_defaults()
 
-    for k, v in defaults.items():
+    for params_or_model_name, params_or_model_value in tracer_halo_defaults.items():
         # SKip the component parameters for now.
-        if k.endswith('_params'):
+        if params_or_model_name.endswith('_params'):
             continue
 
-        if np.issubclass_(v, Component):
+        if np.issubclass_(params_or_model_value, Component):
             # Save class names, not the classes themselves.
-            backend_constants[k] = v.__name__
-        elif isinstance(v, FlatLambdaCDM):
+            backend_constants[params_or_model_name] = params_or_model_value.__name__
+        elif isinstance(params_or_model_value, FlatLambdaCDM):
             # Cosmology is weird, treat differently
-            backend_constants[k] = v.name
+            backend_constants[params_or_model_name] = params_or_model_value.name
         else:
-            backend_constants[k] = v
+            backend_constants[params_or_model_name] = params_or_model_value
 
     # Now find all the parameters for all the component models.
     for component in get_base_components():
         models = component.get_models()
-        this = backend_constants[component.__name__ + "_params"] = {}
+        current_component_params = backend_constants[component.__name__ + "_params"] = {}
 
         if component == Cosmology:
             # Corner case: doesn't have _defaults :-(
             for name in ['Tcmb0', 'Neff', 'm_nu', 'H0', 'Om0']:
-                this[name] = getattr(defaults['cosmo_model'], name)
+                current_component_params[name] = getattr(
+                    tracer_halo_defaults['cosmo_model'], name)
         else:
             for name, model in models.items():
                 if hasattr(model, "_defaults"):
@@ -82,7 +113,6 @@ def generate_constants() -> dict:
 
 backend_constants = generate_constants()
 
-
 constants_bp = Blueprint('constants', __name__)
 
 
@@ -90,6 +120,8 @@ constants_bp = Blueprint('constants', __name__)
 def constants():
     """
     Returns a json representation that holds the constants of HMF.
+
+    This can be seen in the browser by simply navigating to this endpoint.
     """
 
     return jsonify(backend_constants)
