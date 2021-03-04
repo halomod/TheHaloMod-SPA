@@ -13,6 +13,7 @@ from matplotlib.figure import Figure
 import re
 import codecs
 import pickle
+import json
 
 
 logger = logging.getLogger(__name__)
@@ -39,6 +40,8 @@ def hmf_driver(cls=TracerHaloModel, previous: Union[None, TracerHaloModel] = Non
 
 
 def create_canvas(objects, q: str, d: dict, plot_format: str = "png"):
+    km = load_json('../../globals/plotData.json')
+    print("//////" + km)
     # TODO: make log scaling automatic
     fig = Figure(figsize=(10, 6), edgecolor="white", facecolor="white", dpi=100)
     ax = fig.add_subplot(111)
@@ -361,3 +364,7 @@ def serialize_model(model) -> str:
 
 def deserialize_model(serialized_model):
     return pickle.loads(codecs.decode(serialized_model.encode(), "base64"))
+
+def load_json(file_location):
+    with open(file_location) as json_file:
+        return json.load(json_file)

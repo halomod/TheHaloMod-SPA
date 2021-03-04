@@ -18,7 +18,6 @@ from sentry_sdk.integrations.flask import FlaskIntegration
 
 sess = Session()
 
-
 def create_app(test_config=None):
     # add sentry sdk
     sentry_sdk.init(
@@ -298,7 +297,7 @@ def create_app(test_config=None):
             models = pickle.loads(session["models"])
         else:
             models = {}
-
+        KEYMAP = utils.load_json('../../globals/plotData.json')
         # generates figure/plot not working!
         buf, errors = utils.create_canvas(
             models, y, x, img_type)
