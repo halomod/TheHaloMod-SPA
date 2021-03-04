@@ -27,10 +27,8 @@ jobs:
         key: ${{ secrets.SERVERKEY }}
         port: ${{ secrets.PORT }}
         script:  |
-          ls /home
-          whoami
-          echo $PATH
-          python --version
+          pwd
+          ls ./*
           #mkdir /home/steven-murray/HaloModServer-SPA
           #cd /home/steven-murray/HaloModServer-SPA
           #git clone https://github.com/halomod/TheHaloMod-SPA
