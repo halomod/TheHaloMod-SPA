@@ -28,8 +28,9 @@ jobs:
         port: ${{ secrets.PORT }}
         script:  |
           git clone https://github.com/halomod/TheHaloMod-SPA
-          cd ./HaloModServer-SPA
+          cd ./TheHaloMod-SPA
           git pull origin master
           git status
           # Stop the server with docker-compose down
+          cd server
           python3 dockerStart.py -p --url localhost --port 8010
