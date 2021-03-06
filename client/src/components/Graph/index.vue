@@ -47,12 +47,11 @@
 <script>
 // import clonedeep from 'lodash.clonedeep';
 import Error from '@/components/Error.vue';
-import plotTypes from '@/constants/plotTypes.js';
-import PLOT_DATA from '@/constants/plotData.js';
+import { PLOT_DATA, PLOT_TYPES } from '@/constants/PLOT.js';
 import Plot from './Plot.vue';
 
 const xChoices = {};
-Object.entries(plotTypes).forEach((entry) => {
+Object.entries(PLOT_TYPES).forEach((entry) => {
   entry[1].x.forEach((item) => {
     [xChoices[item]] = entry;
   });
@@ -97,7 +96,7 @@ export default {
   },
   watch: {
     xAxisChoice(newXAxisChoice, oldXAxisChoice) {
-      this.yAxisChoices = plotTypes[xChoices[newXAxisChoice]]?.y;
+      this.yAxisChoices = PLOT_TYPES[xChoices[newXAxisChoice]]?.y;
       [this.yAxisChoice] = this.yAxisChoices;
       this.$store.setPlotType(newXAxisChoice, 'x', xChoices[newXAxisChoice] === xChoices[oldXAxisChoice]);
     },
