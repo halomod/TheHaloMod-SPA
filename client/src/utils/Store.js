@@ -19,7 +19,7 @@ debug.enabled = false;
  * This store is initialized at the beginning of the application startup. It
  * should be able to be accessed with `this.$store` on any component.
  */
-export default class API {
+export default class Store {
   constructor() {
     this.state = {
       models: {},
@@ -52,9 +52,10 @@ export default class API {
   }
 
   /**
-   * Flattens model to make request params
-   * @param {Object} model model to flatten
-   * @returns {Object} flattened params
+   * Flattens model to make request params.
+   *
+   * @param {Object} model the model to flatten
+   * @returns {Object} the flattened params
    */
   flatten = (model) => {
     const params = {};
@@ -65,7 +66,8 @@ export default class API {
   }
 
   /**
-   * gets the plot
+   * Gets the plot.
+   *
    * @returns {String} plot base64 string
    */
   getPlot = () => this.plot;
@@ -83,7 +85,8 @@ export default class API {
 
   /**
    * Gets plot from server
-   * @param {String} fig_type, type of figure to be requested from server
+   * @param {String} x, x axis type
+   * @param {String} y, y axis type
    * @return {String} image data base64 string, or null if request fails
    */
   createPlot = async (x = this.state.x, y = this.state.y) => {
@@ -104,11 +107,11 @@ export default class API {
   }
 
   /**
-   * Sends model data to server to create Tracer Halo Model Object
-   * Also saves model into indexed db
+   * Sends the model data to server to create Tracer Halo Model Object. This
+   * also saves the model into the local indexed db on the client.
+   *
    * @param {Object} model model data
    * @param {String} name model name
-   * @returns {void}
    */
   createModel = async (model, name) => {
     try {
@@ -130,9 +133,10 @@ export default class API {
   }
 
   /**
-   * Updates a model
-   * @param {Object} model model to update
-   * @param {String} name label to update model
+   * Updates a model.
+   *
+   * @param {Object} model the updated model object
+   * @param {String} name the name of the model to update
    */
   updateModel = async (name, model) => {
     try {
@@ -152,10 +156,11 @@ export default class API {
     }
   }
 
-  /** Renames a model
+  /**
+   * Renames a model.
    *
-   * @param {String} oldName
-   * @param {String} newName
+   * @param {String} oldName the original name of the model
+   * @param {String} newName the new name of the model
    */
   renameModel = async (oldName, newName) => {
     try {
@@ -178,10 +183,10 @@ export default class API {
   }
 
   /**
-   * Clones a model
+   * Clones a model.
+   *
    * @param {String} oldName
    * @param {String} newName
-   * @returns {void}
    */
   cloneModel = async (oldName, newName) => {
     try {
@@ -215,9 +220,12 @@ export default class API {
   }
 
   /**
-   * Gets (clones) a model at label, keeps function pure.
+   * Gets (clones) a model with the given name. This returns a deep cloned
+   * copy of the model.
+   *
    * @param {String} name the name of the model
-   * @returns {Object | undefined} A copy of the target model, or undefined
+   * @returns {Object | undefined} a copy of the target model, or undefined if
+   * it doesn't exist
    */
   getModel = async (name) => clonedeep(await this?.state.models[name]);
 
@@ -225,7 +233,7 @@ export default class API {
    * Gets (clones) all models.
    *
    * @returns {{
-   *  [modelName: String]: Object
+   *  [modelName: string]: Object
    * } | undefined} A copy of all the models with their names or undefined
    */
   getAllModels = async () => {
@@ -243,10 +251,10 @@ export default class API {
   };
 
   /**
-   * Sets a model at name
+   * Sets a model with the given name.
+   *
    * @param {String} name the name of the model
    * @param {Object} model the model to set
-   * @returns {void}
    */
   setModel = async (name, model) => {
     try {
@@ -266,9 +274,9 @@ export default class API {
   getModelNames = () => Object.keys(this.state.models);
 
   /**
-   * deletes a model
-   * @param {String} name the name to set the model
-   * @returns {void}
+   * Deletes a model.
+   *
+   * @param {String} name the name of the model to delete
    */
   deleteModel = async (name) => {
     try {
@@ -293,8 +301,7 @@ export default class API {
   }
 
   /**
-   * Clears all existing models
-   * @returns {void}
+   * Clears all existing models.
    */
   clearModels = async () => {
     try {
@@ -310,8 +317,8 @@ export default class API {
 
   /**
    * Retrieves plot data for all models if a plotType is specified in state.
-   *
-   * @returns {void}
+   * This doesn't return the plot data, rather it sets the plot data to the
+   * `state` of this `Store` object.
    */
   getPlotData = async () => {
     if (this.state.y === '' || this.state.x === '') {

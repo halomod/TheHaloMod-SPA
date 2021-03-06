@@ -20,9 +20,17 @@
         <p>TheHaloMod is hosted on a cluster maintained by the
         <a href="http://loco.lab.asu.edu/">Low-frequency Cosmology</a> (LoCo)
         lab at the <a href="http://sese.asu.edu%20target%3D/">School of Earth
-        and Space Exploration</a> at ASU. Shout-outs to Judd Bowman, Danny Jacobs,
-        Adam Beardsley and Matt
-        Kolopanis for assisting greatly with server setup and maintenance.</p>
+        and Space Exploration</a> at ASU. </p>
+
+        <p>Shout-outs to Judd Bowman, Danny Jacobs, Adam Beardsley and Matt
+        Kolopanis for assisting greatly with server
+        setup and maintenance. Also shoutout to the ASU students who helped
+        build this version of the website:
+        <a href="https://github.com/vperuzzi">Tia Peruzzi</a>,
+        <a href="https://github.com/aschnapp">Michael Schnapp</a>,
+        <a href="https://github.com/Tengelma">Trent Engleman</a>,
+        <a href="https://github.com/dblevin1">Daniel Blevins</a>, and
+        <a href="https://github.com/aneuhold">Anton Neuhold</a>.</p>
       </md-content>
     </div>
   </div>
@@ -31,6 +39,9 @@
 <script>
 import Navbar from '@/components/Navbar.vue';
 
+/**
+ * Represents the "About" page of the website.
+ */
 export default {
   components: {
     Navbar,

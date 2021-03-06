@@ -1,3 +1,6 @@
+"""Holds the main entrypoint for the server."""
+
+
 from flask import Flask, url_for, redirect, jsonify, request, session, abort, send_file
 from . import utils
 import base64
@@ -19,6 +22,9 @@ from sentry_sdk.integrations.flask import FlaskIntegration
 sess = Session()
 
 def create_app(test_config=None):
+    """Acts as the main entrypoint for the server. Builds the Flask app and
+    the routes."""
+
     # add sentry sdk
     sentry_sdk.init(
         dsn="https://27537774b9d949b7ab5dcbe3ba4496c9@o516709.ingest.sentry.io/5624184",
@@ -62,10 +68,11 @@ def create_app(test_config=None):
         response.content_type = "application/json"
         return response
 
-    # HTTP Exception Handler for error codes 400-499
-    # Returns JSON object with error code, exception name, and description
     @app.errorhandler(HTTPException)
     def handle_exception(e):
+        """HTTP Exception Handler for error codes 400-499.
+
+        Returns JSON object with error code, exception name, and description"""
         # start with the correct headers and status code from the error
         response = e.get_response()
         # replace the body with JSON
@@ -313,8 +320,6 @@ def create_app(test_config=None):
 
         return jsonify(response)
 
-    # Builds and sends the text data for each model stored in the session
-    # outputs {}
     @app.route('/ascii', methods=['GET'])
     def ascii():
         """ Builds and sends the text data for each model stored in the session.
