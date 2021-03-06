@@ -39,49 +39,48 @@ def hmf_driver(cls=TracerHaloModel, previous: Union[None, TracerHaloModel] = Non
         return this
 
 
-def create_canvas(objects, q: str, d: dict, plot_format: str = "png"):
-    km = load_json('../../globals/plotData.json')
-    print("//////" + km)
+def create_canvas(objects, x_key: str, y_key: str, plot_format: str = "png"):
+    KEYMAP = load_json('../globals/plotData.json')
     # TODO: make log scaling automatic
     fig = Figure(figsize=(10, 6), edgecolor="white", facecolor="white", dpi=100)
     ax = fig.add_subplot(111)
     ax.grid(True)
-    ax.set_xlabel(d["xlab"], fontsize=15)
-    ax.set_ylabel(d["ylab"], fontsize=15)
+    ax.set_xlabel(KEYMAP[x_key]["label"], fontsize=15)
+    ax.set_ylabel(KEYMAP[y_key]["label"], fontsize=15)
 
     lines = ["-", "--", "-.", ":"]
 
-    if q.startswith("comparison"):
+    if y_key.startswith("comparison"):
         compare = True
-        q = q[11:]
+        y_key = y_key[11:]
     else:
         compare = False
 
     # Get the kind of axis we're comparing to.
-    for x, label in XLABELS.items():
-        if KEYMAP[q]["xlab"] == label:
-            break
-    else:
-        raise ValueError(f"The quantity {q} is not found in KEYMAP")
+    # for x, label in XLABELS.items():
+    #     if KEYMAP[q]["xlab"] == label:
+    #         break
+    # else:
+    #     raise ValueError(f"The quantity {y_key} is not found in KEYMAP")
 
     errors = {}
     ys = {}
     for i, (l, o) in enumerate(objects.items()):
         if not compare:
             try:
-                y = getattr(o, q)
+                y = getattr(o, y_key)
                 mask = y > 1e-40 * y.max()
                 ys[l] = y[mask]
                 if y is not None:
                     ax.plot(
-                        getattr(o, x)[mask],
+                        getattr(o, x_key)[mask],
                         y[mask],
                         color=f"C{i % 7}",
                         linestyle=lines[(i // 7) % 4],
                         label=l,
                     )
             except Exception as e:
-                logger.exception(f"Error encountered getting {q} for model called {l}.")
+                logger.exception(f"Error encountered getting {y_key} for model called {l}.")
                 errors[l] = e
         else:
             if i == 0:
@@ -89,19 +88,19 @@ def create_canvas(objects, q: str, d: dict, plot_format: str = "png"):
                 continue
 
             try:
-                ynum = getattr(o, q)
+                ynum = getattr(o, y_key)
             except Exception as e:
-                logger.exception(f"Error encountered getting {q} for model called {l}.")
+                logger.exception(f"Error encountered getting {y_key} for model called {l}.")
                 errors[l] = e
 
-            yden = getattr(comp_obj, q)
+            yden = getattr(comp_obj, y_key)
             mask = yden > 0
 
             if ynum is not None and yden is not None:
                 y = ynum[mask] / yden[mask]
                 ys[l] = y
                 ax.plot(
-                    getattr(o, x)[mask],
+                    getattr(o, x_key)[mask],
                     y,
                     color=f"C{(i+1) % 7}",
                     linestyle=lines[((i + 1) // 7) % 4],
@@ -110,10 +109,11 @@ def create_canvas(objects, q: str, d: dict, plot_format: str = "png"):
 
     try:
         # Shrink current axis by 30%
-        ax.set_xscale("log")
+        ax.set_xscale(KEYMAP[x_key]["scale"])
 
-        ax.set_yscale(d["yscale"], base=d.get("basey", 10))
-        if d["yscale"] == "log" and d.get("basey", 10) == 2:
+        # this basey thing is unused....
+        ax.set_yscale(KEYMAP[y_key]["scale"], base=KEYMAP[y_key].get("basey", 10))
+        if KEYMAP[y_key]["scale"] == "log" and KEYMAP[y_key].get("basey", 10) == 2:
             ax.yaxis.set_major_formatter(tick.ScalarFormatter())
 
         box = ax.get_position()

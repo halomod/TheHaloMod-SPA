@@ -297,10 +297,9 @@ def create_app(test_config=None):
             models = pickle.loads(session["models"])
         else:
             models = {}
-        KEYMAP = utils.load_json('../../globals/plotData.json')
         # generates figure/plot not working!
         buf, errors = utils.create_canvas(
-            models, y, x, img_type)
+            models, x, y, img_type)
 
         # serializes image so it can be sent via JSON
         png_base64_bytes = base64.b64encode(buf.getvalue())
