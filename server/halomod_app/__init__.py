@@ -1,18 +1,17 @@
-from halomod_app.routes.create import create_bp
-from halomod_app.routes.plot_types import plot_types_bp
-from halomod_app.routes.constants import constants_bp
-from halomod_app.routes.ascii import ascii_bp
 from sentry_sdk.integrations.flask import FlaskIntegration
 import sentry_sdk
 from werkzeug.exceptions import HTTPException
 from flask_session import Session
 from flask_cors import CORS
-from flask import Flask, jsonify, request, session, abort
+from flask import Flask, jsonify, request, session, abort, send_file
 from . import utils
 from halomod_app.utils import get_model_names
 import base64
 import json
 import dill as pickle
+import zipfile
+import io
+import numpy as np
 
 sess = Session()
 
@@ -44,13 +43,6 @@ def create_app(test_config=None):
 
     CORS(app, origins="http://localhost:*", supports_credentials=True)  # enable CORS
     sess.init_app(app)  # enable Sessions
-
-    # Mount the routes. Each prefix is shown here so that it is easier to notice
-    # conflicts.
-    app.register_blueprint(constants_bp, url_prefix='/constants')
-    app.register_blueprint(plot_types_bp, url_prefix='/get_plot_types')
-    app.register_blueprint(create_bp, url_prefix='/create')
-    app.register_blueprint(ascii_bp, url_prefix='/ascii')
 
     # Generic Exception handler for 500 Internal Server Error
     # Returns manually formatted JSON response object with 500 code,
@@ -91,6 +83,27 @@ def create_app(test_config=None):
     @app.route('/')
     def home():
         return jsonify({"start": 'This is the HaloModApp'})
+
+    @app.route('/create', methods=["POST"])
+    def create():
+        """Handles the creation of models and saving the created model to the session
+
+        expects: {"params": <dictionary of params>, "label": <model_name>}
+        outputs: {"model_names": <list_of_model_names_in_session>}"""
+        params = request.get_json()["params"]
+        label = request.get_json()["label"]
+
+        models = None
+        if 'models' in session:
+            models = pickle.loads(session.get('models'))
+        else:
+            models = {}
+
+        models[label] = utils.hmf_driver(**params)  # creates model from params
+        session["models"] = pickle.dumps(models)  # writes updated model dict to session
+
+        # returns new list of model names
+        return jsonify({"model_names": get_model_names()})
 
     # This endpoint returns the names of all the models associated with the current
     # session
@@ -303,5 +316,95 @@ def create_app(test_config=None):
         response["figure"] = base64_png
 
         return jsonify(response)
+
+    @app.route('/get_plot_types', methods=["GET"])
+    def get_plot_types():
+        """This endpoint returns the details of all the different plot types that
+        can be used to represent a halo model.
+
+        expects: None
+        outputs: {
+            xLabels: <data from utils.py>,
+            plotOptions: <data from KEYMAP in utils.py>
+        }"""
+        res = {
+            'xLabels': utils.XLABELS,
+            'plotOptions': utils.KEYMAP
+        }
+        return jsonify(res)
+
+    @app.route('/ascii', methods=['GET'])
+    def ascii():
+        """ Builds and sends the text data for each model stored in the session,
+        which is then bundled into a zip file.
+
+        get:
+        responses:
+            200:
+            description: "Returns the zip file containining the different data files for each model in the user's session"
+            content:
+                application/zip:
+        """
+        models = None
+        if 'models' in session:
+            models = pickle.loads(session.get("models"))
+        else:
+            models = {}
+
+        labels = list(models.keys())
+        objects = list(models.values())
+
+        # Open up file-like objects for response
+        buff = io.BytesIO()
+        archive = zipfile.ZipFile(buff, "w", zipfile.ZIP_DEFLATED)
+
+        # Write out mass-based, k-based and r-based data files
+        for index, object in enumerate(objects):
+            for kind in utils.XLABELS:
+                s = io.BytesIO()
+
+                s.write(f"# [0] {utils.XLABELS[kind]}".encode())
+
+                items = {
+                    k: utils.KEYMAP[k]["ylab"]
+                    for k in utils.KEYMAP
+                    if utils.KEYMAP[k]["xlab"] == utils.XLABELS[kind]
+                }
+
+                for j, (label, ylab) in enumerate(items.items()):
+                    if getattr(object, label) is not None:
+                        s.write(f"# [{j+1}] {ylab}".encode())
+
+                out = np.array(
+                    [getattr(object, kind)] + [
+                        getattr(object, label)
+                        for label in items
+                        if getattr(object, label) is not None
+                    ]
+                ).T
+                np.savetxt(s, out)
+
+                archive.writestr(f"{kind}Vector_test{labels[index]}.txt", s.getvalue())
+
+                s.close()
+
+        archive.close()
+
+        # Reset the location of the buffer to the beginning
+        buff.seek(0)
+
+        return send_file(buff, as_attachment=True, attachment_filename="all_plots.zip")
+
+    backend_constants = utils.generate_constants()
+
+    @app.route('/constants', methods=["GET"], strict_slashes=False)
+    def constants():
+        """
+        Returns a json representation that holds the constants of HMF.
+
+        This can be seen in the browser by simply navigating to this endpoint.
+        """
+
+        return jsonify(backend_constants)
 
     return app

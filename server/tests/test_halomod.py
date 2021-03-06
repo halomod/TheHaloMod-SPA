@@ -4,11 +4,23 @@ import imghdr
 import base64
 from halomod import TracerHaloModel
 import pickle
+import io
+import zipfile
 
 
 def test_home(client):
     response = home(client)
     assert response.json['start'] == 'This is the HaloModApp'
+
+
+def test_ascii(client):
+    with client.session_transaction() as sess:
+        sess["models"] = pickle.dumps({"TheModel": TracerHaloModel()})
+    response = client.get('/ascii')
+    assert response is not None
+    assert response.status_code == 200
+    returnFile = io.BytesIO(response.data)
+    assert zipfile.is_zipfile(returnFile)
 
 
 def test_get_names(client):
@@ -100,6 +112,21 @@ def test_get_plot_data(client):
 
     assert "plot_data" in response.json
     assert "TheModel" in response.json["plot_data"]
+
+
+def test_get_plot_types(client):
+    response = client.get('/get_plot_types')
+    assert response is not None
+    assert response.status_code == 200
+    assert "xLabels" in response.json
+    assert "plotOptions" in response.json
+
+
+def test_constants(client):
+    response = client.get('/constants')
+    assert response is not None
+    assert response.status_code == 200
+    assert "cosmo_defaults" in response.json
 
 
 def test_plot(client, plot_payload):
