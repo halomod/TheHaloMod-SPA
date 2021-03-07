@@ -28,12 +28,15 @@ jobs:
         port: ${{ secrets.PORT }}
         script:  |
           ls
+          cd ./TheHaloMod-SPA/server
           docker-compose down
+          cd ../..
           rm -r ./TheHaloMod-SPA
           git clone https://github.com/halomod/TheHaloMod-SPA
           cd ./TheHaloMod-SPA
           git pull
           git status
           # Stop the server with docker-compose down
-          cd server
+          cd ./server
+          pwd
           python3 dockerStart.py -p --url localhost --port 8010
