@@ -25,15 +25,6 @@ def test_get_names(client):
     assert "TheModel" in names
     assert "AnotherModel" in names
 
-
-def test_get_plot_types(client):
-    response = client.get('/get_plot_types')
-    assert response is not None
-    assert response.status_code == 200
-    assert "xLabels" in response.json
-    assert "plotOptions" in response.json
-
-
 def test_clone(client):
     with client.session_transaction() as sess:
         sess["models"] = pickle.dumps({"TheModel": TracerHaloModel()})
@@ -103,7 +94,7 @@ def test_clear(client):
 def test_get_plot_data(client):
     with client.session_transaction() as sess:
         sess["models"] = pickle.dumps({"TheModel": TracerHaloModel()})
-    response = client.post('/get_plot_data', json={"fig_type": "dndm"})
+    response = client.post('/get_plot_data', json={"x": "m", "y": "dndm"})
     assert "plot_details" in response.json
     assert "xlab" in response.json["plot_details"]
     assert "ylab" in response.json["plot_details"]
@@ -117,7 +108,7 @@ def test_plot(client, plot_payload):
     with client.session_transaction() as sess:
         sess["models"] = pickle.dumps(
             {"TheModel": TracerHaloModel(), "TheOtherModel": TracerHaloModel()})
-    response = client.post('/plot', json={"fig_type": "dndm", "img_type": "png"})
+    response = client.post('/plot', json={"x": "m", "y": "dndm", "img_type": "png"})
     assert response is not None
     assert response.status_code == 200
     json_response = response.json
