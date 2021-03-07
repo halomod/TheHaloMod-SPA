@@ -27,6 +27,9 @@ jobs:
         key: ${{ secrets.SERVERKEY }}
         port: ${{ secrets.PORT }}
         script:  |
+          export ENV_FILE=settings/base.conf
+          export FLASK_RUN_HOST=0.0.0.0
+          export FLASK_RUN_PORT=8010
           cd ./TheHaloMod-SPA/server
           ls
           docker-compose down
@@ -40,8 +43,5 @@ jobs:
           # Stop the server with docker-compose down
           cd ./server
           ls
-          export ENV_FILE=settings/base.conf
-          export FLASK_RUN_HOST=0.0.0.0
-          export FLASK_RUN_PORT=8010
-          docker-compose up --build --remove-orphans
+          docker-compose up --build --remove-orphans -d
           #python3 dockerStart.py -p --url localhost --port 8010
