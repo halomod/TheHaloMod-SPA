@@ -304,7 +304,7 @@ def create_app(test_config=None):
             models = pickle.loads(session["models"])
         else:
             models = {}
-        # generates figure/plot not working!
+        # generates figure/plot
         buf, errors = utils.create_canvas(
             models, x, y, img_type)
 
