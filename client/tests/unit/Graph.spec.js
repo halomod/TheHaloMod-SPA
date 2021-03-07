@@ -3,8 +3,8 @@ import Graph from '@/components/Graph';
 import Vue from 'vue';
 import Store from '@/utils/Store.js';
 import DEFAULT_MODEL from '@/constants/initial_state.json';
-import makeServer from '../mockServer';
 import { PLOT_TYPES } from '@/constants/PLOT.js';
+import makeServer from '../mockServer';
 
 // Disable dev notice info logs. Just a quality of life thing.
 Vue.config.productionTip = false;
@@ -68,7 +68,7 @@ describe('Graph tests', () => {
     option is different. */
     let previousYAxisChoice = wrapper.vm.$data.yAxisChoice;
     expect(previousYAxisChoice).toBeDefined();
-    for (let i = 0; i < Object.keys(xAxisChoices); i++) {
+    for (let i = 0; i < Object.keys(xAxisChoices).length; i += 1) {
       const xChoice = Object.keys(xAxisChoices)[i];
       wrapper.vm.$data.xAxisChoice = xChoice;
       // It seems that await has to be used here to allow the render to occur
@@ -77,8 +77,9 @@ describe('Graph tests', () => {
       const { yAxisChoices } = wrapper.vm.$data;
       expect(yAxisChoices).toBeDefined();
       expect(yAxisChoices.length).toBeGreaterThanOrEqual(1);
-      expect(yAxisChoice).toBe(PLOT_TYPES[this.xAxisChoices[xChoice]].y[0])
+      const { yAxisChoice } = wrapper.vm.$data;
+      expect(yAxisChoice).toBe(PLOT_TYPES[xAxisChoices[xChoice]].y[0]);
       [previousYAxisChoice] = yAxisChoices;
-    };
+    }
   });
 });
