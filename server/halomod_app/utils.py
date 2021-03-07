@@ -19,7 +19,8 @@ import json
 logger = logging.getLogger(__name__)
 
 
-def hmf_driver(cls=TracerHaloModel, previous: Union[None, TracerHaloModel] = None, **kwargs):
+def hmf_driver(cls=TracerHaloModel,
+               previous: Union[None, TracerHaloModel] = None, **kwargs):
     if previous is None:
         return cls(**kwargs)
     elif "wdm_model" in kwargs and not isinstance(previous, HaloModelWDM):
@@ -80,7 +81,8 @@ def create_canvas(objects, x_key: str, y_key: str, plot_format: str = "png"):
                         label=l,
                     )
             except Exception as e:
-                logger.exception(f"Error encountered getting {y_key} for model called {l}.")
+                logger.exception(
+                    f"Error encountered getting {y_key} for model called {l}.")
                 errors[l] = e
         else:
             if i == 0:
@@ -90,7 +92,8 @@ def create_canvas(objects, x_key: str, y_key: str, plot_format: str = "png"):
             try:
                 ynum = getattr(o, y_key)
             except Exception as e:
-                logger.exception(f"Error encountered getting {y_key} for model called {l}.")
+                logger.exception(
+                    f"Error encountered getting {y_key} for model called {l}.")
                 errors[l] = e
 
             yden = getattr(comp_obj, y_key)
@@ -364,6 +367,7 @@ def serialize_model(model) -> str:
 
 def deserialize_model(serialized_model):
     return pickle.loads(codecs.decode(serialized_model.encode(), "base64"))
+
 
 def load_json(file_location):
     with open(file_location) as json_file:

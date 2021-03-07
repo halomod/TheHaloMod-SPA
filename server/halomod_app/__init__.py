@@ -21,6 +21,7 @@ from sentry_sdk.integrations.flask import FlaskIntegration
 
 sess = Session()
 
+
 def create_app(test_config=None):
     """Acts as the main entrypoint for the server. Builds the Flask app and
     the routes."""
@@ -164,7 +165,8 @@ def create_app(test_config=None):
                 data["ys"] = list(ys[mask])  # apply mask and save ys into data dict
                 data["xs"] = list(xs[mask])  # apply mask and save xs into data dict
             except Exception as e:
-                abort(400, f"Error encountered getting {y_param} for model {name}. {str(e)}.")
+                abort(
+                    400, f"Error encountered getting {y_param} for model {name}. {str(e)}.")
                 print(f"Error encountered getting {y_param} for model {name}")
                 print(e)
 

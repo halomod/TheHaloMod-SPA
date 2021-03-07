@@ -10,6 +10,8 @@ do
       python3 -m pip install -r requirements.txt;;
     "--lint" )
       flake8 tests halomod_app;;
+    "--fix" )
+      autopep8 -a -r --in-place halomod_app;;
     "--test" )
       python -m pytest;;
     "--dev" )

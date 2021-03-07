@@ -25,6 +25,7 @@ def test_get_names(client):
     assert "TheModel" in names
     assert "AnotherModel" in names
 
+
 def test_clone(client):
     with client.session_transaction() as sess:
         sess["models"] = pickle.dumps({"TheModel": TracerHaloModel()})
