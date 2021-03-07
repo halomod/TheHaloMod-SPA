@@ -50,13 +50,6 @@ import Error from '@/components/Error.vue';
 import { PLOT_DATA, PLOT_TYPES } from '@/constants/PLOT.js';
 import Plot from './Plot.vue';
 
-const xChoices = {};
-Object.entries(PLOT_TYPES).forEach((entry) => {
-  entry[1].x.forEach((item) => {
-    [xChoices[item]] = entry;
-  });
-});
-
 export default {
   name: 'Graph',
   data() {
@@ -65,7 +58,7 @@ export default {
       /**
        * @type {string[] | null}
        */
-      xAxisChoices: xChoices,
+      xAxisChoices: {},
       /**
        * @type {string | null}
        */
@@ -91,14 +84,19 @@ export default {
       return this.xAxisChoice !== null;
     },
   },
-  async created() {
+  created() {
+    Object.entries(PLOT_TYPES).forEach((entry) => {
+      entry[1].x.forEach((item) => {
+        [this.xAxisChoices[item]] = entry;
+      });
+    });
     [this.xAxisChoice] = Object.keys(this.xAxisChoices);
   },
   watch: {
     xAxisChoice(newXAxisChoice, oldXAxisChoice) {
-      this.yAxisChoices = PLOT_TYPES[xChoices[newXAxisChoice]]?.y;
+      this.yAxisChoices = PLOT_TYPES[this.xAxisChoices[newXAxisChoice]]?.y;
       [this.yAxisChoice] = this.yAxisChoices;
-      this.$store.setPlotType(newXAxisChoice, 'x', xChoices[newXAxisChoice] === xChoices[oldXAxisChoice]);
+      this.$store.setPlotType(newXAxisChoice, 'x', this.xAxisChoices[newXAxisChoice] === this.xAxisChoices[oldXAxisChoice]);
     },
     yAxisChoice(newYAxisChoice, oldYAxisChoice) {
       if (newYAxisChoice !== null && newYAxisChoice !== oldYAxisChoice) {

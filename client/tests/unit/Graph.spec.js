@@ -4,6 +4,7 @@ import Vue from 'vue';
 import Store from '@/utils/Store.js';
 import DEFAULT_MODEL from '@/constants/initial_state.json';
 import makeServer from '../mockServer';
+import { PLOT_TYPES } from '@/constants/PLOT.js';
 
 // Disable dev notice info logs. Just a quality of life thing.
 Vue.config.productionTip = false;
@@ -57,35 +58,27 @@ describe('Graph tests', () => {
     expect(node.isVisible()).toBe(true);
   });
 
-  test('When an X axis is not chosen, the y axis dropdown does not render', async () => {
-    // Set the xAxisChoice to null
-    wrapper.vm.$data.xAxisChoice = null;
-    expect(wrapper.vm.$data.xAxisChoice === null).toBeTruthy();
-    await wrapper.vm.$nextTick();
-    expect(wrapper.find('#yAxisChoices').exists()).toBeFalsy();
-  });
-
-  test('Whenever an X axis is chosen, a different set of Y values are set as options', async () => {
+  test('Whenever an X axis is chosen, the correct set of Y values are set as options', async () => {
     // Set the xAxisChoice to the first choice of X Axis choices
     const { xAxisChoices } = wrapper.vm.$data;
     expect(xAxisChoices).toBeDefined();
-    expect(xAxisChoices.length).toBeGreaterThanOrEqual(1);
-    [wrapper.vm.$data.xAxisChoice] = xAxisChoices;
+    expect(Object.keys(xAxisChoices).length).toBeGreaterThanOrEqual(1);
 
     /* Loop through each x axis choice and make sure each corresponding Y axis
     option is different. */
     let previousYAxisChoice = wrapper.vm.$data.yAxisChoice;
     expect(previousYAxisChoice).toBeDefined();
-    for (let xIndex = 1; xIndex < xAxisChoices.length; xIndex += 1) {
-      wrapper.vm.$data.xAxisChoice = xAxisChoices[xIndex];
+    for (let i = 0; i < Object.keys(xAxisChoices); i++) {
+      const xChoice = Object.keys(xAxisChoices)[i];
+      wrapper.vm.$data.xAxisChoice = xChoice;
       // It seems that await has to be used here to allow the render to occur
       // eslint-disable-next-line no-await-in-loop
       await wrapper.vm.$nextTick();
       const { yAxisChoices } = wrapper.vm.$data;
       expect(yAxisChoices).toBeDefined();
       expect(yAxisChoices.length).toBeGreaterThanOrEqual(1);
-      expect(previousYAxisChoice !== yAxisChoices[0]);
+      expect(yAxisChoice).toBe(PLOT_TYPES[this.xAxisChoices[xChoice]].y[0])
       [previousYAxisChoice] = yAxisChoices;
-    }
+    };
   });
 });
