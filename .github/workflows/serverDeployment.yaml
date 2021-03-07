@@ -27,9 +27,12 @@ jobs:
         key: ${{ secrets.SERVERKEY }}
         port: ${{ secrets.PORT }}
         script:  |
+          ls
+          docker-compose down
+          rm -r ./TheHaloMod-SPA
           git clone https://github.com/halomod/TheHaloMod-SPA
           cd ./TheHaloMod-SPA
-          git pull origin master
+          git pull
           git status
           # Stop the server with docker-compose down
           cd server
