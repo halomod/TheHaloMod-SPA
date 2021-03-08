@@ -19,8 +19,8 @@ describe('Store tests', () => {
     store = new Store();
     expect(store).toBeDefined();
     await store.init();
-    expect(store.state.y).toBeDefined();
-    expect(store.state.x).toBeDefined();
+    expect(store.state.plot.y).toBeDefined();
+    expect(store.state.plot.x).toBeDefined();
   });
 
   // Clearing of store after each test
@@ -34,8 +34,8 @@ describe('Store tests', () => {
   });
 
   test('Store should be initialized', () => {
-    expect(store.state.y).toBeDefined();
-    expect(store.state.x).toBeDefined();
+    expect(store.state.plot.y).toBeDefined();
+    expect(store.state.plot.x).toBeDefined();
   });
 
   test('Store should retrieve no model names if no models have been added', () => {
@@ -94,8 +94,8 @@ describe('Store tests', () => {
     const newPlotType = 'somePlotType';
     await store.setPlotType(newPlotType, 'x', false);
     await store.setPlotType(newPlotType, 'y', false);
-    expect(store.state.x).toBe(newPlotType);
-    expect(store.state.y).toBe(newPlotType);
+    expect(store.state.plot.x).toBe(newPlotType);
+    expect(store.state.plot.y).toBe(newPlotType);
   });
 
   test('Getting a model should return its data', async () => {

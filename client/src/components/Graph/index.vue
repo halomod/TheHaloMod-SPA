@@ -34,8 +34,7 @@
       <Plot
         :id="plotElementId"
         v-if="plotDataExists()"
-        :plotData="READ_ONLY.plotData"
-        :plotType="READ_ONLY.plotType"
+        :plotData="READ_ONLY.plot.plotData"
         :plotElementId="plotElementId"
       />
       <p id="no-graph-notification" v-else>No graph has been generated yet</p>
@@ -111,8 +110,8 @@ export default {
      * @returns {boolean} true if it does
      */
     plotDataExists() {
-      return this.READ_ONLY.plotData !== null
-        && Object.values(this.READ_ONLY.plotData).length !== 0;
+      return this.READ_ONLY.plot.plotData !== null
+        && Object.values(this.READ_ONLY.plot.plotData).length !== 0;
     },
   },
 };

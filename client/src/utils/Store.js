@@ -24,10 +24,11 @@ export default class Store {
     this.state = {
       models: {},
       modelNames: [],
-      x: '',
-      y: '',
-      plotData: null,
-      plot: '',
+      plot: {
+        x: '',
+        y: '',
+        plotData: null,
+      },
       error: false,
       errorType: '',
       errorMessage: '',
@@ -89,21 +90,10 @@ export default class Store {
    * @param {String} y, y axis type
    * @return {String} image data base64 string, or null if request fails
    */
-  createPlot = async (x = this.state.x, y = this.state.y) => {
-    try {
-      const { data } = await axios.post(`${baseurl}/plot`, {
-        x,
-        y,
-        img_type: 'png',
-      });
-      debug(`The data was retrieved with the baseurl of ${baseurl} and is: `,
-        data);
-      this.state.plot = `data:image/png;base64,${data.figure}`;
-      return this.state.plot;
-    } catch (error) {
-      console.error(error);
-      return null;
-    }
+  createPlot = async () => {
+    // eslint-disable-next-line
+    alert('Going to be updated in next merge');
+    return null;
   }
 
   /**
@@ -321,15 +311,15 @@ export default class Store {
    * `state` of this `Store` object.
    */
   getPlotData = async () => {
-    if (this.state.y === '' || this.state.x === '') {
+    if (this.state.plot.y === '' || this.state.plot.x === '') {
       return;
     }
     try {
       const data = await axios.post(`${baseurl}/get_plot_data`, {
-        x: this.state.x,
-        y: this.state.y,
+        x: this.state.plot.x,
+        y: this.state.plot.y,
       });
-      this.state.plotData = data.data;
+      this.state.plot.plotData = data.data;
       this.state.error = false;
     } catch (error) {
       console.error(error);
@@ -352,8 +342,8 @@ export default class Store {
    * @returns {void}
    */
   setPlotType = async (plotType, axis, refresh) => {
-    if (plotType !== this.state[axis]) {
-      this.state[axis] = plotType;
+    if (plotType !== this.state.plot[axis]) {
+      this.state.plot[axis] = plotType;
       if (refresh) await this.getPlotData();
     }
   }

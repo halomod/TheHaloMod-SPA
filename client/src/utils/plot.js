@@ -68,8 +68,8 @@ function generateLegend(svg, colorGen, plotData) {
  * }} an object which holds pixel values for the width from the left for
  * the y label and the height from the bottom to get past the x label
  */
-function generateAxisLabels(svg, store) {
-  const { x, y } = store.state;
+function generateAxisLabels(svg, plot) {
+  const { x, y } = plot;
   const h = svg.node().getBoundingClientRect().height;
   const w = svg.node().getBoundingClientRect().width;
 
@@ -119,11 +119,11 @@ function generateAxisLabels(svg, store) {
  *
  * @param {string} elementId the ID of the element to manipulate which will
  * become the parent of the SVG plot
- * @param {} plotData the plot data which should be held in state of the
- * `$store` of the Vue instance
+ * @param {} plot the plot data which should be held in state of the
+ * `$plot` of the Vue instance
  */
-export default (elementId, store) => {
-  const { plotData, y } = store.state;
+export default (elementId, plot) => {
+  const { plotData, y } = plot;
   debug('Generate plot triggered with the following plotData', plotData);
   // Clear all SVGs within the main element if they exist
   d3.select(`#${elementId}`).selectAll('svg').remove();
@@ -139,7 +139,7 @@ export default (elementId, store) => {
   const w = svg.node().getBoundingClientRect().width;
   const h = svg.node().getBoundingClientRect().height;
 
-  const { yLabelWidth, xLabelHeight } = generateAxisLabels(svg, store);
+  const { yLabelWidth, xLabelHeight } = generateAxisLabels(svg, plot);
 
   const datasets = Object.values(plotData.plot_data);
 
