@@ -1,9 +1,9 @@
-"""Plotting and driving utilities for halomod."""
+"""Plotting and driving utilities for TheHaloMod-SPA."""
+
 import io
 import logging
 from typing import Union
 import matplotlib.ticker as tick
-
 from halomod import TracerHaloModel
 from halomod.wdm import HaloModelWDM
 from matplotlib.backends.backend_agg import FigureCanvasAgg
