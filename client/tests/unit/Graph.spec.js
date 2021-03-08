@@ -3,7 +3,7 @@ import Graph from '@/components/Graph';
 import Vue from 'vue';
 import Store from '@/utils/Store.js';
 import DEFAULT_MODEL from '@/constants/initial_state.json';
-import { PLOT_TYPES } from '@/constants/PLOT.js';
+import { PLOT_AXIS_OPIONS } from '@/constants/PLOT.js';
 import makeServer from '../mockServer';
 
 // Disable dev notice info logs. Just a quality of life thing.
@@ -78,7 +78,7 @@ describe('Graph tests', () => {
       expect(yAxisChoices).toBeDefined();
       expect(yAxisChoices.length).toBeGreaterThanOrEqual(1);
       const { yAxisChoice } = wrapper.vm.$data;
-      expect(yAxisChoice).toBe(PLOT_TYPES[xAxisChoices[xChoice]].y[0]);
+      expect(yAxisChoice).toBe(PLOT_AXIS_OPIONS[xAxisChoices[xChoice]].y[0]);
       [previousYAxisChoice] = yAxisChoices;
     }
   });
