@@ -14,14 +14,14 @@ import BACKEND_CONSTANTS from '@/constants/backend_constants.js';
 //    Description: Has core parameters with defined ranges, special styling, and/or special types
 //    Examples: Halo Model, Cosmology, Transfer,  Filter
 
-const FORMS = [
+const FORMS = {
   // {
   //   component: CosmologyForm,
   //   model: 'cosmo',
   //   title: 'Cosmology',
   //   id: 'cosmology',
   // },
-  {
+  mdef: {
     id: 'mdef',
     title: 'Mass Definition',
     props: {
@@ -43,7 +43,7 @@ const FORMS = [
   //   title: 'Filter',
   //   id: 'filter',
   // },
-  {
+  growth: {
     id: 'growth',
     title: 'Growth',
     props: {
@@ -65,7 +65,7 @@ const FORMS = [
   //   title: 'Halo Model',
   //   id: 'halo_model',
   // },
-  {
+  hod: {
     id: 'hod',
     title: 'HOD',
     props: {
@@ -75,7 +75,7 @@ const FORMS = [
       all_data: BACKEND_CONSTANTS.hod_params,
     },
   },
-  {
+  bias: {
     id: 'bias',
     title: 'Bias',
     props: {
@@ -85,7 +85,7 @@ const FORMS = [
       all_data: BACKEND_CONSTANTS.bias_params,
     },
   },
-  {
+  halo_concentration: {
     id: 'halo_concentration',
     title: 'Halo Concentration',
     props: {
@@ -95,7 +95,7 @@ const FORMS = [
       all_data: BACKEND_CONSTANTS.concentration_params,
     },
   },
-  {
+  tracer_concentration: {
     id: 'tracer_concentration',
     title: 'Tracer Concentration',
     props: {
@@ -105,7 +105,7 @@ const FORMS = [
       all_data: BACKEND_CONSTANTS.concentration_params,
     },
   },
-  {
+  halo_profile: {
     id: 'halo_profile',
     title: 'Halo Profile',
     props: {
@@ -115,7 +115,7 @@ const FORMS = [
       all_data: BACKEND_CONSTANTS.profile_params,
     },
   },
-  {
+  tracer_profile: {
     id: 'tracer_profile',
     title: 'Tracer Profile',
     props: {
@@ -125,7 +125,7 @@ const FORMS = [
       all_data: BACKEND_CONSTANTS.profile_params,
     },
   },
-  {
+  halo_exclusion: {
     id: 'halo_exclusion',
     title: 'Halo Exclusion',
     props: {
@@ -135,6 +135,6 @@ const FORMS = [
       all_data: BACKEND_CONSTANTS.exclusion_params,
     },
   },
-];
+};
 
 export default FORMS;

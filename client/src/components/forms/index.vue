@@ -6,7 +6,7 @@
       class="md-primary"
       md-fixed>
       <md-list>
-        <md-list-item v-for="(form, index) in forms" :key="index"
+        <md-list-item v-for="(form, index) in Object.values(forms)" :key="index"
           :class="{'router-link-active': currentlyVisible == form.title}"
           :to="`#${form.id}`">
           {{form.title}}
@@ -22,7 +22,7 @@
             <h2 class="md-title">{{contextSecondary}}</h2>
           </div>
           <md-divider/>
-          <div v-for="(form, index) in forms" :key="index">
+          <div v-for="(form, index) in Object.values(forms)" :key="index">
             <FormWrapper
               :id="form.id"
               :title="form.title"
@@ -104,7 +104,6 @@ export default {
       window.history.replaceState({}, '', `#${id}`);
     },
     buildProps(form) {
-      // console.log(this.default[form.id]);
       return { ...form.props, initial_data: this.default[form.id], title: form.title };
     },
   },
