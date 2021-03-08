@@ -113,7 +113,21 @@ export default {
     }
     this.current = clonedeep(this.initial);
   },
+  updated() {
+    this.scrollToAnchor();
+  },
   methods: {
+    scrollToAnchor() {
+      this.$nextTick(() => {
+        if (this.$route.hash) {
+          document
+            .getElementById(this.$route.hash.slice(1))
+            .scrollIntoView({
+              behavior: 'smooth',
+            });
+        }
+      });
+    },
     leave() {
       this.showCancelDialog = false;
       this.$router.push('/');
