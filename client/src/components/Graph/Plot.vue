@@ -39,7 +39,7 @@ export default {
   methods: {
     generatePlot() {
       debug('plot being built');
-      buildPlot(this.plotElementId, this.plotData);
+      buildPlot(this.plotElementId, this.$store);
     },
   },
   beforeDestroy() {

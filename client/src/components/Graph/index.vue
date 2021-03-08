@@ -47,7 +47,7 @@
 <script>
 // import clonedeep from 'lodash.clonedeep';
 import Error from '@/components/Error.vue';
-import { PLOT_DATA, PLOT_TYPES } from '@/constants/PLOT.js';
+import { PLOT_AXIS_METADATA, PLOT_AXIS_OPIONS } from '@/constants/PLOT.js';
 import Plot from './Plot.vue';
 
 export default {
@@ -72,7 +72,7 @@ export default {
        */
       yAxisChoice: null,
       plotElementId: 'd3-chart',
-      plotData: PLOT_DATA,
+      plotData: PLOT_AXIS_METADATA,
     };
   },
   components: {
@@ -85,7 +85,7 @@ export default {
     },
   },
   created() {
-    Object.entries(PLOT_TYPES).forEach((entry) => {
+    Object.entries(PLOT_AXIS_OPIONS).forEach((entry) => {
       entry[1].x.forEach((item) => {
         [this.xAxisChoices[item]] = entry;
       });
@@ -94,7 +94,7 @@ export default {
   },
   watch: {
     xAxisChoice(newXAxisChoice, oldXAxisChoice) {
-      this.yAxisChoices = PLOT_TYPES[this.xAxisChoices[newXAxisChoice]]?.y;
+      this.yAxisChoices = PLOT_AXIS_OPIONS[this.xAxisChoices[newXAxisChoice]]?.y;
       [this.yAxisChoice] = this.yAxisChoices;
       this.$store.setPlotType(newXAxisChoice, 'x', this.xAxisChoices[newXAxisChoice] === this.xAxisChoices[oldXAxisChoice]);
     },
