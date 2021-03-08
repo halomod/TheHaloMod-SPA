@@ -30,6 +30,7 @@ jobs:
           export ENV_FILE=settings/base.conf
           export FLASK_RUN_HOST=0.0.0.0
           export FLASK_RUN_PORT=8010
+          export FLASK_KEY=${{ secrets.FLASK_KEY }}
           cd ./TheHaloMod-SPA/server
           ls
           docker-compose down
