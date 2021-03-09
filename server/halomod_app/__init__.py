@@ -1,25 +1,26 @@
-from halomod_app.routes.create import create_bp
-from halomod_app.routes.plot_types import plot_types_bp
-from halomod_app.routes.constants import constants_bp
-from halomod_app.routes.ascii import ascii_bp
-from halomod_app.routes.toml import toml_bp
 from sentry_sdk.integrations.flask import FlaskIntegration
 import sentry_sdk
 from werkzeug.exceptions import HTTPException
 from flask_session import Session
 from flask_cors import CORS
-from flask import Flask, jsonify, request, session, abort
+from flask import Flask, jsonify, request, session, abort, send_file
 from . import utils
 from halomod_app.utils import get_model_names
-import base64
+from hmf.helpers.cfg_utils import framework_to_dict
+import toml
 import json
 import dill as pickle
-
+import zipfile
+import io
+import numpy as np
 
 sess = Session()
 
 
 def create_app(test_config=None):
+    """Acts as the main entrypoint for the server. Builds the Flask app and
+    the routes."""
+
     # add sentry sdk
     sentry_sdk.init(
         dsn="https://27537774b9d949b7ab5dcbe3ba4496c9@o516709.ingest.sentry.io/5624184",
@@ -43,14 +44,6 @@ def create_app(test_config=None):
 
     CORS(app, origins="http://localhost:*", supports_credentials=True)  # enable CORS
     sess.init_app(app)  # enable Sessions
-
-    # Mount the routes. Each prefix is shown here so that it is easier to notice
-    # conflicts.
-    app.register_blueprint(constants_bp, url_prefix='/constants')
-    app.register_blueprint(plot_types_bp, url_prefix='/get_plot_types')
-    app.register_blueprint(create_bp, url_prefix='/create')
-    app.register_blueprint(ascii_bp, url_prefix='/ascii')
-    app.register_blueprint(toml_bp, url_prefix='/toml')
 
     # Generic Exception handler for 500 Internal Server Error
     # Returns manually formatted JSON response object with 500 code,
@@ -80,10 +73,11 @@ def create_app(test_config=None):
         response.setdefault('content_type', "application/json")
         return response
 
-    # HTTP Exception Handler for error codes 400-499
-    # Returns JSON object with error code, exception name, and description
     @app.errorhandler(HTTPException)
     def handle_exception(e):
+        """HTTP Exception Handler for error codes 400-499.
+
+        Returns JSON object with error code, exception name, and description"""
         # start with the correct headers and status code from the error
         response = e.get_response()
         # replace the body with JSON
@@ -99,6 +93,27 @@ def create_app(test_config=None):
     def home():
         return jsonify({"start": 'This is the HaloModApp'})
 
+    @app.route('/create', methods=["POST"])
+    def create():
+        """Handles the creation of models and saving the created model to the session
+
+        expects: {"params": <dictionary of params>, "label": <model_name>}
+        outputs: {"model_names": <list_of_model_names_in_session>}"""
+        params = request.get_json()["params"]
+        label = request.get_json()["label"]
+
+        models = None
+        if 'models' in session:
+            models = pickle.loads(session.get('models'))
+        else:
+            models = {}
+
+        models[label] = utils.hmf_driver(**params)  # creates model from params
+        session["models"] = pickle.dumps(models)  # writes updated model dict to session
+
+        # returns new list of model names
+        return jsonify({"model_names": get_model_names()})
+
     # This endpoint returns the names of all the models associated with the current
     # session
     #
@@ -111,7 +126,7 @@ def create_app(test_config=None):
 
     # This endpoint returns plot data required for front-end plotting from session data
     #
-    # expects: {"fig_type": <choice_from_KEYMAP>, (OPTIONAL) "model_names": <array_of_model_names_to_consider> }
+    # expects: {"x": <choice_from_PLOT_AXIS_METADATA>, "y": <choice_from_PLOT_AXIS_METADATA>, "model_names": <array_of_model_names_to_consider> }
     # outputs: {"plot_details":
     #             {"xlab": <str_xlabel>, "ylab": <str_ylabel>, "yscale": <str_yscale>},
     #          "plot_data": {
@@ -121,25 +136,16 @@ def create_app(test_config=None):
 
     @app.route('/get_plot_data', methods=["POST"])
     def get_plot_data():
-
+        res = {"plot_data": {}}
         request_json = request.get_json()
-        fig_type = request_json["fig_type"]
-
-        # below gets correct x attr key ( pulled from create_canvas in utils )
-        for x, label in utils.XLABELS.items():
-            if utils.KEYMAP[fig_type]["xlab"] == label:
-                break
-
-        x_param = x
-        y_param = fig_type
+        x_param = request_json["x"]
+        y_param = request_json["y"]
 
         models = None
-        res = {"plot_data": {}}
         if 'models' in session:
             models = pickle.loads(session.get("models"))
         else:
             models = {}
-
         # if model_names in json use those else use all
         names = request_json["model_names"] if "model_names" in request_json else list(
             models.keys())
@@ -155,14 +161,11 @@ def create_app(test_config=None):
                 data["xs"] = list(xs[mask])  # apply mask and save xs into data dict
             except Exception as e:
                 abort(
-                    400, f"Error encountered getting {fig_type} for model {name}. {str(e)}.")
-                print(f"Error encountered getting {fig_type} for model {name}")
+                    400, f"Error encountered getting {y_param} for model {name}. {str(e)}.")
+                print(f"Error encountered getting {y_param} for model {name}")
                 print(e)
 
             res["plot_data"][name] = data  # put data in response object
-
-        # put figure metadata into response
-        res["plot_details"] = utils.KEYMAP[fig_type]
 
         # save post-calculation models to session to take advantage of compute
         session["models"] = pickle.dumps(models)
@@ -278,37 +281,117 @@ def create_app(test_config=None):
         res = {"model_names": get_model_names()}
         return jsonify(res)
 
-    # Generates a figure using session data & matplotlib rendering and
-    # returns it to client
-    #
-    # expects: {"fig_type": <fig_type> (see utils.KEYMAP for options),
-    #           "image type": <format of returned image> (png, svg, etc...)}
-    # outputs {"figure": <b64_serialized_figure>}
-    @app.route('/plot', methods=["POST"])
-    def plot():
-        request_json = request.get_json()
-        fig_type = request_json["fig_type"]
-        img_type = request_json["img_type"]
+    @app.route('/ascii', methods=['GET'])
+    def ascii():
+        """ Builds and sends the text data for each model stored in the session,
+        which is then bundled into a zip file.
 
+        get:
+        responses:
+            200:
+            description: "Returns the zip file containining the different data files for each model in the user's session"
+            content:
+                application/zip:
+        """
+        models = None
         if 'models' in session:
-            models = pickle.loads(session["models"])
+            models = pickle.loads(session.get("models"))
         else:
             models = {}
 
-        # generates figure/plot
-        buf, errors = utils.create_canvas(
-            models, fig_type, utils.KEYMAP[fig_type], img_type)
+        labels = list(models.keys())
+        objects = list(models.values())
 
-        # serializes image so it can be sent via JSON
-        png_base64_bytes = base64.b64encode(buf.getvalue())
-        base64_png = png_base64_bytes.decode('ascii')
+        # Open up file-like objects for response
+        buff = io.BytesIO()
+        archive = zipfile.ZipFile(buff, "w", zipfile.ZIP_DEFLATED)
 
-        # save post-calculation models to session
-        session["models"] = pickle.dumps(models)
+        # Write out mass-based, k-based and r-based data files
+        for index, object in enumerate(objects):
+            for kind in utils.XLABELS:
+                s = io.BytesIO()
 
-        response = {}
-        response["figure"] = base64_png
+                s.write(f"# [0] {utils.XLABELS[kind]}".encode())
 
-        return jsonify(response)
+                items = {
+                    k: utils.KEYMAP[k]["ylab"]
+                    for k in utils.KEYMAP
+                    if utils.KEYMAP[k]["xlab"] == utils.XLABELS[kind]
+                }
+
+                for j, (label, ylab) in enumerate(items.items()):
+                    if getattr(object, label) is not None:
+                        s.write(f"# [{j+1}] {ylab}".encode())
+
+                out = np.array(
+                    [getattr(object, kind)] + [
+                        getattr(object, label)
+                        for label in items
+                        if getattr(object, label) is not None
+                    ]
+                ).T
+                np.savetxt(s, out)
+
+                archive.writestr(f"{kind}Vector_test{labels[index]}.txt", s.getvalue())
+
+                s.close()
+
+        archive.close()
+
+        # Reset the location of the buffer to the beginning
+        buff.seek(0)
+
+        return send_file(buff, as_attachment=True, attachment_filename="all_plots.zip")
+
+    backend_constants = utils.generate_constants()
+
+    @app.route('/constants', methods=["GET"], strict_slashes=False)
+    def constants():
+        """
+        Returns a json representation that holds the constants of HMF.
+
+        This can be seen in the browser by simply navigating to this endpoint.
+        """
+
+        return jsonify(backend_constants)
+
+    @app.route('/toml', methods=['GET'])
+    def toml_route():
+        """ Builds and sends a toml file for each model in the user's session in a
+        zip folder.
+
+        get:
+        responses:
+            200:
+            description: "Returns the zip file containining the different toml files for each model in the user's session"
+            content:
+                application/zip:
+        """
+        models = None
+        if 'models' in session:
+            models = pickle.loads(session.get("models"))
+        else:
+            models = {}
+
+        # Open up file-like objects for response
+        buff = io.BytesIO()
+        archive = zipfile.ZipFile(buff, "w", zipfile.ZIP_DEFLATED)
+
+        for label, object in models.items():
+            s = io.BytesIO()
+            s.write(toml.dumps(framework_to_dict(object)).encode())
+            archive.writestr(f"{label}.toml", s.getvalue())
+            s.close()
+
+        archive.close()
+
+        # Reset the location of the buffer to the beginning
+        buff.seek(0)
+
+        # Cache timeout set to 3 seconds, which seems like enough time for the user
+        # to change a paremeter and try to download again, but prevents spamming.
+        return send_file(buff, as_attachment=True,
+                         attachment_filename="all_plots_toml.zip",
+                         cache_timeout=3)
 
     return app

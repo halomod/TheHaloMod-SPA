@@ -19,15 +19,16 @@ debug.enabled = false;
  * This store is initialized at the beginning of the application startup. It
  * should be able to be accessed with `this.$store` on any component.
  */
-export default class API {
+export default class Store {
   constructor() {
     this.state = {
       models: {},
       modelNames: [],
-      plotTypes: {},
-      plotType: '',
-      plotData: null,
-      plot: '',
+      plot: {
+        x: '',
+        y: '',
+        plotData: null,
+      },
       error: false,
       errorType: '',
       errorMessage: '',
@@ -48,14 +49,14 @@ export default class API {
 
     this.state.models = Object.fromEntries(models);
     this.state.modelNames = this.getModelNames();
-    this.state.plotTypes = await this.getPlotTypes();
     this.getPlotData();
   }
 
   /**
-   * Flattens model to make request params
-   * @param {Object} model model to flatten
-   * @returns {Object} flattened params
+   * Flattens model to make request params.
+   *
+   * @param {Object} model the model to flatten
+   * @returns {Object} the flattened params
    */
   flatten = (model) => {
     const params = {};
@@ -66,7 +67,8 @@ export default class API {
   }
 
   /**
-   * gets the plot
+   * Gets the plot.
+   *
    * @returns {String} plot base64 string
    */
   getPlot = () => this.plot;
@@ -83,50 +85,23 @@ export default class API {
    */
 
   /**
-   * Gets the different plot types.
-   *
-   * @returns {{
-   *  xLabels: {
-   *    [labelName: string]: string
-   *  },
-   *  plotOptions: {
-   *    [plotName: string]: PlotDetails
-   *  }
-   * }} an object containing the different plot options and x labels
-   */
-  getPlotTypes = async () => {
-    const result = await axios.get(`${baseurl}/get_plot_types`);
-    const plotTypes = result.data;
-    return plotTypes;
-  }
-
-  /**
    * Gets plot from server
-   * @param {String} fig_type, type of figure to be requested from server
+   * @param {String} x, x axis type
+   * @param {String} y, y axis type
    * @return {String} image data base64 string, or null if request fails
    */
-  createPlot = async (fig_type = this.state.plotType) => {
-    try {
-      const { data } = await axios.post(`${baseurl}/plot`, {
-        fig_type,
-        img_type: 'png',
-      });
-      debug(`The data was retrieved with the baseurl of ${baseurl} and is: `,
-        data);
-      this.state.plot = `data:image/png;base64,${data.figure}`;
-      return this.state.plot;
-    } catch (error) {
-      console.error(error);
-      return null;
-    }
+  createPlot = async () => {
+    // eslint-disable-next-line
+    alert('Going to be updated in next merge');
+    return null;
   }
 
   /**
-   * Sends model data to server to create Tracer Halo Model Object
-   * Also saves model into indexed db
+   * Sends the model data to server to create Tracer Halo Model Object. This
+   * also saves the model into the local indexed db on the client.
+   *
    * @param {Object} model model data
    * @param {String} name model name
-   * @returns {void}
    */
   createModel = async (model, name) => {
     try {
@@ -148,9 +123,10 @@ export default class API {
   }
 
   /**
-   * Updates a model
-   * @param {Object} model model to update
-   * @param {String} name label to update model
+   * Updates a model.
+   *
+   * @param {Object} model the updated model object
+   * @param {String} name the name of the model to update
    */
   updateModel = async (name, model) => {
     try {
@@ -170,10 +146,11 @@ export default class API {
     }
   }
 
-  /** Renames a model
+  /**
+   * Renames a model.
    *
-   * @param {String} oldName
-   * @param {String} newName
+   * @param {String} oldName the original name of the model
+   * @param {String} newName the new name of the model
    */
   renameModel = async (oldName, newName) => {
     try {
@@ -196,10 +173,10 @@ export default class API {
   }
 
   /**
-   * Clones a model
+   * Clones a model.
+   *
    * @param {String} oldName
    * @param {String} newName
-   * @returns {void}
    */
   cloneModel = async (oldName, newName) => {
     try {
@@ -233,9 +210,12 @@ export default class API {
   }
 
   /**
-   * Gets (clones) a model at label, keeps function pure.
+   * Gets (clones) a model with the given name. This returns a deep cloned
+   * copy of the model.
+   *
    * @param {String} name the name of the model
-   * @returns {Object | undefined} A copy of the target model, or undefined
+   * @returns {Object | undefined} a copy of the target model, or undefined if
+   * it doesn't exist
    */
   getModel = async (name) => clonedeep(await this?.state.models[name]);
 
@@ -243,7 +223,7 @@ export default class API {
    * Gets (clones) all models.
    *
    * @returns {{
-   *  [modelName: String]: Object
+   *  [modelName: string]: Object
    * } | undefined} A copy of all the models with their names or undefined
    */
   getAllModels = async () => {
@@ -261,10 +241,10 @@ export default class API {
   };
 
   /**
-   * Sets a model at name
+   * Sets a model with the given name.
+   *
    * @param {String} name the name of the model
    * @param {Object} model the model to set
-   * @returns {void}
    */
   setModel = async (name, model) => {
     try {
@@ -284,9 +264,9 @@ export default class API {
   getModelNames = () => Object.keys(this.state.models);
 
   /**
-   * deletes a model
-   * @param {String} name the name to set the model
-   * @returns {void}
+   * Deletes a model.
+   *
+   * @param {String} name the name of the model to delete
    */
   deleteModel = async (name) => {
     try {
@@ -311,8 +291,7 @@ export default class API {
   }
 
   /**
-   * Clears all existing models
-   * @returns {void}
+   * Clears all existing models.
    */
   clearModels = async () => {
     try {
@@ -328,18 +307,19 @@ export default class API {
 
   /**
    * Retrieves plot data for all models if a plotType is specified in state.
-   *
-   * @returns {void}
+   * This doesn't return the plot data, rather it sets the plot data to the
+   * `state` of this `Store` object.
    */
   getPlotData = async () => {
-    if (this.state.plotType === '') {
+    if (this.state.plot.y === '' || this.state.plot.x === '') {
       return;
     }
     try {
       const data = await axios.post(`${baseurl}/get_plot_data`, {
-        fig_type: this.state.plotType,
+        x: this.state.plot.x,
+        y: this.state.plot.y,
       });
-      this.state.plotData = data.data;
+      this.state.plot.plotData = data.data;
       this.state.error = false;
     } catch (error) {
       console.error(error);
@@ -355,14 +335,16 @@ export default class API {
    * Sets the plot type for the plot, and generates a new plot if it is
    * different.
    *
-   * @param {string} newPlotType the identifier of the new plot type. For
+   * @param {string} plotType the identifier of the new plot type. For
    * example: `dndm`.
+   * @param {string} axis the axis to change. For example: `x`.
+   * @param {boolean} refresh if true, gets new plot data
    * @returns {void}
    */
-  setPlotType = async (newPlotType) => {
-    if (newPlotType !== this.state.plotType) {
-      this.state.plotType = newPlotType;
-      await this.getPlotData();
+  setPlotType = async (plotType, axis, refresh) => {
+    if (plotType !== this.state.plot[axis]) {
+      this.state.plot[axis] = plotType;
+      if (refresh) await this.getPlotData();
     }
   }
 }

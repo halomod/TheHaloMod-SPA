@@ -1,5 +1,7 @@
-import os
-import tempfile
+"""Houses the fixtures for the tests.
+
+Pytest documentation on fixtures: https://docs.pytest.org/en/stable/fixture.html"""
+
 import pytest
 import json
 from halomod_app import create_app
@@ -27,5 +29,6 @@ def plot_payload():
 
 @pytest.fixture
 def create_payload():
+    """An example payload for the `/create` route that can be used in tests."""
     with open('tests/thm_payload_create.json') as json_file:
         return json.load(json_file)
