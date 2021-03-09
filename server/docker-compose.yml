@@ -11,8 +11,9 @@ services:
     environment: 
       - FLASK_RUN_PORT=${FLASK_RUN_PORT}
       - FLASK_RUN_HOST=${FLASK_RUN_HOST}
-    env_file: 
-      - '${ENV_FILE}'
+      - FLASK_ENV="production"
+      - FLASK_DEBUG=False
+      - FLASK_APP=halomod_app
 
   redis:
     image: "redis"

@@ -1,60 +1,15 @@
 # TheHaloMod-SPA Server
 
-## Docker
-Run docker using the provided script:
-
-`./dockerStart.py`
-
-### dockerStart Usage
-
-
-```
-USAGE: dockerStart.py [OPTIONS]
-
-  Running dockerStart.py with no options is equivalent to:
-  dockerStart.py -b --port=5000 --url=0.0.0.0
-
-Options:     
-     -h, --help       Show this command list
-     -p, --prod       For production (Enables nginx)
-     -b, --base       Base install (No nginx, no pytest, yes debug mode)
-     --port=[port]    Set the port for Flask
-     --url=[url]      Set the url for Flask
-```
-
-If you dont want to use the above you can start the container with:
-
-```
-export ENV_FILE=settings/base.conf
-export FLASK_RUN_HOST=0.0.0.0
-export FLASK_RUN_PORT=5000
-docker-compose up --build --remove-orphans
-```
-
-To stop the container:
-
-`docker-compose down`
-
-## Manual Start
-
-### How to Start Server
-1. Start up Redis with `redis-server`, which may need to be installed first
-1. Run `sh run.sh --dev`
-
-
 [![Github Actions Server CI Workflow](https://img.shields.io/github/workflow/status/halomod/TheHaloMod-SPA/Server%20CI?label=Server%20CI)](https://github.com/halomod/TheHaloMod-SPA/actions/workflows/server.yaml)
 
 ## Table of Contents
 
 - [TheHaloMod-SPA Server](#thehalomod-spa-server)
-  - [Docker](#docker)
-    - [dockerStart Usage](#dockerstart-usage)
-  - [Manual Start](#manual-start)
-    - [How to Start Server](#how-to-start-server)
   - [Table of Contents](#table-of-contents)
   - [Usage](#usage)
     - [How to start the server locally](#how-to-start-the-server-locally)
     - [Development commands](#development-commands)
+    - [Production deployment using docker](#production-deployment-using-docker)
   - [Architecture](#architecture)
 
 ## Usage
@@ -75,6 +30,21 @@ Before doing any of the commands below, make sure to install the Python packages
 
 - To test, run `. ./run.sh --test`
 - To lint, run `. ./run.sh --lint`
+
+### Production deployment using docker
+
+To run docker manually, first export the needed environment variables. For deployment of this repository, Github actions will use Github secrets to define these variables. View [serverDeployment.yaml](.github\workflows\serverDeployment.yaml) for the Github action that is performed for deployment.
+
+```
+export FLASK_RUN_HOST=0.0.0.0
+export FLASK_RUN_PORT=5000
+export FLASK_KEY=${{ secrets.FLASK_KEY }}     [optional, if none is defined a default value is used]
+docker-compose up --build --remove-orphans -d
+```
+
+To stop the container:
+
+`docker-compose down`
 
 ## Architecture
 
