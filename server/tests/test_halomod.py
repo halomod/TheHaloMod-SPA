@@ -1,17 +1,26 @@
 """Houses the tests for the server."""
 
-import pytest
 import imghdr
 import base64
 from halomod import TracerHaloModel
 import pickle
-import zipfile
 import io
+import zipfile
 
 
 def test_home(client):
     response = home(client)
     assert response.json['start'] == 'This is the HaloModApp'
+
+
+def test_ascii(client):
+    with client.session_transaction() as sess:
+        sess["models"] = pickle.dumps({"TheModel": TracerHaloModel()})
+    response = client.get('/ascii')
+    assert response is not None
+    assert response.status_code == 200
+    returnFile = io.BytesIO(response.data)
+    assert zipfile.is_zipfile(returnFile)
 
 
 def test_get_names(client):
@@ -100,6 +109,13 @@ def test_get_plot_data(client):
     assert "TheModel" in response.json["plot_data"]
 
 
+def test_constants(client):
+    response = client.get('/constants')
+    assert response is not None
+    assert response.status_code == 200
+    assert "cosmo_defaults" in response.json
+
+
 def test_create(client, create_payload):
     with client.session_transaction() as sess:
         sess["models"] = pickle.dumps({"TheModel": TracerHaloModel()})
@@ -110,16 +126,6 @@ def test_create(client, create_payload):
     assert "model_names" in json_response
     assert "TheModel" in json_response["model_names"]
     assert "THE_BEST_MODEL_EVER" in json_response["model_names"]
-
-
-def test_ascii(client):
-    with client.session_transaction() as sess:
-        sess["models"] = pickle.dumps({"TheModel": TracerHaloModel()})
-    response = client.get('/ascii')
-    assert response is not None
-    assert response.status_code == 200
-    returnFile = io.BytesIO(response.data)
-    assert zipfile.is_zipfile(returnFile)
 
 
 def home(client):
