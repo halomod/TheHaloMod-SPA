@@ -1,23 +1,17 @@
-"""Holds the main entrypoint for the server."""
-
-
-from flask import Flask, url_for, redirect, jsonify, request, session, abort, send_file
-from . import utils
-import base64
-from halomod import TracerHaloModel
-import json
-import zipfile
-import dill as pickle
-import codecs
-import hmf
-from flask_cors import CORS
-import numpy as np
-import redis
-from flask_session import Session
-import io
-from werkzeug.exceptions import InternalServerError, HTTPException
-import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
+import sentry_sdk
+from werkzeug.exceptions import HTTPException
+from flask_session import Session
+from flask_cors import CORS
+from flask import Flask, jsonify, request, session, abort, send_file
+from . import utils
+from halomod_app.utils import get_model_names
+import base64
+import json
+import dill as pickle
+import zipfile
+import io
+import numpy as np
 
 sess = Session()
 
@@ -53,6 +47,7 @@ def create_app(test_config=None):
     # Generic Exception handler for 500 Internal Server Error
     # Returns manually formatted JSON response object with 500 code,
     # exception name, and description
+
     @app.errorhandler(Exception)
     def handle_generic_exception(e):
         # pass HTTPExceptions to HTTPException handler
@@ -85,26 +80,16 @@ def create_app(test_config=None):
         response.content_type = "application/json"
         return response
 
-    # Helper function that abstracts logic for getting names of all models
-    # associated with the function
-    def get_model_names():
-        if 'models' in session:
-            models = pickle.loads(session.get('models'))
-        else:
-            models = {}
-        return list(models.keys())
-
     @app.route('/')
     def home():
         return jsonify({"start": 'This is the HaloModApp'})
 
-    # This endpoint handles the creation of models and saving the created model to
-    # the session
-    #
-    # expects: {"params": <dictionary of params>, "label": <model_name>}
-    # outputs: {"model_names": <list_of_model_names_in_session>}
     @app.route('/create', methods=["POST"])
     def create():
+        """Handles the creation of models and saving the created model to the session
+
+        expects: {"params": <dictionary of params>, "label": <model_name>}
+        outputs: {"model_names": <list_of_model_names_in_session>}"""
         params = request.get_json()["params"]
         label = request.get_json()["label"]
 
@@ -130,22 +115,6 @@ def create_app(test_config=None):
         res = {"model_names": get_model_names()}
         return jsonify(res)  # returns list of model names
 
-    # This endpoint returns the details of all the different plot types that
-    # can be used to represent a halo model.
-    #
-    # expects: None
-    # outputs: {
-    #   xLabels: <data from utils.py>,
-    #   plotOptions: <data from KEYMAP in utils.py>
-    # }
-    @app.route('/get_plot_types', methods=["GET"])
-    def get_plot_types():
-        res = {
-            'xLabels': utils.XLABELS,
-            'plotOptions': utils.KEYMAP
-        }
-        return jsonify(res)  # returns full key map of plot types
-
     # This endpoint returns plot data required for front-end plotting from session data
     #
     # expects: {"fig_type": <choice_from_KEYMAP>, (OPTIONAL) "model_names": <array_of_model_names_to_consider> }
@@ -155,6 +124,7 @@ def create_app(test_config=None):
     #              <model_label>: {"xs": <array_of_xs>, "ys": <array_of_ys>},
     #              ...
     #           }}
+
     @app.route('/get_plot_data', methods=["POST"])
     def get_plot_data():
 
@@ -347,15 +317,32 @@ def create_app(test_config=None):
 
         return jsonify(response)
 
+    @app.route('/get_plot_types', methods=["GET"])
+    def get_plot_types():
+        """This endpoint returns the details of all the different plot types that
+        can be used to represent a halo model.
+
+        expects: None
+        outputs: {
+            xLabels: <data from utils.py>,
+            plotOptions: <data from KEYMAP in utils.py>
+        }"""
+        res = {
+            'xLabels': utils.XLABELS,
+            'plotOptions': utils.KEYMAP
+        }
+        return jsonify(res)
+
     @app.route('/ascii', methods=['GET'])
     def ascii():
-        """ Builds and sends the text data for each model stored in the session.
+        """ Builds and sends the text data for each model stored in the session,
+        which is then bundled into a zip file.
 
         get:
-          responses:
+        responses:
             200:
-              description: "Returns the zip file containining the different data files for each model in the user's session"
-              content:
+            description: "Returns the zip file containining the different data files for each model in the user's session"
+            content:
                 application/zip:
         """
         models = None
@@ -374,7 +361,6 @@ def create_app(test_config=None):
         # Write out mass-based, k-based and r-based data files
         for index, object in enumerate(objects):
             for kind in utils.XLABELS:
-
                 s = io.BytesIO()
 
                 s.write(f"# [0] {utils.XLABELS[kind]}".encode())
@@ -398,7 +384,7 @@ def create_app(test_config=None):
                 ).T
                 np.savetxt(s, out)
 
-                archive.writestr(f"{kind}Vector_{labels[index]}.txt", s.getvalue())
+                archive.writestr(f"{kind}Vector_test{labels[index]}.txt", s.getvalue())
 
                 s.close()
 
@@ -408,5 +394,17 @@ def create_app(test_config=None):
         buff.seek(0)
 
         return send_file(buff, as_attachment=True, attachment_filename="all_plots.zip")
+
+    backend_constants = utils.generate_constants()
+
+    @app.route('/constants', methods=["GET"], strict_slashes=False)
+    def constants():
+        """
+        Returns a json representation that holds the constants of HMF.
+
+        This can be seen in the browser by simply navigating to this endpoint.
+        """
+
+        return jsonify(backend_constants)
 
     return app
