@@ -19,7 +19,8 @@ import json
 
 import numpy as np
 
-# Documentation on the built-in cosmologies: https://docs.astropy.org/en/stable/cosmology/index.html#built-in-cosmologies
+# Documentation on the built-in cosmologies:
+# https://docs.astropy.org/en/stable/cosmology/index.html#built-in-cosmologies
 from astropy.cosmology.parameters import available as cosmo_options
 from astropy.cosmology import FlatLambdaCDM
 from contextlib import redirect_stdout
