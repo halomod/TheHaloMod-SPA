@@ -24,10 +24,11 @@ export default class Store {
     this.state = {
       models: {},
       modelNames: [],
-      plotTypes: {},
-      plotType: '',
-      plotData: null,
-      plot: '',
+      plot: {
+        x: '',
+        y: '',
+        plotData: null,
+      },
       error: false,
       errorType: '',
       errorMessage: '',
@@ -48,7 +49,6 @@ export default class Store {
 
     this.state.models = Object.fromEntries(models);
     this.state.modelNames = this.getModelNames();
-    this.state.plotTypes = await this.getPlotTypes();
     this.getPlotData();
   }
 
@@ -85,43 +85,15 @@ export default class Store {
    */
 
   /**
-   * Gets the different plot types.
-   *
-   * @returns {{
-   *  xLabels: {
-   *    [labelName: string]: string
-   *  },
-   *  plotOptions: {
-   *    [plotName: string]: PlotDetails
-   *  }
-   * }} an object containing the different plot options and x labels
-   */
-  getPlotTypes = async () => {
-    const result = await axios.get(`${baseurl}/get_plot_types`);
-    const plotTypes = result.data;
-    return plotTypes;
-  }
-
-  /**
-   * Gets plot from server.
-   *
-   * @param {String} fig_type the type of figure to be requested from server
+   * Gets plot from server
+   * @param {String} x, x axis type
+   * @param {String} y, y axis type
    * @return {String} image data base64 string, or null if request fails
    */
-  createPlot = async (fig_type = this.state.plotType) => {
-    try {
-      const { data } = await axios.post(`${baseurl}/plot`, {
-        fig_type,
-        img_type: 'png',
-      });
-      debug(`The data was retrieved with the baseurl of ${baseurl} and is: `,
-        data);
-      this.state.plot = `data:image/png;base64,${data.figure}`;
-      return this.state.plot;
-    } catch (error) {
-      console.error(error);
-      return null;
-    }
+  createPlot = async () => {
+    // eslint-disable-next-line
+    alert('Going to be updated in next merge');
+    return null;
   }
 
   /**
@@ -339,14 +311,15 @@ export default class Store {
    * `state` of this `Store` object.
    */
   getPlotData = async () => {
-    if (this.state.plotType === '') {
+    if (this.state.plot.y === '' || this.state.plot.x === '') {
       return;
     }
     try {
       const data = await axios.post(`${baseurl}/get_plot_data`, {
-        fig_type: this.state.plotType,
+        x: this.state.plot.x,
+        y: this.state.plot.y,
       });
-      this.state.plotData = data.data;
+      this.state.plot.plotData = data.data;
       this.state.error = false;
     } catch (error) {
       console.error(error);
@@ -362,13 +335,16 @@ export default class Store {
    * Sets the plot type for the plot, and generates a new plot if it is
    * different.
    *
-   * @param {string} newPlotType the identifier of the new plot type. For
+   * @param {string} plotType the identifier of the new plot type. For
    * example: `dndm`.
+   * @param {string} axis the axis to change. For example: `x`.
+   * @param {boolean} refresh if true, gets new plot data
+   * @returns {void}
    */
-  setPlotType = async (newPlotType) => {
-    if (newPlotType !== this.state.plotType) {
-      this.state.plotType = newPlotType;
-      await this.getPlotData();
+  setPlotType = async (plotType, axis, refresh) => {
+    if (plotType !== this.state.plot[axis]) {
+      this.state.plot[axis] = plotType;
+      if (refresh) await this.getPlotData();
     }
   }
 }

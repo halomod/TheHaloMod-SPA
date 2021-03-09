@@ -15,10 +15,12 @@ from matplotlib.figure import Figure
 import re
 import codecs
 import pickle
+import json
 
 import numpy as np
 
-# Documentation on the built-in cosmologies: https://docs.astropy.org/en/stable/cosmology/index.html#built-in-cosmologies
+# Documentation on the built-in cosmologies:
+# https://docs.astropy.org/en/stable/cosmology/index.html#built-in-cosmologies
 from astropy.cosmology.parameters import available as cosmo_options
 from astropy.cosmology import FlatLambdaCDM
 from contextlib import redirect_stdout
@@ -139,7 +141,8 @@ def get_model_names():
     return list(models.keys())
 
 
-def hmf_driver(cls=TracerHaloModel, previous: Union[None, TracerHaloModel] = None, **kwargs):
+def hmf_driver(cls=TracerHaloModel,
+               previous: Union[None, TracerHaloModel] = None, **kwargs):
     if previous is None:
         return cls(**kwargs)
     elif "wdm_model" in kwargs and not isinstance(previous, HaloModelWDM):
@@ -157,105 +160,6 @@ def hmf_driver(cls=TracerHaloModel, previous: Union[None, TracerHaloModel] = Non
                 this.update(**{k.replace("model", "params"): {}})
 
         return this
-
-
-def create_canvas(objects, q: str, d: dict, plot_format: str = "png"):
-    # TODO: make log scaling automatic
-    fig = Figure(figsize=(10, 6), edgecolor="white", facecolor="white", dpi=100)
-    ax = fig.add_subplot(111)
-    ax.grid(True)
-    ax.set_xlabel(d["xlab"], fontsize=15)
-    ax.set_ylabel(d["ylab"], fontsize=15)
-
-    lines = ["-", "--", "-.", ":"]
-
-    if q.startswith("comparison"):
-        compare = True
-        q = q[11:]
-    else:
-        compare = False
-
-    # Get the kind of axis we're comparing to.
-    for x, label in XLABELS.items():
-        if KEYMAP[q]["xlab"] == label:
-            break
-    else:
-        raise ValueError(f"The quantity {q} is not found in KEYMAP")
-
-    errors = {}
-    ys = {}
-    for i, (l, o) in enumerate(objects.items()):
-        if not compare:
-            try:
-                y = getattr(o, q)
-                mask = y > 1e-40 * y.max()
-                ys[l] = y[mask]
-                if y is not None:
-                    ax.plot(
-                        getattr(o, x)[mask],
-                        y[mask],
-                        color=f"C{i % 7}",
-                        linestyle=lines[(i // 7) % 4],
-                        label=l,
-                    )
-            except Exception as e:
-                logger.exception(f"Error encountered getting {q} for model called {l}.")
-                errors[l] = e
-        else:
-            if i == 0:
-                comp_obj = o
-                continue
-
-            try:
-                ynum = getattr(o, q)
-            except Exception as e:
-                logger.exception(f"Error encountered getting {q} for model called {l}.")
-                errors[l] = e
-
-            yden = getattr(comp_obj, q)
-            mask = yden > 0
-
-            if ynum is not None and yden is not None:
-                y = ynum[mask] / yden[mask]
-                ys[l] = y
-                ax.plot(
-                    getattr(o, x)[mask],
-                    y,
-                    color=f"C{(i+1) % 7}",
-                    linestyle=lines[((i + 1) // 7) % 4],
-                    label=l,
-                )
-
-    try:
-        # Shrink current axis by 30%
-        ax.set_xscale("log")
-
-        ax.set_yscale(d["yscale"], base=d.get("basey", 10))
-        if d["yscale"] == "log" and d.get("basey", 10) == 2:
-            ax.yaxis.set_major_formatter(tick.ScalarFormatter())
-
-        box = ax.get_position()
-        ax.set_position([box.x0, box.y0, box.width * 0.6, box.height])
-
-        # Put a legend to the right of the current axis
-        ax.legend(loc="center left", bbox_to_anchor=(1, 0.5), fontsize=15)
-
-        buf = io.BytesIO()
-
-        if plot_format == "pdf":
-            FigureCanvasPdf(fig).print_pdf(buf)
-        elif plot_format == "png":
-            FigureCanvasAgg(fig).print_png(buf)
-        elif plot_format == "svg":
-            FigureCanvasSVG(fig).print_svg(buf)
-        else:
-            raise ValueError("plot_format should be png, pdf or svg!")
-    except Exception:
-        logger.info(f"y-axis data: {ys}")
-        logger.exception("Something went wrong in creating the image itself")
-        raise
-
-    return buf, errors
 
 
 MLABEL = r"Mass $(M_{\odot}h^{-1})$"
@@ -482,3 +386,8 @@ def serialize_model(model) -> str:
 
 def deserialize_model(serialized_model):
     return pickle.loads(codecs.decode(serialized_model.encode(), "base64"))
+
+
+def load_json(file_location):
+    with open(file_location) as json_file:
+        return json.load(json_file)

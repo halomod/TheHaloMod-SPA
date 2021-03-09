@@ -1,6 +1,7 @@
 import * as d3 from 'd3';
 import Debug from 'debug';
 import { legendColor } from 'd3-svg-legend';
+import { PLOT_AXIS_METADATA } from '@/constants/PLOT.js';
 import createLatexSvgFromString from './latex';
 
 const debug = Debug('plot.js');
@@ -67,7 +68,8 @@ function generateLegend(svg, colorGen, plotData) {
  * }} an object which holds pixel values for the width from the left for
  * the y label and the height from the bottom to get past the x label
  */
-function generateAxisLabels(svg, plotData) {
+function generateAxisLabels(svg, plot) {
+  const { x, y } = plot;
   const h = svg.node().getBoundingClientRect().height;
   const w = svg.node().getBoundingClientRect().width;
 
@@ -76,7 +78,7 @@ function generateAxisLabels(svg, plotData) {
     .attr('id', 'x-axis-label')
     .attr('y', h - 24);
   const xAxisNode = document.getElementById('x-axis-label');
-  const xAxisLatexSvg = createLatexSvgFromString(plotData.plot_details.xlab);
+  const xAxisLatexSvg = createLatexSvgFromString(PLOT_AXIS_METADATA[x].label);
   xAxisNode.append(xAxisLatexSvg);
 
   // Center the x-axis
@@ -92,7 +94,7 @@ function generateAxisLabels(svg, plotData) {
   const yAxisNode = document.getElementById('y-axis-label');
   const yAxisContainer = document.getElementById('y-axis-container');
   yAxisContainer.append(yAxisNode);
-  const yAxisLatexSvg = createLatexSvgFromString(plotData.plot_details.ylab);
+  const yAxisLatexSvg = createLatexSvgFromString(PLOT_AXIS_METADATA[y].label);
   yAxisNode.append(yAxisLatexSvg);
 
   // Rotation happens at the pivot point of the top left corner by default
@@ -117,10 +119,10 @@ function generateAxisLabels(svg, plotData) {
  *
  * @param {string} elementId the ID of the element to manipulate which will
  * become the parent of the SVG plot
- * @param {} plotData the plot data which should be held in state of the
- * `$store` of the Vue instance
+ * @param {} plot the plot data which should be held in `$store` of the Vue instance
  */
-export default (elementId, plotData) => {
+export default (elementId, plot) => {
+  const { plotData, y } = plot;
   debug('Generate plot triggered with the following plotData', plotData);
   // Clear all SVGs within the main element if they exist
   d3.select(`#${elementId}`).selectAll('svg').remove();
@@ -136,7 +138,7 @@ export default (elementId, plotData) => {
   const w = svg.node().getBoundingClientRect().width;
   const h = svg.node().getBoundingClientRect().height;
 
-  const { yLabelWidth, xLabelHeight } = generateAxisLabels(svg, plotData);
+  const { yLabelWidth, xLabelHeight } = generateAxisLabels(svg, plot);
 
   const datasets = Object.values(plotData.plot_data);
 
@@ -165,7 +167,7 @@ export default (elementId, plotData) => {
   let xScale = d3.scaleLog();
   let yScale;
 
-  if (plotData.plot_details.yscale === 'log') {
+  if (PLOT_AXIS_METADATA[y].scale === 'log') {
     yScale = d3.scaleLog();
   } else {
     yScale = d3.scaleLinear();

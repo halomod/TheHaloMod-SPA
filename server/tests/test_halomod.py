@@ -104,22 +104,9 @@ def test_clear(client):
 def test_get_plot_data(client):
     with client.session_transaction() as sess:
         sess["models"] = pickle.dumps({"TheModel": TracerHaloModel()})
-    response = client.post('/get_plot_data', json={"fig_type": "dndm"})
-    assert "plot_details" in response.json
-    assert "xlab" in response.json["plot_details"]
-    assert "ylab" in response.json["plot_details"]
-    assert "yscale" in response.json["plot_details"]
-
+    response = client.post('/get_plot_data', json={"x": "m", "y": "dndm"})
     assert "plot_data" in response.json
     assert "TheModel" in response.json["plot_data"]
-
-
-def test_get_plot_types(client):
-    response = client.get('/get_plot_types')
-    assert response is not None
-    assert response.status_code == 200
-    assert "xLabels" in response.json
-    assert "plotOptions" in response.json
 
 
 def test_constants(client):
@@ -127,25 +114,6 @@ def test_constants(client):
     assert response is not None
     assert response.status_code == 200
     assert "cosmo_defaults" in response.json
-
-
-def test_plot(client, plot_payload):
-    with client.session_transaction() as sess:
-        sess["models"] = pickle.dumps(
-            {"TheModel": TracerHaloModel(), "TheOtherModel": TracerHaloModel()})
-    response = client.post('/plot', json={"fig_type": "dndm", "img_type": "png"})
-    assert response is not None
-    assert response.status_code == 200
-    json_response = response.json
-    assert "figure" in json_response
-
-    # Decode
-    base64_png = json_response['figure']
-    base64_bytes = base64_png.encode('ascii')
-    png_bytes = base64.b64decode(base64_bytes)
-
-    # Check to make sure it is a png
-    assert imghdr.what(None, h=png_bytes) == 'png'
 
 
 def test_create(client, create_payload):

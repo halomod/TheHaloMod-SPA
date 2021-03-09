@@ -117,7 +117,7 @@ def create_app(test_config=None):
 
     # This endpoint returns plot data required for front-end plotting from session data
     #
-    # expects: {"fig_type": <choice_from_KEYMAP>, (OPTIONAL) "model_names": <array_of_model_names_to_consider> }
+    # expects: {"x": <choice_from_PLOT_AXIS_METADATA>, "y": <choice_from_PLOT_AXIS_METADATA>, "model_names": <array_of_model_names_to_consider> }
     # outputs: {"plot_details":
     #             {"xlab": <str_xlabel>, "ylab": <str_ylabel>, "yscale": <str_yscale>},
     #          "plot_data": {
@@ -127,25 +127,16 @@ def create_app(test_config=None):
 
     @app.route('/get_plot_data', methods=["POST"])
     def get_plot_data():
-
+        res = {"plot_data": {}}
         request_json = request.get_json()
-        fig_type = request_json["fig_type"]
-
-        # below gets correct x attr key ( pulled from create_canvas in utils )
-        for x, label in utils.XLABELS.items():
-            if utils.KEYMAP[fig_type]["xlab"] == label:
-                break
-
-        x_param = x
-        y_param = fig_type
+        x_param = request_json["x"]
+        y_param = request_json["y"]
 
         models = None
-        res = {"plot_data": {}}
         if 'models' in session:
             models = pickle.loads(session.get("models"))
         else:
             models = {}
-
         # if model_names in json use those else use all
         names = request_json["model_names"] if "model_names" in request_json else list(
             models.keys())
@@ -161,14 +152,11 @@ def create_app(test_config=None):
                 data["xs"] = list(xs[mask])  # apply mask and save xs into data dict
             except Exception as e:
                 abort(
-                    400, f"Error encountered getting {fig_type} for model {name}. {str(e)}.")
-                print(f"Error encountered getting {fig_type} for model {name}")
+                    400, f"Error encountered getting {y_param} for model {name}. {str(e)}.")
+                print(f"Error encountered getting {y_param} for model {name}")
                 print(e)
 
             res["plot_data"][name] = data  # put data in response object
-
-        # put figure metadata into response
-        res["plot_details"] = utils.KEYMAP[fig_type]
 
         # save post-calculation models to session to take advantage of compute
         session["models"] = pickle.dumps(models)
@@ -282,55 +270,6 @@ def create_app(test_config=None):
     def clear():
         session["models"] = pickle.dumps({})
         res = {"model_names": get_model_names()}
-        return jsonify(res)
-
-    # Generates a figure using session data & matplotlib rendering and
-    # returns it to client
-    #
-    # expects: {"fig_type": <fig_type> (see utils.KEYMAP for options),
-    #           "image type": <format of returned image> (png, svg, etc...)}
-    # outputs {"figure": <b64_serialized_figure>}
-    @app.route('/plot', methods=["POST"])
-    def plot():
-        request_json = request.get_json()
-        fig_type = request_json["fig_type"]
-        img_type = request_json["img_type"]
-
-        if 'models' in session:
-            models = pickle.loads(session["models"])
-        else:
-            models = {}
-
-        # generates figure/plot
-        buf, errors = utils.create_canvas(
-            models, fig_type, utils.KEYMAP[fig_type], img_type)
-
-        # serializes image so it can be sent via JSON
-        png_base64_bytes = base64.b64encode(buf.getvalue())
-        base64_png = png_base64_bytes.decode('ascii')
-
-        # save post-calculation models to session
-        session["models"] = pickle.dumps(models)
-
-        response = {}
-        response["figure"] = base64_png
-
-        return jsonify(response)
-
-    @app.route('/get_plot_types', methods=["GET"])
-    def get_plot_types():
-        """This endpoint returns the details of all the different plot types that
-        can be used to represent a halo model.
-
-        expects: None
-        outputs: {
-            xLabels: <data from utils.py>,
-            plotOptions: <data from KEYMAP in utils.py>
-        }"""
-        res = {
-            'xLabels': utils.XLABELS,
-            'plotOptions': utils.KEYMAP
-        }
         return jsonify(res)
 
     @app.route('/ascii', methods=['GET'])
