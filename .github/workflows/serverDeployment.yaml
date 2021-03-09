@@ -6,7 +6,7 @@ name: Server Deployment
 on: 
   push:
     branches:
-      - testServerDeployment
+      - master
 
 jobs:
   build:
@@ -38,7 +38,7 @@ jobs:
           git clone https://github.com/halomod/TheHaloMod-SPA
           cd ./TheHaloMod-SPA
           git fetch origin
-          git checkout -b testServerDeployment origin/testServerDeployment
+          git checkout -b master origin/master
           git status
           # Stop the server with docker-compose down
           cd ./server
