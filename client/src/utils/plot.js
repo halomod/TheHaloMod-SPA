@@ -119,8 +119,7 @@ function generateAxisLabels(svg, plot) {
  *
  * @param {string} elementId the ID of the element to manipulate which will
  * become the parent of the SVG plot
- * @param {} plot the plot data which should be held in state of the
- * `$plot` of the Vue instance
+ * @param {} plot the plot data which should be held in `$store` of the Vue instance
  */
 export default (elementId, plot) => {
   const { plotData, y } = plot;
