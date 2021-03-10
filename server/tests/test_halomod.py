@@ -113,6 +113,17 @@ def test_get_plot_data(client):
     assert "TheModel" in response.json["plot_data"]
 
 
+def test_get_object_data(client):
+    params = ["m", "k", "r", "k_hm"]
+    with client.session_transaction() as sess:
+        sess["models"] = pickle.dumps({"TheModel": TracerHaloModel()})
+    response = client.post('/get_object_data', json={"param_names": params})
+    assert "TheModel" in response.json
+    for param in params:
+        assert param in response.json["TheModel"]
+        assert response.json["TheModel"][param]["vector"]
+
+
 def test_plot(client, plot_payload):
     with client.session_transaction() as sess:
         sess["models"] = pickle.dumps(

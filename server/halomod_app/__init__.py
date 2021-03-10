@@ -347,6 +347,33 @@ def create_app(test_config=None):
 
         return jsonify(response)
 
+    @app.route('/get_object_data', methods=['POST'])
+    def get_object_data():
+        """
+          Returns vectors associated with each model in the session for each
+          parameter passed to the endpoint
+
+          expects: {"param_names": [<param_name>, <param_name>, etc...]}
+          outputs {"<model_name>: {<param_name>: "vector": <param_data_for_model>}}
+        """
+        request_json = request.get_json()
+        param_names = request_json["param_names"]
+
+        if 'models' in session:
+            models = pickle.loads(session['models'])
+        else:
+            models = {}
+
+        res = {}
+
+        for label, obj in models.items():
+            res[label] = {}
+            for param_name in param_names:
+                if getattr(obj, param_name) is not None:
+                    res[label][param_name] = {"vector": ["{:e}".format(num) for num in list(getattr(obj, param_name))]}
+
+        return jsonify(res)
+
     @app.route('/ascii', methods=['GET'])
     def ascii():
         """ Builds and sends the text data for each model stored in the session.
@@ -385,6 +412,8 @@ def create_app(test_config=None):
                     if utils.KEYMAP[k]["xlab"] == utils.XLABELS[kind]
                 }
 
+                print(items)
+
                 for j, (label, ylab) in enumerate(items.items()):
                     if getattr(object, label) is not None:
                         s.write(f"# [{j+1}] {ylab}".encode())
@@ -396,6 +425,9 @@ def create_app(test_config=None):
                         if getattr(object, label) is not None
                     ]
                 ).T
+
+                print(out)
+
                 np.savetxt(s, out)
 
                 archive.writestr(f"{kind}Vector_{labels[index]}.txt", s.getvalue())
