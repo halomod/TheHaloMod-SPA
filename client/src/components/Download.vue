@@ -45,6 +45,8 @@
 
 <script>
 import baseUrl from '@/env';
+import PDFDocument from 'pdfkit';
+import SVGtoPDF from 'svg-to-pdfkit';
 
 const downloadChoiceObjs = {
   plotImage: {
