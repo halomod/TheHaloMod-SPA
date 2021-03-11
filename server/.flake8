@@ -4,6 +4,9 @@ ignore =
     E266
     E501
     W503
+    
+    # Ignored because autopep8 formats it specifically this way
+    W504
     F403
     F401
     E231

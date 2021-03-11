@@ -3257,11 +3257,6 @@
           2.077862290340157e-32
         ]
       }
-    },
-    "plot_details": {
-      "xlab": "Mass $(M_{\\odot}h^{-1})$",
-      "ylab": "Mass Function $\\left( \\frac{dn}{dM} \\right) h^4 Mpc^{-3}M_\\odot^{-1}$",
-      "yscale": "log"
     }
   },
   "status": 200,

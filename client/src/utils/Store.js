@@ -24,9 +24,11 @@ export default class Store {
     this.state = {
       models: {},
       modelNames: [],
-      plotTypes: {},
-      plotType: '',
-      plotData: null,
+      plot: {
+        x: '',
+        y: '',
+        plotData: null,
+      },
       error: false,
       errorType: '',
       errorMessage: '',
@@ -47,7 +49,6 @@ export default class Store {
 
     this.state.models = Object.fromEntries(models);
     this.state.modelNames = this.getModelNames();
-    this.state.plotTypes = await this.getPlotTypes();
     this.getPlotData();
   }
 
@@ -309,14 +310,15 @@ export default class Store {
    * `state` of this `Store` object.
    */
   getPlotData = async () => {
-    if (this.state.plotType === '') {
+    if (this.state.plot.y === '' || this.state.plot.x === '') {
       return;
     }
     try {
       const data = await axios.post(`${baseurl}/get_plot_data`, {
-        fig_type: this.state.plotType,
+        x: this.state.plot.x,
+        y: this.state.plot.y,
       });
-      this.state.plotData = data.data;
+      this.state.plot.plotData = data.data;
       this.state.error = false;
     } catch (error) {
       console.error(error);
@@ -332,13 +334,16 @@ export default class Store {
    * Sets the plot type for the plot, and generates a new plot if it is
    * different.
    *
-   * @param {string} newPlotType the identifier of the new plot type. For
+   * @param {string} plotType the identifier of the new plot type. For
    * example: `dndm`.
+   * @param {string} axis the axis to change. For example: `x`.
+   * @param {boolean} refresh if true, gets new plot data
+   * @returns {void}
    */
-  setPlotType = async (newPlotType) => {
-    if (newPlotType !== this.state.plotType) {
-      this.state.plotType = newPlotType;
-      await this.getPlotData();
+  setPlotType = async (plotType, axis, refresh) => {
+    if (plotType !== this.state.plot[axis]) {
+      this.state.plot[axis] = plotType;
+      if (refresh) await this.getPlotData();
     }
   }
 }
