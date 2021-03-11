@@ -67,13 +67,6 @@ export default class Store {
   }
 
   /**
-   * Gets the plot.
-   *
-   * @returns {String} plot base64 string
-   */
-  getPlot = () => this.plot;
-
-  /**
    * The way that data is formatted for each plot option.
    *
    * @typedef PlotDetails
@@ -85,15 +78,21 @@ export default class Store {
    */
 
   /**
-   * Gets plot from server
-   * @param {String} x, x axis type
-   * @param {String} y, y axis type
-   * @return {String} image data base64 string, or null if request fails
+   * Gets the different plot types.
+   *
+   * @returns {{
+   *  xLabels: {
+   *    [labelName: string]: string
+   *  },
+   *  plotOptions: {
+   *    [plotName: string]: PlotDetails
+   *  }
+   * }} an object containing the different plot options and x labels
    */
-  createPlot = async () => {
-    // eslint-disable-next-line
-    alert('Going to be updated in next merge');
-    return null;
+  getPlotTypes = async () => {
+    const result = await axios.get(`${baseurl}/get_plot_types`);
+    const plotTypes = result.data;
+    return plotTypes;
   }
 
   /**
