@@ -27,7 +27,6 @@ export default class Store {
       plotTypes: {},
       plotType: '',
       plotData: null,
-      plot: '',
       error: false,
       errorType: '',
       errorMessage: '',
@@ -67,13 +66,6 @@ export default class Store {
   }
 
   /**
-   * Gets the plot.
-   *
-   * @returns {String} plot base64 string
-   */
-  getPlot = () => this.plot;
-
-  /**
    * The way that data is formatted for each plot option.
    *
    * @typedef PlotDetails
@@ -100,28 +92,6 @@ export default class Store {
     const result = await axios.get(`${baseurl}/get_plot_types`);
     const plotTypes = result.data;
     return plotTypes;
-  }
-
-  /**
-   * Gets plot from server.
-   *
-   * @param {String} fig_type the type of figure to be requested from server
-   * @return {String} image data base64 string, or null if request fails
-   */
-  createPlot = async (fig_type = this.state.plotType) => {
-    try {
-      const { data } = await axios.post(`${baseurl}/plot`, {
-        fig_type,
-        img_type: 'png',
-      });
-      debug(`The data was retrieved with the baseurl of ${baseurl} and is: `,
-        data);
-      this.state.plot = `data:image/png;base64,${data.figure}`;
-      return this.state.plot;
-    } catch (error) {
-      console.error(error);
-      return null;
-    }
   }
 
   /**
