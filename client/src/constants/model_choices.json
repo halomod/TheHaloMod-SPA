@@ -1,10 +1,6 @@
 {
-  "cosmo": {
-
-  },
-  "hmf": {
-
-  },
+  "cosmo": {},
+  "hmf": {},
   "hod": {
     "Zehavi (3-param), 2005": "Zehavi05",
     "Zheng (5-param), 2005": "Zheng05",
@@ -16,9 +12,7 @@
     "Continuous Power Law": "ContinuousPowerLaw",
     "Constant Occupancy": "Constant"
   },
-  "halo_model": {
-
-  },
+  "halo_model": {},
   "bias": {
     "Tinker (2010)": "Tinker10",
     "Unbiased": "UnityBias",
@@ -46,9 +40,7 @@
     "GenMF": "GenMFGrowth",
     "Carroll (1992)": "Carroll1992"
   },
-  "filter": {
-
-  },
+  "filter": {},
   "mdef": {
     "Use native definition of mass function": "SOGeneric",
     "Spherical Overdensity wrt mean": "SOMean",
@@ -56,9 +48,7 @@
     "Virial Spherical Overdensity (Bryan and Norman)": "SOVirial",
     "Friends-of-Friends": "FOF"
   },
-  "transfer": {
-
-  },
+  "transfer": {},
   "profile": {
     "NFW (1997)": "NFW",
     "Hernquist": "Hernquist",

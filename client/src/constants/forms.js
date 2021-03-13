@@ -14,6 +14,57 @@ import BACKEND_CONSTANTS from '@/constants/backend_constants.js';
 //    Description: Has core parameters with defined ranges, special styling, and/or special types
 //    Examples: Halo Model, Cosmology, Transfer,  Filter
 
+/**
+ * Defines the forms and their data that will be rendered.
+ *
+ * @typedef Forms
+ * @type {{
+ *  [formKeyName: string]: FormDetails
+ * }}
+ */
+
+/**
+ * Defines the details that each form will have which will be needed to render
+ * that form.
+ *
+ * The `title` is the title that will be shown to the user when they look
+ * at that form. It is also used in navigation.
+ *
+ * @typedef FormDetails
+ * @type {{
+ *  id: string,
+ *  title: string,
+ *  props: FormProps
+ * }}
+ */
+
+/**
+ * Defines the props that each form will accept through Vue.
+ *
+ * `params_key` is what is searched for in the `backend_constants` file to
+ * generate the different fields that can be filled for that form.
+ *
+ * @typedef FormProps
+ * @type {{
+ *  model_key: string,
+ *  choices: ModelChoices,
+ *  params_key: string,
+ *  all_data: object
+ * }}
+ */
+
+/**
+ * Defines the choices for the model that a form is displaying.
+ *
+ * @typedef ModelChoices
+ * @type {{
+ *  [somePropName: string]: string
+ * }}
+ */
+
+/**
+ * @type {Forms}
+ */
 const FORMS = {
   // {
   //   component: CosmologyForm,
