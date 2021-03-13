@@ -354,7 +354,7 @@ def create_app(test_config=None):
           parameter passed to the endpoint
 
           expects: {"param_names": [<param_name>, <param_name>, etc...]}
-          outputs {"<model_name>: {<param_name>: "vector": <param_data_for_model>}}
+          outputs {"<model_name>: {<param_name>: "vector": <param_data_for_model>}, etc...}
         """
         request_json = request.get_json()
         param_names = request_json["param_names"]
@@ -370,7 +370,7 @@ def create_app(test_config=None):
             res[label] = {}
             for param_name in param_names:
                 if getattr(obj, param_name) is not None:
-                    res[label][param_name] = {"vector": ["{:e}".format(num) for num in list(getattr(obj, param_name))]}
+                    res[label][param_name] = {"vector": list(getattr(obj, param_name))}
 
         return jsonify(res)
 

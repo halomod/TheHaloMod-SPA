@@ -45,25 +45,32 @@
 
 <script>
 import baseUrl from '@/env';
+import axios from 'axios';
 
 const downloadChoiceObjs = {
-  plotImage: {
+  PlotImage: {
     displayName: 'Image of Plot',
-    name: 'plotImage',
+    name: 'PlotImage',
     downloadName: 'PlotImage',
     loadingTitle: 'Creating plot image...',
   },
-  ascii: {
+  Ascii: {
     displayName: 'ASCII',
-    name: 'ascii',
+    name: 'Ascii',
     downloadName: 'AllData.zip',
     loadingTitle: 'Retrieving ASCII data...',
   },
-  paramVals: {
+  ParamVals: {
     displayName: 'Parameter Values',
-    name: 'paramVals',
+    name: 'ParamVals',
     downloadName: 'ParameterValues.json',
     loadingTitle: 'Loading parameter values...',
+  },
+  Data: {
+    displayName: 'Vector Data',
+    name: 'Data',
+    downloadName: 'ModelVectorData.json',
+    loadingTitle: 'Getting key vectors for all models',
   },
 };
 
@@ -84,25 +91,37 @@ export default {
   },
   methods: {
     async handleClick() {
+      console.log('happening');
+      console.log('here');
       const downloadNode = document.getElementById('download-element');
+      console.log('here');
       const { downloadName, name, loadingTitle } = downloadChoiceObjs[this.downloadChoice];
+      console.log('here');
       this.loadingTitle = loadingTitle;
       this.loading = true;
-      const href = await this[`download_${name}`]();
+      console.log('here');
+      const href = await this[`download${name}`]();
       downloadNode.setAttribute('href', href);
       downloadNode.setAttribute('download', downloadName);
       downloadNode.click();
+      console.log('happening');
       this.loading = false;
     },
-    async download_plotImage() {
+    async downloadData() {
+      const result = await axios.post(`${baseUrl}/get_object_data`, {
+        param_names: ['m', 'k', 'r', 'k_hm'],
+      });
+      return `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(result.data, null, 2))}`;
+    },
+    async downloadPlotImage() {
       await this.$store.createPlot();
       return this.$store.state.plot;
     },
-    async download_ascii() {
+    async downloadAscii() {
       this.asciiDialogVisible = true;
       return `${baseUrl}/ascii`;
     },
-    async download_paramVals() {
+    async downloadParamVals() {
       const modelsJsonString = JSON.stringify(await this.$store.getAllModels(), null, 2);
       const dataStr = `data:text/json;charset=utf-8,${encodeURIComponent(modelsJsonString)}`;
       return dataStr;
