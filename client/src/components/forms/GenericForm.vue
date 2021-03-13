@@ -44,6 +44,9 @@ export default {
   model: {
     event: 'onChange',
   },
+  /**
+   * See `forms.js` for descriptions on what each of these props are for.
+   */
   props: [
     'title',
     'initial_data',

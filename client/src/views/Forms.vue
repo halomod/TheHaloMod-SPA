@@ -74,6 +74,9 @@ export default {
   },
   data() {
     return {
+      /**
+       * Holds the currently edited model if there is one.
+       */
       initial: null,
       current: null,
       loading: false,

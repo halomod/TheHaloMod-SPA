@@ -41,6 +41,9 @@ import BACKEND_CONSTANTS from '@/constants/backend_constants.js';
 /**
  * Defines the props that each form will accept through Vue.
  *
+ * `model_key` is what is searched for int he `backend_constants` file to
+ * retrieve the model that is currently chosen for the form.
+ *
  * `params_key` is what is searched for in the `backend_constants` file to
  * generate the different fields that can be filled for that form.
  *
