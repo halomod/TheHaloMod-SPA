@@ -49,7 +49,7 @@ import FORMS from '@/constants/forms';
 import GenericForm from '@/components/forms/GenericForm.vue';
 
 const debug = Debug('Create.vue');
-debug.enabled = true;
+debug.enabled = false;
 export default {
   name: 'Forms',
   components: {

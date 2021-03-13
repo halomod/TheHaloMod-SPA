@@ -66,6 +66,11 @@ const downloadChoiceObjs = {
     loadingTitle: 'Loading parameter values...',
   },
 };
+
+/**
+ * Represents the component which can be used to download things such as the
+ * plot, model data, and parameter values.
+ */
 export default {
   name: 'Download',
   data() {

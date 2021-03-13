@@ -1,3 +1,5 @@
+# This file describes what browsers we are targeting with the project. See here for the documentation on the file: https://github.com/browserslist/browserslist#browserslistrc. It is parsed by most IDEs to help with flagging certain constructs as unusable for the browsers we are targeting, or it will help with code suggestions while writing the application for constructs that can be used with those browsers. 
+
 > 1%
 last 2 versions
 not dead
