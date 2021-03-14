@@ -37,7 +37,18 @@ jobs:
           ${{ runner.os }}-build-${{ env.cache-name }}-
           ${{ runner.os }}-build-
           ${{ runner.os }}-
-    
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+
+    - name: Python Caching
+      uses: actions/cache@v2
+      with:
+        path: ~/.cache/pip
+        key: ${{ hashFiles('server/requirements.txt') }}
+        
     - run: npm ci
+    - run: npm run setup
     - run: npm run lint
     - run: npm run test:unit
