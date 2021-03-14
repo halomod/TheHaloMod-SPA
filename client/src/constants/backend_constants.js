@@ -145,7 +145,7 @@ export default deepFreeze({
     },
     EH: {},
   },
-  Filter_params: {
+  filter_params: {
     TopHat: {},
     Gaussian: {},
     SharpK: {

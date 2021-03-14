@@ -107,8 +107,10 @@
   },
   "filter": {
     "filter_model": "TopHat",
-    "filter_params": {},
-    "delta_c": 1.686
+    "filter_params": {
+      "filter_params": {},
+      "delta_c": 1.686
+    }
   },
   "mdef": {
     "mdef_model": "SOMean",

@@ -13,7 +13,7 @@ import {
 axios.defaults.withCredentials = true;
 
 const debug = Debug('Store.js');
-debug.enabled = true;
+debug.enabled = false;
 
 /**
  * This store is initialized at the beginning of the application startup. It
@@ -65,14 +65,11 @@ export default class Store {
       // a more ubiquitous config file for the different forms. Or it could
       // potentially be handled by parsing the backend_constants data
       // differently.
-      debug('The value before being edited is: ', value);
       const newValue = clonedeep(value);
-      debug(newValue);
       if (Object.keys(value).includes('cosmo_params')) {
         const oldCosmoParams = value.cosmo_params;
         delete newValue.cosmo_params;
         Object.assign(newValue, oldCosmoParams);
-        debug(newValue);
       }
       Object.assign(params, newValue);
     });

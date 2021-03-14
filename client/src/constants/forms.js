@@ -37,12 +37,17 @@ import BACKEND_CONSTANTS from '@/constants/backend_constants.js';
  * `params_key` is what is searched for in the `backend_constants` file to
  * generate the different fields that can be filled for that form.
  *
+ * `rootLevelFields` are optional and should be an array of strings that match
+ * to fields that are in the root of `backend_constants` that should be shown
+ * for that form.
+ *
  * @typedef FormProps
  * @type {{
  *  model_key: string,
- *  choices: ModelChoices,
+ *  modelChoices: ModelChoices,
  *  params_key: string,
- *  all_data: object
+ *  all_data: object,
+ *  rootLevelFields?: string[]
  * }}
  */
 
@@ -59,6 +64,13 @@ import BACKEND_CONSTANTS from '@/constants/backend_constants.js';
  */
 
 /**
+ * What is a consistent format for each of these?
+ * It looks like there is always a model that is chosen, and then some
+ * set of parameters. There are also some set of parameters that may
+ * change with the model change and some that might not.
+ */
+
+/**
  * @type {Forms}
  */
 const FORMS = {
@@ -67,7 +79,7 @@ const FORMS = {
     title: 'Cosmology',
     props: {
       model_key: 'cosmo_model',
-      choices: MODEL_CHOICES.cosmo,
+      modelChoices: MODEL_CHOICES.cosmo,
       params_key: 'cosmo_params',
       all_data: BACKEND_CONSTANTS.cosmo_params,
     },
@@ -77,7 +89,7 @@ const FORMS = {
     title: 'Mass Definition',
     props: {
       model_key: 'mdef_model',
-      choices: MODEL_CHOICES.mdef,
+      modelChoices: MODEL_CHOICES.mdef,
       params_key: 'mdef_params',
       all_data: BACKEND_CONSTANTS.mdef_params,
     },
@@ -88,18 +100,25 @@ const FORMS = {
   //   title: 'Transfer',
   //   id: 'transfer',
   // },
-  // {
-  //   component: FilterForm,
-  //   model: 'filter',
-  //   title: 'Filter',
+  // filter: {
   //   id: 'filter',
+  //   title: 'Filter',
+  //   props: {
+  //     model_key: 'filter_model',
+  //     modelChoices: MODEL_CHOICES.filter,
+  //     params_key: 'filter_params',
+  //     all_data: BACKEND_CONSTANTS.filter_params,
+  //     rootLevelFields: [
+  //       'delta_c',
+  //     ],
+  //   },
   // },
   growth: {
     id: 'growth',
     title: 'Growth',
     props: {
       model_key: 'growth_model',
-      choices: MODEL_CHOICES.growth,
+      modelChoices: MODEL_CHOICES.growth,
       params_key: 'growth_params',
       all_data: BACKEND_CONSTANTS.growth_params,
     },
@@ -121,7 +140,7 @@ const FORMS = {
     title: 'HOD',
     props: {
       model_key: 'hod_model',
-      choices: MODEL_CHOICES.hod,
+      modelChoices: MODEL_CHOICES.hod,
       params_key: 'hod_params',
       all_data: BACKEND_CONSTANTS.hod_params,
     },
@@ -131,7 +150,7 @@ const FORMS = {
     title: 'Bias',
     props: {
       model_key: 'bias_model',
-      choices: MODEL_CHOICES.bias,
+      modelChoices: MODEL_CHOICES.bias,
       params_key: 'bias_params',
       all_data: BACKEND_CONSTANTS.bias_params,
     },
@@ -141,7 +160,7 @@ const FORMS = {
     title: 'Halo Concentration',
     props: {
       model_key: 'halo_concentration_model',
-      choices: MODEL_CHOICES.concentration,
+      modelChoices: MODEL_CHOICES.concentration,
       params_key: 'halo_concentration_params',
       all_data: BACKEND_CONSTANTS.concentration_params,
     },
@@ -151,7 +170,7 @@ const FORMS = {
     title: 'Tracer Concentration',
     props: {
       model_key: 'tracer_concentration_model',
-      choices: MODEL_CHOICES.concentration,
+      modelChoices: MODEL_CHOICES.concentration,
       params_key: 'tracer_concentration_params',
       all_data: BACKEND_CONSTANTS.concentration_params,
     },
@@ -161,7 +180,7 @@ const FORMS = {
     title: 'Halo Profile',
     props: {
       model_key: 'halo_profile_model',
-      choices: MODEL_CHOICES.profile,
+      modelChoices: MODEL_CHOICES.profile,
       params_key: 'halo_profile_params',
       all_data: BACKEND_CONSTANTS.profile_params,
     },
@@ -171,7 +190,7 @@ const FORMS = {
     title: 'Tracer Profile',
     props: {
       model_key: 'tracer_profile_model',
-      choices: MODEL_CHOICES.profile,
+      modelChoices: MODEL_CHOICES.profile,
       params_key: 'tracer_profile_params',
       all_data: BACKEND_CONSTANTS.profile_params,
     },
@@ -181,7 +200,7 @@ const FORMS = {
     title: 'Halo Exclusion',
     props: {
       model_key: 'exclusion_model',
-      choices: MODEL_CHOICES.halo_exclusion,
+      modelChoices: MODEL_CHOICES.halo_exclusion,
       params_key: 'exclusion_params',
       all_data: BACKEND_CONSTANTS.exclusion_params,
     },

@@ -46,7 +46,12 @@
     "GenMF": "GenMFGrowth",
     "Carroll (1992)": "Carroll1992"
   },
-  "filter": {},
+  "filter": {
+    "Top-hat": "TopHat",
+    "Gaussian": "Gaussian",
+    "Sharp-k": "SharpK",
+    "Sharp-k with ellipsoidal correction": "SharpKEllipsoid"
+  },
   "mdef": {
     "Use native definition of mass function": "SOGeneric",
     "Spherical Overdensity wrt mean": "SOMean",

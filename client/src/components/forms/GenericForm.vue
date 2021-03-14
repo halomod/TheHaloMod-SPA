@@ -6,7 +6,7 @@
           <label>{{title}}</label>
           <md-select v-model="model[model_key]">
             <md-option
-              v-for="(value, choice) in choices"
+              v-for="(value, choice) in modelChoices"
               :key="choice"
               :value="value">
               {{choice}}
@@ -26,7 +26,7 @@
           <div v-if="typeof value === 'object'">
             <div v-for="(subVal, subKey) in value" :key="subKey">
               <double-field
-                :init="defaults[params_key][param][subKey]"
+                :init="model[params_key][param][subKey]"
                 :param="subKey"
                 range=false
                 v-model="model[params_key][param][subKey]"/>
@@ -34,7 +34,7 @@
           </div>
           <double-field
             v-else
-            :init="defaults[params_key][param]"
+            :init="model[params_key][param]"
             :param="param"
             range=false
             v-model="model[params_key][param]"/>
@@ -57,7 +57,6 @@ export default {
   model: {
     event: 'onChange',
   },
-
   props: {
     /**
      * This prop is special and not defined in `forms.js`. It is pulled in
@@ -82,7 +81,7 @@ export default {
       type: String,
       required: true,
     },
-    choices: {
+    modelChoices: {
       type: Object,
       required: true,
     },
@@ -90,14 +89,24 @@ export default {
       type: Object,
       required: true,
     },
+    rootLevelFields: {
+      type: Array,
+      required: false,
+    },
   },
   components: {
     DoubleField,
   },
   data() {
     return {
+      /**
+       * What is actually stored for the model that will be sent to the server.
+       */
       model: clonedeep(this.initial_data),
-      defaults: clonedeep(this.initial_data),
+      /**
+       * The cached options that the user has selected previously, but possibly
+       * not saved yet to the model.
+       */
       cache: clonedeep(this.all_data),
     };
   },
@@ -110,7 +119,6 @@ export default {
         if (oldVal === newVal) return;
         this.cache[oldVal] = clonedeep(this.model[this.params_key]);
         this.model[this.params_key] = clonedeep(this.cache[newVal]);
-        this.defaults[this.params_key] = clonedeep(this.cache[newVal]);
       },
     );
   },
@@ -125,7 +133,6 @@ export default {
       deep: true,
       handler() {
         this.model = clonedeep(this.initial_data);
-        this.defaults = clonedeep(this.initial_data);
         this.cache = clonedeep(this.all_data);
       },
     },
