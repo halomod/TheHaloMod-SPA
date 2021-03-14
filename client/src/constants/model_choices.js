@@ -1,0 +1,82 @@
+/**
+ * The model choices for different types of forms. This is held in its own file
+ * because some forms have the same model choices between them.
+ */
+export default {
+  cosmo: {
+    Planck13: 'Planck13',
+    Planck15: 'Planck15',
+    WMAP5: 'WMAP5',
+    WMAP7: 'WMAP7',
+    WMAP9: 'WMAP9',
+  },
+  hmf: {},
+  hod: {
+    'Zehavi (3-param), 2005': 'Zehavi05',
+    'Zheng (5-param), 2005': 'Zheng05',
+    'Contreras (9-param), 2013': 'Contreras13',
+    'Geach (8-param), 2012': 'Geach12',
+    'Tinker (3-param), 2005': 'Tinker05',
+    'Zehavi (2005) with max': 'Zehavi05WithMax',
+    'Zehavi (2005) dimensional': 'Zehavi05Marked',
+    'Continuous Power Law': 'ContinuousPowerLaw',
+    'Constant Occupancy': 'Constant',
+  },
+  halo_model: {},
+  bias: {
+    'Tinker (2010)': 'Tinker10',
+    Unbiased: 'UnityBias',
+    'Mo (1996)': 'Mo96',
+    'Jing (1998)': 'Jing98',
+    'Sheth-Tormen (1999)': 'ST99',
+    'Sheth-Mo-Tormen (2001)': 'SMT01',
+    'Seljak (2004) Without Cosmo': 'Seljak04',
+    'Seljack (2004) With Cosmo': 'Seljak04Cosmo',
+    'Mandelbaum (2005)': 'Mandelbaum05',
+    'Pillepich (2010)': 'Pillepich10',
+    'Manera (2010)': 'Manera10',
+    'Tinker (2010) Peak-Background Split': 'Tinker10PBSplit',
+  },
+  concentration: {
+    'Bullock (2001) Physical Form': 'Bullock01',
+    'Bullock (2001) Power-Law': 'Bullock01Power',
+    'Duffy (2008) Power-Law': 'Duffy08',
+    'Zehavi (2011) Power-Law': 'Zehavil11',
+    'Ludlow (2016)': 'Ludlow2016',
+    Ludlow16Empirical: 'Ludlow (2016) Empirical',
+  },
+  growth: {
+    Integral: 'GrowthFactor',
+    GenMF: 'GenMFGrowth',
+    'Carroll (1992)': 'Carroll1992',
+  },
+  filter: {
+    'Top-hat': 'TopHat',
+    Gaussian: 'Gaussian',
+    'Sharp-k': 'SharpK',
+    'Sharp-k with ellipsoidal correction': 'SharpKEllipsoid',
+  },
+  mdef: {
+    'Use native definition of mass function': 'SOGeneric',
+    'Spherical Overdensity wrt mean': 'SOMean',
+    'Spherical Overdensity wrt critical': 'SOCritical',
+    'Virial Spherical Overdensity (Bryan and Norman)': 'SOVirial',
+    'Friends-of-Friends': 'FOF',
+  },
+  transfer: {},
+  profile: {
+    'NFW (1997)': 'NFW',
+    Hernquist: 'Hernquist',
+    Moore: 'Moore',
+    'Generalized NFW': 'GeneralizedNFW',
+    Einasto: 'Einasto',
+    'Cored NFW': 'CoredNFW',
+  },
+  halo_exclusion: {
+    'No Exclusion': 'NoExclusion',
+    'Spherical Halos': 'Sphere',
+    'Spherical Overlapping Halos': 'DblSphere',
+    'Ellipsoidal Halos': 'DblEllipsoid',
+    'Density-Matched (Tinker 2005)': 'NgMatched',
+  },
+};

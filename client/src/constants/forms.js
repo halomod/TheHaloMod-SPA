@@ -1,4 +1,4 @@
-import MODEL_CHOICES from '@/constants/model_choices.json';
+import MODEL_CHOICES from '@/constants/model_choices.js';
 import BACKEND_CONSTANTS from '@/constants/backend_constants.js';
 
 /**
@@ -39,7 +39,8 @@ import BACKEND_CONSTANTS from '@/constants/backend_constants.js';
  *
  * `rootLevelFields` are optional and should be an array of strings that match
  * to fields that are in the root of `backend_constants` that should be shown
- * for that form.
+ * for that form. At the moment, all the values these correspond to should be
+ * number fields.
  *
  * @typedef FormProps
  * @type {{
@@ -71,6 +72,10 @@ import BACKEND_CONSTANTS from '@/constants/backend_constants.js';
  */
 
 /**
+ * The primary source of information on the client side which will generate
+ * the forms. This contains everything that is needed to configure the
+ * front-end forms.
+ *
  * @type {Forms}
  */
 const FORMS = {
