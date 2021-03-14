@@ -1,19 +1,6 @@
 import MODEL_CHOICES from '@/constants/model_choices.json';
 import BACKEND_CONSTANTS from '@/constants/backend_constants.js';
 
-// Very Basic
-//    Description: Just numeric fields with no core parameters or special styling
-//    Examples: Growth, HOD, Bias, Mass Definition, Halo Exclusion
-// Basic
-//    Description: Mostly numeric fields with no core parameters or special styling
-//    Examples: TracerProfile, HaloProfile, Tracer Concentration, Halo Concentration
-// Complex
-//    Description: Has core parameters with defined ranges
-//    Examples: HMF
-// Very Complex
-//    Description: Has core parameters with defined ranges, special styling, and/or special types
-//    Examples: Halo Model, Cosmology, Transfer,  Filter
-
 /**
  * Defines the forms and their data that will be rendered.
  *
@@ -26,6 +13,9 @@ import BACKEND_CONSTANTS from '@/constants/backend_constants.js';
 /**
  * Defines the details that each form will have which will be needed to render
  * that form.
+ *
+ * The `id` needs to be the same as the key for the form, AND match one of the
+ * entries in `initial_state.json`.
  *
  * The `title` is the title that will be shown to the user when they look
  * at that form. It is also used in navigation.
@@ -41,7 +31,7 @@ import BACKEND_CONSTANTS from '@/constants/backend_constants.js';
 /**
  * Defines the props that each form will accept through Vue.
  *
- * `model_key` is what is searched for int he `backend_constants` file to
+ * `model_key` is what is searched for in the `backend_constants` file to
  * retrieve the model that is currently chosen for the form.
  *
  * `params_key` is what is searched for in the `backend_constants` file to
@@ -57,11 +47,14 @@ import BACKEND_CONSTANTS from '@/constants/backend_constants.js';
  */
 
 /**
- * Defines the choices for the model that a form is displaying.
+ * Defines the choices for the model that a form is displaying. This is
+ * formatted as an object where the key is the name that the user sees,
+ * and the value is the value that is used to get the defaults or currently
+ * set values for that model choice in `backend_constants`.
  *
  * @typedef ModelChoices
  * @type {{
- *  [somePropName: string]: string
+ *  [displayName: string]: string
  * }}
  */
 
@@ -69,12 +62,16 @@ import BACKEND_CONSTANTS from '@/constants/backend_constants.js';
  * @type {Forms}
  */
 const FORMS = {
-  // {
-  //   component: CosmologyForm,
-  //   model: 'cosmo',
-  //   title: 'Cosmology',
-  //   id: 'cosmology',
-  // },
+  cosmo: {
+    id: 'cosmo',
+    title: 'Cosmology',
+    props: {
+      model_key: 'cosmo_model',
+      choices: MODEL_CHOICES.cosmo,
+      params_key: 'cosmo_params',
+      all_data: BACKEND_CONSTANTS.cosmo_params,
+    },
+  },
   mdef: {
     id: 'mdef',
     title: 'Mass Definition',

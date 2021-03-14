@@ -23,6 +23,15 @@
             v-model="model[params_key][param]">
             {{param}}
           </md-checkbox>
+          <div v-if="typeof value === 'object'">
+            <div v-for="(subVal, subKey) in value" :key="subKey">
+              <double-field
+                :init="defaults[params_key][param][subKey]"
+                :param="subKey"
+                range=false
+                v-model="model[params_key][param][subKey]"/>
+            </div>
+          </div>
           <double-field
             v-else
             :init="defaults[params_key][param]"
@@ -38,23 +47,50 @@
 <script>
 import clonedeep from 'lodash.clonedeep';
 import DoubleField from '@/components/DoubleField.vue';
+import Debug from 'debug';
+
+const debug = Debug('GenericForm.vue');
+debug.enabled = false;
 
 export default {
   name: 'GenericForm',
   model: {
     event: 'onChange',
   },
-  /**
-   * See `forms.js` for descriptions on what each of these props are for.
-   */
-  props: [
-    'title',
-    'initial_data',
-    'model_key',
-    'params_key',
-    'choices',
-    'all_data',
-  ],
+
+  props: {
+    /**
+     * This prop is special and not defined in `forms.js`. It is pulled in
+     * from `initial_state.json`.
+     */
+    initial_data: {
+      type: Object,
+      required: false,
+    },
+    /**
+     * See `forms.js` for descriptions on what each of the below props are for.
+     */
+    title: {
+      type: String,
+      required: true,
+    },
+    model_key: {
+      type: String,
+      required: true,
+    },
+    params_key: {
+      type: String,
+      required: true,
+    },
+    choices: {
+      type: Object,
+      required: true,
+    },
+    all_data: {
+      type: Object,
+      required: true,
+    },
+  },
   components: {
     DoubleField,
   },

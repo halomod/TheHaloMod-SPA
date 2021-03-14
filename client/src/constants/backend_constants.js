@@ -48,7 +48,7 @@ export default deepFreeze({
     hc_spectrum: 'nonlinear',
     force_1halo_turnover: true,
   },
-  Cosmo_params: {
+  cosmo_params: {
     Planck13: {
       cosmo_params: {
         H0: 67.77,

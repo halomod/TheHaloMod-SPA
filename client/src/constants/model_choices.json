@@ -1,5 +1,11 @@
 {
-  "cosmo": {},
+  "cosmo": {
+    "Planck13": "Planck13",
+    "Planck15": "Planck15",
+    "WMAP5": "WMAP5",
+    "WMAP7": "WMAP7",
+    "WMAP9": "WMAP9"
+  },
   "hmf": {},
   "hod": {
     "Zehavi (3-param), 2005": "Zehavi05",
