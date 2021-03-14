@@ -71,10 +71,7 @@ export default class Store {
       if (Object.keys(value).includes('cosmo_params')) {
         const oldCosmoParams = value.cosmo_params;
         delete newValue.cosmo_params;
-        Object.values(oldCosmoParams).forEach((subVal) => {
-          debug('The value being iterated over is: ', subVal);
-          Object.assign(newValue, subVal);
-        });
+        Object.assign(newValue, oldCosmoParams);
         debug(newValue);
       }
       Object.assign(params, newValue);
