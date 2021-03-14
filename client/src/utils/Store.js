@@ -78,24 +78,6 @@ export default class Store {
    */
 
   /**
-   * Gets the different plot types.
-   *
-   * @returns {{
-   *  xLabels: {
-   *    [labelName: string]: string
-   *  },
-   *  plotOptions: {
-   *    [plotName: string]: PlotDetails
-   *  }
-   * }} an object containing the different plot options and x labels
-   */
-  getPlotTypes = async () => {
-    const result = await axios.get(`${baseurl}/get_plot_types`);
-    const plotTypes = result.data;
-    return plotTypes;
-  }
-
-  /**
    * Sends the model data to server to create Tracer Halo Model Object. This
    * also saves the model into the local indexed db on the client.
    *
