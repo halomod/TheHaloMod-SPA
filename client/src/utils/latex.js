@@ -16,7 +16,7 @@ const latex2svg = (inputLatex) => {
   const correctedString = processLatexString(inputLatex);
 
   // Use the first child because the parent has unneeded extra fluff
-  return MathJax.tex2svg(correctedString)
+  return MathJax.tex2svg(correctedString, { display: true })
     .firstChild;
 };
 
