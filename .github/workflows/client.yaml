@@ -55,8 +55,10 @@ jobs:
 
     - name: Generate constants    
       run: sh generate_constants.sh
-    - name: Run tests
-      run: cd client
-      run: npm ci
-      run: npm run lint
-      run: npm run test:unit
+   
+    - name: Run Tests
+      run: |
+        cd client
+        npm ci
+        npm run lint
+        npm run test:unit
