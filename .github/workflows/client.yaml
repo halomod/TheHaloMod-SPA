@@ -54,7 +54,7 @@ jobs:
         key: ${{ hashFiles('server/requirements.txt') }}
 
     - name: Generate constants    
-      run: cd server && . ./run.sh --install && cd .. && mkdir -p ./client/generated && ls server && mv ./server/backend_constants.json ./client/generated/backend_constants.json
+      run: cd server && . ./run.sh --install -gc && cd .. && mkdir -p ./client/generated && ls server && mv ./server/backend_constants.json ./client/generated/backend_constants.json
     # - name: Run tests
     #   run: |
     #   cd client
