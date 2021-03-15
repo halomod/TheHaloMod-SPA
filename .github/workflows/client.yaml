@@ -49,6 +49,6 @@ jobs:
         key: ${{ hashFiles('server/requirements.txt') }}
         
     - run: npm ci
-    - run: npm run setup
+    - run: cd .. && sh generate_constants.sh && cd client
     - run: npm run lint
     - run: npm run test:unit
