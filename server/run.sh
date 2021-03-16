@@ -18,6 +18,7 @@ do
       export FLASK_ENV=development
       flask run;;
     "--generate-constants" | "-gc" )
+      echo "runsh!"
       python3 generate_constants.py;;
   esac
 done
