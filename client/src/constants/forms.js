@@ -130,8 +130,8 @@ debug.enabled = true;
  * Flattens the given HMModel's parameters which are relevant to the form into
  * a format usable by the server.
  *
- * For example, this is used to take the backend constants file from its
- * expanded form, into the form the server accepts when done over all forms.
+ * For example, this is used to convert an `HMModel` from its
+ * expanded form, into an `HMModelFlat` when done over all forms.
  *
  * @typedef FlattenHMModelFunction
  * @type {(hmModel: HMModel) => object}
