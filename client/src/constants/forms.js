@@ -7,6 +7,22 @@ const debug = Debug('forms.js');
 debug.enabled = true;
 
 /**
+ * The HMModel stands for "Halo Mod Model" and represents the form that the
+ * backend constants come in.
+ *
+ * @typedef HMModel
+ * @type {object}
+ */
+
+/**
+ * HMModelFlat stands for "Halo Mod Model flat" and represents the form of a
+ * data model which is accepted by the server to create a model on that side.
+ *
+ * @typedef HMModelFlat
+ * @type {object}
+ */
+
+/**
  * Defines the forms and their data that will be rendered.
  *
  * @typedef Forms
@@ -19,41 +35,30 @@ debug.enabled = true;
  * Defines the details that each form will have which will be needed to render
  * that form.
  *
- * The `id` needs to be the same as the key for the form, AND match one of the
- * entries in `initial_state.json`.
+ * The `id` needs to be the same as the key for the form. It is used to
+ * identify the form when all forms are iterated over.
  *
  * The `title` is the title that will be shown to the user when they look
  * at that form. It is also used in navigation.
- *
- * @typedef FormDetails
- * @type {{
- *  id: string,
- *  title: string,
- *  props: FormProps
- * }}
- */
-
-/**
- * Defines the props that each form will accept through Vue.
  *
  * `model_key` is what is searched for in the `backend_constants` file to
  * retrieve the model that is currently chosen for the form.
  *
  * `params_key` is what is searched for in the `backend_constants` file to
- * generate the different fields that can be filled for that form.
+ * retrive properties for the different model selections. It is also used to
+ * set the name of parameters for the form in most cases.
  *
- * `rootLevelFields` are optional and should be an array of strings that match
- * to fields that are in the root of `backend_constants` that should be shown
- * for that form. At the moment, all the values these correspond to should be
- * number fields.
- *
- * @typedef FormProps
+ * @typedef FormDetails
  * @type {{
+ *  id: string,
+ *  title: string,
  *  model_key: string,
  *  modelChoices: ModelChoices,
  *  params_key: string,
- *  all_data: object,
- *  rootLevelFields?: string[]
+ *  getRelevantHMModelFlat: GetRelevantHMModelFlatFunction,
+ *  getModelChoicesDataFromFlat: GetModelChoicesDataFromFlatFunction,
+ *  updateModelChoice: UpdateModelChoiceFunction,
+ *  flattenHMModel: FlattenHMModelFunction
  * }}
  */
 
@@ -70,10 +75,66 @@ debug.enabled = true;
  */
 
 /**
- * What is a consistent format for each of these?
- * It looks like there is always a model that is chosen, and then some
- * set of parameters. There are also some set of parameters that may
- * change with the model change and some that might not.
+ * Gets the relevant fields of a given HMModelFlat object. For example,
+ * if a form only uses the `params` field of the HMModelFlat, and 2 other
+ * root-level fields, it will only return the model name field, the params
+ * field, and those 2 other fields.
+ *
+ * @typedef GetRelevantHMModelFlatFunction
+ * @type {(hmModelFlat: HMModelFlat) => object}
+ */
+
+/**
+ * Builds the `modelChoicesData` based on the given `hmModelFlat`.
+ *
+ * Typically this function will take what exists in `hmModelFlat` and transpose
+ * the relevant fields onto the object which corresponds to the currently
+ * chosen model.
+ *
+ * @typedef GetModelChoicesDataFromFlatFunction
+ * @type {(hmModelFlat: HMModelFlat) => ModelChoicesData}
+ */
+
+/**
+ * Holds the different data + paremeters associated with the model choices.
+ * The use of this object and it's objects change based on the form and on
+ * the `getModelChoicesDataFromFlat` function, but the structure below is
+ * consistent among all forms.
+ *
+ * @typedef ModelChoicesData
+ * @type {{
+ *  [modelName: string]: object
+ * }}
+ */
+
+/**
+ * Updates the given `hmModelFlat` and `modelChoicesData` based on the provided
+ * `oldModelName` and `newModelName`. This funciton allows a form to customize
+ * how the HMModelFlat is modified when the selected model is changed, as well
+ * as the current ModelChoicesData.
+ *
+ * Most of the time, the params field for the form is modified when this
+ * happens, but custom behavior is needed for several forms which make use of
+ * root-level fields.
+ *
+ * @typedef UpdateModelChoiceFunction
+ * @type {(
+ *  oldModelName: string,
+ *  newModelName: string,
+ *  hmModelFlat: HMModelFlat,
+ *  modelChoicesData: ModelChoicesData
+ * ) => [HMModelFlat, ModelChoicesData]}
+ */
+
+/**
+ * Flattens the given HMModel's parameters which are relevant to the form into
+ * a format usable by the server.
+ *
+ * For example, this is used to take the backend constants file from its
+ * expanded form, into the form the server accepts when done over all forms.
+ *
+ * @typedef FlattenHMModelFunction
+ * @type {(hmModel: HMModel) => object}
  */
 
 /**
