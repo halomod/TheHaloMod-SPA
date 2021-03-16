@@ -22,8 +22,6 @@ Parameters = Union[dict, bool, int, float, str]
 BackendConstantsValue = Union[Model, Parameters]
 BackendConstants = Dict[BackendConstantsKey, BackendConstantsValue]
 
-print("heree!")
-
 def generate_constants() -> BackendConstants:
     """Builds the constants that a front-end can use to build forms or interactive
     pages for the calculations in HMF.
