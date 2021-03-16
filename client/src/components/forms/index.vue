@@ -28,8 +28,9 @@
               :title="form.title"
               @currently-visible="() => setCurrentlyVisible(form.id, form.title)">
               <GenericForm
+                v-if="initialHMModelFlat"
                 v-bind="buildProps(form)"
-                v-model="params[form.id]"/>
+                @onChange="handleFormDataChange"/>
             </FormWrapper>
             <md-divider/>
           </div>
@@ -44,12 +45,9 @@
 import FormWrapper from '@/components/FormWrapper.vue';
 import Navbar from '@/components/Navbar.vue';
 import clonedeep from 'lodash.clonedeep';
-import Debug from 'debug';
 import FORMS from '@/constants/forms';
 import GenericForm from '@/components/forms/GenericForm.vue';
 
-const debug = Debug('Create.vue');
-debug.enabled = false;
 export default {
   name: 'Forms',
   components: {
@@ -61,7 +59,10 @@ export default {
     event: 'onChange',
   },
   props: {
-    init: {
+    /**
+     * The state of the model.
+     */
+    initialHMModelFlat: {
       type: Object,
       required: true,
     },
@@ -78,23 +79,27 @@ export default {
     return {
       forms: FORMS,
       currentlyVisible: null,
-      params: clonedeep(this.init),
-      default: clonedeep(this.init),
+      hmModelFlat: clonedeep(this.initialHMModelFlat),
     };
   },
   activated() {
     this.currentlyVisible = null;
   },
   watch: {
-    params: {
+    /**
+     * If state is propogated up, then pass it along to this components parent.
+     */
+    hmModelFlat: {
       deep: true,
-      handler() { this.$emit('onChange', clonedeep(this.params)); },
+      handler() { this.$emit('onChange', clonedeep(this.hmModelFlat)); },
     },
-    init: {
+    /**
+     * If state is propogated down, then pass it along to the children.
+     */
+    initialHMModelFlat: {
       deep: true,
       handler() {
-        this.params = clonedeep(this.init);
-        this.default = clonedeep(this.init);
+        this.hmModelFlat = clonedeep(this.initialHMModelFlat);
       },
     },
   },
@@ -104,7 +109,18 @@ export default {
       window.history.replaceState({}, '', `#${id}`);
     },
     buildProps(form) {
-      return { ...form.props, initial_data: this.default[form.id], title: form.title };
+      return {
+        relevantHMModelFlat: form.getRelevantHMModelFlat(this.hmModelFlat),
+        title: form.title,
+        model_key: form.model_key,
+        params_key: form.params_key,
+        modelChoices: form.modelChoices,
+        modelChoicesData: form.getModelChoicesDataFromFlat(this.hmModelFlat),
+        updateModelChoice: form.updateModelChoice,
+      };
+    },
+    handleFormDataChange(formData) {
+      Object.assign(this.hmModelFlat, formData);
     },
   },
 };

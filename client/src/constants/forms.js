@@ -1,5 +1,10 @@
 import MODEL_CHOICES from '@/constants/model_choices.js';
-import BACKEND_CONSTANTS from '@/constants/backend_constants.js';
+import clonedeep from 'lodash.clonedeep';
+import Debug from 'debug';
+import BACKEND_CONSTANTS from './backend_constants';
+
+const debug = Debug('forms.js');
+debug.enabled = true;
 
 /**
  * Defines the forms and their data that will be rendered.
@@ -79,24 +84,87 @@ import BACKEND_CONSTANTS from '@/constants/backend_constants.js';
  * @type {Forms}
  */
 const FORMS = {
-  cosmo: {
-    id: 'cosmo',
-    title: 'Cosmology',
-    props: {
-      model_key: 'cosmo_model',
-      modelChoices: MODEL_CHOICES.cosmo,
-      params_key: 'cosmo_params',
-      all_data: BACKEND_CONSTANTS.cosmo_params,
-    },
-  },
+  // cosmo: {
+  //   id: 'cosmo',
+  //   title: 'Cosmology',
+  //   model_key: 'cosmo_model',
+  //   modelChoices: MODEL_CHOICES.cosmo,
+  //   params_key: 'cosmo_params',
+  //   modelChoicesData: BACKEND_CONSTANTS.cosmo_params,
+  //   getFormFields(currentFormsData) {
+  //     return {
+  //       growth_model: currentFormsData.growth_model,
+  //       growth_params: currentFormsData.growth_params,
+  //     };
+  //   },
+  //   get updateHMModelFromFlat() {
+  //     return function update(hmModelFlat, hmModel) {
+  //       const updatedHMModel = hmModel;
+  //       updatedHMModel[this.model_key] = hmModelFlat[this.model_key];
+  //       updatedHMModel[this.params_key][this.model_key] = hmModelFlat[this.params_key];
+  //       return updatedHMModel;
+  //     };
+  //   },
+  //   get flattenHMModel() {
+  //     return function flatten(hmModel) {
+  //       const partiallyFlattenedHMModel = clonedeep(hmModel);
+  //       delete partiallyFlattenedHMModel[this.params_key];
+  //       Object.assign(partiallyFlattenedHMModel, {
+  //         [this.params_key]: hmModel[this.params_key][hmModel[this.model_key]],
+  //       });
+  //       return partiallyFlattenedHMModel;
+  //     };
+  //   },
+  // },
   mdef: {
     id: 'mdef',
     title: 'Mass Definition',
-    props: {
-      model_key: 'mdef_model',
-      modelChoices: MODEL_CHOICES.mdef,
-      params_key: 'mdef_params',
-      all_data: BACKEND_CONSTANTS.mdef_params,
+    model_key: 'mdef_model',
+    modelChoices: MODEL_CHOICES.mdef,
+    params_key: 'mdef_params',
+    get getRelevantHMModelFlat() {
+      return function getRelevant(hmModelFlat) {
+        debug('getRelevantHMModelFlat was ran for mdef');
+        return {
+          [this.model_key]: hmModelFlat[this.model_key],
+          [this.params_key]: hmModelFlat[this.params_key],
+        };
+      };
+    },
+    get getModelChoicesDataFromFlat() {
+      return function getModelChoicesData(hmModelFlat) {
+        const modelChoicesData = clonedeep(BACKEND_CONSTANTS[this.params_key]);
+        modelChoicesData[hmModelFlat[this.model_key]] = clonedeep(
+          hmModelFlat[this.params_key],
+        );
+        return modelChoicesData;
+      };
+    },
+    get updateModelChoice() {
+      return function updateModelChoice(oldModelName, newModelName, hmModelFlat, modelChoicesData) {
+        const newModelChoicesData = clonedeep(modelChoicesData);
+        if (oldModelName) {
+          newModelChoicesData[oldModelName] = clonedeep(hmModelFlat[this.params_key]);
+        }
+        const newHMModelFlat = Object.assign(
+          clonedeep(hmModelFlat),
+          {
+            [this.params_key]: modelChoicesData[newModelName],
+          },
+        );
+        return [newHMModelFlat, newModelChoicesData];
+      };
+    },
+    get flattenHMModel() {
+      return function flatten(hmModel) {
+        debug('flattenHMModel was triggered for mdef');
+        const partiallyFlattenedHMModel = clonedeep(hmModel);
+        delete partiallyFlattenedHMModel[this.params_key];
+        Object.assign(partiallyFlattenedHMModel, {
+          [this.params_key]: hmModel[this.params_key][hmModel[this.model_key]],
+        });
+        return partiallyFlattenedHMModel;
+      };
     },
   },
   // {
@@ -121,11 +189,50 @@ const FORMS = {
   growth: {
     id: 'growth',
     title: 'Growth',
-    props: {
-      model_key: 'growth_model',
-      modelChoices: MODEL_CHOICES.growth,
-      params_key: 'growth_params',
-      all_data: BACKEND_CONSTANTS.growth_params,
+    model_key: 'growth_model',
+    modelChoices: MODEL_CHOICES.growth,
+    params_key: 'growth_params',
+    get getRelevantHMModelFlat() {
+      return function getRelevant(hmModelFlat) {
+        return {
+          [this.model_key]: hmModelFlat[this.model_key],
+          [this.params_key]: hmModelFlat[this.params_key],
+        };
+      };
+    },
+    get getModelChoicesDataFromFlat() {
+      return function getModelChoicesData(hmModelFlat) {
+        const modelChoicesData = clonedeep(BACKEND_CONSTANTS[this.params_key]);
+        modelChoicesData[hmModelFlat[this.model_key]] = clonedeep(
+          hmModelFlat[this.params_key],
+        );
+        return modelChoicesData;
+      };
+    },
+    get updateModelChoice() {
+      return function updateModelChoice(oldModelName, newModelName, hmModelFlat, modelChoicesData) {
+        const newModelChoicesData = clonedeep(modelChoicesData);
+        if (oldModelName) {
+          newModelChoicesData[oldModelName] = clonedeep(hmModelFlat[this.params_key]);
+        }
+        const newHMModelFlat = Object.assign(
+          clonedeep(hmModelFlat),
+          {
+            [this.params_key]: modelChoicesData[newModelName],
+          },
+        );
+        return [newHMModelFlat, newModelChoicesData];
+      };
+    },
+    get flattenHMModel() {
+      return function flatten(hmModel) {
+        const partiallyFlattenedHMModel = clonedeep(hmModel);
+        delete partiallyFlattenedHMModel[this.params_key];
+        Object.assign(partiallyFlattenedHMModel, {
+          [this.params_key]: hmModel[this.params_key][hmModel[this.model_key]],
+        });
+        return partiallyFlattenedHMModel;
+      };
     },
   },
   // {
@@ -143,71 +250,337 @@ const FORMS = {
   hod: {
     id: 'hod',
     title: 'HOD',
-    props: {
-      model_key: 'hod_model',
-      modelChoices: MODEL_CHOICES.hod,
-      params_key: 'hod_params',
-      all_data: BACKEND_CONSTANTS.hod_params,
+    model_key: 'hod_model',
+    modelChoices: MODEL_CHOICES.hod,
+    params_key: 'hod_params',
+    get getRelevantHMModelFlat() {
+      return function getRelevant(hmModelFlat) {
+        return {
+          [this.model_key]: hmModelFlat[this.model_key],
+          [this.params_key]: hmModelFlat[this.params_key],
+        };
+      };
+    },
+    get getModelChoicesDataFromFlat() {
+      return function getModelChoicesData(hmModelFlat) {
+        const modelChoicesData = clonedeep(BACKEND_CONSTANTS[this.params_key]);
+        modelChoicesData[hmModelFlat[this.model_key]] = clonedeep(
+          hmModelFlat[this.params_key],
+        );
+        return modelChoicesData;
+      };
+    },
+    get updateModelChoice() {
+      return function updateModelChoice(oldModelName, newModelName, hmModelFlat, modelChoicesData) {
+        const newModelChoicesData = clonedeep(modelChoicesData);
+        if (oldModelName) {
+          newModelChoicesData[oldModelName] = clonedeep(hmModelFlat[this.params_key]);
+        }
+        const newHMModelFlat = Object.assign(
+          clonedeep(hmModelFlat),
+          {
+            [this.params_key]: modelChoicesData[newModelName],
+          },
+        );
+        return [newHMModelFlat, newModelChoicesData];
+      };
+    },
+    get flattenHMModel() {
+      return function flatten(hmModel) {
+        const partiallyFlattenedHMModel = clonedeep(hmModel);
+        delete partiallyFlattenedHMModel[this.params_key];
+        Object.assign(partiallyFlattenedHMModel, {
+          [this.params_key]: hmModel[this.params_key][hmModel[this.model_key]],
+        });
+        return partiallyFlattenedHMModel;
+      };
     },
   },
   bias: {
     id: 'bias',
     title: 'Bias',
-    props: {
-      model_key: 'bias_model',
-      modelChoices: MODEL_CHOICES.bias,
-      params_key: 'bias_params',
-      all_data: BACKEND_CONSTANTS.bias_params,
+    model_key: 'bias_model',
+    modelChoices: MODEL_CHOICES.bias,
+    params_key: 'bias_params',
+    get getRelevantHMModelFlat() {
+      return function getRelevant(hmModelFlat) {
+        return {
+          [this.model_key]: hmModelFlat[this.model_key],
+          [this.params_key]: hmModelFlat[this.params_key],
+        };
+      };
+    },
+    get getModelChoicesDataFromFlat() {
+      return function getModelChoicesData(hmModelFlat) {
+        const modelChoicesData = clonedeep(BACKEND_CONSTANTS[this.params_key]);
+        modelChoicesData[hmModelFlat[this.model_key]] = clonedeep(
+          hmModelFlat[this.params_key],
+        );
+        return modelChoicesData;
+      };
+    },
+    get updateModelChoice() {
+      return function updateModelChoice(oldModelName, newModelName, hmModelFlat, modelChoicesData) {
+        const newModelChoicesData = clonedeep(modelChoicesData);
+        if (oldModelName) {
+          newModelChoicesData[oldModelName] = clonedeep(hmModelFlat[this.params_key]);
+        }
+        const newHMModelFlat = Object.assign(
+          clonedeep(hmModelFlat),
+          {
+            [this.params_key]: modelChoicesData[newModelName],
+          },
+        );
+        return [newHMModelFlat, newModelChoicesData];
+      };
+    },
+    get flattenHMModel() {
+      return function flatten(hmModel) {
+        const partiallyFlattenedHMModel = clonedeep(hmModel);
+        delete partiallyFlattenedHMModel[this.params_key];
+        Object.assign(partiallyFlattenedHMModel, {
+          [this.params_key]: hmModel[this.params_key][hmModel[this.model_key]],
+        });
+        return partiallyFlattenedHMModel;
+      };
     },
   },
   halo_concentration: {
     id: 'halo_concentration',
     title: 'Halo Concentration',
-    props: {
-      model_key: 'halo_concentration_model',
-      modelChoices: MODEL_CHOICES.concentration,
-      params_key: 'halo_concentration_params',
-      all_data: BACKEND_CONSTANTS.concentration_params,
+    model_key: 'halo_concentration_model',
+    modelChoices: MODEL_CHOICES.concentration,
+    params_key: 'halo_concentration_params',
+    get getRelevantHMModelFlat() {
+      return function getRelevant(hmModelFlat) {
+        return {
+          [this.model_key]: hmModelFlat[this.model_key],
+          [this.params_key]: hmModelFlat[this.params_key],
+        };
+      };
+    },
+    get getModelChoicesDataFromFlat() {
+      return function getModelChoicesData(hmModelFlat) {
+        const modelChoicesData = clonedeep(BACKEND_CONSTANTS.concentration_params);
+        modelChoicesData[hmModelFlat[this.model_key]] = clonedeep(
+          hmModelFlat[this.params_key],
+        );
+        return modelChoicesData;
+      };
+    },
+    get updateModelChoice() {
+      return function updateModelChoice(oldModelName, newModelName, hmModelFlat, modelChoicesData) {
+        const newModelChoicesData = clonedeep(modelChoicesData);
+        if (oldModelName) {
+          newModelChoicesData[oldModelName] = clonedeep(hmModelFlat[this.params_key]);
+        }
+        const newHMModelFlat = Object.assign(
+          clonedeep(hmModelFlat),
+          {
+            [this.params_key]: modelChoicesData[newModelName],
+          },
+        );
+        return [newHMModelFlat, newModelChoicesData];
+      };
+    },
+    get flattenHMModel() {
+      return function flatten(hmModel) {
+        const partiallyFlattenedHMModel = clonedeep(hmModel);
+        Object.assign(partiallyFlattenedHMModel, {
+          [this.params_key]: hmModel.concentration_params[hmModel[this.model_key]],
+        });
+        return partiallyFlattenedHMModel;
+      };
     },
   },
   tracer_concentration: {
     id: 'tracer_concentration',
     title: 'Tracer Concentration',
-    props: {
-      model_key: 'tracer_concentration_model',
-      modelChoices: MODEL_CHOICES.concentration,
-      params_key: 'tracer_concentration_params',
-      all_data: BACKEND_CONSTANTS.concentration_params,
+    model_key: 'tracer_concentration_model',
+    modelChoices: MODEL_CHOICES.concentration,
+    params_key: 'tracer_concentration_params',
+    get getRelevantHMModelFlat() {
+      return function getRelevant(hmModelFlat) {
+        return {
+          [this.model_key]: hmModelFlat[this.model_key],
+          [this.params_key]: hmModelFlat[this.params_key],
+        };
+      };
+    },
+    get getModelChoicesDataFromFlat() {
+      return function getModelChoicesData(hmModelFlat) {
+        const modelChoicesData = clonedeep(BACKEND_CONSTANTS.concentration_params);
+        modelChoicesData[hmModelFlat[this.model_key]] = clonedeep(
+          hmModelFlat[this.params_key],
+        );
+        return modelChoicesData;
+      };
+    },
+    get updateModelChoice() {
+      return function updateModelChoice(oldModelName, newModelName, hmModelFlat, modelChoicesData) {
+        const newModelChoicesData = clonedeep(modelChoicesData);
+        if (oldModelName) {
+          newModelChoicesData[oldModelName] = clonedeep(hmModelFlat[this.params_key]);
+        }
+        const newHMModelFlat = Object.assign(
+          clonedeep(hmModelFlat),
+          {
+            [this.params_key]: modelChoicesData[newModelName],
+          },
+        );
+        return [newHMModelFlat, newModelChoicesData];
+      };
+    },
+    get flattenHMModel() {
+      return function flatten(hmModel) {
+        const partiallyFlattenedHMModel = clonedeep(hmModel);
+        Object.assign(partiallyFlattenedHMModel, {
+          [this.params_key]: hmModel.concentration_params[hmModel[this.model_key]],
+        });
+        return partiallyFlattenedHMModel;
+      };
     },
   },
   halo_profile: {
     id: 'halo_profile',
     title: 'Halo Profile',
-    props: {
-      model_key: 'halo_profile_model',
-      modelChoices: MODEL_CHOICES.profile,
-      params_key: 'halo_profile_params',
-      all_data: BACKEND_CONSTANTS.profile_params,
+    model_key: 'halo_profile_model',
+    modelChoices: MODEL_CHOICES.profile,
+    params_key: 'halo_profile_params',
+    get getRelevantHMModelFlat() {
+      return function getRelevant(hmModelFlat) {
+        return {
+          [this.model_key]: hmModelFlat[this.model_key],
+          [this.params_key]: hmModelFlat[this.params_key],
+        };
+      };
+    },
+    get getModelChoicesDataFromFlat() {
+      return function getModelChoicesData(hmModelFlat) {
+        const modelChoicesData = clonedeep(BACKEND_CONSTANTS.concentration_params);
+        modelChoicesData[hmModelFlat[this.model_key]] = clonedeep(
+          hmModelFlat[this.params_key],
+        );
+        return modelChoicesData;
+      };
+    },
+    get updateModelChoice() {
+      return function updateModelChoice(oldModelName, newModelName, hmModelFlat, modelChoicesData) {
+        const newModelChoicesData = clonedeep(modelChoicesData);
+        if (oldModelName) {
+          newModelChoicesData[oldModelName] = clonedeep(hmModelFlat[this.params_key]);
+        }
+        const newHMModelFlat = Object.assign(
+          clonedeep(hmModelFlat),
+          {
+            [this.params_key]: modelChoicesData[newModelName],
+          },
+        );
+        return [newHMModelFlat, newModelChoicesData];
+      };
+    },
+    get flattenHMModel() {
+      return function flatten(hmModel) {
+        const partiallyFlattenedHMModel = clonedeep(hmModel);
+        Object.assign(partiallyFlattenedHMModel, {
+          [this.params_key]: hmModel.profile_params[hmModel[this.model_key]],
+        });
+        return partiallyFlattenedHMModel;
+      };
     },
   },
   tracer_profile: {
     id: 'tracer_profile',
     title: 'Tracer Profile',
-    props: {
-      model_key: 'tracer_profile_model',
-      modelChoices: MODEL_CHOICES.profile,
-      params_key: 'tracer_profile_params',
-      all_data: BACKEND_CONSTANTS.profile_params,
+    model_key: 'tracer_profile_model',
+    modelChoices: MODEL_CHOICES.profile,
+    params_key: 'tracer_profile_params',
+    get getRelevantHMModelFlat() {
+      return function getRelevant(hmModelFlat) {
+        return {
+          [this.model_key]: hmModelFlat[this.model_key],
+          [this.params_key]: hmModelFlat[this.params_key],
+        };
+      };
+    },
+    get getModelChoicesDataFromFlat() {
+      return function getModelChoicesData(hmModelFlat) {
+        const modelChoicesData = clonedeep(BACKEND_CONSTANTS.profile_params);
+        modelChoicesData[hmModelFlat[this.model_key]] = clonedeep(
+          hmModelFlat[this.params_key],
+        );
+        return modelChoicesData;
+      };
+    },
+    get updateModelChoice() {
+      return function updateModelChoice(oldModelName, newModelName, hmModelFlat, modelChoicesData) {
+        const newModelChoicesData = clonedeep(modelChoicesData);
+        if (oldModelName) {
+          newModelChoicesData[oldModelName] = clonedeep(hmModelFlat[this.params_key]);
+        }
+        const newHMModelFlat = Object.assign(
+          clonedeep(hmModelFlat),
+          {
+            [this.params_key]: modelChoicesData[newModelName],
+          },
+        );
+        return [newHMModelFlat, newModelChoicesData];
+      };
+    },
+    get flattenHMModel() {
+      return function flatten(hmModel) {
+        const partiallyFlattenedHMModel = clonedeep(hmModel);
+        Object.assign(partiallyFlattenedHMModel, {
+          [this.params_key]: hmModel.profile_params[hmModel[this.model_key]],
+        });
+        return partiallyFlattenedHMModel;
+      };
     },
   },
   halo_exclusion: {
     id: 'halo_exclusion',
     title: 'Halo Exclusion',
-    props: {
-      model_key: 'exclusion_model',
-      modelChoices: MODEL_CHOICES.halo_exclusion,
-      params_key: 'exclusion_params',
-      all_data: BACKEND_CONSTANTS.exclusion_params,
+    model_key: 'exclusion_model',
+    modelChoices: MODEL_CHOICES.halo_exclusion,
+    params_key: 'exclusion_params',
+    get getRelevantHMModelFlat() {
+      return function getRelevant(hmModelFlat) {
+        return {
+          [this.model_key]: hmModelFlat[this.model_key],
+          [this.params_key]: hmModelFlat[this.params_key],
+        };
+      };
+    },
+    get getModelChoicesDataFromFlat() {
+      return function getModelChoicesData(hmModelFlat) {
+        const modelChoicesData = clonedeep(BACKEND_CONSTANTS.exclusion_params);
+        modelChoicesData[hmModelFlat[this.model_key]] = clonedeep(
+          hmModelFlat[this.params_key],
+        );
+        return modelChoicesData;
+      };
+    },
+    get updateModelChoice() {
+      return function updateModelChoice(oldModelName, newModelName, hmModelFlat, modelChoicesData) {
+        const newModelChoicesData = clonedeep(modelChoicesData);
+        if (oldModelName) {
+          newModelChoicesData[oldModelName] = clonedeep(hmModelFlat[this.params_key]);
+        }
+        const newHMModelFlat = Object.assign(
+          clonedeep(hmModelFlat),
+          {
+            [this.params_key]: modelChoicesData[newModelName],
+          },
+        );
+        return [newHMModelFlat, newModelChoicesData];
+      };
+    },
+    get flattenHMModel() {
+      return function flatten(hmModel) {
+        const partiallyFlattenedHMModel = clonedeep(hmModel);
+        delete partiallyFlattenedHMModel[this.params_key];
+        return partiallyFlattenedHMModel;
+      };
     },
   },
 };

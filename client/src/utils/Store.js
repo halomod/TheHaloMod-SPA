@@ -53,30 +53,6 @@ export default class Store {
   }
 
   /**
-   * Flattens model to make request params.
-   *
-   * @param {Object} model the model to flatten
-   * @returns {Object} the flattened params
-   */
-  flatten = (model) => {
-    const params = {};
-    Object.values(model).forEach((value) => {
-      // Extra flattening for special cases 🚀 This can likely move into
-      // a more ubiquitous config file for the different forms. Or it could
-      // potentially be handled by parsing the backend_constants data
-      // differently.
-      const newValue = clonedeep(value);
-      if (Object.keys(value).includes('cosmo_params')) {
-        const oldCosmoParams = value.cosmo_params;
-        delete newValue.cosmo_params;
-        Object.assign(newValue, oldCosmoParams);
-      }
-      Object.assign(params, newValue);
-    });
-    return params;
-  }
-
-  /**
    * Gets the plot.
    *
    * @returns {String} plot base64 string
@@ -116,7 +92,7 @@ export default class Store {
   createModel = async (model, name) => {
     try {
       await axios.post(`${baseurl}/create`, {
-        params: this.flatten(model),
+        params: model,
         label: name,
       });
       this.state.error = false;
@@ -141,7 +117,7 @@ export default class Store {
   updateModel = async (name, model) => {
     try {
       await axios.post(`${baseurl}/update`, {
-        params: this.flatten(model),
+        params: model,
         model_name: name,
       });
       this.state.error = false;

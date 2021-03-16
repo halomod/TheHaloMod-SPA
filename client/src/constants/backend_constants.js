@@ -1,6 +1,9 @@
 import deepFreeze from 'deep-freeze';
 
-export default deepFreeze({
+/**
+ * @typedef HMModel
+ */
+const BACKEND_CONSTANTS = deepFreeze({
   cosmo_model: 'Planck15',
   n: 0.9667,
   sigma_8: 0.8159,
@@ -750,3 +753,5 @@ export default deepFreeze({
     },
   },
 });
+
+export default BACKEND_CONSTANTS;
