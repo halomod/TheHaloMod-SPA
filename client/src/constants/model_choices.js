@@ -63,7 +63,13 @@ export default {
     'Virial Spherical Overdensity (Bryan and Norman)': 'SOVirial',
     'Friends-of-Friends': 'FOF',
   },
-  transfer: {},
+  transfer: {
+    CAMB: 'CAMB',
+    'Eisenstein-Hu (1998) (with BAO)': 'EH_BAO',
+    'Eisenstein-Hu (1998) (no BAO)': 'EH_NoBAO',
+    'BBKS (1986)': 'BBKS',
+    'Bond-Efstathiou': 'BondEfs',
+  },
   profile: {
     'NFW (1997)': 'NFW',
     Hernquist: 'Hernquist',

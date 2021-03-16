@@ -118,7 +118,7 @@ const BACKEND_CONSTANTS = deepFreeze({
     },
     CambGrowth: {},
   },
-  TransferComponent_params: {
+  transfer_params: {
     FromFile: {
       fname: '',
     },

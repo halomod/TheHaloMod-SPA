@@ -200,12 +200,65 @@ const FORMS = {
       };
     },
   },
-  // {
-  //   component: TransferForm,
-  //   model: 'transfer',
-  //   title: 'Transfer',
-  //   id: 'transfer',
-  // },
+  transfer: {
+    id: 'transfer',
+    title: 'Transfer',
+    model_key: 'transfer_model',
+    modelChoices: MODEL_CHOICES.transfer,
+    params_key: 'transfer_params',
+    get getRelevantHMModelFlat() {
+      return function getRelevant(hmModelFlat) {
+        const relevantHMModelFlat = {
+          lnk_min: hmModelFlat.lnk_min,
+          lnk_max: hmModelFlat.lnk_max,
+          dlnk: hmModelFlat.dlnk,
+          takahashi: hmModelFlat.takahashi,
+          [this.model_key]: hmModelFlat[this.model_key],
+        };
+        if (hmModelFlat[this.params_key]) {
+          relevantHMModelFlat[this.params_key] = clonedeep(hmModelFlat[this.params_key]);
+        }
+        return relevantHMModelFlat;
+      };
+    },
+    get getModelChoicesDataFromFlat() {
+      return function getModelChoicesData(hmModelFlat) {
+        const modelChoicesData = clonedeep(BACKEND_CONSTANTS[this.params_key]);
+        // Make sure the params exist first, because they don't in some cases.
+        if (hmModelFlat[this.params_key]) {
+          modelChoicesData[hmModelFlat[this.model_key]] = clonedeep(
+            hmModelFlat[this.params_key],
+          );
+        }
+        return modelChoicesData;
+      };
+    },
+    get updateModelChoice() {
+      return function updateModelChoice(oldModelName, newModelName, hmModelFlat, modelChoicesData) {
+        const newModelChoicesData = clonedeep(modelChoicesData);
+        if (oldModelName) {
+          newModelChoicesData[oldModelName] = clonedeep(hmModelFlat[this.params_key]);
+        }
+        const newHMModelFlat = Object.assign(
+          clonedeep(hmModelFlat),
+          {
+            [this.params_key]: modelChoicesData[newModelName],
+          },
+        );
+        return [newHMModelFlat, newModelChoicesData];
+      };
+    },
+    get flattenHMModel() {
+      return function flatten(hmModel) {
+        const partiallyFlattenedHMModel = clonedeep(hmModel);
+        delete partiallyFlattenedHMModel[this.params_key];
+        Object.assign(partiallyFlattenedHMModel, {
+          [this.params_key]: hmModel[this.params_key][hmModel[this.model_key]],
+        });
+        return partiallyFlattenedHMModel;
+      };
+    },
+  },
   // filter: {
   //   id: 'filter',
   //   title: 'Filter',
