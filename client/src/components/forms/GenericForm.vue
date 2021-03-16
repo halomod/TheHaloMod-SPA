@@ -26,14 +26,13 @@
                 v-if="typeof paramsValue === 'boolean'"
                 class="md-primary"
                 v-model="localHMModelFlat[params_key][paramsKey]">
-                {{paramsValue}}
+                {{paramsKey}}
               </md-checkbox>
               <double-field
                 v-else
                 :init="localHMModelFlat[params_key][paramsKey]"
-                :param="paramsKey"
-                range=false
-                v-model="localHMModelFlat[params_key][paramsKey]"/>
+                v-model="localHMModelFlat[params_key][paramsKey]"
+                v-bind="getDoubleFieldProps(paramsKey)"/>
             </div>
           </div>
           <div v-else>
@@ -41,14 +40,13 @@
               v-if="typeof value === 'boolean'"
               class="md-primary"
               v-model="localHMModelFlat[key]">
-              {{value}}
+              {{key}}
             </md-checkbox>
             <double-field
               v-else
               :init="localHMModelFlat[key]"
-              :param="key"
-              range=false
-              v-model="localHMModelFlat[key]"/>
+              v-model="localHMModelFlat[key]"
+              v-bind="getDoubleFieldProps(key)"/>
           </div>
 
         </div>
@@ -63,6 +61,7 @@ import clonedeep from 'lodash.clonedeep';
 import DoubleField from '@/components/DoubleField.vue';
 import Debug from 'debug';
 import isEqual from 'lodash.isequal';
+import PARAMETER_PROPS from '@/constants/parameter_properties.js';
 
 const debug = Debug('GenericForm.vue');
 debug.enabled = true;
@@ -108,14 +107,6 @@ export default {
     updateModelChoice: {
       type: Function,
       required: true,
-    },
-    /**
-     * These are fields that don't change when the model changes, but they
-     * should still be configured by the current form.
-     */
-    extraHMModelData: {
-      type: Object,
-      required: false,
     },
   },
   components: {
@@ -186,6 +177,36 @@ export default {
           this.localHMModelFlat = clonedeep(this.relevantHMModelFlat);
         }
       },
+    },
+  },
+  methods: {
+    getDoubleFieldProps(parameterKey) {
+      const parameterProps = PARAMETER_PROPS[parameterKey];
+      const doubleProps = {
+        param: parameterKey,
+        range: false,
+      };
+
+      // If properties do not exist, pass the default values
+      if (!parameterProps) return doubleProps;
+
+      if (parameterProps.plainName) {
+        doubleProps.param = parameterProps.plainName;
+      }
+      if (parameterProps.html) {
+        doubleProps.html = parameterProps.html;
+      }
+      if (parameterProps.range) {
+        doubleProps.range = parameterProps.range;
+      }
+      if (parameterProps.min) {
+        doubleProps.min = parameterProps.min;
+      }
+      if (parameterProps.max) {
+        doubleProps.max = parameterProps.max;
+      }
+
+      return doubleProps;
     },
   },
 };
