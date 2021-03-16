@@ -1,45 +1,59 @@
 <template>
   <form novalidate>
-    <div class='md-layout md-gutter'>
-      <div class='md-layout-item'>
-        <md-field>
-          <label>{{title}}</label>
-          <md-select v-model="localHMModelFlat[model_key]">
-            <md-option
-              v-for="(value, choice) in modelChoices"
-              :key="choice"
-              :value="value">
-              {{choice}}
-            </md-option>
-          </md-select>
-        </md-field>
-      </div>
 
-      <div class='md-layout-item'>
-        <div :key="param" v-for="(value, param) in localHMModelFlat[params_key]">
-          <md-checkbox
-            v-if="typeof value === 'boolean'"
-            class="md-primary"
-            v-model="localHMModelFlat[params_key][param]">
-            {{param}}
-          </md-checkbox>
-          <div v-else-if="typeof value === 'object'">
-            <div v-for="(subVal, subKey) in value" :key="subKey">
+    <div class='md-layout md-gutter'>
+      <div v-for="(value, key) in localHMModelFlat" :key="key" class='md-layout-item'>
+        <div v-if="key === model_key">
+          <md-field>
+            <label>{{title}}</label>
+            <md-select v-model="localHMModelFlat[model_key]">
+              <md-option
+                v-for="(value, choice) in modelChoices"
+                :key="choice"
+                :value="value">
+                {{choice}}
+              </md-option>
+            </md-select>
+          </md-field>
+        </div>
+        <div v-else>
+          <div v-if="key === params_key" >
+            <div
+              v-for="(paramsValue, paramsKey) in value"
+              :key="paramsKey"
+            >
+              <md-checkbox
+                v-if="typeof paramsValue === 'boolean'"
+                class="md-primary"
+                v-model="localHMModelFlat[params_key][paramsKey]">
+                {{paramsValue}}
+              </md-checkbox>
               <double-field
-                :init="localHMModelFlat[params_key][param][subKey]"
-                :param="subKey"
+                v-else
+                :init="localHMModelFlat[params_key][paramsKey]"
+                :param="paramsKey"
                 range=false
-                v-model="localHMModelFlat[params_key][param][subKey]"/>
+                v-model="localHMModelFlat[params_key][paramsKey]"/>
             </div>
           </div>
-          <double-field
-            v-else
-            :init="localHMModelFlat[params_key][param]"
-            :param="param"
-            range=false
-            v-model="localHMModelFlat[params_key][param]"/>
+          <div v-else>
+            <md-checkbox
+              v-if="typeof value === 'boolean'"
+              class="md-primary"
+              v-model="localHMModelFlat[key]">
+              {{value}}
+            </md-checkbox>
+            <double-field
+              v-else
+              :init="localHMModelFlat[key]"
+              :param="key"
+              range=false
+              v-model="localHMModelFlat[key]"/>
+          </div>
+
         </div>
       </div>
+
     </div>
   </form>
 </template>

@@ -84,38 +84,73 @@ debug.enabled = true;
  * @type {Forms}
  */
 const FORMS = {
-  // cosmo: {
-  //   id: 'cosmo',
-  //   title: 'Cosmology',
-  //   model_key: 'cosmo_model',
-  //   modelChoices: MODEL_CHOICES.cosmo,
-  //   params_key: 'cosmo_params',
-  //   modelChoicesData: BACKEND_CONSTANTS.cosmo_params,
-  //   getFormFields(currentFormsData) {
-  //     return {
-  //       growth_model: currentFormsData.growth_model,
-  //       growth_params: currentFormsData.growth_params,
-  //     };
-  //   },
-  //   get updateHMModelFromFlat() {
-  //     return function update(hmModelFlat, hmModel) {
-  //       const updatedHMModel = hmModel;
-  //       updatedHMModel[this.model_key] = hmModelFlat[this.model_key];
-  //       updatedHMModel[this.params_key][this.model_key] = hmModelFlat[this.params_key];
-  //       return updatedHMModel;
-  //     };
-  //   },
-  //   get flattenHMModel() {
-  //     return function flatten(hmModel) {
-  //       const partiallyFlattenedHMModel = clonedeep(hmModel);
-  //       delete partiallyFlattenedHMModel[this.params_key];
-  //       Object.assign(partiallyFlattenedHMModel, {
-  //         [this.params_key]: hmModel[this.params_key][hmModel[this.model_key]],
-  //       });
-  //       return partiallyFlattenedHMModel;
-  //     };
-  //   },
-  // },
+  cosmo: {
+    id: 'cosmo',
+    title: 'Cosmology',
+    model_key: 'cosmo_model',
+    modelChoices: MODEL_CHOICES.cosmo,
+    params_key: 'cosmo_params',
+    get getRelevantHMModelFlat() {
+      return function getRelevant(hmModelFlat) {
+        return {
+          [this.model_key]: hmModelFlat[this.model_key],
+          [this.params_key]: hmModelFlat[this.params_key],
+          z: hmModelFlat.z,
+          n: hmModelFlat.n,
+          sigma_8: hmModelFlat.sigma_8,
+        };
+      };
+    },
+    get getModelChoicesDataFromFlat() {
+      return function getModelChoicesData(hmModelFlat) {
+        debug('getModelChoicesDataFromFlat was ran for cosmo');
+        const modelChoicesData = clonedeep(BACKEND_CONSTANTS[this.params_key]);
+        modelChoicesData[hmModelFlat[this.model_key]] = {
+          [this.params_key]: clonedeep(hmModelFlat[this.params_key]),
+          z: hmModelFlat.z,
+          n: hmModelFlat.n,
+          sigma_8: hmModelFlat.sigma_8,
+        };
+        return modelChoicesData;
+      };
+    },
+    get updateModelChoice() {
+      return function updateModelChoice(oldModelName, newModelName, hmModelFlat, modelChoicesData) {
+        const newModelChoicesData = clonedeep(modelChoicesData);
+        if (oldModelName) {
+          newModelChoicesData[oldModelName] = {
+            [this.params_key]: clonedeep(hmModelFlat[this.params_key]),
+            z: hmModelFlat.z,
+            n: hmModelFlat.n,
+            sigma_8: hmModelFlat.sigma_8,
+          };
+        }
+        const newHMModelFlat = Object.assign(
+          clonedeep(hmModelFlat),
+          {
+            [this.params_key]: modelChoicesData[newModelName][this.params_key],
+            z: modelChoicesData[newModelName].z,
+            n: modelChoicesData[newModelName].n,
+            sigma_8: modelChoicesData[newModelName].sigma_8,
+          },
+        );
+        return [newHMModelFlat, newModelChoicesData];
+      };
+    },
+    get flattenHMModel() {
+      return function flatten(hmModel) {
+        const partiallyFlattenedHMModel = clonedeep(hmModel);
+        delete partiallyFlattenedHMModel[this.params_key];
+        Object.assign(partiallyFlattenedHMModel, {
+          [this.params_key]: hmModel[this.params_key][hmModel[this.model_key]][this.params_key],
+          z: hmModel[this.params_key][hmModel[this.model_key]].z,
+          n: hmModel[this.params_key][hmModel[this.model_key]].n,
+          sigma_8: hmModel[this.params_key][hmModel[this.model_key]].sigma_8,
+        });
+        return partiallyFlattenedHMModel;
+      };
+    },
+  },
   mdef: {
     id: 'mdef',
     title: 'Mass Definition',
@@ -124,7 +159,6 @@ const FORMS = {
     params_key: 'mdef_params',
     get getRelevantHMModelFlat() {
       return function getRelevant(hmModelFlat) {
-        debug('getRelevantHMModelFlat was ran for mdef');
         return {
           [this.model_key]: hmModelFlat[this.model_key],
           [this.params_key]: hmModelFlat[this.params_key],
@@ -157,7 +191,6 @@ const FORMS = {
     },
     get flattenHMModel() {
       return function flatten(hmModel) {
-        debug('flattenHMModel was triggered for mdef');
         const partiallyFlattenedHMModel = clonedeep(hmModel);
         delete partiallyFlattenedHMModel[this.params_key];
         Object.assign(partiallyFlattenedHMModel, {
