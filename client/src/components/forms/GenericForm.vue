@@ -22,8 +22,9 @@
               v-for="(paramsValue, paramsKey) in value"
               :key="paramsKey"
             >
+              <div v-if="!isVisible(paramsKey)"/>
               <md-checkbox
-                v-if="typeof paramsValue === 'boolean'"
+                v-else-if="typeof paramsValue === 'boolean'"
                 class="md-primary"
                 v-model="localHMModelFlat[params_key][paramsKey]">
                 {{paramsKey}}
@@ -36,8 +37,9 @@
             </div>
           </div>
           <div v-else>
+            <div v-if="!isVisible(key)"/>
             <md-checkbox
-              v-if="typeof value === 'boolean'"
+              v-else-if="typeof value === 'boolean'"
               class="md-primary"
               v-model="localHMModelFlat[key]">
               {{key}}
@@ -205,8 +207,15 @@ export default {
       if (parameterProps.max) {
         doubleProps.max = parameterProps.max;
       }
-
       return doubleProps;
+    },
+    isVisible(parameterKey) {
+      if (PARAMETER_PROPS[parameterKey]
+        && PARAMETER_PROPS[parameterKey].visible === false
+      ) {
+        return false;
+      }
+      return true;
     },
   },
 };

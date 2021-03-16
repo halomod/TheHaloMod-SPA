@@ -2,6 +2,9 @@
  * An object which determines the ranges of different parameters used, and other
  * useful information on each property that will be consistent across forms.
  *
+ * `visible` determines if the field should be visible to the end user or not.
+ * By default this is true.
+ *
  * `html` is an html string that doesn't need an enclosing element which will
  * determine how the title of the property is displayed. For example:
  * `n<sub>s</sub>`.
@@ -17,6 +20,7 @@
  *
  * @type {{
  *  [parameterName: string]: {
+ *    visible?: boolean,
  *    min?: number,
  *    max?: number,
  *    step?: number,
@@ -135,6 +139,9 @@ const PARAMETER_PROPERTIES = {
   },
   force_1halo_turnover: {
     label: 'Force 1-halo turnover?',
+  },
+  camb_params: {
+    visible: false,
   },
 };
 
