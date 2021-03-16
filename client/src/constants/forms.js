@@ -320,19 +320,56 @@ const FORMS = {
       };
     },
   },
-  // filter: {
-  //   id: 'filter',
-  //   title: 'Filter',
-  //   props: {
-  //     model_key: 'filter_model',
-  //     modelChoices: MODEL_CHOICES.filter,
-  //     params_key: 'filter_params',
-  //     all_data: BACKEND_CONSTANTS.filter_params,
-  //     rootLevelFields: [
-  //       'delta_c',
-  //     ],
-  //   },
-  // },
+  filter: {
+    id: 'filter',
+    title: 'Filter',
+    model_key: 'filter_model',
+    modelChoices: MODEL_CHOICES.filter,
+    params_key: 'filter_params',
+    get getRelevantHMModelFlat() {
+      return function getRelevant(hmModelFlat) {
+        return {
+          delta_c: hmModelFlat.delta_c,
+          [this.model_key]: hmModelFlat[this.model_key],
+          [this.params_key]: hmModelFlat[this.params_key],
+        };
+      };
+    },
+    get getModelChoicesDataFromFlat() {
+      return function getModelChoicesData(hmModelFlat) {
+        const modelChoicesData = clonedeep(BACKEND_CONSTANTS[this.params_key]);
+        modelChoicesData[hmModelFlat[this.model_key]] = clonedeep(
+          hmModelFlat[this.params_key],
+        );
+        return modelChoicesData;
+      };
+    },
+    get updateModelChoice() {
+      return function updateModelChoice(oldModelName, newModelName, hmModelFlat, modelChoicesData) {
+        const newModelChoicesData = clonedeep(modelChoicesData);
+        if (oldModelName) {
+          newModelChoicesData[oldModelName] = clonedeep(hmModelFlat[this.params_key]);
+        }
+        const newHMModelFlat = Object.assign(
+          clonedeep(hmModelFlat),
+          {
+            [this.params_key]: modelChoicesData[newModelName],
+          },
+        );
+        return [newHMModelFlat, newModelChoicesData];
+      };
+    },
+    get flattenHMModel() {
+      return function flatten(hmModel) {
+        const partiallyFlattenedHMModel = clonedeep(hmModel);
+        delete partiallyFlattenedHMModel[this.params_key];
+        Object.assign(partiallyFlattenedHMModel, {
+          [this.params_key]: hmModel[this.params_key][hmModel[this.model_key]],
+        });
+        return partiallyFlattenedHMModel;
+      };
+    },
+  },
   growth: {
     id: 'growth',
     title: 'Growth',
