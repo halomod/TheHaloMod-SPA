@@ -143,6 +143,9 @@ const PARAMETER_PROPERTIES = {
   camb_params: {
     visible: false,
   },
+  dark_energy_params: {
+    visible: false,
+  },
 };
 
 export default PARAMETER_PROPERTIES;

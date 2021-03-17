@@ -10,7 +10,10 @@ export function between(number, min = Number.MIN_SAFE_INTEGER, max = Number.MAX_
 export function numeric(value) {
   const regex = RegExp(/-?(?:0|[1-9]\d*)(?:\.\d*)?(?:[eE][+-]?\d+)?/g);
   const result = regex.exec(String(value));
-  return (result[result.index] === String(value));
+  if (result !== null) {
+    return (result[result.index] === String(value));
+  }
+  return false;
 }
 
 export function defined(value) {
