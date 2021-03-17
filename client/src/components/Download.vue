@@ -46,8 +46,7 @@
 <script>
 import baseUrl from '@/env';
 import { jsPDF } from 'jspdf';
-import 'svg2pdf.js';
-import Canvg from 'canvg';
+import svgString2Image from '../utils/imgUtils';
 
 const downloadChoiceObjs = {
   plotImage: {
@@ -98,7 +97,7 @@ export default {
       this.loading = false;
     },
     async download_plotImage() {
-      const svgNode = document.getElementById('plot-svg');
+      const svgNode = document.getElementById('svg-plot');
       const serializer = new XMLSerializer();
       let plotString = serializer.serializeToString(svgNode);
       if (!plotString.match(/^<svg[^>]+xmlns="http:\/\/www\.w3\.org\/2000\/svg"/)) {
@@ -110,13 +109,10 @@ export default {
       plotString = `<?xml version="1.0" standalone="no"?>\r\n${plotString}`;
       /* eslint-disable */
       const doc = new jsPDF(); 
-      const canvas = document.createElement('canvas');
-      var context = canvas.getContext('2d');
-      context.clearRect(0, 0, canvas.width, canvas.height);
-      Canvg(canvas, svgNode);
-
-      var png = canvas.toDataURL('image/png');
-      return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(plotString)}`;
+      const imgString = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(plotString)}`;
+      const img = svgString2Image(imgString, 800, 300, 'png');
+      doc.addImage(img, 'png', 800, 300);
+      doc.save('test.pdf');
     },
     async download_ascii() {
       this.asciiDialogVisible = true;
