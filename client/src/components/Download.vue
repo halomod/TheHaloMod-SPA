@@ -91,27 +91,30 @@ export default {
   },
   methods: {
     async handleClick() {
-      console.log('happening');
-      console.log('here');
       const downloadNode = document.getElementById('download-element');
-      console.log('here');
       const { downloadName, name, loadingTitle } = downloadChoiceObjs[this.downloadChoice];
-      console.log('here');
       this.loadingTitle = loadingTitle;
       this.loading = true;
-      console.log('here');
       const href = await this[`download${name}`]();
       downloadNode.setAttribute('href', href);
       downloadNode.setAttribute('download', downloadName);
       downloadNode.click();
-      console.log('happening');
       this.loading = false;
     },
     async downloadData() {
       const result = await axios.post(`${baseUrl}/get_object_data`, {
         param_names: ['m', 'k', 'r', 'k_hm'],
       });
-      return `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(result.data, null, 2))}`;
+      const json = result.data;
+      const zip = new JSZip();
+      Object.entries(json).forEach((name, parameters) => {
+        Object.entries(json).forEach((parameter, data) => {
+          const csv = `data:text/csv;charset-utf-8,${data.map(element => element.join(','))}`;
+          zip.file(`${name}${parameter}vector.csv`, csv);
+        });
+      });
+      const blob = await zip.generateAsync({type:"blob"});
+      return window.URL.createObjectURL(blob);
     },
     async downloadPlotImage() {
       await this.$store.createPlot();
