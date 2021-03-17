@@ -53,6 +53,22 @@ export default class Store {
   }
 
   /**
+   * Cleans up a model for sending to the server. This removes parameters
+   * that aren't accepted by the server but come from backend constants.
+   */
+  cleanUpModel = (model) => {
+    const cleanedModel = clonedeep(model);
+    delete cleanedModel.WDM_params;
+    delete cleanedModel.WDMRecalibrateMF_params;
+    delete cleanedModel.profile_params;
+    delete cleanedModel.concentration_params;
+    delete cleanedModel.CMRelation_options;
+    delete cleanedModel.ScaleDepBias_params;
+    delete cleanedModel._HODCross_params;
+    return cleanedModel;
+  }
+
+  /**
    * Gets the plot.
    *
    * @returns {String} plot base64 string
@@ -92,7 +108,7 @@ export default class Store {
   createModel = async (model, name) => {
     try {
       await axios.post(`${baseurl}/create`, {
-        params: model,
+        params: this.cleanUpModel(model),
         label: name,
       });
       this.state.error = false;
@@ -117,7 +133,7 @@ export default class Store {
   updateModel = async (name, model) => {
     try {
       await axios.post(`${baseurl}/update`, {
-        params: model,
+        params: this.cleanUpModel(model),
         model_name: name,
       });
       this.state.error = false;

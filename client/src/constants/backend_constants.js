@@ -172,7 +172,7 @@ const BACKEND_CONSTANTS = deepFreeze({
       linking_length: 0.2,
     },
   },
-  FittingFunction_params: {
+  hmf_params: {
     PS: {},
     SMT: {
       a: 0.707,
