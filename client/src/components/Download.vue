@@ -119,9 +119,18 @@ export default {
       const blob = await zip.generateAsync({ type: 'blob' });
       return window.URL.createObjectURL(blob);
     },
-    async downloadPlotImage() {
-      await this.$store.createPlot();
-      return this.$store.state.plot;
+    async download_plotImage() {
+      const svgNode = document.getElementById('svg-plot');
+      const serializer = new XMLSerializer();
+      let plotString = serializer.serializeToString(svgNode);
+      if (!plotString.match(/^<svg[^>]+xmlns="http:\/\/www\.w3\.org\/2000\/svg"/)) {
+        plotString = plotString.replace(/^<svg/, '<svg xmlns="http://www.w3.org/2000/svg"');
+      }
+      if (!plotString.match(/^<svg[^>]+"http:\/\/www\.w3\.org\/1999\/xlink"/)) {
+        plotString = plotString.replace(/^<svg/, '<svg xmlns:xlink="http://www.w3.org/1999/xlink"');
+      }
+      plotString = `<?xml version="1.0" standalone="no"?>\r\n${plotString}`;
+      return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(plotString)}`;
     },
     async downloadAscii() {
       this.asciiDialogVisible = true;

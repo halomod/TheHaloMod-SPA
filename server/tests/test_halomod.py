@@ -1,17 +1,26 @@
 """Houses the tests for the server."""
 
-import pytest
 import imghdr
 import base64
 from halomod import TracerHaloModel
 import pickle
-import zipfile
 import io
+import zipfile
 
 
 def test_home(client):
     response = home(client)
     assert response.json['start'] == 'This is the HaloModApp'
+
+
+def test_ascii(client):
+    with client.session_transaction() as sess:
+        sess["models"] = pickle.dumps({"TheModel": TracerHaloModel()})
+    response = client.get('/ascii')
+    assert response is not None
+    assert response.status_code == 200
+    returnFile = io.BytesIO(response.data)
+    assert zipfile.is_zipfile(returnFile)
 
 
 def test_get_names(client):
@@ -24,14 +33,6 @@ def test_get_names(client):
     names = response.json["model_names"]
     assert "TheModel" in names
     assert "AnotherModel" in names
-
-
-def test_get_plot_types(client):
-    response = client.get('/get_plot_types')
-    assert response is not None
-    assert response.status_code == 200
-    assert "xLabels" in response.json
-    assert "plotOptions" in response.json
 
 
 def test_clone(client):
@@ -103,16 +104,12 @@ def test_clear(client):
 def test_get_plot_data(client):
     with client.session_transaction() as sess:
         sess["models"] = pickle.dumps({"TheModel": TracerHaloModel()})
-    response = client.post('/get_plot_data', json={"fig_type": "dndm"})
-    assert "plot_details" in response.json
-    assert "xlab" in response.json["plot_details"]
-    assert "ylab" in response.json["plot_details"]
-    assert "yscale" in response.json["plot_details"]
-
+    response = client.post('/get_plot_data', json={"x": "m", "y": "dndm"})
     assert "plot_data" in response.json
     assert "TheModel" in response.json["plot_data"]
 
 
+<<<<<<< HEAD
 def test_get_object_data(client):
     params = ["m", "k", "r", "k_hm"]
     with client.session_transaction() as sess:
@@ -129,18 +126,13 @@ def test_plot(client, plot_payload):
         sess["models"] = pickle.dumps(
             {"TheModel": TracerHaloModel(), "TheOtherModel": TracerHaloModel()})
     response = client.post('/plot', json={"fig_type": "dndm", "img_type": "png"})
+=======
+def test_constants(client):
+    response = client.get('/constants')
+>>>>>>> 5e4e50813aec22db3005c7b31b59d9ae0b2976de
     assert response is not None
     assert response.status_code == 200
-    json_response = response.json
-    assert "figure" in json_response
-
-    # Decode
-    base64_png = json_response['figure']
-    base64_bytes = base64_png.encode('ascii')
-    png_bytes = base64.b64decode(base64_bytes)
-
-    # Check to make sure it is a png
-    assert imghdr.what(None, h=png_bytes) == 'png'
+    assert "cosmo_defaults" in response.json
 
 
 def test_create(client, create_payload):
@@ -153,16 +145,6 @@ def test_create(client, create_payload):
     assert "model_names" in json_response
     assert "TheModel" in json_response["model_names"]
     assert "THE_BEST_MODEL_EVER" in json_response["model_names"]
-
-
-def test_ascii(client):
-    with client.session_transaction() as sess:
-        sess["models"] = pickle.dumps({"TheModel": TracerHaloModel()})
-    response = client.get('/ascii')
-    assert response is not None
-    assert response.status_code == 200
-    returnFile = io.BytesIO(response.data)
-    assert zipfile.is_zipfile(returnFile)
 
 
 def home(client):
