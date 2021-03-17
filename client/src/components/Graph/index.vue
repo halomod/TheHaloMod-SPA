@@ -17,7 +17,7 @@
             {{plotData[key].name}}
           </md-option>
         </md-select>
-
+        <md-checkbox v-model="xlog">log</md-checkbox>
       </md-field>
       <md-field>
         <label for="yAxisChoice">Y-Axis</label>
@@ -30,12 +30,15 @@
             {{plotData[choice].name}}
           </md-option>
         </md-select>
+        <md-checkbox v-model="ylog">log</md-checkbox>
       </md-field>
       <Plot
         :id="plotElementId"
         v-if="plotDataExists()"
         :plotData="READ_ONLY.plot.plotData"
         :plotElementId="plotElementId"
+        :xlog="xlog"
+        :ylog="ylog"
       />
       <p id="no-graph-notification" v-else>No graph has been generated yet</p>
       <Error v-if="READ_ONLY.error" :type="READ_ONLY.errorType" :message="READ_ONLY.errorMessage"/>
@@ -72,6 +75,8 @@ export default {
       yAxisChoice: null,
       plotElementId: 'd3-chart',
       plotData: PLOT_AXIS_METADATA,
+      xlog: true,
+      ylog: true,
     };
   },
   components: {
@@ -90,6 +95,10 @@ export default {
       });
     });
     [this.xAxisChoice] = Object.keys(this.xAxisChoices);
+  },
+  mounted() {
+    this.xlog = this.getAxisScale('x');
+    this.ylog = this.getAxisScale('y');
   },
   watch: {
     xAxisChoice(newXAxisChoice, oldXAxisChoice) {
@@ -112,6 +121,10 @@ export default {
     plotDataExists() {
       return this.READ_ONLY.plot.plotData !== null
         && Object.values(this.READ_ONLY.plot.plotData).length !== 0;
+    },
+    getAxisScale(axis) {
+      const plottype = this.READ_ONLY.plot[axis];
+      return PLOT_AXIS_METADATA[plottype].scale === 'log';
     },
   },
 };
