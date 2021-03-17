@@ -46,6 +46,7 @@
 <script>
 import baseUrl from '@/env';
 import axios from 'axios';
+import JSZip from 'jszip';
 
 const downloadChoiceObjs = {
   PlotImage: {
@@ -69,7 +70,7 @@ const downloadChoiceObjs = {
   Data: {
     displayName: 'Vector Data',
     name: 'Data',
-    downloadName: 'ModelVectorData.json',
+    downloadName: 'ModelVectorData.zip',
     loadingTitle: 'Getting key vectors for all models',
   },
 };
@@ -107,13 +108,15 @@ export default {
       });
       const json = result.data;
       const zip = new JSZip();
-      Object.entries(json).forEach((name, parameters) => {
-        Object.entries(json).forEach((parameter, data) => {
-          const csv = `data:text/csv;charset-utf-8,${data.map(element => element.join(','))}`;
-          zip.file(`${name}${parameter}vector.csv`, csv);
+      Object.entries(json).forEach(([name, parameters]) => {
+        Object.entries(parameters).forEach(([parameter, data]) => {
+          const { vector } = data;
+          const vectorString = vector.join('\n');
+          const csv = `${vectorString}`;
+          zip.file(`${name}${parameter}vector.txt`, csv);
         });
       });
-      const blob = await zip.generateAsync({type:"blob"});
+      const blob = await zip.generateAsync({ type: 'blob' });
       return window.URL.createObjectURL(blob);
     },
     async downloadPlotImage() {
