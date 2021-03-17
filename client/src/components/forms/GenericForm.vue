@@ -29,6 +29,17 @@
                 v-model="localHMModelFlat[params_key][paramsKey]">
                 {{paramsKey}}
               </md-checkbox>
+              <md-field v-else-if="typeof paramsValue === 'string'">
+                <label>{{getParameterLabel(paramsKey)}}</label>
+                <md-select v-model="localHMModelFlat[params_key][paramsKey]">
+                  <md-option
+                    v-for="(choiceName, choiceKey) in getParameterOptions(paramsKey)"
+                    :key="choiceKey"
+                    :value="choiceKey">
+                    {{choiceName}}
+                  </md-option>
+                </md-select>
+              </md-field>
               <double-field
                 v-else
                 :init="localHMModelFlat[params_key][paramsKey]"
@@ -44,6 +55,17 @@
               v-model="localHMModelFlat[key]">
               {{key}}
             </md-checkbox>
+            <md-field v-else-if="typeof value === 'string'">
+              <label>{{getParameterLabel(key)}}</label>
+              <md-select v-model="localHMModelFlat[key]">
+                <md-option
+                  v-for="(choiceName, choiceKey) in getParameterOptions(key)"
+                  :key="choiceKey"
+                  :value="choiceKey">
+                  {{choiceName}}
+                </md-option>
+              </md-select>
+            </md-field>
             <double-field
               v-else
               :init="localHMModelFlat[key]"
@@ -131,8 +153,6 @@ export default {
         return this.localHMModelFlat[this.model_key];
       },
       function updateParams(newModelName, oldModelName) {
-        debug('updateParams was ran');
-        debug('current localHMModelFlat is: ', this.localHMModelFlat);
         if (oldModelName === newModelName) return;
         // Use the method of updating appropriate to the form
         const [newHMModelFlat, newModelChoicesData] = this.updateModelChoice(
@@ -142,9 +162,7 @@ export default {
           this.localModelChoicesData,
         );
         // Change everything but the model name to avoid infinite loop
-        debug('current localHMModelFlat is: ', this.localHMModelFlat);
         delete newHMModelFlat[this.model_key];
-        debug('newHMModelFlat is: ', newHMModelFlat);
         this.localHMModelFlat = Object.assign(
           this.localHMModelFlat,
           newHMModelFlat,
@@ -202,6 +220,31 @@ export default {
         doubleProps.max = parameterProps.max;
       }
       return doubleProps;
+    },
+    /**
+     * Gets a label for the given parameter. This should only be used on
+     * parameters that have a string value.
+     */
+    getParameterLabel(parameterKey) {
+      const parameterProps = PARAMETER_PROPS[parameterKey];
+      if (parameterProps && parameterProps.plainName) {
+        return parameterProps.plainName;
+      }
+      return parameterKey;
+    },
+    /**
+     * Gets the options for a given parameter. This should only be used on
+     * parameters that have a string value.
+     */
+    getParameterOptions(parameterKey) {
+      const parameterProps = PARAMETER_PROPS[parameterKey];
+      if (!parameterProps || !parameterProps.options) {
+        console.error(`Error in parameter "${parameterKey}" \n`
+        + 'No options were provided for the string value parameter in '
+        + 'parameter_properties.js');
+        return {};
+      }
+      return parameterProps.options;
     },
     isVisible(parameterKey) {
       if (PARAMETER_PROPS[parameterKey]

@@ -18,6 +18,12 @@
  * `range` determines if the property should act as a slider. By default,
  * this is false. If it is a range, min and max should be defined.
  *
+ * `options` should be an object containing the different options for the field.
+ * This should only be filled out if the field accepts a string, and should be
+ * an object with the key being what is stored for the value when one of the
+ * options is selected, and the value being what is shown to the user. This
+ * MUST be filled out for parameters that accept a string.
+ *
  * @type {{
  *  [parameterName: string]: {
  *    visible?: boolean,
@@ -27,7 +33,10 @@
  *    html?: string,
  *    plainName?: string
  *    helpText?: string,
- *    range?: boolean
+ *    range?: boolean,
+ *    options?: {
+ *      [optionValue: string]: string
+ *    }
  *  }
  * }}
  */
@@ -115,36 +124,52 @@ const PARAMETER_PROPERTIES = {
     step: 0.05,
   },
   rnum: {
-    label: 'Number of r bins',
+    plainName: 'Number of r bins',
     min: 5.0,
     max: 100,
     value: 5,
   },
   hm_logk_min: {
-    label: 'Wavenumber Min (log10)',
+    plainName: 'Wavenumber Min (log10)',
     min: -3.0,
     max: 3.0,
     step: 0.05,
   },
   hm_logk_max: {
-    label: 'Wavenumber Max (log10)',
+    plainName: 'Wavenumber Max (log10)',
     min: -3.0,
     max: 3.0,
     step: 0.05,
   },
   hm_dlog10k: {
-    label: 'Halo Model k bin size',
+    plainName: 'Halo Model k bin size',
     min: 0.01,
     max: 1.0,
   },
   force_1halo_turnover: {
-    label: 'Force 1-halo turnover?',
+    plainName: 'Force 1-halo turnover?',
   },
   camb_params: {
     visible: false,
   },
   dark_energy_params: {
     visible: false,
+  },
+  sample: {
+    plainName: 'Sample',
+    options: {
+      relaxed: 'relaxed',
+      full: 'full',
+    },
+  },
+  hc_spectrum: {
+    plainName: 'Halo Centre Spectrum',
+    options: {
+      linear: 'linear',
+      nonlinear: 'nonlinear',
+      filtered_lin: 'filtered linear',
+      filtered_n1: 'filtered non-linear',
+    },
   },
 };
 
