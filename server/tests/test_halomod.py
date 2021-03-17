@@ -109,7 +109,6 @@ def test_get_plot_data(client):
     assert "TheModel" in response.json["plot_data"]
 
 
-<<<<<<< HEAD
 def test_get_object_data(client):
     params = ["m", "k", "r", "k_hm"]
     with client.session_transaction() as sess:
@@ -118,18 +117,11 @@ def test_get_object_data(client):
     assert "TheModel" in response.json
     for param in params:
         assert param in response.json["TheModel"]
-        assert response.json["TheModel"][param]["vector"]
+        assert response.json["TheModel"][param]
 
 
-def test_plot(client, plot_payload):
-    with client.session_transaction() as sess:
-        sess["models"] = pickle.dumps(
-            {"TheModel": TracerHaloModel(), "TheOtherModel": TracerHaloModel()})
-    response = client.post('/plot', json={"fig_type": "dndm", "img_type": "png"})
-=======
 def test_constants(client):
     response = client.get('/constants')
->>>>>>> 5e4e50813aec22db3005c7b31b59d9ae0b2976de
     assert response is not None
     assert response.status_code == 200
     assert "cosmo_defaults" in response.json

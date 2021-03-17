@@ -272,7 +272,6 @@ def create_app(test_config=None):
         res = {"model_names": get_model_names()}
         return jsonify(res)
 
-<<<<<<< HEAD
     # Generates a figure using session data & matplotlib rendering and
     # returns it to client
     #
@@ -329,12 +328,10 @@ def create_app(test_config=None):
             res[label] = {}
             for param_name in param_names:
                 if getattr(obj, param_name) is not None:
-                    res[label][param_name] = {"vector": list(getattr(obj, param_name))}
+                    res[label][param_name] = list(getattr(obj, param_name))
 
         return jsonify(res)
 
-=======
->>>>>>> 5e4e50813aec22db3005c7b31b59d9ae0b2976de
     @app.route('/ascii', methods=['GET'])
     def ascii():
         """ Builds and sends the text data for each model stored in the session,
