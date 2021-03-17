@@ -124,7 +124,7 @@ export default {
     },
     getAxisScale(axis) {
       const plottype = this.READ_ONLY.plot[axis];
-      return PLOT_AXIS_METADATA[plottype].scale === 'log';
+      return PLOT_AXIS_METADATA[plottype]?.scale === 'log';
     },
   },
 };
