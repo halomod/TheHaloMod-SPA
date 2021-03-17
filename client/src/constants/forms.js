@@ -42,7 +42,8 @@ debug.enabled = true;
  * at that form. It is also used in navigation.
  *
  * `model_key` is what is searched for in the `backend_constants` file to
- * retrieve the model that is currently chosen for the form.
+ * retrieve the model that is currently chosen for the form. If there is no
+ * model for the form, this property can be left out.
  *
  * `params_key` is what is searched for in the `backend_constants` file to
  * retrive properties for the different model selections. It is also used to
@@ -52,7 +53,7 @@ debug.enabled = true;
  * @type {{
  *  id: string,
  *  title: string,
- *  model_key: string,
+ *  model_key: string | undefined,
  *  modelChoices: ModelChoices,
  *  params_key: string,
  *  getRelevantHMModelFlat: GetRelevantHMModelFlatFunction,
@@ -425,12 +426,40 @@ const FORMS = {
   //   title: 'HMF',
   //   id: 'hmf',
   // },
-  // {
-  //   component: HaloModelForm,
-  //   model: 'halo_model',
-  //   title: 'Halo Model',
-  //   id: 'halo_model',
-  // },
+  halo_model: {
+    id: 'halo_model',
+    title: 'Halo Model',
+    modelChoices: {},
+    params_key: 'halo_model_params',
+    get getRelevantHMModelFlat() {
+      return function getRelevant(hmModelFlat) {
+        const relevantHMModelFlat = {};
+        Object.keys(BACKEND_CONSTANTS.halo_model_params).forEach((key) => {
+          relevantHMModelFlat[key] = hmModelFlat[key];
+        });
+        return relevantHMModelFlat;
+      };
+    },
+    get getModelChoicesDataFromFlat() {
+      return function getModelChoicesData() {
+        // There are no model options for this form
+        return {};
+      };
+    },
+    get updateModelChoice() {
+      return function updateModelChoice(_1, _2, hmModelFlat, modelChoicesData) {
+        return [hmModelFlat, modelChoicesData];
+      };
+    },
+    get flattenHMModel() {
+      return function flatten(hmModel) {
+        const partiallyFlattenedHMModel = clonedeep(hmModel);
+        delete partiallyFlattenedHMModel[this.params_key];
+        Object.assign(partiallyFlattenedHMModel, hmModel[this.params_key]);
+        return partiallyFlattenedHMModel;
+      };
+    },
+  },
   hod: {
     id: 'hod',
     title: 'HOD',

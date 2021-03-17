@@ -50,10 +50,8 @@
               v-model="localHMModelFlat[key]"
               v-bind="getDoubleFieldProps(key)"/>
           </div>
-
         </div>
       </div>
-
     </div>
   </form>
 </template>
@@ -87,7 +85,7 @@ export default {
     },
     model_key: {
       type: String,
-      required: true,
+      required: false,
     },
     params_key: {
       type: String,
@@ -125,10 +123,6 @@ export default {
        * different models, but possibly haven't been saved to the server yet.
        */
       localModelChoicesData: clonedeep(this.modelChoicesData),
-      /**
-       * A local version of the extraHMModelData.
-       */
-      localExtraHMModelData: clonedeep(this.extraHMModelData),
     };
   },
   created() {
