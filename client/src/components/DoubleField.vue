@@ -3,10 +3,9 @@
     <label v-if="html !== undefined" v-html="html"/>
     <label v-else>{{param}}</label>
     <md-input
-      v-model="current"
-      :value="current"/>
+      v-model="current"/>
     <div class="md-error" v-if="!isDefined">Value must be defined</div>
-    <div class="md-error" v-else-if="!isNumeric">Value must be a numeric</div>
+    <div class="md-error" v-else-if="!isNumeric">Value must be numeric</div>
     <div class="md-error" v-else-if="!isBetween">Value must be between {{min}} and {{max}}</div>
   </md-field>
 </template>
@@ -14,6 +13,10 @@
 <script>
 import { between, numeric, defined } from '../utils/validators';
 
+/**
+ * Needs to be updated to support just a min value and just a max
+ * value.
+ */
 export default {
   name: 'DoubleField',
   model: {
@@ -31,7 +34,7 @@ export default {
   data() {
     return {
       current: this.init,
-      default: this.init,
+      test: this.init,
     };
   },
   computed: {
@@ -43,19 +46,18 @@ export default {
   },
   watch: {
     current() {
-      // defaults to emitting the default value if current is not valid
-      this.$emit('input', this.isValid ? this.current : this.init);
+      if (this.isValid) {
+        this.$emit('input', Number(this.current));
+      }
     },
     /* handles case where init has been updated to a new value during a switch to a new route */
     init() {
       this.current = this.init;
-      this.default = this.init;
     },
   },
   /* handles case where values need to be reset because of a return to old route */
   activated() {
     this.current = this.init;
-    this.default = this.init;
   },
 };
 </script>
