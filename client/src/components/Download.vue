@@ -108,11 +108,12 @@ export default {
       }
       plotString = `<?xml version="1.0" standalone="no"?>\r\n${plotString}`;
       /* eslint-disable */
-      const doc = new jsPDF(); 
+       
       const imgString = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(plotString)}`;
-      const img = svgString2Image(imgString, 800, 300, 'png');
-      doc.addImage(img, 'png', 800, 300);
-      doc.save('test.pdf');
+      const tmp = "data:image/svg+xml;base64," + btoa(plotString);
+      const doc = new jsPDF();
+      console.log("got here");
+      svgString2Image(tmp, 800, 300, 'png', doc);
     },
     async download_ascii() {
       this.asciiDialogVisible = true;
