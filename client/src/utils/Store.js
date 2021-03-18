@@ -9,6 +9,8 @@ import {
   get,
   clear,
 } from 'idb-keyval';
+import BACKEND_CONSTANTS from '@/constants/backend_constants';
+import FORMS from '@/constants/forms';
 
 axios.defaults.withCredentials = true;
 
@@ -70,6 +72,21 @@ export default class Store {
     delete cleanedModel.ScaleDepBias_params;
     delete cleanedModel._HODCross_params;
     return cleanedModel;
+  }
+
+  /**
+   * Gets an `HMModelFlat` from the backend constants file by flattening it.
+   * This can be used to supply a default flattened file to the server or any
+   * other purposes like initializing state.
+   *
+   * @returns {import('@/constants/forms').HMModelFlat}
+   */
+  getHMModelFlatFromConstants = () => {
+    let hmModelFlat = clonedeep(BACKEND_CONSTANTS);
+    Object.values(FORMS).forEach((form) => {
+      hmModelFlat = form.flattenHMModel(hmModelFlat);
+    });
+    return hmModelFlat;
   }
 
   /**

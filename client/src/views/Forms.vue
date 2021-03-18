@@ -59,8 +59,6 @@
 <script>
 import clonedeep from 'lodash.clonedeep';
 import Forms from '@/components/Forms';
-import BACKEND_CONSTANTS from '@/constants/backend_constants.js';
-import FORMS from '@/constants/forms.js';
 
 /**
  * Represents the view of the forms for each type of data entered into halomod.
@@ -113,7 +111,7 @@ export default {
       this.loadingTitle = 'Creating your model...';
       this.contextPrimary = 'Create';
       this.contextSecondary = 'New Model';
-      this.initialHMModelFlat = this.getFlattenedConstants();
+      this.initialHMModelFlat = this.$store.getHMModelFlatFromConstants();
     }
     this.currentHMModelFlat = clonedeep(this.initialHMModelFlat);
   },
@@ -146,13 +144,6 @@ export default {
       this.loading = false;
       this.showSaveDialog = false;
       this.$router.push('/');
-    },
-    getFlattenedConstants() {
-      let hmModelFlat = clonedeep(BACKEND_CONSTANTS);
-      Object.values(FORMS).forEach((form) => {
-        hmModelFlat = form.flattenHMModel(hmModelFlat);
-      });
-      return hmModelFlat;
     },
   },
 };
