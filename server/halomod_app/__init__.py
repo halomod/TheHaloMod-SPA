@@ -312,7 +312,7 @@ def create_app(test_config=None):
           parameter passed to the endpoint
 
           expects: {"param_names": [<param_name>, <param_name>, etc...]}
-          outputs {"<model_name>: {<param_name>: "vector": <param_data_for_model>}, etc...}
+          outputs {"<model_name>: {<param_name>: <param_data_for_model>, etc...}, etc...}
         """
         request_json = request.get_json()
         param_names = request_json["param_names"]
