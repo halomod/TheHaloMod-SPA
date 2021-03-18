@@ -13,16 +13,6 @@ def test_home(client):
     assert response.json['start'] == 'This is the HaloModApp'
 
 
-def test_ascii(client):
-    with client.session_transaction() as sess:
-        sess["models"] = pickle.dumps({"TheModel": TracerHaloModel()})
-    response = client.get('/ascii')
-    assert response is not None
-    assert response.status_code == 200
-    returnFile = io.BytesIO(response.data)
-    assert zipfile.is_zipfile(returnFile)
-
-
 def test_get_names(client):
     with client.session_transaction() as sess:
         sess["models"] = pickle.dumps({"TheModel": {}, "AnotherModel": {}})

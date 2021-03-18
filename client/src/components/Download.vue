@@ -44,34 +44,30 @@
 </template>
 
 <script>
-import baseUrl from '@/env';
-import axios from 'axios';
-import JSZip from 'jszip';
+import {
+  downloadData,
+  downloadPlotImage,
+  downloadParamVals,
+} from '@/utils/downloads.js';
 
-const downloadChoiceObjs = {
+const downloadOptions = {
   PlotImage: {
-    displayName: 'Image of Plot',
     name: 'PlotImage',
-    downloadName: 'PlotImage',
+    displayName: 'Image of Plot',
+    fileName: 'PlotImage.svg',
     loadingTitle: 'Creating plot image...',
   },
-  Ascii: {
-    displayName: 'ASCII',
-    name: 'Ascii',
-    downloadName: 'AllData.zip',
-    loadingTitle: 'Retrieving ASCII data...',
-  },
   ParamVals: {
-    displayName: 'Parameter Values',
     name: 'ParamVals',
-    downloadName: 'ParameterValues.json',
+    displayName: 'Parameter Values',
+    fileName: 'ParameterValues.json',
     loadingTitle: 'Loading parameter values...',
   },
   Data: {
-    displayName: 'Vector Data',
     name: 'Data',
-    downloadName: 'ModelVectorData.zip',
-    loadingTitle: 'Getting key vectors for all models',
+    displayName: 'Vector Data',
+    fileName: 'ModelVectorData.zip',
+    loadingTitle: 'Getting all model data',
   },
 };
 
@@ -83,63 +79,27 @@ export default {
   name: 'Download',
   data() {
     return {
-      downloadChoices: Object.values(downloadChoiceObjs),
-      downloadChoice: Object.values(downloadChoiceObjs)[0].name,
+      downloadChoices: Object.values(downloadOptions),
+      downloadChoice: Object.values(downloadOptions)[0].name,
       loading: false,
       loadingTitle: '',
       asciiDialogVisible: false,
     };
   },
   methods: {
+    downloadData,
+    downloadPlotImage,
+    downloadParamVals,
     async handleClick() {
       const downloadNode = document.getElementById('download-element');
-      const { downloadName, name, loadingTitle } = downloadChoiceObjs[this.downloadChoice];
+      const { fileName, name, loadingTitle } = downloadOptions[this.downloadChoice];
       this.loadingTitle = loadingTitle;
       this.loading = true;
-      const href = await this[`download${name}`]();
+      const href = await this[`download${name}`](this.$store);
       downloadNode.setAttribute('href', href);
-      downloadNode.setAttribute('download', downloadName);
+      downloadNode.setAttribute('download', fileName);
       downloadNode.click();
       this.loading = false;
-    },
-    async downloadData() {
-      const result = await axios.post(`${baseUrl}/get_object_data`, {
-        param_names: ['m', 'k', 'r', 'k_hm'],
-      });
-      const json = result.data;
-      const zip = new JSZip();
-      Object.entries(json).forEach(([name, parameters]) => {
-        Object.entries(parameters).forEach(([parameter, data]) => {
-          const { vector } = data;
-          const vectorString = vector.join('\n');
-          const csv = `${vectorString}`;
-          zip.file(`${name}${parameter}vector.txt`, csv);
-        });
-      });
-      const blob = await zip.generateAsync({ type: 'blob' });
-      return window.URL.createObjectURL(blob);
-    },
-    async download_plotImage() {
-      const svgNode = document.getElementById('svg-plot');
-      const serializer = new XMLSerializer();
-      let plotString = serializer.serializeToString(svgNode);
-      if (!plotString.match(/^<svg[^>]+xmlns="http:\/\/www\.w3\.org\/2000\/svg"/)) {
-        plotString = plotString.replace(/^<svg/, '<svg xmlns="http://www.w3.org/2000/svg"');
-      }
-      if (!plotString.match(/^<svg[^>]+"http:\/\/www\.w3\.org\/1999\/xlink"/)) {
-        plotString = plotString.replace(/^<svg/, '<svg xmlns:xlink="http://www.w3.org/1999/xlink"');
-      }
-      plotString = `<?xml version="1.0" standalone="no"?>\r\n${plotString}`;
-      return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(plotString)}`;
-    },
-    async downloadAscii() {
-      this.asciiDialogVisible = true;
-      return `${baseUrl}/ascii`;
-    },
-    async downloadParamVals() {
-      const modelsJsonString = JSON.stringify(await this.$store.getAllModels(), null, 2);
-      const dataStr = `data:text/json;charset=utf-8,${encodeURIComponent(modelsJsonString)}`;
-      return dataStr;
     },
   },
 };

@@ -7339,7 +7339,7 @@ jsprim@^1.2.2:
     json-schema "0.2.3"
     verror "1.10.0"
 
-jszip@^3.6.0:
+jszip@^3.1.5:
   version "3.6.0"
   resolved "https://registry.yarnpkg.com/jszip/-/jszip-3.6.0.tgz#839b72812e3f97819cc13ac4134ffced95dd6af9"
   integrity sha512-jgnQoG9LKnWO3mnVNBnfhkh0QknICd1FGSrXcgrl67zioyJ4wgx25o9ZqwNtrROSflGBCGYnJfjrIyRIby1OoQ==
@@ -7715,6 +7715,11 @@ lodash.uniqby@^4.7.0:
   version "4.7.0"
   resolved "https://registry.npmjs.org/lodash.uniqby/-/lodash.uniqby-4.7.0.tgz"
   integrity sha1-2ZwHpmnp5tJOE2Lf4mbGdhavEwI=
+
+lodash.unzip@^3.4.0:
+  version "3.4.0"
+  resolved "https://registry.yarnpkg.com/lodash.unzip/-/lodash.unzip-3.4.0.tgz#99523e589832e0b4e1e8002462cd3c4501ba909f"
+  integrity sha1-mVI+WJgy4LTh6AAkYs08RQG6kJ8=
 
 lodash.values@^4.3.0:
   version "4.3.0"
