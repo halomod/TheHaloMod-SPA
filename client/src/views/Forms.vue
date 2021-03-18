@@ -58,7 +58,7 @@
 
 <script>
 import clonedeep from 'lodash.clonedeep';
-import Forms from '@/components/forms/index.vue';
+import Forms from '@/components/Forms';
 import BACKEND_CONSTANTS from '@/constants/backend_constants.js';
 import FORMS from '@/constants/forms.js';
 

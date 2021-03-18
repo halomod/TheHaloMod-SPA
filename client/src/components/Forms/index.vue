@@ -46,7 +46,7 @@ import FormWrapper from '@/components/FormWrapper.vue';
 import Navbar from '@/components/Navbar.vue';
 import clonedeep from 'lodash.clonedeep';
 import FORMS from '@/constants/forms';
-import GenericForm from './GenericForm.vue';
+import GenericForm from '@/components/Forms/GenericForm.vue';
 
 export default {
   name: 'Forms',
