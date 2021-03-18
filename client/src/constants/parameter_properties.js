@@ -123,20 +123,25 @@ const PARAMETER_PROPERTIES = {
     min: 0.005,
     max: 1,
   },
-  /**
-   * Need to do something about the scales for the below 2.
-   */
   rmin: {
     plainName: 'Scale (log10)',
     min: -3.0,
     max: 3.0,
     step: 0.05,
+    rangeSlider: {
+      isRangeSliderMin: true,
+      rangeSliderMaxParameter: 'rmax',
+    },
   },
   rmax: {
     plainName: 'Scale (log10)',
     min: -3.0,
     max: 3.0,
     step: 0.05,
+    rangeSlider: {
+      isRangeSliderMax: true,
+      rangeSliderMinParameter: 'rmin',
+    },
   },
   rnum: {
     plainName: 'Number of r bins',
@@ -145,7 +150,7 @@ const PARAMETER_PROPERTIES = {
     value: 5,
   },
   hm_logk_min: {
-    plainName: 'Wavenumber Min (log10)',
+    plainName: 'Wavenumber (log10)',
     min: -3.0,
     max: 3.0,
     step: 0.05,
@@ -155,7 +160,7 @@ const PARAMETER_PROPERTIES = {
     },
   },
   hm_logk_max: {
-    plainName: 'Wavenumber Max (log10)',
+    plainName: 'Wavenumber (log10)',
     min: -3.0,
     max: 3.0,
     step: 0.05,
