@@ -1,4 +1,18 @@
 /**
+ * If this field is defined, it means that it is part of a range slider combo
+ * of parameters where the max cannot be lower than the min and the min cannot
+ * be higher than the max.
+ *
+ * @typedef RangeSlider
+ * @type {{
+ *  isRangeSliderMin?: boolean,
+ *  isRangeSliderMax?: boolean,
+ *  rangeSliderMaxParameter?: string,
+ *  rangeSliderMinParameter?: string,
+ * }}
+ */
+
+/**
  * An object which determines the ranges of different parameters used, and other
  * useful information on each property that will be consistent across forms.
  *
@@ -34,6 +48,7 @@
  *    plainName?: string
  *    helpText?: string,
  *    range?: boolean,
+ *    rangeSlider?: RangeSlider,
  *    options?: {
  *      [optionValue: string]: string
  *    }
@@ -134,12 +149,20 @@ const PARAMETER_PROPERTIES = {
     min: -3.0,
     max: 3.0,
     step: 0.05,
+    rangeSlider: {
+      isRangeSliderMin: true,
+      rangeSliderMaxParameter: 'hm_logk_max',
+    },
   },
   hm_logk_max: {
     plainName: 'Wavenumber Max (log10)',
     min: -3.0,
     max: 3.0,
     step: 0.05,
+    rangeSlider: {
+      isRangeSliderMax: true,
+      rangeSliderMinParameter: 'hm_logk_min',
+    },
   },
   hm_dlog10k: {
     plainName: 'Halo Model k bin size',

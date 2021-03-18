@@ -40,6 +40,15 @@
                   </md-option>
                 </md-select>
               </md-field>
+              <div v-else-if="isSlider(paramsKey)">
+                <div v-if="isSliderMin(paramsKey)">
+                  <InputSlider
+                    v-if="isSliderMin(paramsKey)"
+                    :minParameterKey="paramsKey"
+                    v-model="localHMModelFlat[params_key]"
+                  />
+                </div>
+              </div>
               <double-field
                 v-else
                 :init="localHMModelFlat[params_key][paramsKey]"
@@ -66,6 +75,13 @@
                 </md-option>
               </md-select>
             </md-field>
+            <div v-else-if="isSlider(key)">
+              <InputSlider
+                v-if="isSliderMin(key)"
+                :minParameterKey="key"
+                v-model="localHMModelFlat"
+              />
+            </div>
             <double-field
               v-else
               :init="localHMModelFlat[key]"
@@ -81,12 +97,13 @@
 <script>
 import clonedeep from 'lodash.clonedeep';
 import DoubleField from '@/components/DoubleField.vue';
+import InputSlider from '@/components/InputSlider.vue';
 import Debug from 'debug';
 import isEqual from 'lodash.isequal';
 import PARAMETER_PROPS from '@/constants/parameter_properties.js';
 
 const debug = Debug('GenericForm.vue');
-debug.enabled = true;
+debug.enabled = false;
 
 export default {
   name: 'GenericForm',
@@ -133,6 +150,7 @@ export default {
   },
   components: {
     DoubleField,
+    InputSlider,
   },
   data() {
     return {
@@ -250,6 +268,21 @@ export default {
       if (PARAMETER_PROPS[parameterKey]
         && PARAMETER_PROPS[parameterKey].visible === false
       ) {
+        return false;
+      }
+      return true;
+    },
+    isSlider(parameterKey) {
+      const parameterProps = PARAMETER_PROPS[parameterKey];
+      if (!parameterProps || !parameterProps.rangeSlider) {
+        return false;
+      }
+      return true;
+    },
+    isSliderMin(parameterKey) {
+      const parameterProps = PARAMETER_PROPS[parameterKey];
+      if (!parameterProps || !parameterProps.rangeSlider
+      || !parameterProps.rangeSlider.isRangeSliderMin) {
         return false;
       }
       return true;

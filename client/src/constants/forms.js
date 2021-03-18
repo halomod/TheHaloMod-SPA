@@ -4,7 +4,7 @@ import Debug from 'debug';
 import BACKEND_CONSTANTS from './backend_constants';
 
 const debug = Debug('forms.js');
-debug.enabled = true;
+debug.enabled = false;
 
 /**
  * The HMModel stands for "Halo Mod Model" and represents the form that the
