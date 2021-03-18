@@ -55,6 +55,10 @@ export default class Store {
   /**
    * Cleans up a model for sending to the server. This removes parameters
    * that aren't accepted by the server but come from backend constants.
+   *
+   * @param {import('@/constants/forms').HMModelFlat} model the model to clean
+   * @returns {import('@/constants/forms').HMModelFlat} the cleaned model,
+   * ready to send to the server
    */
   cleanUpModel = (model) => {
     const cleanedModel = clonedeep(model);
@@ -71,7 +75,7 @@ export default class Store {
   /**
    * Gets the plot.
    *
-   * @returns {String} plot base64 string
+   * @returns {string} plot base64 string
    */
   getPlot = () => this.plot;
 
@@ -88,9 +92,10 @@ export default class Store {
 
   /**
    * Gets plot from server
-   * @param {String} x, x axis type
-   * @param {String} y, y axis type
-   * @return {String} image data base64 string, or null if request fails
+   *
+   * @param {string} x, x axis type
+   * @param {string} y, y axis type
+   * @returns {string} image data base64 string, or null if request fails
    */
   createPlot = async () => {
     // eslint-disable-next-line
@@ -102,8 +107,8 @@ export default class Store {
    * Sends the model data to server to create Tracer Halo Model Object. This
    * also saves the model into the local indexed db on the client.
    *
-   * @param {Object} model model data
-   * @param {String} name model name
+   * @param {object} model model data
+   * @param {string} name model name
    */
   createModel = async (model, name) => {
     try {
@@ -127,8 +132,8 @@ export default class Store {
   /**
    * Updates a model.
    *
-   * @param {Object} model the updated model object
-   * @param {String} name the name of the model to update
+   * @param {object} model the updated model object
+   * @param {string} name the name of the model to update
    */
   updateModel = async (name, model) => {
     try {
@@ -151,8 +156,8 @@ export default class Store {
   /**
    * Renames a model.
    *
-   * @param {String} oldName the original name of the model
-   * @param {String} newName the new name of the model
+   * @param {string} oldName the original name of the model
+   * @param {string} newName the new name of the model
    */
   renameModel = async (oldName, newName) => {
     try {
@@ -177,8 +182,8 @@ export default class Store {
   /**
    * Clones a model.
    *
-   * @param {String} oldName
-   * @param {String} newName
+   * @param {string} oldName
+   * @param {string} newName
    */
   cloneModel = async (oldName, newName) => {
     try {
@@ -215,8 +220,8 @@ export default class Store {
    * Gets (clones) a model with the given name. This returns a deep cloned
    * copy of the model.
    *
-   * @param {String} name the name of the model
-   * @returns {Object | undefined} a copy of the target model, or undefined if
+   * @param {string} name the name of the model
+   * @returns {object | undefined} a copy of the target model, or undefined if
    * it doesn't exist
    */
   getModel = async (name) => clonedeep(await this?.state.models[name]);
@@ -245,8 +250,8 @@ export default class Store {
   /**
    * Sets a model with the given name.
    *
-   * @param {String} name the name of the model
-   * @param {Object} model the model to set
+   * @param {string} name the name of the model
+   * @param {object} model the model to set
    */
   setModel = async (name, model) => {
     try {
@@ -268,7 +273,7 @@ export default class Store {
   /**
    * Deletes a model.
    *
-   * @param {String} name the name of the model to delete
+   * @param {string} name the name of the model to delete
    */
   deleteModel = async (name) => {
     try {
