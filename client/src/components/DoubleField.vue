@@ -34,7 +34,6 @@ export default {
   data() {
     return {
       current: this.init,
-      test: this.init,
     };
   },
   computed: {

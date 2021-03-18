@@ -23,12 +23,11 @@ describe('Mounted DoubleField', () => {
 
   test('initializes with correct value', () => {
     expect(wrapper.vm.current).toEqual(wrapper.vm.init);
-    expect(wrapper.vm.default).toEqual(wrapper.vm.init);
   });
 
   test('displays no errors when current is valid', () => {
     expect(wrapper.html()).toEqual(expect.not.stringContaining('Value must be defined'));
-    expect(wrapper.html()).toEqual(expect.not.stringContaining('Value must be a numeric'));
+    expect(wrapper.html()).toEqual(expect.not.stringContaining('Value must be numeric'));
     expect(wrapper.html()).toEqual(expect.not.stringContaining('Value must be between 5 and 10'));
   });
 
@@ -41,7 +40,7 @@ describe('Mounted DoubleField', () => {
   test('displays \'not numeric\' error if current is not numeric', async () => {
     wrapper.vm.current = '0.0.0';
     await localVue.nextTick();
-    expect(wrapper.html()).toEqual(expect.stringContaining('Value must be a numeric'));
+    expect(wrapper.html()).toEqual(expect.stringContaining('Value must be numeric'));
   });
 
   test('displays \'not between\' error if current is not in range', async () => {
@@ -50,23 +49,16 @@ describe('Mounted DoubleField', () => {
     expect(wrapper.html()).toEqual(expect.stringContaining('Value must be between 5 and 10'));
   });
 
-  test('updates current and default when init changes', async () => {
+  test('updates current when init changes', async () => {
     await wrapper.setProps({ ...propsData, init: 12 });
     await localVue.nextTick();
     expect(wrapper.vm.current).toEqual(wrapper.vm.init);
-    expect(wrapper.vm.default).toEqual(wrapper.vm.init);
   });
 
   test('emits current value on valid change', async () => {
     wrapper.vm.current = 6;
     await localVue.nextTick();
     expect(wrapper.emitted('input')[0]).toEqual([6]);
-  });
-
-  test('emits default on invalid change', async () => {
-    wrapper.vm.current = 12;
-    await localVue.nextTick();
-    expect(wrapper.emitted('input')[0]).toEqual([7]);
   });
 
   test('displays the field name as text if html prop is undefined', async () => {
