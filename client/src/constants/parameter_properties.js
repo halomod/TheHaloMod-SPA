@@ -3,6 +3,9 @@
  * of parameters where the max cannot be lower than the min and the min cannot
  * be higher than the max.
  *
+ * The `plainName` of both of the parameters associated with the range slider
+ * will be the `plainName` of the minimum parameter.
+ *
  * @typedef RangeSlider
  * @type {{
  *  isRangeSliderMin?: boolean,
@@ -106,16 +109,24 @@ const PARAMETER_PROPERTIES = {
     max: 3,
   },
   Mmin: {
-    plainName: 'Mass Range Min (log10)',
+    plainName: 'Mass Range (log10)',
     range: true,
     min: 0,
     max: 20,
+    rangeSlider: {
+      isRangeSliderMin: true,
+      rangeSliderMaxParameter: 'Mmax',
+    },
   },
   Mmax: {
-    plainName: 'Mass Range Max (log10)',
+    plainName: 'Mass Range (log10)',
     range: true,
     min: 0,
     max: 20,
+    rangeSlider: {
+      isRangeSliderMax: true,
+      rangeSliderMinParameter: 'Mmin',
+    },
   },
   dlog10m: {
     plainName: 'Mass resolution (log10)',
