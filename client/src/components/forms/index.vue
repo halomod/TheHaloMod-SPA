@@ -104,6 +104,12 @@ export default {
     },
   },
   methods: {
+    /**
+     * At the moment, this function triggers a re-render of the forms.
+     * It might be good to find a way to make this not happen. This can be
+     * seen by setting up a debugging statement in a lifecycle hook for a
+     * re-render in the generic form.
+     */
     setCurrentlyVisible(id, title) {
       this.currentlyVisible = title;
       window.history.replaceState({}, '', `#${id}`);
