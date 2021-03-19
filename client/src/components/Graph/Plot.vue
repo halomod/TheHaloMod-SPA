@@ -21,6 +21,12 @@ export default {
       type: String,
       required: true,
     },
+    xlog: {
+      type: Boolean,
+    },
+    ylog: {
+      type: Boolean,
+    },
   },
   mounted() {
     // Init
@@ -35,11 +41,17 @@ export default {
       debug('Data changed');
       this.generatePlot();
     },
+    xlog() {
+      this.generatePlot();
+    },
+    ylog() {
+      this.generatePlot();
+    },
   },
   methods: {
     generatePlot() {
       debug('plot being built');
-      buildPlot(this.plotElementId, this.$store.state.plot);
+      buildPlot(this.plotElementId, this.$store.state.plot, this.xlog, this.ylog);
     },
   },
   beforeDestroy() {
