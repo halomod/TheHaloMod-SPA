@@ -358,7 +358,9 @@ def create_app(test_config=None):
     @app.route('/toml', methods=['GET'])
     def toml_route():
         """ Builds and sends a toml file for each model in the user's session in a
-        zip folder.
+        zip folder. These can be used to input into the `halomod` library by
+        running the following in your shell:
+        `halomod run --config "tomlFileName.toml"`.
 
         get:
         responses:
