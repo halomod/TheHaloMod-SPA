@@ -1,41 +1,48 @@
 <template>
   <div>
-    <md-toolbar class="md-large">
+    <md-toolbar class="md-large md-layout">
       <div class="md-toolbar-row">
         <div class="md-toolbar-section-start">
           <h3 class="md-title">Plot</h3>
         </div>
       </div>
-      <md-field v-if="xAxisChoices">
-        <label for="xAxisChoice">X-Axis</label>
-        <md-select v-model="xAxisChoice" id="xAxisChoices" name="xAxisChoice">
-          <md-option
-            v-for="(_, key) in xAxisChoices"
-            :key="key"
-            :value="key"
-          >
-            {{plotData[key].name}}
-          </md-option>
-        </md-select>
-
-      </md-field>
-      <md-field>
-        <label for="yAxisChoice">Y-Axis</label>
-        <md-select v-if="xAxisChosen" v-model="yAxisChoice" id="yAxisChoices" name="yAxisChoice">
-          <md-option
-            v-for="choice in yAxisChoices"
-            :key="choice"
-            :value="choice"
-          >
-            {{plotData[choice].name}}
-          </md-option>
-        </md-select>
-      </md-field>
+      <div class="md-layout-item md-size-100 md-layout md-gutter">
+        <md-field v-if="xAxisChoices" class="md-layout-item md-gutter md-size-85">
+          <label for="xAxisChoice">X-Axis</label>
+          <md-select v-model="xAxisChoice" id="xAxisChoices" name="xAxisChoice">
+            <md-option
+              v-for="(_, key) in xAxisChoices"
+              :key="key"
+              :value="key"
+            >
+              {{plotData[key].name}}
+            </md-option>
+          </md-select>
+        </md-field>
+        <md-checkbox v-model="xlog" class="md-layout-item md-gutter">log</md-checkbox>
+      </div>
+      <div class="md-layout-item md-size-100 md-layout md-gutter">
+        <md-field class="md-layout-item md-gutter md-size-85">
+          <label for="yAxisChoice">Y-Axis</label>
+          <md-select v-if="xAxisChosen" v-model="yAxisChoice" id="yAxisChoices" name="yAxisChoice">
+            <md-option
+              v-for="choice in yAxisChoices"
+              :key="choice"
+              :value="choice"
+            >
+              {{plotData[choice].name}}
+            </md-option>
+          </md-select>
+        </md-field>
+        <md-checkbox class="md-layout-item md-gutter" v-model="ylog">log</md-checkbox>
+      </div>
       <Plot
         :id="plotElementId"
         v-if="plotDataExists()"
         :plotData="READ_ONLY.plot.plotData"
         :plotElementId="plotElementId"
+        :xlog="xlog"
+        :ylog="ylog"
       />
       <p id="no-graph-notification" v-else>No graph has been generated yet</p>
       <Error v-if="READ_ONLY.error" :type="READ_ONLY.errorType" :message="READ_ONLY.errorMessage"/>
@@ -72,6 +79,8 @@ export default {
       yAxisChoice: null,
       plotElementId: 'd3-chart',
       plotData: PLOT_AXIS_METADATA,
+      xlog: true,
+      ylog: true,
     };
   },
   components: {
@@ -90,6 +99,10 @@ export default {
       });
     });
     [this.xAxisChoice] = Object.keys(this.xAxisChoices);
+  },
+  mounted() {
+    this.xlog = this.getAxisScale('x');
+    this.ylog = this.getAxisScale('y');
   },
   watch: {
     xAxisChoice(newXAxisChoice, oldXAxisChoice) {
@@ -112,6 +125,10 @@ export default {
     plotDataExists() {
       return this.READ_ONLY.plot.plotData !== null
         && Object.values(this.READ_ONLY.plot.plotData).length !== 0;
+    },
+    getAxisScale(axis) {
+      const plottype = this.READ_ONLY.plot[axis];
+      return PLOT_AXIS_METADATA[plottype]?.scale === 'log';
     },
   },
 };
