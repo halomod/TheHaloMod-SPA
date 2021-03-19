@@ -90,13 +90,6 @@ export default class Store {
   }
 
   /**
-   * Gets the plot.
-   *
-   * @returns {string} plot base64 string
-   */
-  getPlot = () => this.plot;
-
-  /**
    * The way that data is formatted for each plot option.
    *
    * @typedef PlotDetails
@@ -106,19 +99,6 @@ export default class Store {
    *  yScale: string
    * }}
    */
-
-  /**
-   * Gets plot from server
-   *
-   * @param {string} x, x axis type
-   * @param {string} y, y axis type
-   * @returns {string} image data base64 string, or null if request fails
-   */
-  createPlot = async () => {
-    // eslint-disable-next-line
-    alert('Going to be updated in next merge');
-    return null;
-  }
 
   /**
    * Sends the model data to server to create Tracer Halo Model Object. This
