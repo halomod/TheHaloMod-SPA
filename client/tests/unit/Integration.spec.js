@@ -1,19 +1,12 @@
 import { mount, createLocalVue } from '@vue/test-utils';
 import FormView from '@/views/Forms.vue';
-import Forms from '@/components/forms';
-import BiasForm from '@/components/forms/BiasForm.vue';
-import ConcentrationForm from '@/components/forms/ConcentrationForm.vue';
-import HaloExclusion from '@/components/forms/HaloExclusionForm.vue';
-import HMFForm from '@/components/forms/HMFForm.vue';
-import HODForm from '@/components/forms/HODForm.vue';
-import ProfileForm from '@/components/forms/ProfileForm.vue';
-import CosmologyForm from '@/components/forms/CosmologyForm.vue';
-import MassDefinitionForm from '@/components/forms/MassDefinitionForm.vue';
-import GrowthForm from '@/components/forms/GrowthForm.vue';
-import HaloModelForm from '@/components/forms/HaloModelForm.vue';
-import FilterForm from '@/components/forms/FilterForm.vue';
-import TransferForm from '@/components/forms/TransferForm.vue';
+import Forms from '@/components/Forms';
+import FORMS from '@/constants/forms';
+import GenericForm from '@/components/Forms/GenericForm';
+import Store from '@/utils/Store';
+import Vue from 'vue';
 import VueMaterial from 'vue-material';
+import makeServer from '../mockServer';
 
 const $route = {
   path: '/create',
@@ -23,32 +16,51 @@ const $route = {
   query: null,
 };
 
-const subforms = [
-  ['BiasForm', BiasForm, 'Seljack04Cosmo'],
-  ['ConcentrationForm', ConcentrationForm, 'Zehavi11'],
-  ['HaloExclusionForm', HaloExclusion, 'DblSphere'],
-  ['HMFForm', HMFForm, 'Reed07'],
-  ['HODForm', HODForm, 'Contreras13'],
-  ['ProfileForm', ProfileForm, 'Einasto'],
-  ['MassDefinitionForm', MassDefinitionForm, 'SOCritical'],
-  ['GrowthForm', GrowthForm, 'GenMFGrowth'],
-  ['HaloModelForm', HaloModelForm, 'filtered_lin'],
-  ['FilterForm', FilterForm, 'SharpK'],
-  ['TransferForm', TransferForm, 'BondEfs'],
-  ['CosmologyForm', CosmologyForm, 'WMAP5'],
-];
+const subFormOptions = {
+  cosmo: 'WMAP5',
+  mdef: 'SOCritical',
+  transfer: 'BondEfs',
+  filter: 'SharpK',
+  growth: 'GenMFGrowth',
+  hmf: 'Reed07',
+  halo_model: 'filtered_lin',
+  hod: 'Contreras13',
+  bias: 'Seljack04Cosmo',
+  halo_concentration: 'Zehavi11',
+  tracer_concentration: 'Zehavi11',
+  halo_profile: 'Einasto',
+  tracer_profile: 'Einasto',
+  halo_exclusion: 'DblSphere',
+};
+
+// Disable dev notice info logs. Just a quality of life thing.
+Vue.config.productionTip = false;
+Vue.config.devtools = false;
+
+// Setup a fake indexedDB because `window` does not exist while testing.
+require('fake-indexeddb/auto');
 
 describe('Mounted FormView', () => {
   const localVue = createLocalVue();
   localVue.use(VueMaterial);
 
   let wrapper;
+  let server;
+  let genericForms;
 
   beforeAll(async () => {
+    server = makeServer('test');
+    const store = new Store();
+    await store.init();
+    if (typeof store.state !== 'object') {
+      throw new Error('Store wasn\'t initialized correctly in test. The store is'
+      + ` ${JSON.stringify(store)}`);
+    }
     wrapper = mount(FormView, {
       localVue,
       mocks: {
         $route,
+        $store: store,
       },
       stubs: {
         'vue-observe-visibility': true,
@@ -59,6 +71,9 @@ describe('Mounted FormView', () => {
     wrapper.vm.$options.activated[0].call(wrapper.vm);
     await wrapper.vm.$nextTick();
   });
+  afterAll(() => {
+    server.shutdown();
+  });
 
   test('renders top level view FormView component', () => {
     expect(wrapper.findComponent(FormView).exists()).toBe(true);
@@ -68,49 +83,50 @@ describe('Mounted FormView', () => {
     expect(wrapper.findComponent(Forms).exists()).toBe(true);
   });
 
-  test.each(subforms)('renders %s subform.',
-    async (_, component) => {
-      expect(wrapper.findComponent(component).exists()).toBe(true);
+  test('renders all subforms',
+    () => {
+      genericForms = wrapper.findAllComponents(GenericForm).wrappers;
+      const formsLength = Object.keys(FORMS).length;
+      expect(genericForms.length).toBe(formsLength);
     });
 
-  test.each(subforms)('updates composite form state whenever %s subform state changes',
-    async (_, component, newOption) => {
-      const originalState = wrapper.vm.current;
-      const subform = wrapper.findComponent(component);
-      const keys = Object.keys(subform.vm.model);
-      const modelKey = component === HaloModelForm
-        ? 'hc_spectrum'
-        : keys.filter((key) => key.includes('model'))[0];
-      subform.vm.model[modelKey] = newOption;
-      await wrapper.vm.$nextTick();
-      expect(wrapper.vm.current).not.toBe(originalState);
+  describe('subform tests', () => {
+    test('updates composite form state whenever subform state changes', async () => {
+      await genericForms.forEach(async (genericForm) => {
+        const component = genericForm;
+        const formTitle = component.vm.title;
+        expect(formTitle).toBeDefined();
+        const formObj = Object.values(FORMS).find((form) => form.title === formTitle);
+        expect(formObj).toBeDefined();
+        const newOption = subFormOptions[formObj.id];
+        const originalState = wrapper.vm.currentHMModelFlat;
+        const keys = Object.keys(component.vm.localHMModelFlat);
+        const modelKey = formTitle === FORMS.halo_model.title
+          ? 'hc_spectrum'
+          : keys.filter((key) => key.includes('model'))[0];
+        component.vm.localHMModelFlat[modelKey] = newOption;
+        await wrapper.vm.$nextTick();
+        expect(wrapper.vm.currentHMModelFlat).not.toBe(originalState);
+      });
     });
 
-  test.each(subforms)('does not update %s subform state when composite form state changes',
-    async (_, component, newOption) => {
-      const subform = wrapper.findComponent(component);
-      const subformId = subform.vm.subform_id;
-      const keys = Object.keys(subform.vm.model);
-      const modelKey = component === HaloModelForm
-        ? 'hc_spectrum'
-        : keys.filter((key) => key.includes('model'))[0];
-      const originalState = subform.vm.model[modelKey];
-      wrapper.vm.current[subformId][modelKey] = newOption;
-      await wrapper.vm.$nextTick();
-      expect(subform.vm.model[modelKey]).toBe(originalState);
+    test('does not update subform state when composite form state changes', async () => {
+      await genericForms.forEach(async (genericForm) => {
+        const component = genericForm;
+        const formTitle = component.vm.title;
+        expect(formTitle).toBeDefined();
+        const formObj = Object.values(FORMS).find((form) => form.title === formTitle);
+        expect(formObj).toBeDefined();
+        const newOption = subFormOptions[formObj.id];
+        const keys = Object.keys(component.vm.localHMModelFlat);
+        const modelKey = formTitle === FORMS.halo_model.title
+          ? 'hc_spectrum'
+          : keys.filter((key) => key.includes('model'))[0];
+        const originalState = component.vm.localHMModelFlat[modelKey];
+        wrapper.vm.currentHMModelFlat[modelKey] = newOption;
+        await wrapper.vm.$nextTick();
+        expect(component.vm.localHMModelFlat[modelKey]).toBe(originalState);
+      });
     });
-
-  test.each(subforms)('does not expose top-level state objects to direct manipulation from %s subform',
-    async (_, component, newOption) => {
-      const subform = wrapper.findComponent(component);
-      const subformId = subform.vm.subform_id;
-      expect(subform.vm.model).not.toBe(wrapper.vm.current[subformId]);
-      const keys = Object.keys(subform.vm.model);
-      const modelKey = component === HaloModelForm
-        ? 'hc_spectrum'
-        : keys.filter((key) => key.includes('model'))[0];
-      subform.vm.model[modelKey] = newOption;
-      await wrapper.vm.$nextTick();
-      expect(subform.vm.model).not.toBe(wrapper.vm.current[subformId]);
-    });
+  });
 });

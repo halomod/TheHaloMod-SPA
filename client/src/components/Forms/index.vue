@@ -30,6 +30,7 @@
               <GenericForm
                 v-if="initialHMModelFlat"
                 v-bind="buildProps(form)"
+                :testName="form.title"
                 @onChange="handleFormDataChange"/>
             </FormWrapper>
             <md-divider/>
