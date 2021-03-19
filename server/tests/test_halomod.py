@@ -1,7 +1,5 @@
 """Houses the tests for the server."""
 
-import imghdr
-import base64
 from halomod import TracerHaloModel
 import pickle
 import io
