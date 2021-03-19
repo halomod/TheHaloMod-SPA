@@ -379,7 +379,8 @@ def create_app(test_config=None):
 
         for label, object in models.items():
             s = io.BytesIO()
-            s.write(toml.dumps(framework_to_dict(object)).encode())
+            s.write(toml.dumps(framework_to_dict(object),
+                               encoder=toml.TomlNumpyEncoder()).encode())
             archive.writestr(f"{label}.toml", s.getvalue())
             s.close()
 
