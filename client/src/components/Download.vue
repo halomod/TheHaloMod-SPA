@@ -46,6 +46,7 @@
 <script>
 import baseUrl from '@/env';
 import { jsPDF } from 'jspdf';
+import { saveAs } from 'file-saver';
 import svgString2Image from '../utils/imgUtils';
 
 const downloadChoiceObjs = {
@@ -96,24 +97,31 @@ export default {
       downloadNode.click();
       this.loading = false;
     },
+    /* eslint-disable */
     async download_plotImage() {
       const svgNode = document.getElementById('svg-plot');
       const serializer = new XMLSerializer();
       let plotString = serializer.serializeToString(svgNode);
-      if (!plotString.match(/^<svg[^>]+xmlns="http:\/\/www\.w3\.org\/2000\/svg"/)) {
+      /* if (!plotString.match(/^<svg[^>]+xmlns="http:\/\/www\.w3\.org\/2000\/svg"/)) {
         plotString = plotString.replace(/^<svg/, '<svg xmlns="http://www.w3.org/2000/svg"');
       }
       if (!plotString.match(/^<svg[^>]+"http:\/\/www\.w3\.org\/1999\/xlink"/)) {
         plotString = plotString.replace(/^<svg/, '<svg xmlns:xlink="http://www.w3.org/1999/xlink"');
       }
-      plotString = `<?xml version="1.0" standalone="no"?>\r\n${plotString}`;
-      /* eslint-disable */
-       
+      plotString = `<?xml version="1.0" standalone="no"?>\r\n${plotString}`; */
+      
+      plotString = plotString.replace(/(\w+)?:?xlink=/g, 'xmlns:xlink='); // Fix root xlink without namespace
+	    plotString = plotString.replace(/NS\d+:href/g, 'xlink:href'); // Safari NS namespace fix
       const imgString = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(plotString)}`;
-      const tmp = "data:image/svg+xml;base64," + btoa(plotString);
+      const tmp = "data:image/svg+xml;base64," + btoa( unescape( encodeURIComponent( plotString ) ));
       const doc = new jsPDF();
-      console.log("got here");
-      svgString2Image(tmp, 800, 300, 'png', doc);
+
+      const save = function save( dataBlob, filesize ){
+		    saveAs( dataBlob, 'D3 vis exported to PNG.png' ); // FileSaver.js function
+      };
+      
+      
+      svgString2Image(tmp, 800, 800, 'png', save);
     },
     async download_ascii() {
       this.asciiDialogVisible = true;
