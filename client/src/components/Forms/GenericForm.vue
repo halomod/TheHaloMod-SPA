@@ -250,8 +250,10 @@ export default {
       return parameterProps.options;
     },
     isVisible(parameterKey) {
-      return PARAMETER_PROPS[parameterKey]
-        && PARAMETER_PROPS[parameterKey].visible !== false;
+      // Visible if parameter props do not exist or parameter props visible
+      // property is not equal to false
+      return !PARAMETER_PROPS[parameterKey]
+        || PARAMETER_PROPS[parameterKey].visible !== false;
     },
     isSlider(parameterKey) {
       const parameterProps = PARAMETER_PROPS[parameterKey];

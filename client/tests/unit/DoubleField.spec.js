@@ -9,7 +9,7 @@ describe('Mounted DoubleField', () => {
     range: true,
     min: 5,
     max: 10,
-    param: 'field_name',
+    plainName: 'field_name',
     html: '<b>field_html<b>',
   };
 
@@ -64,11 +64,11 @@ describe('Mounted DoubleField', () => {
   test('displays the field name as text if html prop is undefined', async () => {
     await wrapper.setProps({ ...propsData, html: undefined });
     await localVue.nextTick();
-    expect(wrapper.html()).toEqual(expect.stringContaining(wrapper.vm.param));
+    expect(wrapper.html()).toEqual(expect.stringContaining(wrapper.vm.plainName));
   });
 
   test('displays the field name as html if html prop is defined', async () => {
-    expect(wrapper.html()).toEqual(expect.not.stringContaining(wrapper.vm.param));
+    expect(wrapper.html()).toEqual(expect.not.stringContaining(wrapper.vm.plainName));
     expect(wrapper.html()).toEqual(expect.stringContaining(wrapper.vm.html));
   });
 });

@@ -103,7 +103,7 @@ describe('Mounted GenericForm', () => {
 
   test('renders correct number of fields when model selection changes',
     async () => {
-      let fields = wrapper.findAllComponents({ name: 'DoubleField' });
+      let fields = wrapper.findAllComponents({ name: 'DoubleField' }).wrappers;
       expect(fields).toHaveLength(Object.keys(wrapper.vm.localModelChoicesData
         .Tinker10).length);
       wrapper.vm.localHMModelFlat.bias_model = 'Tinker10PBSplit';
