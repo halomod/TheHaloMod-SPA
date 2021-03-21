@@ -1,7 +1,7 @@
 <template>
   <md-field :class="validationClass">
     <label v-if="html !== undefined" v-html="html"/>
-    <label v-else>{{param}}</label>
+    <label v-else>{{plainName}}</label>
     <md-input
       v-model="current"/>
     <div class="md-error" v-if="!isDefined">Value must be defined</div>
@@ -28,7 +28,7 @@ export default {
     'range', // boolean indicating whether it has a range
     'min', // minimum of the range (if exists)
     'max', // maximum of the range (if exists)
-    'param', // string name of the field
+    'plainName', // string name of the field
     'html', // html name of the field
   ],
   data() {

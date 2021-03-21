@@ -215,29 +215,14 @@ export default {
     getDoubleFieldProps(parameterKey) {
       const parameterProps = PARAMETER_PROPS[parameterKey];
       const doubleProps = {
-        param: parameterKey,
+        plainName: parameterKey,
         range: false,
       };
 
       // If properties do not exist, pass the default values
       if (!parameterProps) return doubleProps;
 
-      if (parameterProps.plainName) {
-        doubleProps.param = parameterProps.plainName;
-      }
-      if (parameterProps.html) {
-        doubleProps.html = parameterProps.html;
-      }
-      if (parameterProps.range) {
-        doubleProps.range = parameterProps.range;
-      }
-      if (parameterProps.min) {
-        doubleProps.min = parameterProps.min;
-      }
-      if (parameterProps.max) {
-        doubleProps.max = parameterProps.max;
-      }
-      return doubleProps;
+      return { ...parameterProps };
     },
     /**
      * Gets a label for the given parameter. This should only be used on
