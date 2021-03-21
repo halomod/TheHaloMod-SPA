@@ -222,7 +222,7 @@ export default {
       // If properties do not exist, pass the default values
       if (!parameterProps) return doubleProps;
 
-      return { ...parameterProps };
+      return { ...Object.assign(doubleProps, parameterProps) };
     },
     /**
      * Gets a label for the given parameter. This should only be used on
@@ -250,12 +250,8 @@ export default {
       return parameterProps.options;
     },
     isVisible(parameterKey) {
-      if (PARAMETER_PROPS[parameterKey]
-        && PARAMETER_PROPS[parameterKey].visible === false
-      ) {
-        return false;
-      }
-      return true;
+      return PARAMETER_PROPS[parameterKey]
+        && PARAMETER_PROPS[parameterKey].visible !== false;
     },
     isSlider(parameterKey) {
       const parameterProps = PARAMETER_PROPS[parameterKey];

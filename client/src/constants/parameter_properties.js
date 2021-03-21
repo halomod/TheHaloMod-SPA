@@ -61,11 +61,16 @@
 const PARAMETER_PROPERTIES = {
   lnk_min: {
     min: Math.log(1 * 10 ** -10),
+    max: Math.log(2 * 10 ** 6),
+    range: true,
   },
   lnk_max: {
+    min: Math.log(1 * 10 ** -10),
     max: Math.log(2 * 10 ** 6),
+    range: true,
   },
   dlnk: {
+    plainName: 'lnk Step Size',
     min: 0.005,
     max: 0.5,
   },
