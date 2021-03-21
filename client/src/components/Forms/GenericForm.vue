@@ -260,12 +260,8 @@ export default {
       return parameterProps && parameterProps.rangeSlider;
     },
     isSliderMin(parameterKey) {
-      const parameterProps = PARAMETER_PROPS[parameterKey];
-      if (!parameterProps || !parameterProps.rangeSlider
-      || !parameterProps.rangeSlider.isRangeSliderMin) {
-        return false;
-      }
-      return true;
+      return this.isSlider(parameterKey) && PARAMETER_PROPS[parameterKey]
+        .rangeSlider.isRangeSliderMin;
     },
   },
 };
