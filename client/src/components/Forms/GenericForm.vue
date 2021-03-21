@@ -257,10 +257,7 @@ export default {
     },
     isSlider(parameterKey) {
       const parameterProps = PARAMETER_PROPS[parameterKey];
-      if (!parameterProps || !parameterProps.rangeSlider) {
-        return false;
-      }
-      return true;
+      return parameterProps && parameterProps.rangeSlider;
     },
     isSliderMin(parameterKey) {
       const parameterProps = PARAMETER_PROPS[parameterKey];
