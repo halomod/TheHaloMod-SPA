@@ -1,10 +1,10 @@
 <template>
 <div>
   <Forms
-    :init="initial"
+    :initialHMModelFlat="initialHMModelFlat"
     :contextPrimary="contextPrimary"
     :contextSecondary="contextSecondary"
-    @onChange="(data) => current = data" v-if="initial"/>
+    @onChange="(data) => currentHMModelFlat = data" v-if="initialHMModelFlat"/>
   <div id="float">
     <md-button @click="showCancelDialog = true" class="md-raised">Cancel</md-button>
     <md-button @click="showSaveDialog = true" class="md-raised md-primary">
@@ -57,9 +57,8 @@
 </template>
 
 <script>
-import INITIAL_STATE from '@/constants/initial_state.json';
 import clonedeep from 'lodash.clonedeep';
-import Forms from '@/components/forms/index.vue';
+import Forms from '@/components/Forms';
 
 /**
  * Represents the view of the forms for each type of data entered into halomod.
@@ -74,8 +73,11 @@ export default {
   },
   data() {
     return {
-      initial: null,
-      current: null,
+      /**
+       * Holds the currently edited model if there is one.
+       */
+      initialHMModelFlat: null,
+      currentHMModelFlat: null,
       loading: false,
       showSaveDialog: false,
       showCancelDialog: false,
@@ -92,7 +94,7 @@ export default {
   async activated() {
     if (this.$route.name === 'Edit') {
       this.edit = true;
-      this.initial = await this.$store.getModel(this.$route.params.id);
+      this.initialHMModelFlat = await this.$store.getModel(this.$route.params.id);
       this.name = this.$route.params.id;
       this.saveButton = 'Save';
       this.cancelMessage = `Are you sure you want to discard your changes to '${this.name}?`;
@@ -109,9 +111,9 @@ export default {
       this.loadingTitle = 'Creating your model...';
       this.contextPrimary = 'Create';
       this.contextSecondary = 'New Model';
-      this.initial = clonedeep(INITIAL_STATE);
+      this.initialHMModelFlat = this.$store.getHMModelFlatFromConstants();
     }
-    this.current = clonedeep(this.initial);
+    this.currentHMModelFlat = clonedeep(this.initialHMModelFlat);
   },
   updated() {
     this.scrollToAnchor();
@@ -135,9 +137,9 @@ export default {
     async save() {
       this.loading = true;
       if (this.edit) {
-        await this.$store.updateModel(this.name, this.current);
+        await this.$store.updateModel(this.name, this.currentHMModelFlat);
       } else {
-        await this.$store.createModel(this.current, this.name);
+        await this.$store.createModel(this.currentHMModelFlat, this.name);
       }
       this.loading = false;
       this.showSaveDialog = false;
