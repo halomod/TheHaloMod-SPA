@@ -34,12 +34,15 @@ def test_clone(client):
     assert "NewModel" in names
 
 # DELETE
-def test_delete(client):
+def test_clear(client):
     with client.session_transaction() as sess:
-        sess["models"] = pickle.dumps({"TheModel": TracerHaloModel()})
-    response = client.post('/delete', json={"model_name": "TheModel"})
+        sess["models"] = pickle.dumps({
+            "TheModel": TracerHaloModel(),
+            "AnotherModel": TracerHaloModel(),
+            "AndAnotherOne": TracerHaloModel()})
+    response = client.post('/clear')
     assert response is not None
     assert response.status_code == 200
     assert "model_names" in response.json
     names = response.json["model_names"]
-    assert "TheModel" not in names
+    assert not names
