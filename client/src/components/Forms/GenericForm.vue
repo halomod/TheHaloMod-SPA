@@ -22,7 +22,7 @@
               v-for="(paramsValue, paramsKey) in value"
               :key="paramsKey"
             >
-              <div v-if="!isVisible(paramsKey)"/>
+              <div v-if="!isVisible(paramsKey) || paramsValue === null"/>
               <md-checkbox
                 v-else-if="typeof paramsValue === 'boolean'"
                 class="md-primary"

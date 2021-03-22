@@ -66,9 +66,8 @@ export default class Store {
     const cleanedModel = clonedeep(model);
     delete cleanedModel.WDM_params;
     delete cleanedModel.WDMRecalibrateMF_params;
-    delete cleanedModel.profile_params;
-    delete cleanedModel.concentration_params;
-    delete cleanedModel.CMRelation_options;
+    delete cleanedModel.Profile_params;
+    delete cleanedModel.CMRelation_params;
     delete cleanedModel.ScaleDepBias_params;
     delete cleanedModel._HODCross_params;
     return cleanedModel;

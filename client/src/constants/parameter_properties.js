@@ -53,6 +53,10 @@
  * options is selected, and the value being what is shown to the user. This
  * MUST be filled out for parameters that accept a string.
  *
+ * Note that generally, if a parameter's value is null, it will not be shown.
+ * This behavior is defined in `GenericForm.vue`. To override this, configure
+ * the associated form in `forms.js` to give the parameter a value.
+ *
  * @type {{
  *  [parameterName: string]: {
  *    visible?: boolean,

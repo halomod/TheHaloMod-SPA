@@ -239,7 +239,7 @@ const FORMS = {
     get flattenHMModel() {
       return function flatten(hmModel) {
         const partiallyFlattenedHMModel = clonedeep(hmModel);
-        delete partiallyFlattenedHMModel[this.hmModelFlatParamsKey];
+        delete partiallyFlattenedHMModel[this.hmModelParamsKey];
         Object.assign(partiallyFlattenedHMModel, {
           [this.hmModelFlatParamsKey]: hmModel[this.hmModelParamsKey][hmModel[this.model_key]],
         });
@@ -289,7 +289,7 @@ const FORMS = {
     get flattenHMModel() {
       return function flatten(hmModel) {
         const partiallyFlattenedHMModel = clonedeep(hmModel);
-        delete partiallyFlattenedHMModel[this.hmModelFlatParamsKey];
+        delete partiallyFlattenedHMModel[this.hmModelParamsKey];
         Object.assign(partiallyFlattenedHMModel, {
           [this.hmModelFlatParamsKey]: hmModel[this.hmModelParamsKey][hmModel[this.model_key]],
         });
@@ -351,7 +351,7 @@ const FORMS = {
     get flattenHMModel() {
       return function flatten(hmModel) {
         const partiallyFlattenedHMModel = clonedeep(hmModel);
-        delete partiallyFlattenedHMModel[this.hmModelFlatParamsKey];
+        delete partiallyFlattenedHMModel[this.hmModelParamsKey];
         Object.assign(partiallyFlattenedHMModel, {
           [this.hmModelFlatParamsKey]: hmModel[this.hmModelParamsKey][hmModel[this.model_key]],
         });
@@ -402,7 +402,7 @@ const FORMS = {
     get flattenHMModel() {
       return function flatten(hmModel) {
         const partiallyFlattenedHMModel = clonedeep(hmModel);
-        delete partiallyFlattenedHMModel[this.hmModelFlatParamsKey];
+        delete partiallyFlattenedHMModel[this.hmModelParamsKey];
         Object.assign(partiallyFlattenedHMModel, {
           [this.hmModelFlatParamsKey]: hmModel[this.hmModelParamsKey][hmModel[this.model_key]],
         });
@@ -452,7 +452,7 @@ const FORMS = {
     get flattenHMModel() {
       return function flatten(hmModel) {
         const partiallyFlattenedHMModel = clonedeep(hmModel);
-        delete partiallyFlattenedHMModel[this.hmModelFlatParamsKey];
+        delete partiallyFlattenedHMModel[this.hmModelParamsKey];
         Object.assign(partiallyFlattenedHMModel, {
           [this.hmModelFlatParamsKey]: hmModel[this.hmModelParamsKey][hmModel[this.model_key]],
         });
@@ -505,7 +505,7 @@ const FORMS = {
     get flattenHMModel() {
       return function flatten(hmModel) {
         const partiallyFlattenedHMModel = clonedeep(hmModel);
-        delete partiallyFlattenedHMModel[this.hmModelFlatParamsKey];
+        delete partiallyFlattenedHMModel[this.hmModelParamsKey];
         Object.assign(partiallyFlattenedHMModel, {
           [this.hmModelFlatParamsKey]: hmModel[this.hmModelParamsKey][hmModel[this.model_key]],
         });
@@ -592,7 +592,7 @@ const FORMS = {
     get flattenHMModel() {
       return function flatten(hmModel) {
         const partiallyFlattenedHMModel = clonedeep(hmModel);
-        delete partiallyFlattenedHMModel[this.hmModelFlatParamsKey];
+        delete partiallyFlattenedHMModel[this.hmModelParamsKey];
         Object.assign(partiallyFlattenedHMModel, {
           [this.hmModelFlatParamsKey]: hmModel[this.hmModelParamsKey][hmModel[this.model_key]],
         });
@@ -642,7 +642,7 @@ const FORMS = {
     get flattenHMModel() {
       return function flatten(hmModel) {
         const partiallyFlattenedHMModel = clonedeep(hmModel);
-        delete partiallyFlattenedHMModel[this.hmModelFlatParamsKey];
+        delete partiallyFlattenedHMModel[this.hmModelParamsKey];
         Object.assign(partiallyFlattenedHMModel, {
           [this.hmModelFlatParamsKey]: hmModel[this.hmModelParamsKey][hmModel[this.model_key]],
         });
@@ -888,7 +888,7 @@ const FORMS = {
     get flattenHMModel() {
       return function flatten(hmModel) {
         const partiallyFlattenedHMModel = clonedeep(hmModel);
-        delete partiallyFlattenedHMModel[this.hmModelFlatParamsKey];
+        delete partiallyFlattenedHMModel[this.hmModelParamsKey];
         return partiallyFlattenedHMModel;
       };
     },
