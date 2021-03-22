@@ -222,7 +222,7 @@ export default {
       // If properties do not exist, pass the default values
       if (!parameterProps) return doubleProps;
 
-      return { ...Object.assign(doubleProps, parameterProps) };
+      return Object.assign(doubleProps, parameterProps);
     },
     /**
      * Gets a label for the given parameter. This should only be used on
