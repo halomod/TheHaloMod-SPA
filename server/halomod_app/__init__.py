@@ -12,7 +12,7 @@ import json
 import dill as pickle
 import zipfile
 import io
-import numpy as np
+import base64
 
 sess = Session()
 
@@ -281,67 +281,65 @@ def create_app(test_config=None):
         res = {"model_names": get_model_names()}
         return jsonify(res)
 
-    @app.route('/ascii', methods=['GET'])
-    def ascii():
-        """ Builds and sends the text data for each model stored in the session,
-        which is then bundled into a zip file.
+    # Generates a figure using session data & matplotlib rendering and
+    # returns it to client
+    #
+    # expects: {"fig_type": <fig_type> (see utils.KEYMAP for options),
+    #           "image type": <format of returned image> (png, svg, etc...)}
+    # outputs {"figure": <b64_serialized_figure>}
+    @app.route('/plot', methods=["POST"])
+    def plot():
+        request_json = request.get_json()
+        fig_type = request_json["fig_type"]
+        img_type = request_json["img_type"]
 
-        get:
-        responses:
-            200:
-            description: "Returns the zip file containining the different data files for each model in the user's session"
-            content:
-                application/zip:
-        """
-        models = None
         if 'models' in session:
-            models = pickle.loads(session.get("models"))
+            models = pickle.loads(session["models"])
         else:
             models = {}
 
-        labels = list(models.keys())
-        objects = list(models.values())
+        # generates figure/plot
+        buf, errors = utils.create_canvas(
+            models, fig_type, utils.KEYMAP[fig_type], img_type)
 
-        # Open up file-like objects for response
-        buff = io.BytesIO()
-        archive = zipfile.ZipFile(buff, "w", zipfile.ZIP_DEFLATED)
+        # serializes image so it can be sent via JSON
+        png_base64_bytes = base64.b64encode(buf.getvalue())
+        base64_png = png_base64_bytes.decode('ascii')
 
-        # Write out mass-based, k-based and r-based data files
-        for index, object in enumerate(objects):
-            for kind in utils.XLABELS:
-                s = io.BytesIO()
+        # save post-calculation models to session
+        session["models"] = pickle.dumps(models)
 
-                s.write(f"# [0] {utils.XLABELS[kind]}".encode())
+        response = {}
+        response["figure"] = base64_png
 
-                items = {
-                    k: utils.KEYMAP[k]["ylab"]
-                    for k in utils.KEYMAP
-                    if utils.KEYMAP[k]["xlab"] == utils.XLABELS[kind]
-                }
+        return jsonify(response)
 
-                for j, (label, ylab) in enumerate(items.items()):
-                    if getattr(object, label) is not None:
-                        s.write(f"# [{j+1}] {ylab}".encode())
+    @app.route('/get_object_data', methods=['POST'])
+    def get_object_data():
+        """
+          Returns vectors associated with each model in the session for each
+          parameter passed to the endpoint
 
-                out = np.array(
-                    [getattr(object, kind)] + [
-                        getattr(object, label)
-                        for label in items
-                        if getattr(object, label) is not None
-                    ]
-                ).T
-                np.savetxt(s, out)
+          expects: {"param_names": [<param_name>, <param_name>, etc...]}
+          outputs {"<model_name>: {<param_name>: <param_data_for_model>, etc...}, etc...}
+        """
+        request_json = request.get_json()
+        param_names = request_json["param_names"]
 
-                archive.writestr(f"{kind}Vector_test{labels[index]}.txt", s.getvalue())
+        if 'models' in session:
+            models = pickle.loads(session['models'])
+        else:
+            models = {}
 
-                s.close()
+        res = {}
 
-        archive.close()
+        for label, obj in models.items():
+            res[label] = {}
+            for param_name in param_names:
+                if getattr(obj, param_name) is not None:
+                    res[label][param_name] = list(getattr(obj, param_name))
 
-        # Reset the location of the buffer to the beginning
-        buff.seek(0)
-
-        return send_file(buff, as_attachment=True, attachment_filename="all_plots.zip")
+        return jsonify(res)
 
     @app.route('/toml', methods=['GET'])
     def toml_route():
