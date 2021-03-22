@@ -66,7 +66,7 @@ const downloadOptions = {
   },
   ParamValsJson: {
     name: 'ParamValsJson',
-    displayName: 'Parameter Values',
+    displayName: 'Parameter Values in JSON Format',
     fileName: 'ParameterValues.json',
     loadingTitle: 'Loading parameter values...',
   },
