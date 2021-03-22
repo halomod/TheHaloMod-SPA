@@ -16,6 +16,7 @@
 
 1. Make sure you are in the `TheHaloMod-SPA/client` directory in your shell of choice
 1. Run `npm install`. (If you don't have npm installed, [see here for instructions](https://github.com/nvm-sh/nvm#installing-and-updating)).
+1. Run `npm run setup`
 1. Run `npm run serve`
 1. The client should be available on `localhost:8080`
 

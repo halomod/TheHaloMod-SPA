@@ -1,11 +1,7 @@
 """Houses the tests for the server."""
 
-import imghdr
-import base64
 from halomod import TracerHaloModel
 import pickle
-import io
-import zipfile
 
 
 def test_home(client):
@@ -58,7 +54,8 @@ def test_rename(client):
 def test_update(client):
     with client.session_transaction() as sess:
         sess["models"] = pickle.dumps({"TheModel": TracerHaloModel()})
-    response = client.post('/update', json={"model_name": "TheModel", "params": {}})
+    response = client.post('/update',
+                           json={"model_name": "TheModel", "params": {}})
     assert response is not None
     assert response.status_code == 200
     assert "model_names" in response.json
@@ -108,13 +105,6 @@ def test_get_object_data(client):
     for param in params:
         assert param in response.json["TheModel"]
         assert response.json["TheModel"][param]
-
-
-def test_constants(client):
-    response = client.get('/constants')
-    assert response is not None
-    assert response.status_code == 200
-    assert "cosmo_defaults" in response.json
 
 
 def test_create(client, create_payload):
