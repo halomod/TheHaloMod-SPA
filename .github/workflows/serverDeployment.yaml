@@ -6,7 +6,7 @@ name: Server Deployment
 on: 
   push:
     branches:
-      - master
+      - main
 
 jobs:
   build:
