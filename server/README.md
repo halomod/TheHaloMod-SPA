@@ -4,8 +4,6 @@
 
 ## Table of Contents
 
-- [TheHaloMod-SPA Server](#thehalomod-spa-server)
-  - [Table of Contents](#table-of-contents)
   - [Usage](#usage)
     - [How to start the server locally](#how-to-start-the-server-locally)
     - [Development commands](#development-commands)
