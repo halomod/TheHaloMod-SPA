@@ -24,6 +24,11 @@ module.exports = {
      * to vue: https://vueschool.io/articles/vuejs-tutorials/structuring-vue-components/
      */
     'import/extensions': 'off',
+    /**
+     * Turned off because some of the parameters that come in from the server
+     * have a leading underscore.
+     */
+    'no-underscore-dangle': [0],
   },
   overrides: [
     {

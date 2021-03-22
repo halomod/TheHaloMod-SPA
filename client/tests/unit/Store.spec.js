@@ -1,5 +1,4 @@
 import Store from '@/utils/Store.js';
-import DEFAULT_MODEL from '@/constants/initial_state.json';
 import Vue from 'vue';
 import isEqual from 'lodash.isequal';
 import makeServer from '../mockServer';
@@ -12,6 +11,7 @@ Vue.config.devtools = false;
 require('fake-indexeddb/auto');
 
 describe('Store tests', () => {
+  let defaultModel;
   let store;
   let server;
   beforeAll(async () => {
@@ -19,6 +19,7 @@ describe('Store tests', () => {
     store = new Store();
     expect(store).toBeDefined();
     await store.init();
+    defaultModel = store.getHMModelFlatFromConstants();
     expect(store.state.plot.y).toBeDefined();
     expect(store.state.plot.x).toBeDefined();
   });
@@ -44,17 +45,17 @@ describe('Store tests', () => {
 
   test('Store should be able to create models and return them', async () => {
     const testModelName1 = 'Some test model';
-    await store.createModel(DEFAULT_MODEL, testModelName1);
+    await store.createModel(defaultModel, testModelName1);
     expect(store.getModelNames().length === 1).toBeTruthy();
-    await store.createModel(DEFAULT_MODEL, 'Some other test model');
+    await store.createModel(defaultModel, 'Some other test model');
     expect(store.getModelNames()).toContain(testModelName1);
   });
 
   test('Store should be able to create models and delete them', async () => {
     const testModelName1 = 'Some test model';
-    await store.createModel(DEFAULT_MODEL, testModelName1);
+    await store.createModel(defaultModel, testModelName1);
     expect(store.getModelNames().length === 1).toBeTruthy();
-    await store.createModel(DEFAULT_MODEL, 'Some other test model');
+    await store.createModel(defaultModel, 'Some other test model');
     expect(store.getModelNames()).toHaveLength(2);
     await store.deleteModel(testModelName1);
     expect(store.getModelNames().includes(testModelName1)).toBeFalsy();
@@ -63,7 +64,7 @@ describe('Store tests', () => {
   test('Cloning a model should add one and keep the original', async () => {
     const testModelName1 = 'Some test model';
     const testModelName2 = 'Some other test model';
-    await store.createModel(DEFAULT_MODEL, testModelName1);
+    await store.createModel(defaultModel, testModelName1);
     expect(store.getModelNames().length === 1).toBeTruthy();
     await store.cloneModel(testModelName1, testModelName2);
     const modelNames = store.getModelNames();
@@ -74,7 +75,7 @@ describe('Store tests', () => {
   test('Renaming model should create one and remove the original', async () => {
     const oldModelName = 'Model';
     const newModelName = 'Renamed Model';
-    await store.createModel(DEFAULT_MODEL, oldModelName);
+    await store.createModel(defaultModel, oldModelName);
     expect(store.getModelNames()).toContain(oldModelName);
     await store.renameModel(oldModelName, newModelName);
     expect(store.getModelNames()).not.toContain(oldModelName);
@@ -82,9 +83,9 @@ describe('Store tests', () => {
   });
 
   test('Clearing models should remove all existing models', async () => {
-    await store.createModel(DEFAULT_MODEL, 'MyModel');
-    await store.createModel(DEFAULT_MODEL, 'AnotherModel');
-    await store.createModel(DEFAULT_MODEL, 'AndAnotherOne');
+    await store.createModel(defaultModel, 'MyModel');
+    await store.createModel(defaultModel, 'AnotherModel');
+    await store.createModel(defaultModel, 'AndAnotherOne');
     expect(store.getModelNames()).toHaveLength(3);
     await store.clearModels();
     expect(store.getModelNames()).toHaveLength(0);
@@ -100,15 +101,15 @@ describe('Store tests', () => {
 
   test('Getting a model should return its data', async () => {
     const testModelName1 = 'Some test model';
-    await store.createModel(DEFAULT_MODEL, testModelName1);
+    await store.createModel(defaultModel, testModelName1);
     const returnedModel = await store.getModel(testModelName1);
-    expect(isEqual(returnedModel, DEFAULT_MODEL)).toBeTruthy();
+    expect(isEqual(returnedModel, defaultModel)).toBeTruthy();
   });
 
   test('Getting a model returns null if a model doesnt exist', async () => {
     const returnedValue1 = await store.getModel('Some model not there');
     expect(returnedValue1).toBeUndefined();
-    await store.createModel(DEFAULT_MODEL, 'Some test model');
+    await store.createModel(defaultModel, 'Some test model');
     const returnedValue2 = await store.getModel('Some other model');
     expect(returnedValue2).toBeUndefined();
   });
@@ -116,9 +117,9 @@ describe('Store tests', () => {
   test('Adding models and getting all models should return all of the models', async () => {
     const testModelName1 = 'Some test model';
     const testModelName2 = 'Some other test model';
-    await store.createModel(DEFAULT_MODEL, testModelName1);
+    await store.createModel(defaultModel, testModelName1);
     expect(store.getModelNames().length === 1).toBeTruthy();
-    await store.createModel(DEFAULT_MODEL, testModelName2);
+    await store.createModel(defaultModel, testModelName2);
     expect(store.getModelNames()).toContain(testModelName2);
     const allModels = await store.getAllModels();
     expect(typeof allModels === 'object').toBeTruthy();
