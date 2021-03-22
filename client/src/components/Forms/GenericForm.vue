@@ -17,7 +17,7 @@
           </md-field>
         </div>
         <div v-else>
-          <div v-if="key === params_key" >
+          <div v-if="key === hmModelFlatParamsKey" >
             <div
               v-for="(paramsValue, paramsKey) in value"
               :key="paramsKey"
@@ -26,12 +26,12 @@
               <md-checkbox
                 v-else-if="typeof paramsValue === 'boolean'"
                 class="md-primary"
-                v-model="localHMModelFlat[params_key][paramsKey]">
+                v-model="localHMModelFlat[hmModelFlatParamsKey][paramsKey]">
                 {{paramsKey}}
               </md-checkbox>
               <md-field v-else-if="typeof paramsValue === 'string'">
                 <label>{{getParameterLabel(paramsKey)}}</label>
-                <md-select v-model="localHMModelFlat[params_key][paramsKey]">
+                <md-select v-model="localHMModelFlat[hmModelFlatParamsKey][paramsKey]">
                   <md-option
                     v-for="(choiceName, choiceKey) in getParameterOptions(paramsKey)"
                     :key="choiceKey"
@@ -45,14 +45,14 @@
                   <InputSlider
                     v-if="isSliderMin(paramsKey)"
                     :minParameterKey="paramsKey"
-                    v-model="localHMModelFlat[params_key]"
+                    v-model="localHMModelFlat[hmModelFlatParamsKey]"
                   />
                 </div>
               </div>
               <double-field
                 v-else
-                :init="localHMModelFlat[params_key][paramsKey]"
-                v-model="localHMModelFlat[params_key][paramsKey]"
+                :init="localHMModelFlat[hmModelFlatParamsKey][paramsKey]"
+                v-model="localHMModelFlat[hmModelFlatParamsKey][paramsKey]"
                 v-bind="getDoubleFieldProps(paramsKey)"/>
             </div>
           </div>
@@ -126,9 +126,9 @@ export default {
       type: String,
       required: false,
     },
-    params_key: {
+    hmModelFlatParamsKey: {
       type: String,
-      required: true,
+      required: false,
     },
     modelChoices: {
       type: Object,

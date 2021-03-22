@@ -6,12 +6,20 @@
  * The `plainName` of both of the parameters associated with the range slider
  * will be the `plainName` of the minimum parameter.
  *
+ * `rangeSliderTickInterval` determines how far apart the ticks on the range
+ * slider will be. This defaults to 1 if not defined. This only needs to be
+ * defined on the minimum property if it is used.
+ *
+ * Note that `step` must be defined on the property if a range slider is to
+ * be used. That is because of rendering issues if it isn't.
+ *
  * @typedef RangeSlider
  * @type {{
  *  isRangeSliderMin?: boolean,
  *  isRangeSliderMax?: boolean,
  *  rangeSliderMaxParameter?: string,
  *  rangeSliderMinParameter?: string,
+ *  rangeSliderTickInterval: Number,
  * }}
  */
 
@@ -21,6 +29,9 @@
  *
  * `visible` determines if the field should be visible to the end user or not.
  * By default this is true.
+ *
+ * `step` is a standard unit that this parameter should be incremented or
+ * decremented. This must be defined if `rangeSlider` is defined.
  *
  * `html` is an html string that doesn't need an enclosing element which will
  * determine how the title of the property is displayed. For example:
@@ -32,8 +43,9 @@
  * `helpText` is a string that will show to the user in tooltips or other
  * areas where additional info might populate to further explain the property.
  *
- * `range` determines if the property should act as a slider. By default,
- * this is false. If it is a range, min and max should be defined.
+ * `range` is used if the property is a range between a max and min, but it
+ * should not be a range slider. If `rangeSlider` is defined, this field is
+ * ignored because it is assumed that it is a range.
  *
  * `options` should be an object containing the different options for the field.
  * This should only be filled out if the field accepts a string, and should be
@@ -118,9 +130,11 @@ const PARAMETER_PROPERTIES = {
     range: true,
     min: 0,
     max: 20,
+    step: 0.5,
     rangeSlider: {
       isRangeSliderMin: true,
       rangeSliderMaxParameter: 'Mmax',
+      rangeSliderTickInterval: 2,
     },
   },
   Mmax: {
@@ -128,6 +142,7 @@ const PARAMETER_PROPERTIES = {
     range: true,
     min: 0,
     max: 20,
+    step: 0.5,
     rangeSlider: {
       isRangeSliderMax: true,
       rangeSliderMinParameter: 'Mmin',
@@ -214,6 +229,9 @@ const PARAMETER_PROPERTIES = {
       filtered_lin: 'filtered linear',
       filtered_n1: 'filtered non-linear',
     },
+  },
+  kmax: {
+    visible: false,
   },
 };
 

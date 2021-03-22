@@ -120,7 +120,7 @@ export default {
         relevantHMModelFlat: form.getRelevantHMModelFlat(this.hmModelFlat),
         title: form.title,
         model_key: form.model_key,
-        params_key: form.params_key,
+        hmModelFlatParamsKey: form.hmModelFlatParamsKey,
         modelChoices: form.modelChoices,
         modelChoicesData: form.getModelChoicesDataFromFlat(this.hmModelFlat),
         updateModelChoice: form.updateModelChoice,

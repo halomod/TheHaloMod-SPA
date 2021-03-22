@@ -20,7 +20,7 @@ describe('Mounted GenericForm', () => {
         relevantHMModelFlat: FORMS.bias.getRelevantHMModelFlat(hmModelFlat),
         title: FORMS.bias.title,
         model_key: FORMS.bias.model_key,
-        params_key: FORMS.bias.params_key,
+        hmModelFlatParamsKey: FORMS.bias.hmModelFlatParamsKey,
         modelChoices: FORMS.bias.modelChoices,
         modelChoicesData: FORMS.bias.getModelChoicesDataFromFlat(hmModelFlat),
         updateModelChoice: FORMS.bias.updateModelChoice,
