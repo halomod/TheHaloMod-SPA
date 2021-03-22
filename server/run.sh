@@ -13,7 +13,6 @@ do
     "--test" )
       python -m pytest;;
     "--dev" )
-      redis-server
       export FLASK_APP=halomod_app
       export FLASK_ENV=development
       flask run;;
