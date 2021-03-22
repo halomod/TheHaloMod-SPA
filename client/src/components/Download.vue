@@ -1,53 +1,54 @@
 <template>
   <div>
-  <md-toolbar class="md-large">
-    <div class="md-toolbar-row">
-      <div class="md-toolbar-section-start">
-        <h3 class="md-title">Download</h3>
+    <md-toolbar class="md-large">
+      <div class="md-toolbar-row">
+        <div class="md-toolbar-section-start">
+          <h3 class="md-title">Download</h3>
+        </div>
       </div>
-    </div>
-    <div class="download-container">
-      <md-field class='download-select'>
-        <md-select v-model="downloadChoice" id="downloadChoices">
-          <md-option
-            v-for="choice in downloadChoices"
-            :key="choice.name"
-            :value="choice.name"
-          >
-            {{choice.displayName}}
-          </md-option>
-        </md-select>
-      </md-field>
-      <md-button
-        class="md-icon-button download-button md-raised md-primary"
-        @click="handleClick"
-        id="download-button"
-      >
-        <md-icon>download</md-icon>
-      </md-button>
-    </div>
-    <a id="download-element"/>
-  </md-toolbar>
-  <md-dialog v-if="loading"
-    :md-active.sync="loading"
-    :md-close-on-esc="false"
-    :md-click-outside-to-close="false">
-    <md-dialog-title>{{loadingTitle}}</md-dialog-title>
-    <md-dialog-content><md-progress-bar md-mode="indeterminate"/></md-dialog-content>
-  </md-dialog>
-  <md-dialog v-if="asciiDialogVisible"
-    :md-active.sync="asciiDialogVisible">
-    <md-dialog-title>ASCII data will download soon...</md-dialog-title>
-    <md-button @click="asciiDialogVisible = false">Close</md-button>
-  </md-dialog>
+      <div class="download-container">
+        <md-field class="download-select">
+          <md-select v-model="downloadChoice" id="downloadChoices">
+            <md-option
+              v-for="choice in downloadChoices"
+              :key="choice.name"
+              :value="choice.name"
+            >
+              {{ choice.displayName }}
+            </md-option>
+          </md-select>
+        </md-field>
+        <md-button
+          class="md-icon-button download-button md-raised md-primary"
+          @click="handleClick"
+          id="download-button"
+        >
+          <md-icon>download</md-icon>
+        </md-button>
+      </div>
+      <a id="download-element" />
+    </md-toolbar>
+    <md-dialog
+      v-if="loading"
+      :md-active.sync="loading"
+      :md-close-on-esc="false"
+      :md-click-outside-to-close="false"
+    >
+      <md-dialog-title>{{ loadingTitle }}</md-dialog-title>
+      <md-dialog-content
+        ><md-progress-bar md-mode="indeterminate"
+      /></md-dialog-content>
+    </md-dialog>
+    <md-dialog v-if="asciiDialogVisible" :md-active.sync="asciiDialogVisible">
+      <md-dialog-title>ASCII data will download soon...</md-dialog-title>
+      <md-button @click="asciiDialogVisible = false">Close</md-button>
+    </md-dialog>
   </div>
 </template>
 
 <script>
 import baseUrl from '@/env';
-import { jsPDF } from 'jspdf';
-import { saveAs } from 'file-saver';
-import svgString2Image from '../utils/imgUtils';
+import addInlineCSS from '../utils/inlineCSS';
 
 const downloadChoiceObjs = {
   plotImage: {
@@ -88,7 +89,9 @@ export default {
   methods: {
     async handleClick() {
       const downloadNode = document.getElementById('download-element');
-      const { downloadName, name, loadingTitle } = downloadChoiceObjs[this.downloadChoice];
+      const { downloadName, name, loadingTitle } = downloadChoiceObjs[
+        this.downloadChoice
+      ];
       this.loadingTitle = loadingTitle;
       this.loading = true;
       const href = await this[`download_${name}`]();
@@ -99,37 +102,52 @@ export default {
     },
     /* eslint-disable */
     async download_plotImage() {
-      const svgNode = document.getElementById('svg-plot');
+      const svgElements = [
+        { el: ".graph-line", properties: ["fill", "stroke", "stroke-width"] },
+        {
+          el: ".grid line",
+          properties: ["stroke", "stroke-opacity", "shape-rendering"],
+        },
+        { el: ".grid path", properties: ["stroke-width"] },
+        { el: ".axis-label g text", properties: ["font-size", "font-family"] },
+      ];
+      addInlineCSS(svgElements);
+      const svgNode = document.getElementById("svg-plot");
       const serializer = new XMLSerializer();
       let plotString = serializer.serializeToString(svgNode);
-      /* if (!plotString.match(/^<svg[^>]+xmlns="http:\/\/www\.w3\.org\/2000\/svg"/)) {
-        plotString = plotString.replace(/^<svg/, '<svg xmlns="http://www.w3.org/2000/svg"');
+      if (
+        !plotString.match(/^<svg[^>]+xmlns="http:\/\/www\.w3\.org\/2000\/svg"/)
+      ) {
+        plotString = plotString.replace(
+          /^<svg/,
+          '<svg xmlns="http://www.w3.org/2000/svg"'
+        );
       }
       if (!plotString.match(/^<svg[^>]+"http:\/\/www\.w3\.org\/1999\/xlink"/)) {
-        plotString = plotString.replace(/^<svg/, '<svg xmlns:xlink="http://www.w3.org/1999/xlink"');
+        plotString = plotString.replace(
+          /^<svg/,
+          '<svg xmlns:xlink="http://www.w3.org/1999/xlink"'
+        );
       }
-      plotString = `<?xml version="1.0" standalone="no"?>\r\n${plotString}`; */
-      
-      plotString = plotString.replace(/(\w+)?:?xlink=/g, 'xmlns:xlink='); // Fix root xlink without namespace
-	    plotString = plotString.replace(/NS\d+:href/g, 'xlink:href'); // Safari NS namespace fix
-      const imgString = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(plotString)}`;
-      const tmp = "data:image/svg+xml;base64," + btoa( unescape( encodeURIComponent( plotString ) ));
-      const doc = new jsPDF();
+      plotString = `<?xml version="1.0" standalone="no"?>\r\n${plotString}`;
 
-      const save = function save( dataBlob, filesize ){
-		    saveAs( dataBlob, 'D3 vis exported to PNG.png' ); // FileSaver.js function
-      };
-      
-      
-      svgString2Image(tmp, 800, 800, 'png', save);
+      return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(
+        plotString
+      )}`;
     },
     async download_ascii() {
       this.asciiDialogVisible = true;
       return `${baseUrl}/ascii`;
     },
     async download_paramVals() {
-      const modelsJsonString = JSON.stringify(await this.$store.getAllModels(), null, 2);
-      const dataStr = `data:text/json;charset=utf-8,${encodeURIComponent(modelsJsonString)}`;
+      const modelsJsonString = JSON.stringify(
+        await this.$store.getAllModels(),
+        null,
+        2
+      );
+      const dataStr = `data:text/json;charset=utf-8,${encodeURIComponent(
+        modelsJsonString
+      )}`;
       return dataStr;
     },
   },
