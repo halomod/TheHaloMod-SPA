@@ -1,4 +1,3 @@
-from io import StringIO
 from typing import Union, Dict
 import numpy as np
 import json
@@ -21,6 +20,7 @@ Model = Union[object, None]
 Parameters = Union[dict, bool, int, float, str]
 BackendConstantsValue = Union[Model, Parameters]
 BackendConstants = Dict[BackendConstantsKey, BackendConstantsValue]
+
 
 def generate_constants() -> BackendConstants:
     """Builds the constants that a front-end can use to build forms or interactive
@@ -110,6 +110,6 @@ def generate_constants() -> BackendConstants:
 
     return backend_constants
 
+
 with open('./backend_constants.json', 'w') as fp:
     json.dump(generate_constants(), fp)
-

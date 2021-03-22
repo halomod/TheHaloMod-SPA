@@ -45,9 +45,12 @@ debug.enabled = false;
  * retrieve the model that is currently chosen for the form. If there is no
  * model for the form, this property can be left out.
  *
- * `params_key` is what is searched for in the `backend_constants` file to
- * retrive properties for the different model selections. It is also used to
- * set the name of parameters for the form in most cases.
+ * `hmModelFlatParamsKey` is what is used as the params key that is sent to
+ * the server.
+ *
+ * `hmModelParamsKey` is what is searched for in the `backend_constants` file to
+ * retrive properties for the different model selections. This is sometimes
+ * different than what is sent to the server.
  *
  * @typedef FormDetails
  * @type {{
@@ -55,7 +58,8 @@ debug.enabled = false;
  *  title: string,
  *  model_key: string | undefined,
  *  modelChoices: ModelChoices,
- *  params_key: string,
+ *  hmModelFlatParamsKey: string,
+ *  hmModelParamsKey: string,
  *  getRelevantHMModelFlat: GetRelevantHMModelFlatFunction,
  *  getModelChoicesDataFromFlat: GetModelChoicesDataFromFlatFunction,
  *  updateModelChoice: UpdateModelChoiceFunction,
@@ -151,12 +155,12 @@ const FORMS = {
     title: 'Cosmology',
     model_key: 'cosmo_model',
     modelChoices: MODEL_CHOICES.cosmo,
-    params_key: 'cosmo_params',
+    hmModelFlatParamsKey: 'cosmo_params',
     get getRelevantHMModelFlat() {
       return function getRelevant(hmModelFlat) {
         return {
           [this.model_key]: hmModelFlat[this.model_key],
-          [this.params_key]: hmModelFlat[this.params_key],
+          [this.hmModelFlatParamsKey]: hmModelFlat[this.hmModelFlatParamsKey],
           z: hmModelFlat.z,
           n: hmModelFlat.n,
           sigma_8: hmModelFlat.sigma_8,
@@ -166,9 +170,9 @@ const FORMS = {
     get getModelChoicesDataFromFlat() {
       return function getModelChoicesData(hmModelFlat) {
         debug('getModelChoicesDataFromFlat was ran for cosmo');
-        const modelChoicesData = clonedeep(BACKEND_CONSTANTS[this.params_key]);
+        const modelChoicesData = clonedeep(BACKEND_CONSTANTS[this.hmModelParamsKey]);
         modelChoicesData[hmModelFlat[this.model_key]] = {
-          [this.params_key]: clonedeep(hmModelFlat[this.params_key]),
+          [this.hmModelParamsKey]: clonedeep(hmModelFlat[this.hmModelFlatParamsKey]),
           z: hmModelFlat.z,
           n: hmModelFlat.n,
           sigma_8: hmModelFlat.sigma_8,
@@ -181,7 +185,7 @@ const FORMS = {
         const newModelChoicesData = clonedeep(modelChoicesData);
         if (oldModelName) {
           newModelChoicesData[oldModelName] = {
-            [this.params_key]: clonedeep(hmModelFlat[this.params_key]),
+            [this.hmModelParamsKey]: clonedeep(hmModelFlat[this.hmModelFlatParamsKey]),
             z: hmModelFlat.z,
             n: hmModelFlat.n,
             sigma_8: hmModelFlat.sigma_8,
@@ -190,7 +194,7 @@ const FORMS = {
         const newHMModelFlat = Object.assign(
           clonedeep(hmModelFlat),
           {
-            [this.params_key]: modelChoicesData[newModelName][this.params_key],
+            [this.hmModelFlatParamsKey]: modelChoicesData[newModelName][this.hmModelParamsKey],
             z: modelChoicesData[newModelName].z,
             n: modelChoicesData[newModelName].n,
             sigma_8: modelChoicesData[newModelName].sigma_8,
@@ -202,12 +206,13 @@ const FORMS = {
     get flattenHMModel() {
       return function flatten(hmModel) {
         const partiallyFlattenedHMModel = clonedeep(hmModel);
-        delete partiallyFlattenedHMModel[this.params_key];
+        delete partiallyFlattenedHMModel[this.hmModelFlatParamsKey];
         Object.assign(partiallyFlattenedHMModel, {
-          [this.params_key]: hmModel[this.params_key][hmModel[this.model_key]][this.params_key],
-          z: hmModel[this.params_key][hmModel[this.model_key]].z,
-          n: hmModel[this.params_key][hmModel[this.model_key]].n,
-          sigma_8: hmModel[this.params_key][hmModel[this.model_key]].sigma_8,
+          [this.hmModelFlatParamsKey]:
+            hmModel[this.hmModelParamsKey][hmModel[this.model_key]][this.hmModelFlatParamsKey],
+          z: hmModel[this.hmModelParamsKey][hmModel[this.model_key]].z,
+          n: hmModel[this.hmModelParamsKey][hmModel[this.model_key]].n,
+          sigma_8: hmModel[this.hmModelParamsKey][hmModel[this.model_key]].sigma_8,
         });
         return partiallyFlattenedHMModel;
       };
@@ -218,20 +223,20 @@ const FORMS = {
     title: 'Mass Definition',
     model_key: 'mdef_model',
     modelChoices: MODEL_CHOICES.mdef,
-    params_key: 'mdef_params',
+    hmModelFlatParamsKey: 'mdef_params',
     get getRelevantHMModelFlat() {
       return function getRelevant(hmModelFlat) {
         return {
           [this.model_key]: hmModelFlat[this.model_key],
-          [this.params_key]: hmModelFlat[this.params_key],
+          [this.hmModelFlatParamsKey]: hmModelFlat[this.hmModelFlatParamsKey],
         };
       };
     },
     get getModelChoicesDataFromFlat() {
       return function getModelChoicesData(hmModelFlat) {
-        const modelChoicesData = clonedeep(BACKEND_CONSTANTS[this.params_key]);
+        const modelChoicesData = clonedeep(BACKEND_CONSTANTS[this.hmModelParamsKey]);
         modelChoicesData[hmModelFlat[this.model_key]] = clonedeep(
-          hmModelFlat[this.params_key],
+          hmModelFlat[this.hmModelFlatParamsKey],
         );
         return modelChoicesData;
       };
@@ -240,12 +245,12 @@ const FORMS = {
       return function updateModelChoice(oldModelName, newModelName, hmModelFlat, modelChoicesData) {
         const newModelChoicesData = clonedeep(modelChoicesData);
         if (oldModelName) {
-          newModelChoicesData[oldModelName] = clonedeep(hmModelFlat[this.params_key]);
+          newModelChoicesData[oldModelName] = clonedeep(hmModelFlat[this.hmModelFlatParamsKey]);
         }
         const newHMModelFlat = Object.assign(
           clonedeep(hmModelFlat),
           {
-            [this.params_key]: modelChoicesData[newModelName],
+            [this.hmModelFlatParamsKey]: modelChoicesData[newModelName],
           },
         );
         return [newHMModelFlat, newModelChoicesData];
@@ -254,9 +259,9 @@ const FORMS = {
     get flattenHMModel() {
       return function flatten(hmModel) {
         const partiallyFlattenedHMModel = clonedeep(hmModel);
-        delete partiallyFlattenedHMModel[this.params_key];
+        delete partiallyFlattenedHMModel[this.hmModelFlatParamsKey];
         Object.assign(partiallyFlattenedHMModel, {
-          [this.params_key]: hmModel[this.params_key][hmModel[this.model_key]],
+          [this.hmModelFlatParamsKey]: hmModel[this.hmModelParamsKey][hmModel[this.model_key]],
         });
         return partiallyFlattenedHMModel;
       };
@@ -267,7 +272,7 @@ const FORMS = {
     title: 'Transfer',
     model_key: 'transfer_model',
     modelChoices: MODEL_CHOICES.transfer,
-    params_key: 'transfer_params',
+    hmModelFlatParamsKey: 'transfer_params',
     get getRelevantHMModelFlat() {
       return function getRelevant(hmModelFlat) {
         const relevantHMModelFlat = {
@@ -277,19 +282,21 @@ const FORMS = {
           takahashi: hmModelFlat.takahashi,
           [this.model_key]: hmModelFlat[this.model_key],
         };
-        if (hmModelFlat[this.params_key]) {
-          relevantHMModelFlat[this.params_key] = clonedeep(hmModelFlat[this.params_key]);
+        if (hmModelFlat[this.hmModelFlatParamsKey]) {
+          relevantHMModelFlat[this.hmModelFlatParamsKey] = clonedeep(
+            hmModelFlat[this.hmModelFlatParamsKey],
+          );
         }
         return relevantHMModelFlat;
       };
     },
     get getModelChoicesDataFromFlat() {
       return function getModelChoicesData(hmModelFlat) {
-        const modelChoicesData = clonedeep(BACKEND_CONSTANTS[this.params_key]);
+        const modelChoicesData = clonedeep(BACKEND_CONSTANTS[this.hmModelParamsKey]);
         // Make sure the params exist first, because they don't in some cases.
-        if (hmModelFlat[this.params_key]) {
+        if (hmModelFlat[this.hmModelFlatParamsKey]) {
           modelChoicesData[hmModelFlat[this.model_key]] = clonedeep(
-            hmModelFlat[this.params_key],
+            hmModelFlat[this.hmModelFlatParamsKey],
           );
         }
         return modelChoicesData;
@@ -299,12 +306,12 @@ const FORMS = {
       return function updateModelChoice(oldModelName, newModelName, hmModelFlat, modelChoicesData) {
         const newModelChoicesData = clonedeep(modelChoicesData);
         if (oldModelName) {
-          newModelChoicesData[oldModelName] = clonedeep(hmModelFlat[this.params_key]);
+          newModelChoicesData[oldModelName] = clonedeep(hmModelFlat[this.hmModelFlatParamsKey]);
         }
         const newHMModelFlat = Object.assign(
           clonedeep(hmModelFlat),
           {
-            [this.params_key]: modelChoicesData[newModelName],
+            [this.hmModelFlatParamsKey]: modelChoicesData[newModelName],
           },
         );
         return [newHMModelFlat, newModelChoicesData];
@@ -313,9 +320,9 @@ const FORMS = {
     get flattenHMModel() {
       return function flatten(hmModel) {
         const partiallyFlattenedHMModel = clonedeep(hmModel);
-        delete partiallyFlattenedHMModel[this.params_key];
+        delete partiallyFlattenedHMModel[this.hmModelFlatParamsKey];
         Object.assign(partiallyFlattenedHMModel, {
-          [this.params_key]: hmModel[this.params_key][hmModel[this.model_key]],
+          [this.hmModelFlatParamsKey]: hmModel[this.hmModelParamsKey][hmModel[this.model_key]],
         });
         return partiallyFlattenedHMModel;
       };
@@ -326,21 +333,21 @@ const FORMS = {
     title: 'Filter',
     model_key: 'filter_model',
     modelChoices: MODEL_CHOICES.filter,
-    params_key: 'filter_params',
+    hmModelFlatParamsKey: 'filter_params',
     get getRelevantHMModelFlat() {
       return function getRelevant(hmModelFlat) {
         return {
           delta_c: hmModelFlat.delta_c,
           [this.model_key]: hmModelFlat[this.model_key],
-          [this.params_key]: hmModelFlat[this.params_key],
+          [this.hmModelFlatParamsKey]: hmModelFlat[this.hmModelFlatParamsKey],
         };
       };
     },
     get getModelChoicesDataFromFlat() {
       return function getModelChoicesData(hmModelFlat) {
-        const modelChoicesData = clonedeep(BACKEND_CONSTANTS[this.params_key]);
+        const modelChoicesData = clonedeep(BACKEND_CONSTANTS[this.hmModelParamsKey]);
         modelChoicesData[hmModelFlat[this.model_key]] = clonedeep(
-          hmModelFlat[this.params_key],
+          hmModelFlat[this.hmModelFlatParamsKey],
         );
         return modelChoicesData;
       };
@@ -349,12 +356,12 @@ const FORMS = {
       return function updateModelChoice(oldModelName, newModelName, hmModelFlat, modelChoicesData) {
         const newModelChoicesData = clonedeep(modelChoicesData);
         if (oldModelName) {
-          newModelChoicesData[oldModelName] = clonedeep(hmModelFlat[this.params_key]);
+          newModelChoicesData[oldModelName] = clonedeep(hmModelFlat[this.hmModelFlatParamsKey]);
         }
         const newHMModelFlat = Object.assign(
           clonedeep(hmModelFlat),
           {
-            [this.params_key]: modelChoicesData[newModelName],
+            [this.hmModelFlatParamsKey]: modelChoicesData[newModelName],
           },
         );
         return [newHMModelFlat, newModelChoicesData];
@@ -363,9 +370,9 @@ const FORMS = {
     get flattenHMModel() {
       return function flatten(hmModel) {
         const partiallyFlattenedHMModel = clonedeep(hmModel);
-        delete partiallyFlattenedHMModel[this.params_key];
+        delete partiallyFlattenedHMModel[this.hmModelFlatParamsKey];
         Object.assign(partiallyFlattenedHMModel, {
-          [this.params_key]: hmModel[this.params_key][hmModel[this.model_key]],
+          [this.hmModelFlatParamsKey]: hmModel[this.hmModelParamsKey][hmModel[this.model_key]],
         });
         return partiallyFlattenedHMModel;
       };
@@ -376,20 +383,20 @@ const FORMS = {
     title: 'Growth',
     model_key: 'growth_model',
     modelChoices: MODEL_CHOICES.growth,
-    params_key: 'growth_params',
+    hmModelFlatParamsKey: 'growth_params',
     get getRelevantHMModelFlat() {
       return function getRelevant(hmModelFlat) {
         return {
           [this.model_key]: hmModelFlat[this.model_key],
-          [this.params_key]: hmModelFlat[this.params_key],
+          [this.hmModelFlatParamsKey]: hmModelFlat[this.hmModelFlatParamsKey],
         };
       };
     },
     get getModelChoicesDataFromFlat() {
       return function getModelChoicesData(hmModelFlat) {
-        const modelChoicesData = clonedeep(BACKEND_CONSTANTS[this.params_key]);
+        const modelChoicesData = clonedeep(BACKEND_CONSTANTS[this.hmModelParamsKey]);
         modelChoicesData[hmModelFlat[this.model_key]] = clonedeep(
-          hmModelFlat[this.params_key],
+          hmModelFlat[this.hmModelFlatParamsKey],
         );
         return modelChoicesData;
       };
@@ -398,12 +405,12 @@ const FORMS = {
       return function updateModelChoice(oldModelName, newModelName, hmModelFlat, modelChoicesData) {
         const newModelChoicesData = clonedeep(modelChoicesData);
         if (oldModelName) {
-          newModelChoicesData[oldModelName] = clonedeep(hmModelFlat[this.params_key]);
+          newModelChoicesData[oldModelName] = clonedeep(hmModelFlat[this.hmModelFlatParamsKey]);
         }
         const newHMModelFlat = Object.assign(
           clonedeep(hmModelFlat),
           {
-            [this.params_key]: modelChoicesData[newModelName],
+            [this.hmModelFlatParamsKey]: modelChoicesData[newModelName],
           },
         );
         return [newHMModelFlat, newModelChoicesData];
@@ -412,9 +419,9 @@ const FORMS = {
     get flattenHMModel() {
       return function flatten(hmModel) {
         const partiallyFlattenedHMModel = clonedeep(hmModel);
-        delete partiallyFlattenedHMModel[this.params_key];
+        delete partiallyFlattenedHMModel[this.hmModelFlatParamsKey];
         Object.assign(partiallyFlattenedHMModel, {
-          [this.params_key]: hmModel[this.params_key][hmModel[this.model_key]],
+          [this.hmModelFlatParamsKey]: hmModel[this.hmModelParamsKey][hmModel[this.model_key]],
         });
         return partiallyFlattenedHMModel;
       };
@@ -425,12 +432,12 @@ const FORMS = {
     title: 'HMF',
     model_key: 'hmf_model',
     modelChoices: MODEL_CHOICES.hmf,
-    params_key: 'hmf_params',
+    hmModelFlatParamsKey: 'hmf_params',
     get getRelevantHMModelFlat() {
       return function getRelevant(hmModelFlat) {
         return {
           [this.model_key]: hmModelFlat[this.model_key],
-          [this.params_key]: hmModelFlat[this.params_key],
+          [this.hmModelFlatParamsKey]: hmModelFlat[this.hmModelFlatParamsKey],
           Mmin: hmModelFlat.Mmin,
           Mmax: hmModelFlat.Mmax,
           dlog10m: hmModelFlat.dlog10m,
@@ -439,9 +446,9 @@ const FORMS = {
     },
     get getModelChoicesDataFromFlat() {
       return function getModelChoicesData(hmModelFlat) {
-        const modelChoicesData = clonedeep(BACKEND_CONSTANTS[this.params_key]);
+        const modelChoicesData = clonedeep(BACKEND_CONSTANTS[this.hmModelParamsKey]);
         modelChoicesData[hmModelFlat[this.model_key]] = clonedeep(
-          hmModelFlat[this.params_key],
+          hmModelFlat[this.hmModelFlatParamsKey],
         );
         return modelChoicesData;
       };
@@ -450,12 +457,12 @@ const FORMS = {
       return function updateModelChoice(oldModelName, newModelName, hmModelFlat, modelChoicesData) {
         const newModelChoicesData = clonedeep(modelChoicesData);
         if (oldModelName) {
-          newModelChoicesData[oldModelName] = clonedeep(hmModelFlat[this.params_key]);
+          newModelChoicesData[oldModelName] = clonedeep(hmModelFlat[this.hmModelFlatParamsKey]);
         }
         const newHMModelFlat = Object.assign(
           clonedeep(hmModelFlat),
           {
-            [this.params_key]: modelChoicesData[newModelName],
+            [this.hmModelFlatParamsKey]: modelChoicesData[newModelName],
           },
         );
         return [newHMModelFlat, newModelChoicesData];
@@ -464,9 +471,9 @@ const FORMS = {
     get flattenHMModel() {
       return function flatten(hmModel) {
         const partiallyFlattenedHMModel = clonedeep(hmModel);
-        delete partiallyFlattenedHMModel[this.params_key];
+        delete partiallyFlattenedHMModel[this.hmModelFlatParamsKey];
         Object.assign(partiallyFlattenedHMModel, {
-          [this.params_key]: hmModel[this.params_key][hmModel[this.model_key]],
+          [this.hmModelFlatParamsKey]: hmModel[this.hmModelParamsKey][hmModel[this.model_key]],
         });
         return partiallyFlattenedHMModel;
       };
@@ -476,7 +483,7 @@ const FORMS = {
     id: 'halo_model',
     title: 'Halo Model',
     modelChoices: {},
-    params_key: 'halo_model_params',
+    hmModelFlatParamsKey: 'halo_model_params',
     get getRelevantHMModelFlat() {
       return function getRelevant(hmModelFlat) {
         const relevantHMModelFlat = {};
@@ -500,8 +507,8 @@ const FORMS = {
     get flattenHMModel() {
       return function flatten(hmModel) {
         const partiallyFlattenedHMModel = clonedeep(hmModel);
-        delete partiallyFlattenedHMModel[this.params_key];
-        Object.assign(partiallyFlattenedHMModel, hmModel[this.params_key]);
+        delete partiallyFlattenedHMModel[this.hmModelFlatParamsKey];
+        Object.assign(partiallyFlattenedHMModel, hmModel[this.hmModelParamsKey]);
         return partiallyFlattenedHMModel;
       };
     },
@@ -511,20 +518,20 @@ const FORMS = {
     title: 'HOD',
     model_key: 'hod_model',
     modelChoices: MODEL_CHOICES.hod,
-    params_key: 'hod_params',
+    hmModelFlatParamsKey: 'hod_params',
     get getRelevantHMModelFlat() {
       return function getRelevant(hmModelFlat) {
         return {
           [this.model_key]: hmModelFlat[this.model_key],
-          [this.params_key]: hmModelFlat[this.params_key],
+          [this.hmModelFlatParamsKey]: hmModelFlat[this.hmModelFlatParamsKey],
         };
       };
     },
     get getModelChoicesDataFromFlat() {
       return function getModelChoicesData(hmModelFlat) {
-        const modelChoicesData = clonedeep(BACKEND_CONSTANTS[this.params_key]);
+        const modelChoicesData = clonedeep(BACKEND_CONSTANTS[this.hmModelParamsKey]);
         modelChoicesData[hmModelFlat[this.model_key]] = clonedeep(
-          hmModelFlat[this.params_key],
+          hmModelFlat[this.hmModelFlatParamsKey],
         );
         return modelChoicesData;
       };
@@ -533,12 +540,12 @@ const FORMS = {
       return function updateModelChoice(oldModelName, newModelName, hmModelFlat, modelChoicesData) {
         const newModelChoicesData = clonedeep(modelChoicesData);
         if (oldModelName) {
-          newModelChoicesData[oldModelName] = clonedeep(hmModelFlat[this.params_key]);
+          newModelChoicesData[oldModelName] = clonedeep(hmModelFlat[this.hmModelFlatParamsKey]);
         }
         const newHMModelFlat = Object.assign(
           clonedeep(hmModelFlat),
           {
-            [this.params_key]: modelChoicesData[newModelName],
+            [this.hmModelFlatParamsKey]: modelChoicesData[newModelName],
           },
         );
         return [newHMModelFlat, newModelChoicesData];
@@ -547,9 +554,9 @@ const FORMS = {
     get flattenHMModel() {
       return function flatten(hmModel) {
         const partiallyFlattenedHMModel = clonedeep(hmModel);
-        delete partiallyFlattenedHMModel[this.params_key];
+        delete partiallyFlattenedHMModel[this.hmModelFlatParamsKey];
         Object.assign(partiallyFlattenedHMModel, {
-          [this.params_key]: hmModel[this.params_key][hmModel[this.model_key]],
+          [this.hmModelFlatParamsKey]: hmModel[this.hmModelParamsKey][hmModel[this.model_key]],
         });
         return partiallyFlattenedHMModel;
       };
@@ -560,20 +567,20 @@ const FORMS = {
     title: 'Bias',
     model_key: 'bias_model',
     modelChoices: MODEL_CHOICES.bias,
-    params_key: 'bias_params',
+    hmModelFlatParamsKey: 'bias_params',
     get getRelevantHMModelFlat() {
       return function getRelevant(hmModelFlat) {
         return {
           [this.model_key]: hmModelFlat[this.model_key],
-          [this.params_key]: hmModelFlat[this.params_key],
+          [this.hmModelFlatParamsKey]: hmModelFlat[this.hmModelFlatParamsKey],
         };
       };
     },
     get getModelChoicesDataFromFlat() {
       return function getModelChoicesData(hmModelFlat) {
-        const modelChoicesData = clonedeep(BACKEND_CONSTANTS[this.params_key]);
+        const modelChoicesData = clonedeep(BACKEND_CONSTANTS[this.hmModelParamsKey]);
         modelChoicesData[hmModelFlat[this.model_key]] = clonedeep(
-          hmModelFlat[this.params_key],
+          hmModelFlat[this.hmModelFlatParamsKey],
         );
         return modelChoicesData;
       };
@@ -582,12 +589,12 @@ const FORMS = {
       return function updateModelChoice(oldModelName, newModelName, hmModelFlat, modelChoicesData) {
         const newModelChoicesData = clonedeep(modelChoicesData);
         if (oldModelName) {
-          newModelChoicesData[oldModelName] = clonedeep(hmModelFlat[this.params_key]);
+          newModelChoicesData[oldModelName] = clonedeep(hmModelFlat[this.hmModelFlatParamsKey]);
         }
         const newHMModelFlat = Object.assign(
           clonedeep(hmModelFlat),
           {
-            [this.params_key]: modelChoicesData[newModelName],
+            [this.hmModelFlatParamsKey]: modelChoicesData[newModelName],
           },
         );
         return [newHMModelFlat, newModelChoicesData];
@@ -596,9 +603,9 @@ const FORMS = {
     get flattenHMModel() {
       return function flatten(hmModel) {
         const partiallyFlattenedHMModel = clonedeep(hmModel);
-        delete partiallyFlattenedHMModel[this.params_key];
+        delete partiallyFlattenedHMModel[this.hmModelFlatParamsKey];
         Object.assign(partiallyFlattenedHMModel, {
-          [this.params_key]: hmModel[this.params_key][hmModel[this.model_key]],
+          [this.hmModelFlatParamsKey]: hmModel[this.hmModelParamsKey][hmModel[this.model_key]],
         });
         return partiallyFlattenedHMModel;
       };
@@ -609,12 +616,12 @@ const FORMS = {
     title: 'Halo Concentration',
     model_key: 'halo_concentration_model',
     modelChoices: MODEL_CHOICES.concentration,
-    params_key: 'halo_concentration_params',
+    hmModelFlatParamsKey: 'halo_concentration_params',
     get getRelevantHMModelFlat() {
       return function getRelevant(hmModelFlat) {
         return {
           [this.model_key]: hmModelFlat[this.model_key],
-          [this.params_key]: hmModelFlat[this.params_key],
+          [this.hmModelFlatParamsKey]: hmModelFlat[this.hmModelFlatParamsKey],
         };
       };
     },
@@ -622,7 +629,7 @@ const FORMS = {
       return function getModelChoicesData(hmModelFlat) {
         const modelChoicesData = clonedeep(BACKEND_CONSTANTS.concentration_params);
         modelChoicesData[hmModelFlat[this.model_key]] = clonedeep(
-          hmModelFlat[this.params_key],
+          hmModelFlat[this.hmModelFlatParamsKey],
         );
         return modelChoicesData;
       };
@@ -631,12 +638,12 @@ const FORMS = {
       return function updateModelChoice(oldModelName, newModelName, hmModelFlat, modelChoicesData) {
         const newModelChoicesData = clonedeep(modelChoicesData);
         if (oldModelName) {
-          newModelChoicesData[oldModelName] = clonedeep(hmModelFlat[this.params_key]);
+          newModelChoicesData[oldModelName] = clonedeep(hmModelFlat[this.hmModelFlatParamsKey]);
         }
         const newHMModelFlat = Object.assign(
           clonedeep(hmModelFlat),
           {
-            [this.params_key]: modelChoicesData[newModelName],
+            [this.hmModelFlatParamsKey]: modelChoicesData[newModelName],
           },
         );
         return [newHMModelFlat, newModelChoicesData];
@@ -646,7 +653,7 @@ const FORMS = {
       return function flatten(hmModel) {
         const partiallyFlattenedHMModel = clonedeep(hmModel);
         Object.assign(partiallyFlattenedHMModel, {
-          [this.params_key]: hmModel.concentration_params[hmModel[this.model_key]],
+          [this.hmModelFlatParamsKey]: hmModel.concentration_params[hmModel[this.model_key]],
         });
         return partiallyFlattenedHMModel;
       };
@@ -657,12 +664,12 @@ const FORMS = {
     title: 'Tracer Concentration',
     model_key: 'tracer_concentration_model',
     modelChoices: MODEL_CHOICES.concentration,
-    params_key: 'tracer_concentration_params',
+    hmModelFlatParamsKey: 'tracer_concentration_params',
     get getRelevantHMModelFlat() {
       return function getRelevant(hmModelFlat) {
         return {
           [this.model_key]: hmModelFlat[this.model_key],
-          [this.params_key]: hmModelFlat[this.params_key],
+          [this.hmModelFlatParamsKey]: hmModelFlat[this.hmModelFlatParamsKey],
         };
       };
     },
@@ -670,7 +677,7 @@ const FORMS = {
       return function getModelChoicesData(hmModelFlat) {
         const modelChoicesData = clonedeep(BACKEND_CONSTANTS.concentration_params);
         modelChoicesData[hmModelFlat[this.model_key]] = clonedeep(
-          hmModelFlat[this.params_key],
+          hmModelFlat[this.hmModelFlatParamsKey],
         );
         return modelChoicesData;
       };
@@ -679,12 +686,12 @@ const FORMS = {
       return function updateModelChoice(oldModelName, newModelName, hmModelFlat, modelChoicesData) {
         const newModelChoicesData = clonedeep(modelChoicesData);
         if (oldModelName) {
-          newModelChoicesData[oldModelName] = clonedeep(hmModelFlat[this.params_key]);
+          newModelChoicesData[oldModelName] = clonedeep(hmModelFlat[this.hmModelFlatParamsKey]);
         }
         const newHMModelFlat = Object.assign(
           clonedeep(hmModelFlat),
           {
-            [this.params_key]: modelChoicesData[newModelName],
+            [this.hmModelFlatParamsKey]: modelChoicesData[newModelName],
           },
         );
         return [newHMModelFlat, newModelChoicesData];
@@ -694,7 +701,7 @@ const FORMS = {
       return function flatten(hmModel) {
         const partiallyFlattenedHMModel = clonedeep(hmModel);
         Object.assign(partiallyFlattenedHMModel, {
-          [this.params_key]: hmModel.concentration_params[hmModel[this.model_key]],
+          [this.hmModelFlatParamsKey]: hmModel.concentration_params[hmModel[this.model_key]],
         });
         return partiallyFlattenedHMModel;
       };
@@ -705,12 +712,12 @@ const FORMS = {
     title: 'Halo Profile',
     model_key: 'halo_profile_model',
     modelChoices: MODEL_CHOICES.profile,
-    params_key: 'halo_profile_params',
+    hmModelFlatParamsKey: 'halo_profile_params',
     get getRelevantHMModelFlat() {
       return function getRelevant(hmModelFlat) {
         return {
           [this.model_key]: hmModelFlat[this.model_key],
-          [this.params_key]: hmModelFlat[this.params_key],
+          [this.hmModelFlatParamsKey]: hmModelFlat[this.hmModelFlatParamsKey],
         };
       };
     },
@@ -718,7 +725,7 @@ const FORMS = {
       return function getModelChoicesData(hmModelFlat) {
         const modelChoicesData = clonedeep(BACKEND_CONSTANTS.concentration_params);
         modelChoicesData[hmModelFlat[this.model_key]] = clonedeep(
-          hmModelFlat[this.params_key],
+          hmModelFlat[this.hmModelFlatParamsKey],
         );
         return modelChoicesData;
       };
@@ -727,12 +734,12 @@ const FORMS = {
       return function updateModelChoice(oldModelName, newModelName, hmModelFlat, modelChoicesData) {
         const newModelChoicesData = clonedeep(modelChoicesData);
         if (oldModelName) {
-          newModelChoicesData[oldModelName] = clonedeep(hmModelFlat[this.params_key]);
+          newModelChoicesData[oldModelName] = clonedeep(hmModelFlat[this.hmModelFlatParamsKey]);
         }
         const newHMModelFlat = Object.assign(
           clonedeep(hmModelFlat),
           {
-            [this.params_key]: modelChoicesData[newModelName],
+            [this.hmModelFlatParamsKey]: modelChoicesData[newModelName],
           },
         );
         return [newHMModelFlat, newModelChoicesData];
@@ -742,7 +749,7 @@ const FORMS = {
       return function flatten(hmModel) {
         const partiallyFlattenedHMModel = clonedeep(hmModel);
         Object.assign(partiallyFlattenedHMModel, {
-          [this.params_key]: hmModel.profile_params[hmModel[this.model_key]],
+          [this.hmModelFlatParamsKey]: hmModel.profile_params[hmModel[this.model_key]],
         });
         return partiallyFlattenedHMModel;
       };
@@ -753,12 +760,12 @@ const FORMS = {
     title: 'Tracer Profile',
     model_key: 'tracer_profile_model',
     modelChoices: MODEL_CHOICES.profile,
-    params_key: 'tracer_profile_params',
+    hmModelFlatParamsKey: 'tracer_profile_params',
     get getRelevantHMModelFlat() {
       return function getRelevant(hmModelFlat) {
         return {
           [this.model_key]: hmModelFlat[this.model_key],
-          [this.params_key]: hmModelFlat[this.params_key],
+          [this.hmModelFlatParamsKey]: hmModelFlat[this.hmModelFlatParamsKey],
         };
       };
     },
@@ -766,7 +773,7 @@ const FORMS = {
       return function getModelChoicesData(hmModelFlat) {
         const modelChoicesData = clonedeep(BACKEND_CONSTANTS.profile_params);
         modelChoicesData[hmModelFlat[this.model_key]] = clonedeep(
-          hmModelFlat[this.params_key],
+          hmModelFlat[this.hmModelFlatParamsKey],
         );
         return modelChoicesData;
       };
@@ -775,12 +782,12 @@ const FORMS = {
       return function updateModelChoice(oldModelName, newModelName, hmModelFlat, modelChoicesData) {
         const newModelChoicesData = clonedeep(modelChoicesData);
         if (oldModelName) {
-          newModelChoicesData[oldModelName] = clonedeep(hmModelFlat[this.params_key]);
+          newModelChoicesData[oldModelName] = clonedeep(hmModelFlat[this.hmModelFlatParamsKey]);
         }
         const newHMModelFlat = Object.assign(
           clonedeep(hmModelFlat),
           {
-            [this.params_key]: modelChoicesData[newModelName],
+            [this.hmModelFlatParamsKey]: modelChoicesData[newModelName],
           },
         );
         return [newHMModelFlat, newModelChoicesData];
@@ -790,7 +797,7 @@ const FORMS = {
       return function flatten(hmModel) {
         const partiallyFlattenedHMModel = clonedeep(hmModel);
         Object.assign(partiallyFlattenedHMModel, {
-          [this.params_key]: hmModel.profile_params[hmModel[this.model_key]],
+          [this.hmModelFlatParamsKey]: hmModel.profile_params[hmModel[this.model_key]],
         });
         return partiallyFlattenedHMModel;
       };
@@ -801,12 +808,12 @@ const FORMS = {
     title: 'Halo Exclusion',
     model_key: 'exclusion_model',
     modelChoices: MODEL_CHOICES.halo_exclusion,
-    params_key: 'exclusion_params',
+    hmModelFlatParamsKey: 'exclusion_params',
     get getRelevantHMModelFlat() {
       return function getRelevant(hmModelFlat) {
         return {
           [this.model_key]: hmModelFlat[this.model_key],
-          [this.params_key]: hmModelFlat[this.params_key],
+          [this.hmModelFlatParamsKey]: hmModelFlat[this.hmModelFlatParamsKey],
         };
       };
     },
@@ -814,7 +821,7 @@ const FORMS = {
       return function getModelChoicesData(hmModelFlat) {
         const modelChoicesData = clonedeep(BACKEND_CONSTANTS.exclusion_params);
         modelChoicesData[hmModelFlat[this.model_key]] = clonedeep(
-          hmModelFlat[this.params_key],
+          hmModelFlat[this.hmModelFlatParamsKey],
         );
         return modelChoicesData;
       };
@@ -823,12 +830,12 @@ const FORMS = {
       return function updateModelChoice(oldModelName, newModelName, hmModelFlat, modelChoicesData) {
         const newModelChoicesData = clonedeep(modelChoicesData);
         if (oldModelName) {
-          newModelChoicesData[oldModelName] = clonedeep(hmModelFlat[this.params_key]);
+          newModelChoicesData[oldModelName] = clonedeep(hmModelFlat[this.hmModelFlatParamsKey]);
         }
         const newHMModelFlat = Object.assign(
           clonedeep(hmModelFlat),
           {
-            [this.params_key]: modelChoicesData[newModelName],
+            [this.hmModelFlatParamsKey]: modelChoicesData[newModelName],
           },
         );
         return [newHMModelFlat, newModelChoicesData];
@@ -837,7 +844,7 @@ const FORMS = {
     get flattenHMModel() {
       return function flatten(hmModel) {
         const partiallyFlattenedHMModel = clonedeep(hmModel);
-        delete partiallyFlattenedHMModel[this.params_key];
+        delete partiallyFlattenedHMModel[this.hmModelFlatParamsKey];
         return partiallyFlattenedHMModel;
       };
     },
