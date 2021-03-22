@@ -1,5 +1,5 @@
 astroid==2.4.2
-astropy==4.2
+astropy==4.1
 attrs==20.2.0
 autopep8==1.5.5
 blinker==1.4

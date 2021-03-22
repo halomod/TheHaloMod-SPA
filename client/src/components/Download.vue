@@ -44,26 +44,30 @@
 </template>
 
 <script>
-import baseUrl from '@/env';
+import {
+  downloadData,
+  downloadPlotImage,
+  downloadParamVals,
+} from '@/utils/downloads.js';
 
-const downloadChoiceObjs = {
-  plotImage: {
+const downloadOptions = {
+  PlotImage: {
+    name: 'PlotImage',
     displayName: 'Image of Plot',
-    name: 'plotImage',
-    downloadName: 'PlotImage',
+    fileName: 'PlotImage.svg',
     loadingTitle: 'Creating plot image...',
   },
-  ascii: {
-    displayName: 'ASCII',
-    name: 'ascii',
-    downloadName: 'AllData.zip',
-    loadingTitle: 'Retrieving ASCII data...',
-  },
-  paramVals: {
+  ParamVals: {
+    name: 'ParamVals',
     displayName: 'Parameter Values',
-    name: 'paramVals',
-    downloadName: 'ParameterValues.json',
+    fileName: 'ParameterValues.json',
     loadingTitle: 'Loading parameter values...',
+  },
+  Data: {
+    name: 'Data',
+    displayName: 'Vector Data',
+    fileName: 'ModelVectorData.zip',
+    loadingTitle: 'Getting all model data',
   },
 };
 
@@ -75,46 +79,27 @@ export default {
   name: 'Download',
   data() {
     return {
-      downloadChoices: Object.values(downloadChoiceObjs),
-      downloadChoice: Object.values(downloadChoiceObjs)[0].name,
+      downloadChoices: Object.values(downloadOptions),
+      downloadChoice: Object.values(downloadOptions)[0].name,
       loading: false,
       loadingTitle: '',
       asciiDialogVisible: false,
     };
   },
   methods: {
+    downloadData,
+    downloadPlotImage,
+    downloadParamVals,
     async handleClick() {
       const downloadNode = document.getElementById('download-element');
-      const { downloadName, name, loadingTitle } = downloadChoiceObjs[this.downloadChoice];
+      const { fileName, name, loadingTitle } = downloadOptions[this.downloadChoice];
       this.loadingTitle = loadingTitle;
       this.loading = true;
-      const href = await this[`download_${name}`]();
+      const href = await this[`download${name}`](this.$store);
       downloadNode.setAttribute('href', href);
-      downloadNode.setAttribute('download', downloadName);
+      downloadNode.setAttribute('download', fileName);
       downloadNode.click();
       this.loading = false;
-    },
-    async download_plotImage() {
-      const svgNode = document.getElementById('svg-plot');
-      const serializer = new XMLSerializer();
-      let plotString = serializer.serializeToString(svgNode);
-      if (!plotString.match(/^<svg[^>]+xmlns="http:\/\/www\.w3\.org\/2000\/svg"/)) {
-        plotString = plotString.replace(/^<svg/, '<svg xmlns="http://www.w3.org/2000/svg"');
-      }
-      if (!plotString.match(/^<svg[^>]+"http:\/\/www\.w3\.org\/1999\/xlink"/)) {
-        plotString = plotString.replace(/^<svg/, '<svg xmlns:xlink="http://www.w3.org/1999/xlink"');
-      }
-      plotString = `<?xml version="1.0" standalone="no"?>\r\n${plotString}`;
-      return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(plotString)}`;
-    },
-    async download_ascii() {
-      this.asciiDialogVisible = true;
-      return `${baseUrl}/ascii`;
-    },
-    async download_paramVals() {
-      const modelsJsonString = JSON.stringify(await this.$store.getAllModels(), null, 2);
-      const dataStr = `data:text/json;charset=utf-8,${encodeURIComponent(modelsJsonString)}`;
-      return dataStr;
     },
   },
 };
