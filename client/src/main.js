@@ -8,14 +8,16 @@ import Store from './utils/Store';
 /**
  * Establishes the Sentry.io connection for error tracking.
  */
-Sentry.init({
-  Vue,
-  dsn: 'https://7a99f3aaaa144241960d3857a1f4dee9@o516709.ingest.sentry.io/5623500',
-  integrations: [new Integrations.BrowserTracing()],
-  tracingOptions: {
-    trackComponents: true,
-  },
-});
+if (process.env.VUE_APP_SENTRY_ON !== 'FALSE') {
+  Sentry.init({
+    Vue,
+    dsn: 'https://7a99f3aaaa144241960d3857a1f4dee9@o516709.ingest.sentry.io/5623500',
+    integrations: [new Integrations.BrowserTracing()],
+    tracingOptions: {
+      trackComponents: true,
+    },
+  });
+}
 
 /**
  * The entry point for the Vue application. This notation of

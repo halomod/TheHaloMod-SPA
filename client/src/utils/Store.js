@@ -9,6 +9,8 @@ import {
   get,
   clear,
 } from 'idb-keyval';
+import BACKEND_CONSTANTS from '@/constants/backend_constants';
+import FORMS from '@/constants/forms';
 
 axios.defaults.withCredentials = true;
 
@@ -53,17 +55,37 @@ export default class Store {
   }
 
   /**
-   * Flattens model to make request params.
+   * Cleans up a model for sending to the server. This removes parameters
+   * that aren't accepted by the server but come from backend constants.
    *
-   * @param {Object} model the model to flatten
-   * @returns {Object} the flattened params
+   * @param {import('@/constants/forms').HMModelFlat} model the model to clean
+   * @returns {import('@/constants/forms').HMModelFlat} the cleaned model,
+   * ready to send to the server
    */
-  flatten = (model) => {
-    const params = {};
-    Object.values(model).forEach((value) => {
-      Object.assign(params, value);
+  cleanUpModel = (model) => {
+    const cleanedModel = clonedeep(model);
+    delete cleanedModel.WDM_params;
+    delete cleanedModel.WDMRecalibrateMF_params;
+    delete cleanedModel.Profile_params;
+    delete cleanedModel.CMRelation_params;
+    delete cleanedModel.ScaleDepBias_params;
+    delete cleanedModel._HODCross_params;
+    return cleanedModel;
+  }
+
+  /**
+   * Gets an `HMModelFlat` from the backend constants file by flattening it.
+   * This can be used to supply a default flattened file to the server or any
+   * other purposes like initializing state.
+   *
+   * @returns {import('@/constants/forms').HMModelFlat}
+   */
+  getHMModelFlatFromConstants = () => {
+    let hmModelFlat = clonedeep(BACKEND_CONSTANTS);
+    Object.values(FORMS).forEach((form) => {
+      hmModelFlat = form.flattenHMModel(hmModelFlat);
     });
-    return params;
+    return hmModelFlat;
   }
 
   /**
@@ -78,34 +100,16 @@ export default class Store {
    */
 
   /**
-   * Gets the different plot types.
-   *
-   * @returns {{
-   *  xLabels: {
-   *    [labelName: string]: string
-   *  },
-   *  plotOptions: {
-   *    [plotName: string]: PlotDetails
-   *  }
-   * }} an object containing the different plot options and x labels
-   */
-  getPlotTypes = async () => {
-    const result = await axios.get(`${baseurl}/get_plot_types`);
-    const plotTypes = result.data;
-    return plotTypes;
-  }
-
-  /**
    * Sends the model data to server to create Tracer Halo Model Object. This
    * also saves the model into the local indexed db on the client.
    *
-   * @param {Object} model model data
-   * @param {String} name model name
+   * @param {object} model model data
+   * @param {string} name model name
    */
   createModel = async (model, name) => {
     try {
       await axios.post(`${baseurl}/create`, {
-        params: this.flatten(model),
+        params: this.cleanUpModel(model),
         label: name,
       });
       this.state.error = false;
@@ -124,13 +128,13 @@ export default class Store {
   /**
    * Updates a model.
    *
-   * @param {Object} model the updated model object
-   * @param {String} name the name of the model to update
+   * @param {object} model the updated model object
+   * @param {string} name the name of the model to update
    */
   updateModel = async (name, model) => {
     try {
       await axios.post(`${baseurl}/update`, {
-        params: this.flatten(model),
+        params: this.cleanUpModel(model),
         model_name: name,
       });
       this.state.error = false;
@@ -148,8 +152,8 @@ export default class Store {
   /**
    * Renames a model.
    *
-   * @param {String} oldName the original name of the model
-   * @param {String} newName the new name of the model
+   * @param {string} oldName the original name of the model
+   * @param {string} newName the new name of the model
    */
   renameModel = async (oldName, newName) => {
     try {
@@ -174,8 +178,8 @@ export default class Store {
   /**
    * Clones a model.
    *
-   * @param {String} oldName
-   * @param {String} newName
+   * @param {string} oldName
+   * @param {string} newName
    */
   cloneModel = async (oldName, newName) => {
     try {
@@ -212,8 +216,8 @@ export default class Store {
    * Gets (clones) a model with the given name. This returns a deep cloned
    * copy of the model.
    *
-   * @param {String} name the name of the model
-   * @returns {Object | undefined} a copy of the target model, or undefined if
+   * @param {string} name the name of the model
+   * @returns {object | undefined} a copy of the target model, or undefined if
    * it doesn't exist
    */
   getModel = async (name) => clonedeep(await this?.state.models[name]);
@@ -242,8 +246,8 @@ export default class Store {
   /**
    * Sets a model with the given name.
    *
-   * @param {String} name the name of the model
-   * @param {Object} model the model to set
+   * @param {string} name the name of the model
+   * @param {object} model the model to set
    */
   setModel = async (name, model) => {
     try {
@@ -265,7 +269,7 @@ export default class Store {
   /**
    * Deletes a model.
    *
-   * @param {String} name the name of the model to delete
+   * @param {string} name the name of the model to delete
    */
   deleteModel = async (name) => {
     try {
