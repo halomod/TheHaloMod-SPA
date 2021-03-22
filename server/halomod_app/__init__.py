@@ -334,16 +334,4 @@ def create_app(test_config=None):
 
         return send_file(buff, as_attachment=True, attachment_filename="all_plots.zip")
 
-    backend_constants = utils.generate_constants()
-
-    @app.route('/constants', methods=["GET"], strict_slashes=False)
-    def constants():
-        """
-        Returns a json representation that holds the constants of HMF.
-
-        This can be seen in the browser by simply navigating to this endpoint.
-        """
-
-        return jsonify(backend_constants)
-
     return app
