@@ -48,8 +48,12 @@ export async function downloadPlotImage() {
   return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(plotString)}`;
 }
 
-export async function downloadParamVals(store) {
+export async function downloadParamValsJson(store) {
   const modelsJsonString = JSON.stringify(await store.getAllModels(), null, 2);
   const dataStr = `data:text/json;charset=utf-8,${encodeURIComponent(modelsJsonString)}`;
   return dataStr;
+}
+
+export function downloadParamValsToml() {
+  return `${baseUrl}/toml`;
 }

@@ -2,11 +2,23 @@
 
 from halomod import TracerHaloModel
 import pickle
+import io
+import zipfile
 
 
 def test_home(client):
     response = home(client)
     assert response.json['start'] == 'This is the HaloModApp'
+
+
+def test_toml(client):
+    with client.session_transaction() as sess:
+        sess["models"] = pickle.dumps({"TheModel": TracerHaloModel()})
+    response = client.get('/toml')
+    assert response is not None
+    assert response.status_code == 200
+    returnFile = io.BytesIO(response.data)
+    assert zipfile.is_zipfile(returnFile)
 
 
 def test_get_names(client):

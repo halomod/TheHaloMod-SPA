@@ -6,12 +6,13 @@ from flask_cors import CORS
 from flask import Flask, jsonify, request, session, abort, send_file
 from . import utils
 from halomod_app.utils import get_model_names
-import base64
+from hmf.helpers.cfg_utils import framework_to_dict
+import toml
 import json
 import dill as pickle
 import zipfile
 import io
-import numpy as np
+import base64
 
 sess = Session()
 
@@ -55,13 +56,21 @@ def create_app(test_config=None):
             return e
 
         response = {}
+        description = ""
+        if hasattr(e, 'description'):
+            description = e.description
+        elif hasattr(e, 'args'):
+            description = e.args
+        else:
+            description = 'Error has no description'
+
         # replace the body with JSON
-        response.data = json.dumps({
+        response.setdefault('data', json.dumps({
             "code": '500',
-            "name": e.name,
-            "description": e.description,
-        })
-        response.content_type = "application/json"
+            "name": e.name if hasattr(e, 'name') else str(type(e)),
+            "description": description,
+        }))
+        response.setdefault('content_type', "application/json")
         return response
 
     @app.errorhandler(HTTPException)
@@ -331,5 +340,47 @@ def create_app(test_config=None):
                     res[label][param_name] = list(getattr(obj, param_name))
 
         return jsonify(res)
+
+    @app.route('/toml', methods=['GET'])
+    def toml_route():
+        """ Builds and sends a toml file for each model in the user's session in a
+        zip folder. These can be used to input into the `halomod` library by
+        running the following in your shell:
+        `halomod run --config "tomlFileName.toml"`.
+
+        get:
+        responses:
+            200:
+            description: "Returns the zip file containining the different toml files for each model in the user's session"
+            content:
+                application/zip:
+        """
+        models = None
+        if 'models' in session:
+            models = pickle.loads(session.get("models"))
+        else:
+            models = {}
+
+        # Open up file-like objects for response
+        buff = io.BytesIO()
+        archive = zipfile.ZipFile(buff, "w", zipfile.ZIP_DEFLATED)
+
+        for label, object in models.items():
+            s = io.BytesIO()
+            s.write(toml.dumps(framework_to_dict(object),
+                               encoder=toml.TomlNumpyEncoder()).encode())
+            archive.writestr(f"{label}.toml", s.getvalue())
+            s.close()
+
+        archive.close()
+
+        # Reset the location of the buffer to the beginning
+        buff.seek(0)
+
+        # Cache timeout set to 3 seconds, which seems like enough time for the user
+        # to change a paremeter and try to download again, but prevents spamming.
+        return send_file(buff, as_attachment=True,
+                         attachment_filename="all_plots_toml.zip",
+                         cache_timeout=3)
 
     return app

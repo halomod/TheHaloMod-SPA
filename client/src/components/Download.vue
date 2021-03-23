@@ -35,10 +35,10 @@
     <md-dialog-title>{{loadingTitle}}</md-dialog-title>
     <md-dialog-content><md-progress-bar md-mode="indeterminate"/></md-dialog-content>
   </md-dialog>
-  <md-dialog v-if="asciiDialogVisible"
-    :md-active.sync="asciiDialogVisible">
-    <md-dialog-title>ASCII data will download soon...</md-dialog-title>
-    <md-button @click="asciiDialogVisible = false">Close</md-button>
+  <md-dialog v-if="serverDownloadDialogVisible"
+    :md-active.sync="serverDownloadDialogVisible">
+    <md-dialog-title>{{loadingTitle}}</md-dialog-title>
+    <md-button @click="serverDownloadDialogVisible = false">Close</md-button>
   </md-dialog>
   </div>
 </template>
@@ -47,7 +47,8 @@
 import {
   downloadData,
   downloadPlotImage,
-  downloadParamVals,
+  downloadParamValsJson,
+  downloadParamValsToml,
 } from '@/utils/downloads.js';
 
 const downloadOptions = {
@@ -57,9 +58,15 @@ const downloadOptions = {
     fileName: 'PlotImage.svg',
     loadingTitle: 'Creating plot image...',
   },
-  ParamVals: {
-    name: 'ParamVals',
-    displayName: 'Parameter Values',
+  ParamValsToml: {
+    displayName: 'Parameter Values in TOML Format',
+    name: 'ParamValsToml',
+    downloadName: 'AllModelParemeterValues.zip',
+    loadingTitle: 'Parameter value data will download soon...',
+  },
+  ParamValsJson: {
+    name: 'ParamValsJson',
+    displayName: 'Parameter Values in JSON Format',
     fileName: 'ParameterValues.json',
     loadingTitle: 'Loading parameter values...',
   },
@@ -83,19 +90,24 @@ export default {
       downloadChoice: Object.values(downloadOptions)[0].name,
       loading: false,
       loadingTitle: '',
-      asciiDialogVisible: false,
+      serverDownloadDialogVisible: false,
     };
   },
   methods: {
     downloadData,
     downloadPlotImage,
-    downloadParamVals,
+    downloadParamValsJson,
+    downloadParamValsToml,
     async handleClick() {
       const downloadNode = document.getElementById('download-element');
       const { fileName, name, loadingTitle } = downloadOptions[this.downloadChoice];
       this.loadingTitle = loadingTitle;
-      this.loading = true;
       const href = await this[`download${name}`](this.$store);
+      if (name === 'ParamValsToml') {
+        this.serverDownloadDialogVisible = true;
+      } else {
+        this.loading = true;
+      }
       downloadNode.setAttribute('href', href);
       downloadNode.setAttribute('download', fileName);
       downloadNode.click();
