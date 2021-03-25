@@ -4,7 +4,13 @@
 name: Client Deployment
 
 # On push for now because of the need to test the branch.
-on: [push, pull_request]
+on: 
+  push:
+    branches:
+      - main
+      - dev
+      - US321-CompleteDeployment
+  pull_request:
 
 jobs:
   build-and-deploy:

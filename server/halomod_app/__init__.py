@@ -42,7 +42,13 @@ def create_app(test_config=None):
     # Everything in config.py Config class is loaded into the Flask app config
     app.config.from_object('config.Config')
 
-    CORS(app, origins="http://localhost:*", supports_credentials=True)  # enable CORS
+    # The different origins that the server will allow connections from
+    origins = [
+        'http://localhost:*',
+        'https:*thehalomod.netlify.app/'
+    ]
+
+    CORS(app, origins=origins, supports_credentials=True)  # enable CORS
     sess.init_app(app)  # enable Sessions
 
     # Generic Exception handler for 500 Internal Server Error

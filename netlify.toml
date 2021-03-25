@@ -16,8 +16,8 @@
   command = "npm run build"
 
   # Build environment variables
-  # [build.environment]
-  #   PYTHON_VERSION = "3.7"
+  [build.environment]
+    VUE_APP_SERVER_URL = "http://129.219.108.214:8010"
 
 # Production context: all deploys from the Production branch set in your site’s
 # deploy contexts will inherit these settings.
