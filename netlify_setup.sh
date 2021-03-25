@@ -2,7 +2,7 @@
 cp ./server/requirements.txt ./requirements.txt
 
 # Setup gfortran
-sudo apt-get install gfortran-8
+apt-get install gfortran-8
 mkdir -p gfortran-symlinks
 ln -s /usr/bin/gfortran-8 gfortran-symlinks/gfortran
 export PATH=$PWD/gfortran-symlinks:$PATH
