@@ -54,6 +54,9 @@ jobs:
         path: ~/.cache/pip
         key: ${{ hashFiles('server/requirements.txt') }}
 
+    - name: Install Python wheel
+      run: pip3 install wheel
+
     - name: Generate constants    
       run: sh generate_constants.sh
 
@@ -66,16 +69,17 @@ jobs:
         publish-dir: './client/dist'
         # The "production-branch" means that any deploy to the specified branch
         # will deploy as the production site. For example at 
+        # thehalomod.netlify.app
         production-branch: main
         github-token: ${{ secrets.GITHUB_TOKEN }}
         deploy-message: Deployed from GitHub Actions for branch "${{ github.ref }}"
-        enable-commit-status: false
+        enable-commit-status: true
         netlify-config-path: ./netlify.toml
         # Disables commenting on individual commits with the deploy location
         enable-commit-comment: false
         # Enables commenting on pull requests with the deploy location
         enable-pull-request-comment: true
-        alias: ${{ github.head_ref }}
+        alias: ${{ github.ref }}
       env:
         NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_OAUTH_TOKEN }}
         NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
