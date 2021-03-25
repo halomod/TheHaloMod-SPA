@@ -17,10 +17,10 @@
 
 # Production context: all deploys from the Production branch set in your site’s
 # deploy contexts will inherit these settings.
-[context.production]
-  publish = "output/"
-  command = "make publish"
-  environment = { ACCESS_TOKEN = "super secret", NODE_VERSION = "14.15.3" }
+# [context.production]
+#   publish = "output/"
+#   command = "make publish"
+#   environment = { ACCESS_TOKEN = "super secret", NODE_VERSION = "14.15.3" }
 
 # Deploy Preview context: all deploys generated from a pull/merge request will
 # inherit these settings.
