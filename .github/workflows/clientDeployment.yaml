@@ -54,9 +54,6 @@ jobs:
         path: ~/.cache/pip
         key: ${{ hashFiles('server/requirements.txt') }}
 
-    - name: Install Python wheel
-      run: pip3 install wheel
-
     - name: Generate constants    
       run: sh generate_constants.sh
 
