@@ -16,8 +16,10 @@
   command = "npm run setup && npm run build"
 
   # Build environment variables. Defined so that the constants can be generated.
+  # There are only a certain number of python verisons avaialble so see here:
+  # https://www.netlify.com/blog/2016/10/18/how-our-build-bots-build-sites/.
   [build.environment]
-    PYTHON_VERSION = "3.8.2"
+    PYTHON_VERSION = "3.7"
 
 # Production context: all deploys from the Production branch set in your site’s
 # deploy contexts will inherit these settings.
