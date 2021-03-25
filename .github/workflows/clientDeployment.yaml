@@ -52,7 +52,7 @@ jobs:
       uses: actions/cache@v2
       with:
         path: ~/.cache/pip
-        key: ${{ hashFiles('server/requirements.txt') }}
+        key: ${{ hashFiles('server/requirements.txt') }}v2
 
     - name: Generate constants    
       run: sh generate_constants.sh
