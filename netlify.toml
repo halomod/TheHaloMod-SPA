@@ -12,12 +12,12 @@
   # directory located at the absolute path "root/project/build-output"
   publish = "dist/"
 
-  # Default build command.
+  # Default build command
   command = "npm run setup && npm run build"
 
-  # Build environment variables
-  # [build.environment]
-  #   PYTHON_ENV = 3
+  # Build environment variables. Defined so that the constants can be generated.
+  [build.environment]
+    PYTHON_VERSION = "3.8.2"
 
 # Production context: all deploys from the Production branch set in your site’s
 # deploy contexts will inherit these settings.
