@@ -4,14 +4,15 @@
 name: Client Deployment
 
 # On push for now because of the need to test the branch.
-on: [push, pull_request]
+on: 
+  push:
+  pull_request:
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     # Require that the 'test' job completes first
     needs: test
-    name: Client Deployment
     steps:
     - name: Checkout 🛎️
       uses: actions/checkout@v2
