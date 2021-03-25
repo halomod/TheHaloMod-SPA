@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     # Require that the 'test' job completes first
     needs: test
-
+    name: Client Deployment
     steps:
     - name: Checkout 🛎️
       uses: actions/checkout@v2
