@@ -85,6 +85,7 @@
             <double-field
               v-else
               :init="localHMModelFlat[key]"
+              @is-valid="isValid"
               v-model="localHMModelFlat[key]"
               v-bind="getDoubleFieldProps(key)"/>
           </div>
@@ -262,6 +263,9 @@ export default {
     isSliderMin(parameterKey) {
       return this.isSlider(parameterKey) && PARAMETER_PROPS[parameterKey]
         .rangeSlider.isRangeSliderMin;
+    },
+    isValid(valid) {
+      this.$emit('is-valid', valid);
     },
   },
 };

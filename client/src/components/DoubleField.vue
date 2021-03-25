@@ -7,6 +7,7 @@
     <div class="md-error" v-if="!isDefined">Value must be defined</div>
     <div class="md-error" v-else-if="!isNumeric">Value must be numeric</div>
     <div class="md-error" v-else-if="!isBetween">Value must be between {{min}} and {{max}}</div>
+     <span class="md-helper-text">{{min}} - {{max}}</span>
   </md-field>
 </template>
 
@@ -48,6 +49,9 @@ export default {
       if (this.isValid) {
         this.$emit('input', Number(this.current));
       }
+    },
+    isValid(valid) {
+      this.$emit('is-valid', valid);
     },
     /* handles case where init has been updated to a new value during a switch to a new route */
     init() {
