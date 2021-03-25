@@ -7,6 +7,7 @@ for arg in "$@"
 do
   case $arg in
     "--install")
+      # Install wheel to allow caching of camb and other dependencies
       python3 -m pip install wheel
       python3 -m pip install -r requirements.txt;;
     "--lint" )
