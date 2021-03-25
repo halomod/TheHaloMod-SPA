@@ -4,6 +4,30 @@ import unzip from 'lodash.unzip';
 import baseUrl from '@/env';
 import PLOT_AXIS_OPTIONS from '@/constants/PLOT_AXIS_OPIONS.json';
 import PLOT_AXIS_METADATA from '@/constants/PLOT_AXIS_METADATA.json';
+import * as d3 from 'd3';
+
+/**
+ * Adds inline CSS styles to the D3 SVG element by extracting
+ * style properties using Window.getComputedStyles.
+ *
+ * @param {Array} elements array of elements and style properties
+ */
+function addInlineCSS(elements) {
+  if (elements && elements.length) {
+    elements.forEach(function (d) {
+      d3.selectAll(d.el).each(() => {
+        const element = this;
+        if (d.properties && d.properties.length) {
+          d.properties.forEach((prop) => {
+            const computedStyle = getComputedStyle(element, null);
+            const value = computedStyle.getPropertyValue(prop);
+            element.style[prop] = value;
+          });
+        }
+      });
+    });
+  }
+}
 
 export async function downloadData() {
   const zip = new JSZip();
@@ -12,19 +36,19 @@ export async function downloadData() {
   for (const [kind, options] of Object.entries(PLOT_AXIS_OPTIONS)) {
     /* Gets relevant fields from constants files */
     let params = [kind, ...options.y];
-    if (kind === 'm') params = params.filter((value) => value !== 'how_big');
-    const labels = params.map((param) => PLOT_AXIS_METADATA[param].label);
-    
+    if (kind === "m") params = params.filter(value => value !== "how_big");
+    const labels = params.map(param => PLOT_AXIS_METADATA[param].label);
+
     /* API request */
     const response = await axios.post(`${baseUrl}/get_object_data`, {
-      param_names: params,
+      param_names: params
     });
     const json = response.data;
-    
+
     /* Construct CSV */
     Object.entries(json).forEach(([name, parameters]) => {
       const data = unzip(Object.values(parameters));
-      const csv = `${labels.join('\t')}\n${data.map((row) => `${row.join('\t')}\n`).join()}`;
+      const csv = `${labels.join("\t")}\n${data.map(row => `${row.join("\t")}\n`).join()}`;
       zip.file(`${name}_${kind}_vector.csv`, csv);
     });
   }
