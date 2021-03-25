@@ -36,6 +36,27 @@ jobs:
     - name: Install dependencies
       run: cd client && npm install
 
+    - name: Setup gfortran
+      run: |
+        sudo apt-get install gfortran-8
+        mkdir -p gfortran-symlinks
+        ln -s /usr/bin/gfortran-8 gfortran-symlinks/gfortran
+        export PATH=$PWD/gfortran-symlinks:$PATH
+
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+
+    - name: Python Caching
+      uses: actions/cache@v2
+      with:
+        path: ~/.cache/pip
+        key: ${{ hashFiles('server/requirements.txt') }}
+
+    - name: Generate constants    
+      run: sh generate_constants.sh
+
     - name: Build
       run: cd client && npm run build
 
