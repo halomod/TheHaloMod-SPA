@@ -64,11 +64,14 @@ jobs:
       uses: nwtgck/actions-netlify@v1.1
       with:
         publish-dir: './client/dist'
+        # The "production-branch" means that any deploy to the specified branch
+        # will deploy as the production site. For example at 
         production-branch: main
         github-token: ${{ secrets.GITHUB_TOKEN }}
-        deploy-message: "Deploy from GitHub Actions"
+        deploy-message: Deployed from GitHub Actions for branch "${{ github.ref }}"
+        enable-commit-status: false
         netlify-config-path: ./netlify.toml
-        # Disables commenting on individual commits
+        # Disables commenting on individual commits with the deploy location
         enable-commit-comment: false
         # Enables commenting on pull requests with the deploy location
         enable-pull-request-comment: true
