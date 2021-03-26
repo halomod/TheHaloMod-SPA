@@ -34,3 +34,5 @@ The only parts that are not included in the server and client at this moment are
 - Run tests on both the server and client when new pushes are made to any branch in the project
 - Run linting on both the server and client when new pushes are made to any branch in the project
 - Deploy the client when a new push is made to the `main` branch 
+
+Note that in order to execute shell files (files with an `.sh` extension), then need to be ran in Github Actions with `sh shell_file_name.sh`. If they are ran with `. ./shell_file_name.sh` they will not run correctly.

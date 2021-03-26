@@ -66,6 +66,8 @@ jobs:
       run: sh generate_constants.sh
 
     - name: Build
+      env: 
+        VUE_APP_SERVER_URL: http://129.219.108.214:8010
       run: cd client && npm run build
 
     - name: Deploy to Netlify
