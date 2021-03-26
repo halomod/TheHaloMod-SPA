@@ -18,7 +18,7 @@ do
     "--dev" )
       export FLASK_APP=halomod_app
       export FLASK_ENV=development
-      flask run;;
+      flask run --cert=adhoc;;
     "--generate-constants" | "--gc" )
       python3 generate_constants.py;;
   esac

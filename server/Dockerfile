@@ -16,4 +16,4 @@ RUN pip install -r requirements.txt
 
 ADD . /thehalomod-server
 
-CMD flask run
+CMD flask run --cert=adhoc
