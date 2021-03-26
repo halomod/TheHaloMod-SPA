@@ -8,8 +8,8 @@ do
   case $arg in
     "--install")
       # Install wheel to allow caching of camb and other dependencies
-      python3 -m pip install wheel
-      python3 -m pip install -r requirements.txt;;
+      pip3 install wheel
+      pip3 install -r requirements.txt;;
     "--lint" )
       autopep8 -a -r --in-place halomod_app
       flake8 tests halomod_app;;
