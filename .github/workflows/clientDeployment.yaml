@@ -61,7 +61,7 @@ jobs:
         key: ${{ hashFiles('server/requirements.txt') }}v2
 
     - name: Generate constants    
-      run: sh generate_constants.sh
+      run: . ./generate_constants.sh
 
     - name: Build
       run: cd client && npm run build
