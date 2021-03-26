@@ -18,7 +18,10 @@ do
     "--dev" )
       export FLASK_APP=halomod_app
       export FLASK_ENV=development
-      flask run --cert=adhoc;;
+      # Doesn't run with SSL on dev so that certs do not need to be handled.
+      # To run with SSL on, the following could be run: 
+      # `flask run --cert-adhoc`
+      flask run;;
     "--generate-constants" | "--gc" )
       python3 generate_constants.py;;
   esac
