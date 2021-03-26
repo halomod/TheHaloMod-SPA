@@ -14,7 +14,7 @@ do
       autopep8 -a -r --in-place halomod_app
       flake8 tests halomod_app;;
     "--test" )
-      python -m pytest;;
+      python3 -m pytest;;
     "--dev" )
       export FLASK_APP=halomod_app
       export FLASK_ENV=development
