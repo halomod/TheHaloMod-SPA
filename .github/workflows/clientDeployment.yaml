@@ -67,7 +67,7 @@ jobs:
 
     - name: Build
       env: 
-        VUE_APP_SERVER_URL: http://129.219.108.214:8010
+        VUE_APP_SERVER_URL: https://api.thehalomod.app
       run: cd client && npm run build
 
     - name: Deploy to Netlify
