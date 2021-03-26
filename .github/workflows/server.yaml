@@ -46,16 +46,17 @@ jobs:
       uses: actions/cache@v2
       with:
         path: ~/.cache/pip
-        key: ${{ hashFiles('server/requirements.txt') }}v2
+        # Makes the hashing depend on changes to requirements.txt and
+        # run.sh in case there are some installations that happen there.
+        key: ${{ hashFiles('server/requirements.txt') }}${{ hashFiles('server/run.sh') }}
 
     - name: Install Dependencies
       run: |
         python3 -m pip install --upgrade pip
-        . ./run.sh --install
+        sh run.sh --install
     
     - name: Lint
-      run: . ./run.sh --lint
+      run: sh run.sh --lint
     
     - name: Test
-      run: | 
-        . ./run.sh --test
+      run: sh run.sh --test
