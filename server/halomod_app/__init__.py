@@ -45,7 +45,7 @@ def create_app(test_config=None):
     # The different origins that the server will allow connections from
     origins = [
         'http://localhost:*',
-        'https:*thehalomod.netlify.app/'
+        '*thehalomod.netlify.app*'
     ]
 
     CORS(app, origins=origins, supports_credentials=True)  # enable CORS
