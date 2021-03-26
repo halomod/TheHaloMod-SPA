@@ -34,7 +34,6 @@ jobs:
           ${{ runner.os }}-build-
           ${{ runner.os }}-
 
-    - uses: actions/checkout@v2
     - name: Setup gfortran
       run: |
         sudo apt-get install gfortran-8
