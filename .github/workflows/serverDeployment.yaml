@@ -32,7 +32,11 @@ jobs:
           export FLASK_RUN_PORT=8010
           export FLASK_KEY=${{ secrets.FLASK_KEY }}
           cd ./TheHaloMod-SPA/server
+
+          printf "\nserver directory contents:\n" 
           ls
+          printf "\n"
+          
           docker-compose down
           cd ../..
           rm -r ./TheHaloMod-SPA
