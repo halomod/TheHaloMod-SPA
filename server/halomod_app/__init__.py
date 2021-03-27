@@ -146,6 +146,12 @@ def create_app(test_config=None):
     def get_plot_data():
         # DELETE ME
         print('get_plot_data triggered')
+        print('The current session keys and values are as follows:')
+        print(session.keys(), session.values)
+        print('The request details are below:')
+        print('Request full path: ', request.full_path)
+        print('Request is_secure: ', request.is_secure)
+        print('Request headers: ', request.headers)
 
         res = {"plot_data": {}}
         request_json = request.get_json()
