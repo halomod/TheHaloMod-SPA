@@ -52,7 +52,9 @@ jobs:
         path: ~/.cache/pip
         # Makes the hashing depend on changes to requirements.txt and
         # run.sh in case there are some installations that happen there.
-        key: ${{ hashFiles('server/requirements.txt') }}${{ hashFiles('server/run.sh') }}
+        # This is prepended with the name of the workflow because some workflows
+        # have different python dependencies.
+        key: client${{ hashFiles('server/requirements.txt') }}${{ hashFiles('server/run.sh') }}
 
     - name: Generate constants    
       run: sh generate_constants.sh
