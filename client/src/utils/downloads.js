@@ -59,6 +59,16 @@ export async function downloadData() {
 }
 
 export async function downloadPlotImage() {
+  const svgElements = [
+    { el: '.graph-line', properties: ['fill', 'stroke', 'stroke-width'] },
+    {
+      el: '.grid line',
+      properties: ['stroke', 'stroke-opacity', 'shape-rendering'],
+    },
+    { el: '.grid path', properties: ['stroke-width'] },
+    { el: '.axis-label g text', properties: ['font-size', 'font-family'] },
+  ];
+  addInlineCSS(svgElements);
   const svgNode = document.getElementById('svg-plot');
   const serializer = new XMLSerializer();
   let plotString = serializer.serializeToString(svgNode);
