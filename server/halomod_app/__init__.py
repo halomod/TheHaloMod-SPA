@@ -53,12 +53,12 @@ def create_app(test_config=None):
     CORS(app, origins=origins, supports_credentials=True)  # enable CORS
     sess.init_app(app)  # enable Sessions
 
-    # Generic Exception handler for 500 Internal Server Error
-    # Returns manually formatted JSON response object with 500 code,
-    # exception name, and description
-
     @app.errorhandler(Exception)
     def handle_generic_exception(e):
+        """Generic Exception handler for 500 Internal Server Error
+        Returns manually formatted JSON response object with 500 code,
+        exception name, and description
+        """
         # pass HTTPExceptions to HTTPException handler
         if isinstance(e, HTTPException):
             return e

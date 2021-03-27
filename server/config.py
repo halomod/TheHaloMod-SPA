@@ -3,6 +3,7 @@ from os import environ
 
 # flake8: noqa
 
+
 class Config:
     ''' If a Flask key is not defined then use a pre-defined key '''
     if not environ.get('FLASK_KEY'):
@@ -40,5 +41,15 @@ class Config:
     else:
         # Docker resolves the container name into the URL
         SESSION_REDIS = redis.Redis(host=environ.get("REDIS_URL"), port=6379)
+
+    ''' If the HTTPS session is true, then set that coniguration '''
+    if not environ.get("USE_HTTPS_SESSION") or environ.get("USE_HTTPS_SESSION") == "False":
+        print('USE_HTTPS_SESSION was equivalent to false')
+        SESSION_COOKIE_HTTPONLY = True
+        SESSION_COOKIE_SECURE = False
+    else:
+        print('USE_HTTPS_SESSION was equivalent to true')
+        SESSION_COOKIE_HTTPONLY = False
+        SESSION_COOKIE_SECURE = True
 
     PROPAGATE_EXCEPTIONS = True

@@ -36,7 +36,7 @@ jobs:
           printf "\nserver directory contents:\n" 
           ls
           printf "\n"
-          
+
           docker-compose down
           cd ../..
           rm -r ./TheHaloMod-SPA
