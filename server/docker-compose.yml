@@ -12,7 +12,8 @@ services:
       - FLASK_RUN_PORT=${FLASK_RUN_PORT}
       - FLASK_RUN_HOST=${FLASK_RUN_HOST}
       - FLASK_ENV="production"
-      - FLASK_DEBUG=False
+      # Debug mode on for now to find issues
+      - FLASK_DEBUG=True
       - FLASK_APP=halomod_app
 
   redis:
