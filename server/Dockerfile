@@ -16,4 +16,10 @@ RUN pip install -r requirements.txt
 
 ADD . /thehalomod-server
 
-CMD flask run --cert=adhoc
+# Using the "exec" form. See https://docs.docker.com/engine/reference/builder/#cmd
+# This makes it so it runs normally and not wrapped in "sh". So this allows
+# the container to be attached to and accept input.
+#
+# The "--cert=adhoc" allows SSH connections to be made to this container
+# locally.
+CMD ["flask", "run", "--cert=adhoc"]
