@@ -144,10 +144,17 @@ def create_app(test_config=None):
 
     @app.route('/get_plot_data', methods=["POST"])
     def get_plot_data():
+        # DELETE ME
+        print('get_plot_data triggered')
+
         res = {"plot_data": {}}
         request_json = request.get_json()
         x_param = request_json["x"]
         y_param = request_json["y"]
+
+        # DELETE ME
+        print('The current session models object for the request is as follows:')
+        print(pickle.loads(session.get('models')))
 
         models = None
         if 'models' in session:
