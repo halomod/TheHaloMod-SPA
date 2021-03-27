@@ -20,12 +20,12 @@ describe('Mounted Forms', () => {
   beforeAll(async () => {
     localVue = createLocalVue();
     const store = new Store();
-    const hmModelFlat = store.getHMModelFlatFromConstants();
+    const currentFormState = store.getFormStateFromConstants();
     // Mount the component with the `$store` attached
     wrapper = shallowMount(Forms, {
       localVue,
       propsData: {
-        initialHMModelFlat: hmModelFlat,
+        initialFormState: currentFormState,
         contextPrimary: 'Create',
         contextSecondary: 'New Model',
       },

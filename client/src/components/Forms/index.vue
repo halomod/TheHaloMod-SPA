@@ -24,14 +24,14 @@
           <md-divider/>
           <div v-for="(form, index) in Object.values(forms)" :key="index">
             <FormWrapper
-              :id="form.id"
+              :id="`form_wrapper_${form.id}`"
               :title="form.title"
               @currently-visible="() => setCurrentlyVisible(form.id, form.title)">
               <GenericForm
-                v-if="initialHMModelFlat"
-                v-bind="buildProps(form)"
-                :testName="form.title"
-                @onChange="handleFormDataChange"/>
+                v-if="initialFormState"
+                :formId="form.id"
+                :initialSubformState="initialFormState[form.id]"
+                v-model="currentFormState[form.id]"/>
             </FormWrapper>
             <md-divider/>
           </div>
@@ -63,7 +63,7 @@ export default {
     /**
      * The state of the model.
      */
-    initialHMModelFlat: {
+    initialFormState: {
       type: Object,
       required: true,
     },
@@ -80,7 +80,7 @@ export default {
     return {
       forms: FORMS,
       currentlyVisible: null,
-      hmModelFlat: clonedeep(this.initialHMModelFlat),
+      currentFormState: clonedeep(this.initialFormState),
     };
   },
   activated() {
@@ -90,17 +90,17 @@ export default {
     /**
      * If state is propogated up, then pass it along to this components parent.
      */
-    hmModelFlat: {
+    currentFormState: {
       deep: true,
-      handler() { this.$emit('onChange', clonedeep(this.hmModelFlat)); },
+      handler() { this.$emit('onChange', clonedeep(this.currentFormState)); },
     },
     /**
      * If state is propogated down, then pass it along to the children.
      */
-    initialHMModelFlat: {
+    initialFormState: {
       deep: true,
       handler() {
-        this.hmModelFlat = clonedeep(this.initialHMModelFlat);
+        this.currentFormState = clonedeep(this.initialFormState);
       },
     },
   },
@@ -114,20 +114,6 @@ export default {
     setCurrentlyVisible(id, title) {
       this.currentlyVisible = title;
       window.history.replaceState({}, '', `#${id}`);
-    },
-    buildProps(form) {
-      return {
-        relevantHMModelFlat: form.getRelevantHMModelFlat(this.hmModelFlat),
-        title: form.title,
-        model_key: form.model_key,
-        hmModelFlatParamsKey: form.hmModelFlatParamsKey,
-        modelChoices: form.modelChoices,
-        modelChoicesData: form.getModelChoicesDataFromFlat(this.hmModelFlat),
-        updateModelChoice: form.updateModelChoice,
-      };
-    },
-    handleFormDataChange(formData) {
-      Object.assign(this.hmModelFlat, formData);
     },
   },
 };

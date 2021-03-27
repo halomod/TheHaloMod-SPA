@@ -15,10 +15,10 @@ debug.enabled = false;
  */
 
 /**
- * HMModelFlat stands for "Halo Mod Model flat" and represents the form of a
+ * FormState stands for "Halo Mod Model flat" and represents the form of a
  * data model which is accepted by the server to create a model on that side.
  *
- * @typedef HMModelFlat
+ * @typedef FormState
  * @type {object}
  */
 
@@ -41,11 +41,11 @@ debug.enabled = false;
  * The `title` is the title that will be shown to the user when they look
  * at that form. It is also used in navigation.
  *
- * `model_key` is what is searched for in the `backend_constants` file to
+ * `modelKey` is what is searched for in the `backend_constants` file to
  * retrieve the model that is currently chosen for the form. If there is no
  * model for the form, this property can be left out.
  *
- * `hmModelFlatParamsKey` is what is used as the params key that is sent to
+ * `currentFormStateParamsKey` is what is used as the params key that is sent to
  * the server.
  *
  * `hmModelParamsKey` is what is searched for in the `backend_constants` file to
@@ -56,11 +56,11 @@ debug.enabled = false;
  * @type {{
  *  id: string,
  *  title: string,
- *  model_key: string | undefined,
+ *  modelKey: string | undefined,
  *  modelChoices: ModelChoices,
- *  hmModelFlatParamsKey: string,
+ *  currentFormStateParamsKey: string,
  *  hmModelParamsKey: string,
- *  getRelevantHMModelFlat: GetRelevantHMModelFlatFunction,
+ *  getRelevantFormState: GetRelevantFormStateFunction,
  *  getModelChoicesDataFromFlat: GetModelChoicesDataFromFlatFunction,
  *  updateModelChoice: UpdateModelChoiceFunction,
  *  flattenHMModel: FlattenHMModelFunction
@@ -80,24 +80,24 @@ debug.enabled = false;
  */
 
 /**
- * Gets the relevant fields of a given HMModelFlat object. For example,
- * if a form only uses the `params` field of the HMModelFlat, and 2 other
+ * Gets the relevant fields of a given FormState object. For example,
+ * if a form only uses the `params` field of the FormState, and 2 other
  * root-level fields, it will only return the model name field, the params
  * field, and those 2 other fields.
  *
- * @typedef GetRelevantHMModelFlatFunction
- * @type {(hmModelFlat: HMModelFlat) => object}
+ * @typedef GetRelevantFormStateFunction
+ * @type {(currentFormState: FormState) => object}
  */
 
 /**
- * Builds the `modelChoicesData` based on the given `hmModelFlat`.
+ * Builds the `modelChoicesData` based on the given `currentFormState`.
  *
- * Typically this function will take what exists in `hmModelFlat` and transpose
+ * Typically this function will take what exists in `currentFormState` and transpose
  * the relevant fields onto the object which corresponds to the currently
  * chosen model.
  *
  * @typedef GetModelChoicesDataFromFlatFunction
- * @type {(hmModelFlat: HMModelFlat) => ModelChoicesData}
+ * @type {(currentFormState: FormState) => ModelChoicesData}
  */
 
 /**
@@ -113,9 +113,9 @@ debug.enabled = false;
  */
 
 /**
- * Updates the given `hmModelFlat` and `modelChoicesData` based on the provided
+ * Updates the given `currentFormState` and `modelChoicesData` based on the provided
  * `oldModelName` and `newModelName`. This funciton allows a form to customize
- * how the HMModelFlat is modified when the selected model is changed, as well
+ * how the FormState is modified when the selected model is changed, as well
  * as the current ModelChoicesData.
  *
  * Most of the time, the params field for the form is modified when this
@@ -126,9 +126,9 @@ debug.enabled = false;
  * @type {(
  *  oldModelName: string,
  *  newModelName: string,
- *  hmModelFlat: HMModelFlat,
+ *  currentFormState: FormState,
  *  modelChoicesData: ModelChoicesData
- * ) => [HMModelFlat, ModelChoicesData]}
+ * ) => [FormState, ModelChoicesData]}
  */
 
 /**
@@ -136,7 +136,7 @@ debug.enabled = false;
  * a format usable by the server.
  *
  * For example, this is used to convert an `HMModel` from its
- * expanded form, into an `HMModelFlat` when done over all forms.
+ * expanded form, into an `FormState` when done over all forms.
  *
  * @typedef FlattenHMModelFunction
  * @type {(hmModel: HMModel) => object}
@@ -153,138 +153,48 @@ const FORMS = {
   cosmo: {
     id: 'cosmo',
     title: 'Cosmology',
-    model_key: 'cosmo_model',
+    modelKey: 'cosmo_model',
     core_params: ['z', 'n', 'sigma_8'],
     modelChoices: MODEL_CHOICES.cosmo,
-    hmModelFlatParamsKey: 'cosmo_params',
-    hmModelParamsKey: 'cosmo_defaults',
-    // get getRelevantHMModelFlat() {
-    //   return function getRelevant(hmModelFlat) {
-    //     return {
-    //       [this.model_key]: hmModelFlat[this.model_key],
-    //       [this.hmModelFlatParamsKey]: hmModelFlat[this.hmModelFlatParamsKey],
-    //       z: hmModelFlat.z,
-    //       n: hmModelFlat.n,
-    //       sigma_8: hmModelFlat.sigma_8,
-    //     };
-    //   };
-    // },
-    // get getModelChoicesDataFromFlat() {
-    //   return function getModelChoicesData(hmModelFlat) {
-    //     debug('getModelChoicesDataFromFlat was ran for cosmo');
-    //     const cosmoDefaults = clonedeep(BACKEND_CONSTANTS[this.hmModelParamsKey]);
-    //     const modelChoicesData = {
-    //       Planck13: {
-    //         cosmo_params: cosmoDefaults.Planck13,
-    //         z: 0.0,
-    //         n: 0.9619,
-    //         sigma_8: 0.8347,
-    //       },
-    //       Planck15: {
-    //         cosmo_params: cosmoDefaults.Planck15,
-    //         z: 0.0,
-    //         n: 0.965,
-    //         sigma_8: 0.802,
-    //       },
-    //       WMAP5: {
-    //         cosmo_params: cosmoDefaults.WMAP5,
-    //         z: 0.0,
-    //         n: 0.962,
-    //         sigma_8: 0.817,
-    //       },
-    //       WMAP7: {
-    //         cosmo_params: cosmoDefaults.WMAP7,
-    //         z: 0.0,
-    //         n: 0.967,
-    //         sigma_8: 0.81,
-    //       },
-    //       WMAP9: {
-    //         cosmo_params: cosmoDefaults.WMAP9,
-    //         z: 0.0,
-    //         n: 0.9646,
-    //         sigma_8: 0.817,
-    //       },
-    //     };
-    //     modelChoicesData[hmModelFlat[this.model_key]] = {
-    //       [this.hmModelParamsKey]: clonedeep(hmModelFlat[this.hmModelFlatParamsKey]),
-    //       z: hmModelFlat.z,
-    //       n: hmModelFlat.n,
-    //       sigma_8: hmModelFlat.sigma_8,
-    //     };
-    //     return modelChoicesData;
-    //   };
-    // },
-    // get updateModelChoice() {
-    //   return function updateModelChoice(oldModelName, newModelName, hmModelFlat, modelChoicesData) {
-    //     const newModelChoicesData = clonedeep(modelChoicesData);
-    //     if (oldModelName) {
-    //       newModelChoicesData[oldModelName] = {
-    //         [this.hmModelParamsKey]: clonedeep(hmModelFlat[this.hmModelFlatParamsKey]),
-    //         z: hmModelFlat.z,
-    //         n: hmModelFlat.n,
-    //         sigma_8: hmModelFlat.sigma_8,
-    //       };
-    //     }
-    //     const newHMModelFlat = Object.assign(
-    //       clonedeep(hmModelFlat),
-    //       {
-    //         [this.hmModelFlatParamsKey]: modelChoicesData[newModelName][this.hmModelParamsKey],
-    //         z: modelChoicesData[newModelName].z,
-    //         n: modelChoicesData[newModelName].n,
-    //         sigma_8: modelChoicesData[newModelName].sigma_8,
-    //       },
-    //     );
-    //     return [newHMModelFlat, newModelChoicesData];
-    //   };
-    // },
-    // get flattenHMModel() {
-    //   return function flatten(hmModel) {
-    //     const partiallyFlattenedHMModel = clonedeep(hmModel);
-    //     delete partiallyFlattenedHMModel[this.hmModelParamsKey];
-    //     Object.assign(partiallyFlattenedHMModel, {
-    //       [this.hmModelFlatParamsKey]: hmModel[this.hmModelParamsKey][hmModel[this.model_key]],
-    //     });
-    //     return partiallyFlattenedHMModel;
-    //   };
-    // },
+    paramsKey: 'cosmo_params',
   },
 //   mdef: {
 //     id: 'mdef',
 //     title: 'Mass Definition',
-//     model_key: 'mdef_model',
+//     modelKey: 'mdef_model',
 //     modelChoices: MODEL_CHOICES.mdef,
-//     hmModelFlatParamsKey: 'mdef_params',
+//     currentFormStateParamsKey: 'mdef_params',
 //     hmModelParamsKey: 'MassDefinition_params',
-//     get getRelevantHMModelFlat() {
-//       return function getRelevant(hmModelFlat) {
+//     get getRelevantFormState() {
+//       return function getRelevant(currentFormState) {
 //         return {
-//           [this.model_key]: hmModelFlat[this.model_key],
-//           [this.hmModelFlatParamsKey]: hmModelFlat[this.hmModelFlatParamsKey],
+//           [this.modelKey]: currentFormState[this.modelKey],
+//           [this.currentFormStateParamsKey]: currentFormState[this.currentFormStateParamsKey],
 //         };
 //       };
 //     },
 //     get getModelChoicesDataFromFlat() {
-//       return function getModelChoicesData(hmModelFlat) {
+//       return function getModelChoicesData(currentFormState) {
 //         const modelChoicesData = clonedeep(BACKEND_CONSTANTS[this.hmModelParamsKey]);
-//         modelChoicesData[hmModelFlat[this.model_key]] = clonedeep(
-//           hmModelFlat[this.hmModelFlatParamsKey],
+//         modelChoicesData[currentFormState[this.modelKey]] = clonedeep(
+//           currentFormState[this.currentFormStateParamsKey],
 //         );
 //         return modelChoicesData;
 //       };
 //     },
 //     get updateModelChoice() {
-//       return function updateModelChoice(oldModelName, newModelName, hmModelFlat, modelChoicesData) {
+//       return function updateModelChoice(oldModelName, newModelName, currentFormState, modelChoicesData) {
 //         const newModelChoicesData = clonedeep(modelChoicesData);
 //         if (oldModelName) {
-//           newModelChoicesData[oldModelName] = clonedeep(hmModelFlat[this.hmModelFlatParamsKey]);
+//           newModelChoicesData[oldModelName] = clonedeep(currentFormState[this.currentFormStateParamsKey]);
 //         }
-//         const newHMModelFlat = Object.assign(
-//           clonedeep(hmModelFlat),
+//         const newFormState = Object.assign(
+//           clonedeep(currentFormState),
 //           {
-//             [this.hmModelFlatParamsKey]: modelChoicesData[newModelName],
+//             [this.currentFormStateParamsKey]: modelChoicesData[newModelName],
 //           },
 //         );
-//         return [newHMModelFlat, newModelChoicesData];
+//         return [newFormState, newModelChoicesData];
 //       };
 //     },
 //     get flattenHMModel() {
@@ -292,7 +202,7 @@ const FORMS = {
 //         const partiallyFlattenedHMModel = clonedeep(hmModel);
 //         delete partiallyFlattenedHMModel[this.hmModelParamsKey];
 //         Object.assign(partiallyFlattenedHMModel, {
-//           [this.hmModelFlatParamsKey]: hmModel[this.hmModelParamsKey][hmModel[this.model_key]],
+//           [this.currentFormStateParamsKey]: hmModel[this.hmModelParamsKey][hmModel[this.modelKey]],
 //         });
 //         return partiallyFlattenedHMModel;
 //       };
@@ -301,52 +211,52 @@ const FORMS = {
 //   transfer: {
 //     id: 'transfer',
 //     title: 'Transfer',
-//     model_key: 'transfer_model',
+//     modelKey: 'transfer_model',
 //     modelChoices: MODEL_CHOICES.transfer,
-//     hmModelFlatParamsKey: 'transfer_params',
+//     currentFormStateParamsKey: 'transfer_params',
 //     hmModelParamsKey: 'TransferComponent_params',
-//     get getRelevantHMModelFlat() {
-//       return function getRelevant(hmModelFlat) {
-//         const relevantHMModelFlat = {
-//           lnk_min: hmModelFlat.lnk_min,
-//           lnk_max: hmModelFlat.lnk_max,
-//           dlnk: hmModelFlat.dlnk,
-//           takahashi: hmModelFlat.takahashi,
-//           [this.model_key]: hmModelFlat[this.model_key],
+//     get getRelevantFormState() {
+//       return function getRelevant(currentFormState) {
+//         const relevantFormState = {
+//           lnk_min: currentFormState.lnk_min,
+//           lnk_max: currentFormState.lnk_max,
+//           dlnk: currentFormState.dlnk,
+//           takahashi: currentFormState.takahashi,
+//           [this.modelKey]: currentFormState[this.modelKey],
 //         };
-//         if (hmModelFlat[this.hmModelFlatParamsKey]) {
-//           relevantHMModelFlat[this.hmModelFlatParamsKey] = clonedeep(
-//             hmModelFlat[this.hmModelFlatParamsKey],
+//         if (currentFormState[this.currentFormStateParamsKey]) {
+//           relevantFormState[this.currentFormStateParamsKey] = clonedeep(
+//             currentFormState[this.currentFormStateParamsKey],
 //           );
 //         }
-//         return relevantHMModelFlat;
+//         return relevantFormState;
 //       };
 //     },
 //     get getModelChoicesDataFromFlat() {
-//       return function getModelChoicesData(hmModelFlat) {
+//       return function getModelChoicesData(currentFormState) {
 //         const modelChoicesData = clonedeep(BACKEND_CONSTANTS[this.hmModelParamsKey]);
 //         // Make sure the params exist first, because they don't in some cases.
-//         if (hmModelFlat[this.hmModelFlatParamsKey]) {
-//           modelChoicesData[hmModelFlat[this.model_key]] = clonedeep(
-//             hmModelFlat[this.hmModelFlatParamsKey],
+//         if (currentFormState[this.currentFormStateParamsKey]) {
+//           modelChoicesData[currentFormState[this.modelKey]] = clonedeep(
+//             currentFormState[this.currentFormStateParamsKey],
 //           );
 //         }
 //         return modelChoicesData;
 //       };
 //     },
 //     get updateModelChoice() {
-//       return function updateModelChoice(oldModelName, newModelName, hmModelFlat, modelChoicesData) {
+//       return function updateModelChoice(oldModelName, newModelName, currentFormState, modelChoicesData) {
 //         const newModelChoicesData = clonedeep(modelChoicesData);
 //         if (oldModelName) {
-//           newModelChoicesData[oldModelName] = clonedeep(hmModelFlat[this.hmModelFlatParamsKey]);
+//           newModelChoicesData[oldModelName] = clonedeep(currentFormState[this.currentFormStateParamsKey]);
 //         }
-//         const newHMModelFlat = Object.assign(
-//           clonedeep(hmModelFlat),
+//         const newFormState = Object.assign(
+//           clonedeep(currentFormState),
 //           {
-//             [this.hmModelFlatParamsKey]: modelChoicesData[newModelName],
+//             [this.currentFormStateParamsKey]: modelChoicesData[newModelName],
 //           },
 //         );
-//         return [newHMModelFlat, newModelChoicesData];
+//         return [newFormState, newModelChoicesData];
 //       };
 //     },
 //     get flattenHMModel() {
@@ -354,7 +264,7 @@ const FORMS = {
 //         const partiallyFlattenedHMModel = clonedeep(hmModel);
 //         delete partiallyFlattenedHMModel[this.hmModelParamsKey];
 //         Object.assign(partiallyFlattenedHMModel, {
-//           [this.hmModelFlatParamsKey]: hmModel[this.hmModelParamsKey][hmModel[this.model_key]],
+//           [this.currentFormStateParamsKey]: hmModel[this.hmModelParamsKey][hmModel[this.modelKey]],
 //         });
 //         return partiallyFlattenedHMModel;
 //       };
@@ -363,41 +273,41 @@ const FORMS = {
 //   filter: {
 //     id: 'filter',
 //     title: 'Filter',
-//     model_key: 'filter_model',
+//     modelKey: 'filter_model',
 //     modelChoices: MODEL_CHOICES.filter,
-//     hmModelFlatParamsKey: 'filter_params',
+//     currentFormStateParamsKey: 'filter_params',
 //     hmModelParamsKey: 'Filter_params',
-//     get getRelevantHMModelFlat() {
-//       return function getRelevant(hmModelFlat) {
+//     get getRelevantFormState() {
+//       return function getRelevant(currentFormState) {
 //         return {
-//           delta_c: hmModelFlat.delta_c,
-//           [this.model_key]: hmModelFlat[this.model_key],
-//           [this.hmModelFlatParamsKey]: hmModelFlat[this.hmModelFlatParamsKey],
+//           delta_c: currentFormState.delta_c,
+//           [this.modelKey]: currentFormState[this.modelKey],
+//           [this.currentFormStateParamsKey]: currentFormState[this.currentFormStateParamsKey],
 //         };
 //       };
 //     },
 //     get getModelChoicesDataFromFlat() {
-//       return function getModelChoicesData(hmModelFlat) {
+//       return function getModelChoicesData(currentFormState) {
 //         const modelChoicesData = clonedeep(BACKEND_CONSTANTS[this.hmModelParamsKey]);
-//         modelChoicesData[hmModelFlat[this.model_key]] = clonedeep(
-//           hmModelFlat[this.hmModelFlatParamsKey],
+//         modelChoicesData[currentFormState[this.modelKey]] = clonedeep(
+//           currentFormState[this.currentFormStateParamsKey],
 //         );
 //         return modelChoicesData;
 //       };
 //     },
 //     get updateModelChoice() {
-//       return function updateModelChoice(oldModelName, newModelName, hmModelFlat, modelChoicesData) {
+//       return function updateModelChoice(oldModelName, newModelName, currentFormState, modelChoicesData) {
 //         const newModelChoicesData = clonedeep(modelChoicesData);
 //         if (oldModelName) {
-//           newModelChoicesData[oldModelName] = clonedeep(hmModelFlat[this.hmModelFlatParamsKey]);
+//           newModelChoicesData[oldModelName] = clonedeep(currentFormState[this.currentFormStateParamsKey]);
 //         }
-//         const newHMModelFlat = Object.assign(
-//           clonedeep(hmModelFlat),
+//         const newFormState = Object.assign(
+//           clonedeep(currentFormState),
 //           {
-//             [this.hmModelFlatParamsKey]: modelChoicesData[newModelName],
+//             [this.currentFormStateParamsKey]: modelChoicesData[newModelName],
 //           },
 //         );
-//         return [newHMModelFlat, newModelChoicesData];
+//         return [newFormState, newModelChoicesData];
 //       };
 //     },
 //     get flattenHMModel() {
@@ -405,7 +315,7 @@ const FORMS = {
 //         const partiallyFlattenedHMModel = clonedeep(hmModel);
 //         delete partiallyFlattenedHMModel[this.hmModelParamsKey];
 //         Object.assign(partiallyFlattenedHMModel, {
-//           [this.hmModelFlatParamsKey]: hmModel[this.hmModelParamsKey][hmModel[this.model_key]],
+//           [this.currentFormStateParamsKey]: hmModel[this.hmModelParamsKey][hmModel[this.modelKey]],
 //         });
 //         return partiallyFlattenedHMModel;
 //       };
@@ -414,40 +324,40 @@ const FORMS = {
 //   growth: {
 //     id: 'growth',
 //     title: 'Growth',
-//     model_key: 'growth_model',
+//     modelKey: 'growth_model',
 //     modelChoices: MODEL_CHOICES.growth,
-//     hmModelFlatParamsKey: 'growth_params',
+//     currentFormStateParamsKey: 'growth_params',
 //     hmModelParamsKey: '_GrowthFactor_params',
-//     get getRelevantHMModelFlat() {
-//       return function getRelevant(hmModelFlat) {
+//     get getRelevantFormState() {
+//       return function getRelevant(currentFormState) {
 //         return {
-//           [this.model_key]: hmModelFlat[this.model_key],
-//           [this.hmModelFlatParamsKey]: hmModelFlat[this.hmModelFlatParamsKey],
+//           [this.modelKey]: currentFormState[this.modelKey],
+//           [this.currentFormStateParamsKey]: currentFormState[this.currentFormStateParamsKey],
 //         };
 //       };
 //     },
 //     get getModelChoicesDataFromFlat() {
-//       return function getModelChoicesData(hmModelFlat) {
+//       return function getModelChoicesData(currentFormState) {
 //         const modelChoicesData = clonedeep(BACKEND_CONSTANTS[this.hmModelParamsKey]);
-//         modelChoicesData[hmModelFlat[this.model_key]] = clonedeep(
-//           hmModelFlat[this.hmModelFlatParamsKey],
+//         modelChoicesData[currentFormState[this.modelKey]] = clonedeep(
+//           currentFormState[this.currentFormStateParamsKey],
 //         );
 //         return modelChoicesData;
 //       };
 //     },
 //     get updateModelChoice() {
-//       return function updateModelChoice(oldModelName, newModelName, hmModelFlat, modelChoicesData) {
+//       return function updateModelChoice(oldModelName, newModelName, currentFormState, modelChoicesData) {
 //         const newModelChoicesData = clonedeep(modelChoicesData);
 //         if (oldModelName) {
-//           newModelChoicesData[oldModelName] = clonedeep(hmModelFlat[this.hmModelFlatParamsKey]);
+//           newModelChoicesData[oldModelName] = clonedeep(currentFormState[this.currentFormStateParamsKey]);
 //         }
-//         const newHMModelFlat = Object.assign(
-//           clonedeep(hmModelFlat),
+//         const newFormState = Object.assign(
+//           clonedeep(currentFormState),
 //           {
-//             [this.hmModelFlatParamsKey]: modelChoicesData[newModelName],
+//             [this.currentFormStateParamsKey]: modelChoicesData[newModelName],
 //           },
 //         );
-//         return [newHMModelFlat, newModelChoicesData];
+//         return [newFormState, newModelChoicesData];
 //       };
 //     },
 //     get flattenHMModel() {
@@ -455,7 +365,7 @@ const FORMS = {
 //         const partiallyFlattenedHMModel = clonedeep(hmModel);
 //         delete partiallyFlattenedHMModel[this.hmModelParamsKey];
 //         Object.assign(partiallyFlattenedHMModel, {
-//           [this.hmModelFlatParamsKey]: hmModel[this.hmModelParamsKey][hmModel[this.model_key]],
+//           [this.currentFormStateParamsKey]: hmModel[this.hmModelParamsKey][hmModel[this.modelKey]],
 //         });
 //         return partiallyFlattenedHMModel;
 //       };
@@ -464,43 +374,43 @@ const FORMS = {
 //   hmf: {
 //     id: 'hmf',
 //     title: 'HMF',
-//     model_key: 'hmf_model',
+//     modelKey: 'hmf_model',
 //     modelChoices: MODEL_CHOICES.hmf,
-//     hmModelFlatParamsKey: 'hmf_params',
+//     currentFormStateParamsKey: 'hmf_params',
 //     hmModelParamsKey: 'FittingFunction_params',
-//     get getRelevantHMModelFlat() {
-//       return function getRelevant(hmModelFlat) {
+//     get getRelevantFormState() {
+//       return function getRelevant(currentFormState) {
 //         return {
-//           [this.model_key]: hmModelFlat[this.model_key],
-//           [this.hmModelFlatParamsKey]: hmModelFlat[this.hmModelFlatParamsKey],
-//           Mmin: hmModelFlat.Mmin,
-//           Mmax: hmModelFlat.Mmax,
-//           dlog10m: hmModelFlat.dlog10m,
+//           [this.modelKey]: currentFormState[this.modelKey],
+//           [this.currentFormStateParamsKey]: currentFormState[this.currentFormStateParamsKey],
+//           Mmin: currentFormState.Mmin,
+//           Mmax: currentFormState.Mmax,
+//           dlog10m: currentFormState.dlog10m,
 //         };
 //       };
 //     },
 //     get getModelChoicesDataFromFlat() {
-//       return function getModelChoicesData(hmModelFlat) {
+//       return function getModelChoicesData(currentFormState) {
 //         const modelChoicesData = clonedeep(BACKEND_CONSTANTS[this.hmModelParamsKey]);
-//         modelChoicesData[hmModelFlat[this.model_key]] = clonedeep(
-//           hmModelFlat[this.hmModelFlatParamsKey],
+//         modelChoicesData[currentFormState[this.modelKey]] = clonedeep(
+//           currentFormState[this.currentFormStateParamsKey],
 //         );
 //         return modelChoicesData;
 //       };
 //     },
 //     get updateModelChoice() {
-//       return function updateModelChoice(oldModelName, newModelName, hmModelFlat, modelChoicesData) {
+//       return function updateModelChoice(oldModelName, newModelName, currentFormState, modelChoicesData) {
 //         const newModelChoicesData = clonedeep(modelChoicesData);
 //         if (oldModelName) {
-//           newModelChoicesData[oldModelName] = clonedeep(hmModelFlat[this.hmModelFlatParamsKey]);
+//           newModelChoicesData[oldModelName] = clonedeep(currentFormState[this.currentFormStateParamsKey]);
 //         }
-//         const newHMModelFlat = Object.assign(
-//           clonedeep(hmModelFlat),
+//         const newFormState = Object.assign(
+//           clonedeep(currentFormState),
 //           {
-//             [this.hmModelFlatParamsKey]: modelChoicesData[newModelName],
+//             [this.currentFormStateParamsKey]: modelChoicesData[newModelName],
 //           },
 //         );
-//         return [newHMModelFlat, newModelChoicesData];
+//         return [newFormState, newModelChoicesData];
 //       };
 //     },
 //     get flattenHMModel() {
@@ -508,7 +418,7 @@ const FORMS = {
 //         const partiallyFlattenedHMModel = clonedeep(hmModel);
 //         delete partiallyFlattenedHMModel[this.hmModelParamsKey];
 //         Object.assign(partiallyFlattenedHMModel, {
-//           [this.hmModelFlatParamsKey]: hmModel[this.hmModelParamsKey][hmModel[this.model_key]],
+//           [this.currentFormStateParamsKey]: hmModel[this.hmModelParamsKey][hmModel[this.modelKey]],
 //         });
 //         return partiallyFlattenedHMModel;
 //       };
@@ -518,19 +428,19 @@ const FORMS = {
 //     id: 'halo_model',
 //     title: 'Halo Model',
 //     modelChoices: {},
-//     get getRelevantHMModelFlat() {
-//       return function getRelevant(hmModelFlat) {
-//         const relevantHMModelFlat = {
-//           rmin: hmModelFlat.rmin,
-//           rmax: hmModelFlat.rmax,
-//           rnum: hmModelFlat.rnum,
-//           hm_logk_min: hmModelFlat.hm_logk_min,
-//           hm_logk_max: hmModelFlat.hm_logk_max,
-//           hm_dlog10k: hmModelFlat.hm_dlog10k,
-//           hc_spectrum: hmModelFlat.hc_spectrum,
-//           force_1halo_turnover: hmModelFlat.force_1halo_turnover,
+//     get getRelevantFormState() {
+//       return function getRelevant(currentFormState) {
+//         const relevantFormState = {
+//           rmin: currentFormState.rmin,
+//           rmax: currentFormState.rmax,
+//           rnum: currentFormState.rnum,
+//           hm_logk_min: currentFormState.hm_logk_min,
+//           hm_logk_max: currentFormState.hm_logk_max,
+//           hm_dlog10k: currentFormState.hm_dlog10k,
+//           hc_spectrum: currentFormState.hc_spectrum,
+//           force_1halo_turnover: currentFormState.force_1halo_turnover,
 //         };
-//         return relevantHMModelFlat;
+//         return relevantFormState;
 //       };
 //     },
 //     get getModelChoicesDataFromFlat() {
@@ -540,8 +450,8 @@ const FORMS = {
 //       };
 //     },
 //     get updateModelChoice() {
-//       return function updateModelChoice(_1, _2, hmModelFlat, modelChoicesData) {
-//         return [hmModelFlat, modelChoicesData];
+//       return function updateModelChoice(_1, _2, currentFormState, modelChoicesData) {
+//         return [currentFormState, modelChoicesData];
 //       };
 //     },
 //     get flattenHMModel() {
@@ -554,40 +464,40 @@ const FORMS = {
 //   hod: {
 //     id: 'hod',
 //     title: 'HOD',
-//     model_key: 'hod_model',
+//     modelKey: 'hod_model',
 //     modelChoices: MODEL_CHOICES.hod,
-//     hmModelFlatParamsKey: 'hod_params',
+//     currentFormStateParamsKey: 'hod_params',
 //     hmModelParamsKey: 'HOD_params',
-//     get getRelevantHMModelFlat() {
-//       return function getRelevant(hmModelFlat) {
+//     get getRelevantFormState() {
+//       return function getRelevant(currentFormState) {
 //         return {
-//           [this.model_key]: hmModelFlat[this.model_key],
-//           [this.hmModelFlatParamsKey]: hmModelFlat[this.hmModelFlatParamsKey],
+//           [this.modelKey]: currentFormState[this.modelKey],
+//           [this.currentFormStateParamsKey]: currentFormState[this.currentFormStateParamsKey],
 //         };
 //       };
 //     },
 //     get getModelChoicesDataFromFlat() {
-//       return function getModelChoicesData(hmModelFlat) {
+//       return function getModelChoicesData(currentFormState) {
 //         const modelChoicesData = clonedeep(BACKEND_CONSTANTS[this.hmModelParamsKey]);
-//         modelChoicesData[hmModelFlat[this.model_key]] = clonedeep(
-//           hmModelFlat[this.hmModelFlatParamsKey],
+//         modelChoicesData[currentFormState[this.modelKey]] = clonedeep(
+//           currentFormState[this.currentFormStateParamsKey],
 //         );
 //         return modelChoicesData;
 //       };
 //     },
 //     get updateModelChoice() {
-//       return function updateModelChoice(oldModelName, newModelName, hmModelFlat, modelChoicesData) {
+//       return function updateModelChoice(oldModelName, newModelName, currentFormState, modelChoicesData) {
 //         const newModelChoicesData = clonedeep(modelChoicesData);
 //         if (oldModelName) {
-//           newModelChoicesData[oldModelName] = clonedeep(hmModelFlat[this.hmModelFlatParamsKey]);
+//           newModelChoicesData[oldModelName] = clonedeep(currentFormState[this.currentFormStateParamsKey]);
 //         }
-//         const newHMModelFlat = Object.assign(
-//           clonedeep(hmModelFlat),
+//         const newFormState = Object.assign(
+//           clonedeep(currentFormState),
 //           {
-//             [this.hmModelFlatParamsKey]: modelChoicesData[newModelName],
+//             [this.currentFormStateParamsKey]: modelChoicesData[newModelName],
 //           },
 //         );
-//         return [newHMModelFlat, newModelChoicesData];
+//         return [newFormState, newModelChoicesData];
 //       };
 //     },
 //     get flattenHMModel() {
@@ -595,7 +505,7 @@ const FORMS = {
 //         const partiallyFlattenedHMModel = clonedeep(hmModel);
 //         delete partiallyFlattenedHMModel[this.hmModelParamsKey];
 //         Object.assign(partiallyFlattenedHMModel, {
-//           [this.hmModelFlatParamsKey]: hmModel[this.hmModelParamsKey][hmModel[this.model_key]],
+//           [this.currentFormStateParamsKey]: hmModel[this.hmModelParamsKey][hmModel[this.modelKey]],
 //         });
 //         return partiallyFlattenedHMModel;
 //       };
@@ -604,40 +514,40 @@ const FORMS = {
 //   bias: {
 //     id: 'bias',
 //     title: 'Bias',
-//     model_key: 'bias_model',
+//     modelKey: 'bias_model',
 //     modelChoices: MODEL_CHOICES.bias,
-//     hmModelFlatParamsKey: 'bias_params',
+//     currentFormStateParamsKey: 'bias_params',
 //     hmModelParamsKey: 'Bias_params',
-//     get getRelevantHMModelFlat() {
-//       return function getRelevant(hmModelFlat) {
+//     get getRelevantFormState() {
+//       return function getRelevant(currentFormState) {
 //         return {
-//           [this.model_key]: hmModelFlat[this.model_key],
-//           [this.hmModelFlatParamsKey]: hmModelFlat[this.hmModelFlatParamsKey],
+//           [this.modelKey]: currentFormState[this.modelKey],
+//           [this.currentFormStateParamsKey]: currentFormState[this.currentFormStateParamsKey],
 //         };
 //       };
 //     },
 //     get getModelChoicesDataFromFlat() {
-//       return function getModelChoicesData(hmModelFlat) {
+//       return function getModelChoicesData(currentFormState) {
 //         const modelChoicesData = clonedeep(BACKEND_CONSTANTS[this.hmModelParamsKey]);
-//         modelChoicesData[hmModelFlat[this.model_key]] = clonedeep(
-//           hmModelFlat[this.hmModelFlatParamsKey],
+//         modelChoicesData[currentFormState[this.modelKey]] = clonedeep(
+//           currentFormState[this.currentFormStateParamsKey],
 //         );
 //         return modelChoicesData;
 //       };
 //     },
 //     get updateModelChoice() {
-//       return function updateModelChoice(oldModelName, newModelName, hmModelFlat, modelChoicesData) {
+//       return function updateModelChoice(oldModelName, newModelName, currentFormState, modelChoicesData) {
 //         const newModelChoicesData = clonedeep(modelChoicesData);
 //         if (oldModelName) {
-//           newModelChoicesData[oldModelName] = clonedeep(hmModelFlat[this.hmModelFlatParamsKey]);
+//           newModelChoicesData[oldModelName] = clonedeep(currentFormState[this.currentFormStateParamsKey]);
 //         }
-//         const newHMModelFlat = Object.assign(
-//           clonedeep(hmModelFlat),
+//         const newFormState = Object.assign(
+//           clonedeep(currentFormState),
 //           {
-//             [this.hmModelFlatParamsKey]: modelChoicesData[newModelName],
+//             [this.currentFormStateParamsKey]: modelChoicesData[newModelName],
 //           },
 //         );
-//         return [newHMModelFlat, newModelChoicesData];
+//         return [newFormState, newModelChoicesData];
 //       };
 //     },
 //     get flattenHMModel() {
@@ -645,7 +555,7 @@ const FORMS = {
 //         const partiallyFlattenedHMModel = clonedeep(hmModel);
 //         delete partiallyFlattenedHMModel[this.hmModelParamsKey];
 //         Object.assign(partiallyFlattenedHMModel, {
-//           [this.hmModelFlatParamsKey]: hmModel[this.hmModelParamsKey][hmModel[this.model_key]],
+//           [this.currentFormStateParamsKey]: hmModel[this.hmModelParamsKey][hmModel[this.modelKey]],
 //         });
 //         return partiallyFlattenedHMModel;
 //       };
@@ -654,47 +564,47 @@ const FORMS = {
 //   halo_concentration: {
 //     id: 'halo_concentration',
 //     title: 'Halo Concentration',
-//     model_key: 'halo_concentration_model',
+//     modelKey: 'halo_concentration_model',
 //     modelChoices: MODEL_CHOICES.concentration,
-//     hmModelFlatParamsKey: 'halo_concentration_params',
+//     currentFormStateParamsKey: 'halo_concentration_params',
 //     hmModelParamsKey: 'CMRelation_params',
-//     get getRelevantHMModelFlat() {
-//       return function getRelevant(hmModelFlat) {
+//     get getRelevantFormState() {
+//       return function getRelevant(currentFormState) {
 //         return {
-//           [this.model_key]: hmModelFlat[this.model_key],
-//           [this.hmModelFlatParamsKey]: hmModelFlat[this.hmModelFlatParamsKey],
+//           [this.modelKey]: currentFormState[this.modelKey],
+//           [this.currentFormStateParamsKey]: currentFormState[this.currentFormStateParamsKey],
 //         };
 //       };
 //     },
 //     get getModelChoicesDataFromFlat() {
-//       return function getModelChoicesData(hmModelFlat) {
+//       return function getModelChoicesData(currentFormState) {
 //         const modelChoicesData = clonedeep(BACKEND_CONSTANTS[this.hmModelParamsKey]);
-//         modelChoicesData[hmModelFlat[this.model_key]] = clonedeep(
-//           hmModelFlat[this.hmModelFlatParamsKey],
+//         modelChoicesData[currentFormState[this.modelKey]] = clonedeep(
+//           currentFormState[this.currentFormStateParamsKey],
 //         );
 //         return modelChoicesData;
 //       };
 //     },
 //     get updateModelChoice() {
-//       return function updateModelChoice(oldModelName, newModelName, hmModelFlat, modelChoicesData) {
+//       return function updateModelChoice(oldModelName, newModelName, currentFormState, modelChoicesData) {
 //         const newModelChoicesData = clonedeep(modelChoicesData);
 //         if (oldModelName) {
-//           newModelChoicesData[oldModelName] = clonedeep(hmModelFlat[this.hmModelFlatParamsKey]);
+//           newModelChoicesData[oldModelName] = clonedeep(currentFormState[this.currentFormStateParamsKey]);
 //         }
-//         const newHMModelFlat = Object.assign(
-//           clonedeep(hmModelFlat),
+//         const newFormState = Object.assign(
+//           clonedeep(currentFormState),
 //           {
-//             [this.hmModelFlatParamsKey]: modelChoicesData[newModelName],
+//             [this.currentFormStateParamsKey]: modelChoicesData[newModelName],
 //           },
 //         );
-//         return [newHMModelFlat, newModelChoicesData];
+//         return [newFormState, newModelChoicesData];
 //       };
 //     },
 //     get flattenHMModel() {
 //       return function flatten(hmModel) {
 //         const partiallyFlattenedHMModel = clonedeep(hmModel);
 //         Object.assign(partiallyFlattenedHMModel, {
-//           [this.hmModelFlatParamsKey]: hmModel[this.hmModelParamsKey][hmModel[this.model_key]],
+//           [this.currentFormStateParamsKey]: hmModel[this.hmModelParamsKey][hmModel[this.modelKey]],
 //         });
 //         return partiallyFlattenedHMModel;
 //       };
@@ -703,47 +613,47 @@ const FORMS = {
 //   tracer_concentration: {
 //     id: 'tracer_concentration',
 //     title: 'Tracer Concentration',
-//     model_key: 'tracer_concentration_model',
+//     modelKey: 'tracer_concentration_model',
 //     modelChoices: MODEL_CHOICES.concentration,
-//     hmModelFlatParamsKey: 'tracer_concentration_params',
+//     currentFormStateParamsKey: 'tracer_concentration_params',
 //     hmModelParamsKey: 'CMRelation_params',
-//     get getRelevantHMModelFlat() {
-//       return function getRelevant(hmModelFlat) {
+//     get getRelevantFormState() {
+//       return function getRelevant(currentFormState) {
 //         return {
-//           [this.model_key]: hmModelFlat[this.model_key],
-//           [this.hmModelFlatParamsKey]: hmModelFlat[this.hmModelFlatParamsKey],
+//           [this.modelKey]: currentFormState[this.modelKey],
+//           [this.currentFormStateParamsKey]: currentFormState[this.currentFormStateParamsKey],
 //         };
 //       };
 //     },
 //     get getModelChoicesDataFromFlat() {
-//       return function getModelChoicesData(hmModelFlat) {
+//       return function getModelChoicesData(currentFormState) {
 //         const modelChoicesData = clonedeep(BACKEND_CONSTANTS[this.hmModelParamsKey]);
-//         modelChoicesData[hmModelFlat[this.model_key]] = clonedeep(
-//           hmModelFlat[this.hmModelFlatParamsKey],
+//         modelChoicesData[currentFormState[this.modelKey]] = clonedeep(
+//           currentFormState[this.currentFormStateParamsKey],
 //         );
 //         return modelChoicesData;
 //       };
 //     },
 //     get updateModelChoice() {
-//       return function updateModelChoice(oldModelName, newModelName, hmModelFlat, modelChoicesData) {
+//       return function updateModelChoice(oldModelName, newModelName, currentFormState, modelChoicesData) {
 //         const newModelChoicesData = clonedeep(modelChoicesData);
 //         if (oldModelName) {
-//           newModelChoicesData[oldModelName] = clonedeep(hmModelFlat[this.hmModelFlatParamsKey]);
+//           newModelChoicesData[oldModelName] = clonedeep(currentFormState[this.currentFormStateParamsKey]);
 //         }
-//         const newHMModelFlat = Object.assign(
-//           clonedeep(hmModelFlat),
+//         const newFormState = Object.assign(
+//           clonedeep(currentFormState),
 //           {
-//             [this.hmModelFlatParamsKey]: modelChoicesData[newModelName],
+//             [this.currentFormStateParamsKey]: modelChoicesData[newModelName],
 //           },
 //         );
-//         return [newHMModelFlat, newModelChoicesData];
+//         return [newFormState, newModelChoicesData];
 //       };
 //     },
 //     get flattenHMModel() {
 //       return function flatten(hmModel) {
 //         const partiallyFlattenedHMModel = clonedeep(hmModel);
 //         Object.assign(partiallyFlattenedHMModel, {
-//           [this.hmModelFlatParamsKey]: hmModel[this.hmModelParamsKey][hmModel[this.model_key]],
+//           [this.currentFormStateParamsKey]: hmModel[this.hmModelParamsKey][hmModel[this.modelKey]],
 //         });
 //         return partiallyFlattenedHMModel;
 //       };
@@ -752,47 +662,47 @@ const FORMS = {
 //   halo_profile: {
 //     id: 'halo_profile',
 //     title: 'Halo Profile',
-//     model_key: 'halo_profile_model',
+//     modelKey: 'halo_profile_model',
 //     modelChoices: MODEL_CHOICES.profile,
-//     hmModelFlatParamsKey: 'halo_profile_params',
+//     currentFormStateParamsKey: 'halo_profile_params',
 //     hmModelParamsKey: 'Profile_params',
-//     get getRelevantHMModelFlat() {
-//       return function getRelevant(hmModelFlat) {
+//     get getRelevantFormState() {
+//       return function getRelevant(currentFormState) {
 //         return {
-//           [this.model_key]: hmModelFlat[this.model_key],
-//           [this.hmModelFlatParamsKey]: hmModelFlat[this.hmModelFlatParamsKey],
+//           [this.modelKey]: currentFormState[this.modelKey],
+//           [this.currentFormStateParamsKey]: currentFormState[this.currentFormStateParamsKey],
 //         };
 //       };
 //     },
 //     get getModelChoicesDataFromFlat() {
-//       return function getModelChoicesData(hmModelFlat) {
+//       return function getModelChoicesData(currentFormState) {
 //         const modelChoicesData = clonedeep(BACKEND_CONSTANTS[this.hmModelParamsKey]);
-//         modelChoicesData[hmModelFlat[this.model_key]] = clonedeep(
-//           hmModelFlat[this.hmModelFlatParamsKey],
+//         modelChoicesData[currentFormState[this.modelKey]] = clonedeep(
+//           currentFormState[this.currentFormStateParamsKey],
 //         );
 //         return modelChoicesData;
 //       };
 //     },
 //     get updateModelChoice() {
-//       return function updateModelChoice(oldModelName, newModelName, hmModelFlat, modelChoicesData) {
+//       return function updateModelChoice(oldModelName, newModelName, currentFormState, modelChoicesData) {
 //         const newModelChoicesData = clonedeep(modelChoicesData);
 //         if (oldModelName) {
-//           newModelChoicesData[oldModelName] = clonedeep(hmModelFlat[this.hmModelFlatParamsKey]);
+//           newModelChoicesData[oldModelName] = clonedeep(currentFormState[this.currentFormStateParamsKey]);
 //         }
-//         const newHMModelFlat = Object.assign(
-//           clonedeep(hmModelFlat),
+//         const newFormState = Object.assign(
+//           clonedeep(currentFormState),
 //           {
-//             [this.hmModelFlatParamsKey]: modelChoicesData[newModelName],
+//             [this.currentFormStateParamsKey]: modelChoicesData[newModelName],
 //           },
 //         );
-//         return [newHMModelFlat, newModelChoicesData];
+//         return [newFormState, newModelChoicesData];
 //       };
 //     },
 //     get flattenHMModel() {
 //       return function flatten(hmModel) {
 //         const partiallyFlattenedHMModel = clonedeep(hmModel);
 //         Object.assign(partiallyFlattenedHMModel, {
-//           [this.hmModelFlatParamsKey]: hmModel[this.hmModelParamsKey][hmModel[this.model_key]],
+//           [this.currentFormStateParamsKey]: hmModel[this.hmModelParamsKey][hmModel[this.modelKey]],
 //         });
 //         return partiallyFlattenedHMModel;
 //       };
@@ -801,47 +711,47 @@ const FORMS = {
 //   tracer_profile: {
 //     id: 'tracer_profile',
 //     title: 'Tracer Profile',
-//     model_key: 'tracer_profile_model',
+//     modelKey: 'tracer_profile_model',
 //     modelChoices: MODEL_CHOICES.profile,
-//     hmModelFlatParamsKey: 'tracer_profile_params',
+//     currentFormStateParamsKey: 'tracer_profile_params',
 //     hmModelParamsKey: 'Profile_params',
-//     get getRelevantHMModelFlat() {
-//       return function getRelevant(hmModelFlat) {
+//     get getRelevantFormState() {
+//       return function getRelevant(currentFormState) {
 //         return {
-//           [this.model_key]: hmModelFlat[this.model_key],
-//           [this.hmModelFlatParamsKey]: hmModelFlat[this.hmModelFlatParamsKey],
+//           [this.modelKey]: currentFormState[this.modelKey],
+//           [this.currentFormStateParamsKey]: currentFormState[this.currentFormStateParamsKey],
 //         };
 //       };
 //     },
 //     get getModelChoicesDataFromFlat() {
-//       return function getModelChoicesData(hmModelFlat) {
+//       return function getModelChoicesData(currentFormState) {
 //         const modelChoicesData = clonedeep(BACKEND_CONSTANTS[this.hmModelParamsKey]);
-//         modelChoicesData[hmModelFlat[this.model_key]] = clonedeep(
-//           hmModelFlat[this.hmModelFlatParamsKey],
+//         modelChoicesData[currentFormState[this.modelKey]] = clonedeep(
+//           currentFormState[this.currentFormStateParamsKey],
 //         );
 //         return modelChoicesData;
 //       };
 //     },
 //     get updateModelChoice() {
-//       return function updateModelChoice(oldModelName, newModelName, hmModelFlat, modelChoicesData) {
+//       return function updateModelChoice(oldModelName, newModelName, currentFormState, modelChoicesData) {
 //         const newModelChoicesData = clonedeep(modelChoicesData);
 //         if (oldModelName) {
-//           newModelChoicesData[oldModelName] = clonedeep(hmModelFlat[this.hmModelFlatParamsKey]);
+//           newModelChoicesData[oldModelName] = clonedeep(currentFormState[this.currentFormStateParamsKey]);
 //         }
-//         const newHMModelFlat = Object.assign(
-//           clonedeep(hmModelFlat),
+//         const newFormState = Object.assign(
+//           clonedeep(currentFormState),
 //           {
-//             [this.hmModelFlatParamsKey]: modelChoicesData[newModelName],
+//             [this.currentFormStateParamsKey]: modelChoicesData[newModelName],
 //           },
 //         );
-//         return [newHMModelFlat, newModelChoicesData];
+//         return [newFormState, newModelChoicesData];
 //       };
 //     },
 //     get flattenHMModel() {
 //       return function flatten(hmModel) {
 //         const partiallyFlattenedHMModel = clonedeep(hmModel);
 //         Object.assign(partiallyFlattenedHMModel, {
-//           [this.hmModelFlatParamsKey]: hmModel[this.hmModelParamsKey][hmModel[this.model_key]],
+//           [this.currentFormStateParamsKey]: hmModel[this.hmModelParamsKey][hmModel[this.modelKey]],
 //         });
 //         return partiallyFlattenedHMModel;
 //       };
@@ -850,40 +760,40 @@ const FORMS = {
 //   halo_exclusion: {
 //     id: 'halo_exclusion',
 //     title: 'Halo Exclusion',
-//     model_key: 'exclusion_model',
+//     modelKey: 'exclusion_model',
 //     modelChoices: MODEL_CHOICES.halo_exclusion,
-//     hmModelFlatParamsKey: 'exclusion_params',
+//     currentFormStateParamsKey: 'exclusion_params',
 //     hmModelParamsKey: 'Exclusion_params',
-//     get getRelevantHMModelFlat() {
-//       return function getRelevant(hmModelFlat) {
+//     get getRelevantFormState() {
+//       return function getRelevant(currentFormState) {
 //         return {
-//           [this.model_key]: hmModelFlat[this.model_key],
-//           [this.hmModelFlatParamsKey]: hmModelFlat[this.hmModelFlatParamsKey],
+//           [this.modelKey]: currentFormState[this.modelKey],
+//           [this.currentFormStateParamsKey]: currentFormState[this.currentFormStateParamsKey],
 //         };
 //       };
 //     },
 //     get getModelChoicesDataFromFlat() {
-//       return function getModelChoicesData(hmModelFlat) {
+//       return function getModelChoicesData(currentFormState) {
 //         const modelChoicesData = clonedeep(BACKEND_CONSTANTS[this.hmModelParamsKey]);
-//         modelChoicesData[hmModelFlat[this.model_key]] = clonedeep(
-//           hmModelFlat[this.hmModelFlatParamsKey],
+//         modelChoicesData[currentFormState[this.modelKey]] = clonedeep(
+//           currentFormState[this.currentFormStateParamsKey],
 //         );
 //         return modelChoicesData;
 //       };
 //     },
 //     get updateModelChoice() {
-//       return function updateModelChoice(oldModelName, newModelName, hmModelFlat, modelChoicesData) {
+//       return function updateModelChoice(oldModelName, newModelName, currentFormState, modelChoicesData) {
 //         const newModelChoicesData = clonedeep(modelChoicesData);
 //         if (oldModelName) {
-//           newModelChoicesData[oldModelName] = clonedeep(hmModelFlat[this.hmModelFlatParamsKey]);
+//           newModelChoicesData[oldModelName] = clonedeep(currentFormState[this.currentFormStateParamsKey]);
 //         }
-//         const newHMModelFlat = Object.assign(
-//           clonedeep(hmModelFlat),
+//         const newFormState = Object.assign(
+//           clonedeep(currentFormState),
 //           {
-//             [this.hmModelFlatParamsKey]: modelChoicesData[newModelName],
+//             [this.currentFormStateParamsKey]: modelChoicesData[newModelName],
 //           },
 //         );
-//         return [newHMModelFlat, newModelChoicesData];
+//         return [newFormState, newModelChoicesData];
 //       };
 //     },
 //     get flattenHMModel() {

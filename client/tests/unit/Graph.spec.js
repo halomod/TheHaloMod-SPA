@@ -21,7 +21,7 @@ describe('Graph tests', () => {
     const localVue = createLocalVue();
     const store = new Store();
     await store.init();
-    defaultModel = store.getHMModelFlatFromConstants();
+    defaultModel = store.getFormStateFromConstants();
     if (typeof store.state !== 'object') {
       throw new Error('Store wasn\'t initialized correctly in test. The store is'
       + ` ${JSON.stringify(store)}`);

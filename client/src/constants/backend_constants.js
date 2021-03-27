@@ -7,21 +7,37 @@ import forms from '@/constants/forms.js';
  *
  * @typedef HMModel
  */
+const mapping = {
+  growth: '_GrowthFactor_params',
+  mdef: 'MassDefinition_params',
+  cosmo: 'cosmo_defaults',
+  filter: 'Filter_params',
+  hmf: 'FittingFunction_params',
+  hod: 'HOD_params',
+  bias: 'Bias_params',
+  halo_concentration: 'CMRelation_params',
+  tracer_concentration: 'CMRelation_params',
+  halo_profile: 'Profile_params',
+  tracer_profile: 'Profile_params',
+  halo_exclusion: 'Exclusion_params',
+};
+
 const BACKEND_CONSTANTS = generatedBackendConstants;
 const FORM_OPTION_DEFAULTS = {};
-const INITIAL_STATE = {};
+const DEFAULT_FORM_STATE = {};
 
-Object.entries(forms).forEach((key, { core_params, model_key, params_key }) => {
+Object.entries(forms).forEach(([key, { core_params, modelKey, paramsKey }]) => {
+  /* pulls option defaults from BACKEND_CONSTANTS */
+  FORM_OPTION_DEFAULTS[key] = BACKEND_CONSTANTS[mapping[key]];
+
   /* builds initial state for each subform */
-  const items = [...(!core_params ? [] : core_params), model_key, params_key];
+  const items = [...(!core_params ? [] : core_params), modelKey];
   const initial = {};
   items.forEach((item) => {
     initial[item] = BACKEND_CONSTANTS[item];
   });
-  INITIAL_STATE[key] = initial;
-
-  /* pulls option defaults from BACKEND_CONSTANTS */
-  FORM_OPTION_DEFAULTS[key] = BACKEND_CONSTANTS[key];
+  initial[paramsKey] = FORM_OPTION_DEFAULTS[key][initial[modelKey]];
+  DEFAULT_FORM_STATE[key] = initial;
 });
 
 /* cosmo is special */
@@ -58,7 +74,7 @@ FORM_OPTION_DEFAULTS.cosmo = {
   },
 };
 
-console.log(INITIAL_STATE);
+console.log(DEFAULT_FORM_STATE);
 console.log(FORM_OPTION_DEFAULTS);
 
-export { INITIAL_STATE, FORM_OPTION_DEFAULTS };
+export { DEFAULT_FORM_STATE, FORM_OPTION_DEFAULTS };

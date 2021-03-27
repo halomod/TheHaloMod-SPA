@@ -9,8 +9,8 @@ import {
   get,
   clear,
 } from 'idb-keyval';
-import BACKEND_CONSTANTS from '@/constants/backend_constants';
-import FORMS from '@/constants/forms';
+// import BACKEND_CONSTANTS from '@/constants/backend_constants';
+// import FORMS from '@/constants/forms';
 
 axios.defaults.withCredentials = true;
 
@@ -58,8 +58,8 @@ export default class Store {
    * Cleans up a model for sending to the server. This removes parameters
    * that aren't accepted by the server but come from backend constants.
    *
-   * @param {import('@/constants/forms').HMModelFlat} model the model to clean
-   * @returns {import('@/constants/forms').HMModelFlat} the cleaned model,
+   * @param {import('@/constants/forms').FormState} model the model to clean
+   * @returns {import('@/constants/forms').FormState} the cleaned model,
    * ready to send to the server
    */
   cleanUpModel = (model) => {
@@ -74,19 +74,19 @@ export default class Store {
   }
 
   /**
-   * Gets an `HMModelFlat` from the backend constants file by flattening it.
+   * Gets an `FormState` from the backend constants file by flattening it.
    * This can be used to supply a default flattened file to the server or any
    * other purposes like initializing state.
    *
-   * @returns {import('@/constants/forms').HMModelFlat}
+   * @returns {import('@/constants/forms').FormState}
    */
-  getHMModelFlatFromConstants = () => {
-    let hmModelFlat = clonedeep(BACKEND_CONSTANTS);
-    Object.values(FORMS).forEach((form) => {
-      hmModelFlat = form.flattenHMModel(hmModelFlat);
-    });
-    return hmModelFlat;
-  }
+  // getFormStateFromConstants = () => {
+  //   let currentFormState = clonedeep(BACKEND_CONSTANTS);
+  //   Object.values(FORMS).forEach((form) => {
+  //     currentFormState = form.flattenHMModel(currentFormState);
+  //   });
+  //   return currentFormState;
+  // }
 
   /**
    * The way that data is formatted for each plot option.

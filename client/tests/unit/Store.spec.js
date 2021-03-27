@@ -19,7 +19,7 @@ describe('Store tests', () => {
     store = new Store();
     expect(store).toBeDefined();
     await store.init();
-    defaultModel = store.getHMModelFlatFromConstants();
+    defaultModel = store.getFormStateFromConstants();
     expect(store.state.plot.y).toBeDefined();
     expect(store.state.plot.x).toBeDefined();
   });

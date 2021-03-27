@@ -99,14 +99,14 @@ describe('Mounted FormView', () => {
         const formObj = Object.values(FORMS).find((form) => form.title === formTitle);
         expect(formObj).toBeDefined();
         const newOption = subFormOptions[formObj.id];
-        const originalState = wrapper.vm.currentHMModelFlat;
-        const keys = Object.keys(component.vm.localHMModelFlat);
+        const originalState = wrapper.vm.currentFormState;
+        const keys = Object.keys(component.vm.localFormState);
         const modelKey = formTitle === FORMS.halo_model.title
           ? 'hc_spectrum'
           : keys.filter((key) => key.includes('model'))[0];
-        component.vm.localHMModelFlat[modelKey] = newOption;
+        component.vm.localFormState[modelKey] = newOption;
         await wrapper.vm.$nextTick();
-        expect(wrapper.vm.currentHMModelFlat).not.toBe(originalState);
+        expect(wrapper.vm.currentFormState).not.toBe(originalState);
       });
     });
 
@@ -118,14 +118,14 @@ describe('Mounted FormView', () => {
         const formObj = Object.values(FORMS).find((form) => form.title === formTitle);
         expect(formObj).toBeDefined();
         const newOption = subFormOptions[formObj.id];
-        const keys = Object.keys(component.vm.localHMModelFlat);
+        const keys = Object.keys(component.vm.localFormState);
         const modelKey = formTitle === FORMS.halo_model.title
           ? 'hc_spectrum'
           : keys.filter((key) => key.includes('model'))[0];
-        const originalState = component.vm.localHMModelFlat[modelKey];
-        wrapper.vm.currentHMModelFlat[modelKey] = newOption;
+        const originalState = component.vm.localFormState[modelKey];
+        wrapper.vm.currentFormState[modelKey] = newOption;
         await wrapper.vm.$nextTick();
-        expect(component.vm.localHMModelFlat[modelKey]).toBe(originalState);
+        expect(component.vm.localFormState[modelKey]).toBe(originalState);
       });
     });
   });
