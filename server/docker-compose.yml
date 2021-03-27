@@ -19,6 +19,8 @@ services:
       # Debug mode on for now to find issues
       - FLASK_DEBUG=True
       - FLASK_APP=halomod_app
+      # Set so that python will output print statements when flask is running
+      - PYTHONUNBUFFERED=False
 
   redis:
     image: "redis"
