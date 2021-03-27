@@ -18,6 +18,7 @@ do
     "--dev" )
       export FLASK_APP=halomod_app
       export FLASK_ENV=development
+      export USE_HTTPS_SESSION=True
       # Doesn't run with SSL on dev so that certs do not need to be handled.
       # To run with SSL on, the following could be run: 
       # `flask run --cert-adhoc`

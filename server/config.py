@@ -51,6 +51,7 @@ class Config:
         print('USE_HTTPS_SESSION was equivalent to true')
         SESSION_COOKIE_HTTPONLY = False
         SESSION_COOKIE_SECURE = True
+        # The below does not work because of a known issue with flask session.
         SESSION_COOKIE_SAMESITE = 'None'
 
     PROPAGATE_EXCEPTIONS = True

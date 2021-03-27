@@ -3,7 +3,7 @@ import sentry_sdk
 from werkzeug.exceptions import HTTPException
 from flask_session import Session
 from flask_cors import CORS
-from flask import Flask, jsonify, request, session, abort, send_file
+from flask import Flask, jsonify, request, session, abort, send_file, Response
 from . import utils
 from halomod_app.utils import get_model_names
 from hmf.helpers.cfg_utils import framework_to_dict
@@ -51,7 +51,22 @@ def create_app(test_config=None):
     ]
 
     CORS(app, origins=origins, supports_credentials=True)  # enable CORS
+
     sess.init_app(app)  # enable Sessions
+
+    if app.config['SESSION_COOKIE_SAMESITE'] == 'None':
+        @app.after_request
+        def cookies(response: Response):
+            """Manually overrides the session cookie to fix an issue with
+            Flask-Session.
+
+            See here: https://github.com/fengsp/flask-session/pull/116
+            For the pull request that would fix this and make this function
+            unecessary."""
+            response.headers.add(
+                "Set-Cookie", f"session={session.sid}; Secure; SameSite=None; Path=/;"
+            )
+            return response
 
     @app.errorhandler(Exception)
     def handle_generic_exception(e):
