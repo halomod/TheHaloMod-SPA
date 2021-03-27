@@ -6,12 +6,13 @@ from flask_cors import CORS
 from flask import Flask, jsonify, request, session, abort, send_file
 from . import utils
 from halomod_app.utils import get_model_names
-import base64
+from hmf.helpers.cfg_utils import framework_to_dict
+import toml
 import json
 import dill as pickle
 import zipfile
 import io
-import numpy as np
+import base64
 
 from .endpoint_model import endpoint_model
 from .endpoint_models import endpoint_models
@@ -74,13 +75,21 @@ def create_app(test_config=None):
             return e
 
         response = {}
+        description = ""
+        if hasattr(e, 'description'):
+            description = e.description
+        elif hasattr(e, 'args'):
+            description = e.args
+        else:
+            description = 'Error has no description'
+
         # replace the body with JSON
-        response.data = json.dumps({
+        response.setdefault('data', json.dumps({
             "code": '500',
-            "name": e.name,
-            "description": e.description,
-        })
-        response.content_type = "application/json"
+            "name": e.name if hasattr(e, 'name') else str(type(e)),
+            "description": description,
+        }))
+        response.setdefault('content_type', "application/json")
         return response
 
     @app.errorhandler(HTTPException)

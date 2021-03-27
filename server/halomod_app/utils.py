@@ -13,6 +13,7 @@ import json
 
 logger = logging.getLogger(__name__)
 
+
 def get_model_names():
     """Helper function that abstracts logic for getting names of all models
     associated with the function"""
