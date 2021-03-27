@@ -51,5 +51,6 @@ class Config:
         print('USE_HTTPS_SESSION was equivalent to true')
         SESSION_COOKIE_HTTPONLY = False
         SESSION_COOKIE_SECURE = True
+        SESSION_COOKIE_SAMESITE = 'None'
 
     PROPAGATE_EXCEPTIONS = True
