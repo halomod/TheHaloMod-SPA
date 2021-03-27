@@ -13,6 +13,7 @@ import dill as pickle
 import zipfile
 import io
 import base64
+import re
 
 sess = Session()
 
@@ -42,10 +43,11 @@ def create_app(test_config=None):
     # Everything in config.py Config class is loaded into the Flask app config
     app.config.from_object('config.Config')
 
-    # The different origins that the server will allow connections from
+    # The different origins that the server will allow connections from.
+    # These are specified as RegEx.
     origins = [
-        'http://localhost:*',
-        '*thehalomod.netlify.app*'
+        re.compile(r'http\:\/\/localhost\:.*'),
+        re.compile(r'https:\/\/.*thehalomod\.netlify\.app.*')
     ]
 
     CORS(app, origins=origins, supports_credentials=True)  # enable CORS
