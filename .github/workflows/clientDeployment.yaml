@@ -81,7 +81,6 @@ jobs:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         deploy-message: Deployed from GitHub Actions for branch "${{ github.ref }}"
         enable-commit-status: true
-        netlify-config-path: ./netlify.toml
         # Disables commenting on individual commits with the deploy location
         enable-commit-comment: false
         # Enables commenting on pull requests with the deploy location
