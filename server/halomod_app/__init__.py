@@ -14,6 +14,7 @@ import zipfile
 import io
 import base64
 import re
+from flask_sslify import SSLify
 
 sess = Session()
 
@@ -40,6 +41,9 @@ def create_app(test_config=None):
     )
     app = Flask(__name__, instance_relative_config=True)
 
+    # Testing out SSLify
+    SSLify(app)
+
     # Everything in config.py Config class is loaded into the Flask app config
     app.config.from_object('config.Config')
 
@@ -64,7 +68,7 @@ def create_app(test_config=None):
             For the pull request that would fix this and make this function
             unecessary."""
             response.headers.add(
-                "Set-Cookie", f"something={session.sid}; Secure; SameSite=None; Path=/;"
+                "Set-Cookie", f"session={session.sid}; Secure; SameSite=None; Path=/;"
             )
             return response
 
