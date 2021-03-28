@@ -72,6 +72,7 @@ jobs:
 
     - name: Deploy to Netlify
       uses: nwtgck/actions-netlify@v1.1
+      id: deploy
       with:
         publish-dir: './client/dist'
         # The "production-branch" means that any deploy to the specified branch
@@ -90,3 +91,19 @@ jobs:
         NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_OAUTH_TOKEN }}
         NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
       timeout-minutes: 1
+
+    - name: Update deployment status (success)
+      if: success()
+      uses: 'deliverybot/deployment-status@v1'
+      with:
+        state: 'success'
+        token: '${{ github.token }}'
+        environment: Netlify
+        environment-url: ${{ steps.deploy.outputs.deploy-url }}
+
+    - name: Update deployment status (failure)
+      if: failure()
+      uses: 'deliverybot/deployment-status@v1'
+      with:
+        state: 'failure'
+        token: '${{ github.token }}'
