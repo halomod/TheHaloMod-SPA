@@ -5,9 +5,11 @@ name: Server Deployment
 
 on: 
   push:
+    # Another branch can be added below if the server is being tested, but note
+    # that if the site is deployed, or anyone else is testing it, it will be 
+    # changed for everyone.
     branches:
       - main
-      - US321-CompleteDeployment
 
 jobs:
   build:
