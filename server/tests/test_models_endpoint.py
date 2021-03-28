@@ -18,7 +18,18 @@ def test_get_names(client):
     assert "AnotherModel" in names
 
 # GET
-# TODO add ascii test
+def test_get_object_data(client):
+    params = ["m", "k", "r", "k_hm"]
+    with client.session_transaction() as sess:
+        sess["models"] = pickle.dumps({"TheModel": TracerHaloModel()})
+    response = client.get('/models', json={
+        "param_names": params,
+        "dataType": "ascii",
+        })
+    assert "TheModel" in response.json
+    for param in params:
+        assert param in response.json["TheModel"]
+        assert response.json["TheModel"][param]
 
 # PUT
 def test_clone(client):
