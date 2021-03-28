@@ -22,7 +22,7 @@ do
       # To run with SSL on, the following could be run: 
       # `flask run --cert-adhoc`
       flask run;;
-    "--generate-constants" | "--gc" )
+    "--generate-constants" )
       python3 generate_constants.py;;
   esac
 done
