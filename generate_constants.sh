@@ -2,13 +2,19 @@
 
 cd server
 sh run.sh --install
-echo "Sleeping for 1 second after install"
-sleep 1
+echo "run.sh --install has been ran"
 sh run.sh --generate-constants
-# Sleep for 1 sec to prevent an issue with CI where the backend_constants
-# file didn't exist quiet yet to the script.
-echo "Sleeping for 1 second after constant generation"
-sleep 1
+echo "run.sh --generate-constants has been ran"
 cd ..
 mkdir -p ./client/generated
-mv ./server/backend_constants.json ./client/generated/backend_constants.json
+
+# Testing to see if the constants file exists
+CONSTANTS="./server/backend_constants.json"
+if test -f "$CONSTANTS"; then
+  echo "$CONSTANTS exists. Proceeding with file move"
+  mv ./server/backend_constants.json ./client/generated/backend_constants.json
+  echo "File move is complete"
+else
+  echo "$CONSTANTS does not exist. Throwing error."
+  exit 1
+fi
