@@ -14,7 +14,6 @@ import zipfile
 import io
 import base64
 import re
-from flask_sslify import SSLify
 
 sess = Session()
 
@@ -40,9 +39,6 @@ def create_app(test_config=None):
         # release="myapp@1.0.0",
     )
     app = Flask(__name__, instance_relative_config=True)
-
-    # Testing out SSLify
-    SSLify(app)
 
     # Everything in config.py Config class is loaded into the Flask app config
     app.config.from_object('config.Config')
