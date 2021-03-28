@@ -49,7 +49,7 @@ def create_app(test_config=None):
     CORS(app, origins="http://localhost:*", supports_credentials=True)  # enable CORS
     sess.init_app(app)  # enable Sessions
 
-    # Register the Endpoint Blueprint
+    # Register the Endpoints
     """All endpoints:
     POST /model - Creates a new model
     PUT /model - Updates a model

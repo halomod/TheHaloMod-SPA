@@ -7,7 +7,9 @@ import pickle
 def test_get_names(client):
     with client.session_transaction() as sess:
         sess["models"] = pickle.dumps({"TheModel": {}, "AnotherModel": {}})
-    response = client.get('/get_names')
+    response = client.get('/models', json={
+        "dataType": "names",
+    })
     assert response is not None
     assert response.status_code == 200
     assert "model_names" in response.json
@@ -22,7 +24,7 @@ def test_get_names(client):
 def test_clone(client):
     with client.session_transaction() as sess:
         sess["models"] = pickle.dumps({"TheModel": TracerHaloModel()})
-    response = client.post('/clone', json={
+    response = client.put('/models', json={
         "model_name": "TheModel",
         "new_model_name": "NewModel"
     })
@@ -40,7 +42,7 @@ def test_clear(client):
             "TheModel": TracerHaloModel(),
             "AnotherModel": TracerHaloModel(),
             "AndAnotherOne": TracerHaloModel()})
-    response = client.post('/clear')
+    response = client.delete('/models')
     assert response is not None
     assert response.status_code == 200
     assert "model_names" in response.json

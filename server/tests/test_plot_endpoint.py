@@ -7,7 +7,7 @@ import pickle
 def test_get_plot_data(client):
     with client.session_transaction() as sess:
         sess["models"] = pickle.dumps({"TheModel": TracerHaloModel()})
-    response = client.post('/get_plot_data', json={"x": "m", "y": "dndm"})
+    response = client.get('/plot', json={"x": "m", "y": "dndm"})
     assert "plot_data" in response.json
     assert "TheModel" in response.json["plot_data"]
 
