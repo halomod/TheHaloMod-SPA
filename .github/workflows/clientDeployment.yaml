@@ -8,6 +8,7 @@ on:
     branches:
       - main
       - dev
+      - US321-CompleteDeployment
   pull_request:
 
 jobs:
