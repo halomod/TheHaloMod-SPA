@@ -23,6 +23,7 @@ do
       # `flask run --cert-adhoc`
       flask run;;
     "--generate-constants" )
+      echo "Generating constants from run.sh with generate_constants.py..."
       python3 generate_constants.py;;
   esac
 done
