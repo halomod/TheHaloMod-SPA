@@ -7,9 +7,9 @@
       md-fixed>
       <md-list>
         <md-list-item v-for="(form, index) in Object.values(forms)" :key="index"
-          :class="{'router-link-active': currentlyVisible == form.title}"
+          :class="{ 'router-link-active': currentlyVisible == form.title }"
           :to="`#${form.id}`">
-          {{form.title}}
+          <span :style="{'color': !form.valid ? 'red' : null }">{{form.title}}</span>
         </md-list-item>
       </md-list>
     </md-app-drawer>
@@ -31,6 +31,7 @@
                 v-if="initialHMModelFlat"
                 v-bind="buildProps(form)"
                 :testName="form.title"
+                @is-valid="(valid) => form.valid = valid"
                 @onChange="handleFormDataChange"/>
             </FormWrapper>
             <md-divider/>
@@ -77,6 +78,7 @@ export default {
     },
   },
   data() {
+    console.log(this);
     return {
       forms: FORMS,
       currentlyVisible: null,
