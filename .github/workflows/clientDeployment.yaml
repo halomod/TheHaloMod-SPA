@@ -85,6 +85,7 @@ jobs:
         enable-commit-comment: false
         # Enables commenting on pull requests with the deploy location
         enable-pull-request-comment: true
+        github-deployment-environment: Netlify
       env:
         NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_OAUTH_TOKEN }}
         NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
