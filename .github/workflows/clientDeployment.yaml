@@ -19,6 +19,13 @@ jobs:
       with:
         persist-credentials: false
 
+    - uses: chrnorm/deployment-action@releases/v1
+      name: Create GitHub deployment
+      id: deployStatus
+      with:
+        token: "${{ github.token }}"
+        initial_status: in_progress
+
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
       with:
@@ -84,9 +91,8 @@ jobs:
         enable-commit-status: true
         # Disables commenting on individual commits with the deploy location
         enable-commit-comment: false
-        # Enables commenting on pull requests with the deploy location
-        enable-pull-request-comment: true
-        github-deployment-environment: Netlify
+        # Disabled commenting on pull requests
+        enable-pull-request-comment: false
       env:
         NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_OAUTH_TOKEN }}
         NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
@@ -94,16 +100,17 @@ jobs:
 
     - name: Update deployment status (success)
       if: success()
-      uses: 'deliverybot/deployment-status@v1'
+      uses: chrnorm/deployment-status@releases/v1
       with:
-        state: 'success'
-        token: '${{ github.token }}'
-        environment: Netlify
-        environment-url: ${{ steps.deploy.outputs.deploy-url }}
+        token: "${{ github.token }}"
+        target_url: ${{ steps.deploy.outputs.deploy-url }}
+        state: "success"
+        deployment_id: ${{ steps.deployStatus.outputs.deployment_id }}
 
     - name: Update deployment status (failure)
       if: failure()
-      uses: 'deliverybot/deployment-status@v1'
+      uses: chrnorm/deployment-status@releases/v1
       with:
-        state: 'failure'
-        token: '${{ github.token }}'
+        token: "${{ github.token }}"
+        state: "failure"
+        deployment_id: ${{ steps.deployStatus.outputs.deployment_id }}
