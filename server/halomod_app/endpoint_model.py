@@ -6,7 +6,7 @@ from flask_session import Session
 from flask_cors import CORS
 from flask import Flask, jsonify, request, session, abort, send_file
 from . import utils
-from halomod_app.utils import get_model_names
+from .utils import get_model_names
 import base64
 import json
 import dill as pickle

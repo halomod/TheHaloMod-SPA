@@ -6,7 +6,8 @@ from flask_session import Session
 from flask_cors import CORS
 from flask import Flask, jsonify, request, session, abort, send_file
 from . import utils
-from halomod_app.utils import get_model_names
+from .utils import get_model_names
+from hmf.helpers.cfg_utils import framework_to_dict
 import toml
 import base64
 import json
