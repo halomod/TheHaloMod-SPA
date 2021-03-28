@@ -60,8 +60,11 @@ def create_app(test_config=None):
             """Manually overrides the session cookie to fix an issue with
             Flask-Session.
 
+            `SameSite=None` needs to be specified in order for the remote server
+            to set cookies on a client.
+
             See here: https://github.com/fengsp/flask-session/pull/116
-            For the pull request that would fix this and make this function
+            For the pull request that would fix that issue and make this function
             unecessary."""
             response.headers.add(
                 "Set-Cookie", f"session={session.sid}; Secure; SameSite=None; Path=/;"
@@ -159,23 +162,11 @@ def create_app(test_config=None):
 
     @app.route('/get_plot_data', methods=["POST"])
     def get_plot_data():
-        # DELETE ME
-        print('get_plot_data triggered')
-        print('The current session keys and values are as follows:')
-        print(session.keys(), session.values)
-        print('The request details are below:')
-        print('Request full path: ', request.full_path)
-        print('Request is_secure: ', request.is_secure)
-        print('Request headers: ', request.headers)
 
         res = {"plot_data": {}}
         request_json = request.get_json()
         x_param = request_json["x"]
         y_param = request_json["y"]
-
-        # DELETE ME
-        print('The current session models object for the request is as follows:')
-        print(pickle.loads(session.get('models')))
 
         models = None
         if 'models' in session:

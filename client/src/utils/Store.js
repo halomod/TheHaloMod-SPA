@@ -15,7 +15,7 @@ import FORMS from '@/constants/forms';
 axios.defaults.withCredentials = true;
 
 const debug = Debug('Store.js');
-debug.enabled = true;
+debug.enabled = false;
 
 /**
  * This store is initialized at the beginning of the application startup. It
@@ -314,7 +314,6 @@ export default class Store {
    * `state` of this `Store` object.
    */
   getPlotData = async () => {
-    debug('getPlotData was triggered');
     if (this.state.plot.y === '' || this.state.plot.x === '') {
       return;
     }
@@ -323,7 +322,6 @@ export default class Store {
         x: this.state.plot.x,
         y: this.state.plot.y,
       });
-      debug('The returned data is: ', data);
       this.state.plot.plotData = data.data;
       this.state.error = false;
     } catch (error) {

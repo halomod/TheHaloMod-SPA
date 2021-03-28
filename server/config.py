@@ -44,14 +44,14 @@ class Config:
 
     ''' If the HTTPS session is true, then set that coniguration '''
     if not environ.get("USE_HTTPS_SESSION") or environ.get("USE_HTTPS_SESSION") == "False":
-        print('USE_HTTPS_SESSION was equivalent to false')
         SESSION_COOKIE_HTTPONLY = True
         SESSION_COOKIE_SECURE = False
     else:
-        print('USE_HTTPS_SESSION was equivalent to true')
         SESSION_COOKIE_HTTPONLY = False
         SESSION_COOKIE_SECURE = True
         # The below does not work because of a known issue with flask session.
+        # It is kept here in case there is an update to Flask-Session that fixes
+        # it, and to make it clear what needs to be set once it is fixed.
         SESSION_COOKIE_SAMESITE = 'None'
 
     PROPAGATE_EXCEPTIONS = True
