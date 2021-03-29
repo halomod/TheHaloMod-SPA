@@ -47,7 +47,8 @@ def create_app(test_config=None):
     # These are specified as RegEx.
     origins = [
         re.compile(r'http\:\/\/localhost\:.*'),
-        re.compile(r'https:\/\/.*thehalomod\.netlify\.app.*')
+        re.compile(r'https:\/\/.*thehalomod\.netlify\.app.*'),
+        re.compile(r'https:\/\/.*thehalomod\.app.*'),
     ]
 
     CORS(app, origins=origins, supports_credentials=True)  # enable CORS
