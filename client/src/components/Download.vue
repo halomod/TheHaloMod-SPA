@@ -1,10 +1,9 @@
 <template>
   <div>
-    <md-toolbar class="md-large">
-      <div class="md-toolbar-row">
-        <div class="md-toolbar-section-start">
-          <h3 class="md-title">Download</h3>
-        </div>
+  <md-toolbar class="md-large">
+    <div class="md-toolbar-row">
+      <div class="md-toolbar-section-start">
+        <h3 class="md-title">Download</h3>
       </div>
     </div>
     <div class="download-container">
@@ -46,13 +45,13 @@
 
 <script>
 import baseUrl from '@/env';
-import addInlineCSS from '../utils/inlineCSS';
 import {
   downloadData,
   downloadPlotImage,
   downloadParamValsJson,
   downloadParamValsToml,
 } from '@/utils/downloads.js';
+import addInlineCSS from '../utils/inlineCSS';
 
 const downloadOptions = {
   PlotImage: {
@@ -160,10 +159,10 @@ export default {
       const modelsJsonString = JSON.stringify(
         await this.$store.getAllModels(),
         null,
-        2
+        2,
       );
       const dataStr = `data:text/json;charset=utf-8,${encodeURIComponent(
-        modelsJsonString
+        modelsJsonString,
       )}`;
       return dataStr;
     },
