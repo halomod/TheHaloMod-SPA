@@ -7,8 +7,6 @@ for arg in "$@"
 do
   case $arg in
     "--install")
-      # Install wheel to allow caching of camb and other dependencies
-      pip3 install wheel
       pip3 install -r requirements.txt;;
     "--lint" )
       autopep8 -a -r --in-place halomod_app
