@@ -1,5 +1,5 @@
 astroid==2.4.2
-astropy==4.2
+astropy==4.1
 attrs==20.2.0
 autopep8==1.5.5
 blinker==1.4
@@ -30,16 +30,19 @@ Jinja2==2.11.2
 jsonpickle==1.4.1
 kiwisolver==1.2.0
 lazy-object-proxy==1.4.3
+llvmlite==0.36.0
 MarkupSafe==1.1.1
 matplotlib==3.3.2
 mccabe==0.6.1
 mpmath==1.1.0
+numba==0.53.0
 numpy==1.19.2
 packaging==20.4
 Pillow==8.0.0
 pluggy==0.13.1
 py==1.9.0
 pycodestyle==2.6.0
+pyerfa==1.7.2
 pyflakes==2.2.0
 Pygments==2.7.1
 pylint==2.6.0

@@ -1,7 +1,5 @@
 """Houses the tests for the server."""
 
-import imghdr
-import base64
 from halomod import TracerHaloModel
 import pickle
 import io
@@ -13,10 +11,10 @@ def test_home(client):
     assert response.json['start'] == 'This is the HaloModApp'
 
 
-def test_ascii(client):
+def test_toml(client):
     with client.session_transaction() as sess:
         sess["models"] = pickle.dumps({"TheModel": TracerHaloModel()})
-    response = client.get('/ascii')
+    response = client.get('/toml')
     assert response is not None
     assert response.status_code == 200
     returnFile = io.BytesIO(response.data)
@@ -68,7 +66,8 @@ def test_rename(client):
 def test_update(client):
     with client.session_transaction() as sess:
         sess["models"] = pickle.dumps({"TheModel": TracerHaloModel()})
-    response = client.post('/update', json={"model_name": "TheModel", "params": {}})
+    response = client.post('/update',
+                           json={"model_name": "TheModel", "params": {}})
     assert response is not None
     assert response.status_code == 200
     assert "model_names" in response.json
@@ -107,6 +106,17 @@ def test_get_plot_data(client):
     response = client.post('/get_plot_data', json={"x": "m", "y": "dndm"})
     assert "plot_data" in response.json
     assert "TheModel" in response.json["plot_data"]
+
+
+def test_get_object_data(client):
+    params = ["m", "k", "r", "k_hm"]
+    with client.session_transaction() as sess:
+        sess["models"] = pickle.dumps({"TheModel": TracerHaloModel()})
+    response = client.post('/get_object_data', json={"param_names": params})
+    assert "TheModel" in response.json
+    for param in params:
+        assert param in response.json["TheModel"]
+        assert response.json["TheModel"][param]
 
 
 def test_create(client, create_payload):

@@ -1,0 +1,46 @@
+# This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+name: Server Deployment
+
+on: 
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    # Require that the 'test' job completes first
+    #needs: test
+    #defaults:
+    #  run:
+    #    working-directory: server
+
+    steps:
+    - name: DeployServer
+      uses: appleboy/ssh-action@master
+      with:
+        debug: true
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.SERVERKEY }}
+        port: ${{ secrets.PORT }}
+        script:  |
+          export FLASK_RUN_HOST=0.0.0.0
+          export FLASK_RUN_PORT=8010
+          export FLASK_KEY=${{ secrets.FLASK_KEY }}
+          cd ./TheHaloMod-SPA/server
+          ls
+          docker-compose down
+          cd ../..
+          rm -r ./TheHaloMod-SPA
+          git clone https://github.com/halomod/TheHaloMod-SPA
+          cd ./TheHaloMod-SPA
+          git fetch origin
+          git checkout -b master origin/master
+          git status
+          # Stop the server with docker-compose down
+          cd ./server
+          ls
+          docker-compose up --build --remove-orphans -d
