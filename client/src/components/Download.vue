@@ -6,78 +6,68 @@
           <h3 class="md-title">Download</h3>
         </div>
       </div>
-    </div>
-    <div class="download-container">
-      <md-field class='download-select'>
-        <md-select v-model="downloadChoice" id="downloadChoices">
-          <md-option
-            v-for="choice in downloadChoices"
-            :key="choice.name"
-            :value="choice.name"
-          >
-            {{choice.displayName}}
-          </md-option>
-        </md-select>
-      </md-field>
-      <md-button
-        class="md-icon-button download-button md-raised md-primary"
-        @click="handleClick"
-        id="download-button"
-      >
-        <md-icon>download</md-icon>
-      </md-button>
-    </div>
-    <a id="download-element"/>
-  </md-toolbar>
-  <md-dialog v-if="loading"
-    :md-active.sync="loading"
-    :md-close-on-esc="false"
-    :md-click-outside-to-close="false">
-    <md-dialog-title>{{loadingTitle}}</md-dialog-title>
-    <md-dialog-content><md-progress-bar md-mode="indeterminate"/></md-dialog-content>
-  </md-dialog>
-  <md-dialog v-if="serverDownloadDialogVisible"
-    :md-active.sync="serverDownloadDialogVisible">
-    <md-dialog-title>{{loadingTitle}}</md-dialog-title>
-    <md-button @click="serverDownloadDialogVisible = false">Close</md-button>
-  </md-dialog>
+      <div class="download-container">
+        <md-field class="download-select">
+          <md-select v-model="downloadChoice" id="downloadChoices">
+            <md-option
+              v-for="choice in downloadChoices"
+              :key="choice.name"
+              :value="choice.name"
+            >
+              {{ choice.displayName }}
+            </md-option>
+          </md-select>
+        </md-field>
+        <md-button
+          class="md-icon-button download-button md-raised md-primary"
+          @click="handleClick"
+          id="download-button"
+        >
+          <md-icon>download</md-icon>
+        </md-button>
+      </div>
+      <a id="download-element" />
+    </md-toolbar>
+    <md-dialog
+      v-if="loading"
+      :md-active.sync="loading"
+      :md-close-on-esc="false"
+      :md-click-outside-to-close="false"
+    >
+      <md-dialog-title>{{ loadingTitle }}</md-dialog-title>
+      <md-dialog-content
+        ><md-progress-bar md-mode="indeterminate"
+      /></md-dialog-content>
+    </md-dialog>
+    <md-dialog v-if="asciiDialogVisible" :md-active.sync="asciiDialogVisible">
+      <md-dialog-title>ASCII data will download soon...</md-dialog-title>
+      <md-button @click="asciiDialogVisible = false">Close</md-button>
+    </md-dialog>
   </div>
 </template>
 
 <script>
 import baseUrl from '@/env';
 import addInlineCSS from '../utils/inlineCSS';
-import {
-  downloadData,
-  downloadPlotImage,
-  downloadParamValsJson,
-  downloadParamValsToml,
-} from '@/utils/downloads.js';
 
-const downloadOptions = {
-  PlotImage: {
-    name: 'PlotImage',
+const downloadChoiceObjs = {
+  plotImage: {
     displayName: 'Image of Plot',
-    fileName: 'PlotImage.svg',
+    name: 'plotImage',
+    downloadName: 'PlotImage',
     loadingTitle: 'Creating plot image...',
   },
-  ParamValsToml: {
-    displayName: 'Parameter Values in TOML Format',
-    name: 'ParamValsToml',
-    downloadName: 'AllModelParemeterValues.zip',
-    loadingTitle: 'Parameter value data will download soon...',
+  ascii: {
+    displayName: 'ASCII',
+    name: 'ascii',
+    downloadName: 'AllData.zip',
+    loadingTitle: 'Retrieving ASCII data...',
   },
-  ParamValsJson: {
-    name: 'ParamValsJson',
-    displayName: 'Parameter Values in JSON Format',
-    fileName: 'ParameterValues.json',
+  paramVals: {
+    displayName: 'Parameter Values',
+    name: 'paramVals',
+    downloadName: 'ParameterValues.json',
     loadingTitle: 'Loading parameter values...',
-  },
-  Data: {
-    name: 'Data',
-    displayName: 'Vector Data',
-    fileName: 'ModelVectorData.zip',
-    loadingTitle: 'Getting all model data',
   },
 };
 
@@ -89,30 +79,24 @@ export default {
   name: 'Download',
   data() {
     return {
-      downloadChoices: Object.values(downloadOptions),
-      downloadChoice: Object.values(downloadOptions)[0].name,
+      downloadChoices: Object.values(downloadChoiceObjs),
+      downloadChoice: Object.values(downloadChoiceObjs)[0].name,
       loading: false,
       loadingTitle: '',
-      serverDownloadDialogVisible: false,
+      asciiDialogVisible: false,
     };
   },
   methods: {
-    downloadData,
-    downloadPlotImage,
-    downloadParamValsJson,
-    downloadParamValsToml,
     async handleClick() {
       const downloadNode = document.getElementById('download-element');
-      const { fileName, name, loadingTitle } = downloadOptions[this.downloadChoice];
+      const { downloadName, name, loadingTitle } = downloadChoiceObjs[
+        this.downloadChoice
+      ];
       this.loadingTitle = loadingTitle;
-      const href = await this[`download${name}`](this.$store);
-      if (name === 'ParamValsToml') {
-        this.serverDownloadDialogVisible = true;
-      } else {
-        this.loading = true;
-      }
+      this.loading = true;
+      const href = await this[`download_${name}`]();
       downloadNode.setAttribute('href', href);
-      downloadNode.setAttribute('download', fileName);
+      downloadNode.setAttribute('download', downloadName);
       downloadNode.click();
       this.loading = false;
     },
@@ -151,7 +135,6 @@ export default {
         plotString
       )}`;
     },
-    /* eslint-enable */
     async download_ascii() {
       this.asciiDialogVisible = true;
       return `${baseUrl}/ascii`;

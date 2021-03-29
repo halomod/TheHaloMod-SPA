@@ -4,11 +4,10 @@
 
 ## Table of Contents
 
-  - [Usage](#usage)
-    - [How to start the server locally](#how-to-start-the-server-locally)
-    - [Development commands](#development-commands)
-    - [Production deployment using docker](#production-deployment-using-docker)
-  - [Architecture](#architecture)
+- [Usage](#usage)
+  - [How to start the server locally](#how-to-start-the-server-locally)
+  - [Development commands](#development-commands)
+- [Architecture](#architecture)
 
 ## Usage
 
@@ -28,21 +27,6 @@ Before doing any of the commands below, make sure to install the Python packages
 
 - To test, run `. ./run.sh --test`
 - To lint, run `. ./run.sh --lint`
-
-### Production deployment using docker
-
-To run docker manually, first export the needed environment variables. For deployment of this repository, Github actions will use Github secrets to define these variables. View [serverDeployment.yaml](.github\workflows\serverDeployment.yaml) for the Github action that is performed for deployment.
-
-```
-export FLASK_RUN_HOST=0.0.0.0
-export FLASK_RUN_PORT=5000
-export FLASK_KEY=${{ secrets.FLASK_KEY }}     [optional, if none is defined a default value is used]
-docker-compose up --build --remove-orphans -d
-```
-
-To stop the container:
-
-`docker-compose down`
 
 ## Architecture
 

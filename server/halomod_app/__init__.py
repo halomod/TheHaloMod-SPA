@@ -6,13 +6,12 @@ from flask_cors import CORS
 from flask import Flask, jsonify, request, session, abort, send_file
 from . import utils
 from halomod_app.utils import get_model_names
-from hmf.helpers.cfg_utils import framework_to_dict
-import toml
+import base64
 import json
 import dill as pickle
 import zipfile
 import io
-import base64
+import numpy as np
 
 sess = Session()
 
@@ -56,21 +55,13 @@ def create_app(test_config=None):
             return e
 
         response = {}
-        description = ""
-        if hasattr(e, 'description'):
-            description = e.description
-        elif hasattr(e, 'args'):
-            description = e.args
-        else:
-            description = 'Error has no description'
-
         # replace the body with JSON
-        response.setdefault('data', json.dumps({
+        response.data = json.dumps({
             "code": '500',
-            "name": e.name if hasattr(e, 'name') else str(type(e)),
-            "description": description,
-        }))
-        response.setdefault('content_type', "application/json")
+            "name": e.name,
+            "description": e.description,
+        })
+        response.content_type = "application/json"
         return response
 
     @app.errorhandler(HTTPException)
@@ -281,77 +272,15 @@ def create_app(test_config=None):
         res = {"model_names": get_model_names()}
         return jsonify(res)
 
-    # Generates a figure using session data & matplotlib rendering and
-    # returns it to client
-    #
-    # expects: {"fig_type": <fig_type> (see utils.KEYMAP for options),
-    #           "image type": <format of returned image> (png, svg, etc...)}
-    # outputs {"figure": <b64_serialized_figure>}
-    @app.route('/plot', methods=["POST"])
-    def plot():
-        request_json = request.get_json()
-        fig_type = request_json["fig_type"]
-        img_type = request_json["img_type"]
-
-        if 'models' in session:
-            models = pickle.loads(session["models"])
-        else:
-            models = {}
-
-        # generates figure/plot
-        buf, errors = utils.create_canvas(
-            models, fig_type, utils.KEYMAP[fig_type], img_type)
-
-        # serializes image so it can be sent via JSON
-        png_base64_bytes = base64.b64encode(buf.getvalue())
-        base64_png = png_base64_bytes.decode('ascii')
-
-        # save post-calculation models to session
-        session["models"] = pickle.dumps(models)
-
-        response = {}
-        response["figure"] = base64_png
-
-        return jsonify(response)
-
-    @app.route('/get_object_data', methods=['POST'])
-    def get_object_data():
-        """
-          Returns vectors associated with each model in the session for each
-          parameter passed to the endpoint
-
-          expects: {"param_names": [<param_name>, <param_name>, etc...]}
-          outputs {"<model_name>: {<param_name>: <param_data_for_model>, etc...}, etc...}
-        """
-        request_json = request.get_json()
-        param_names = request_json["param_names"]
-
-        if 'models' in session:
-            models = pickle.loads(session['models'])
-        else:
-            models = {}
-
-        res = {}
-
-        for label, obj in models.items():
-            res[label] = {}
-            for param_name in param_names:
-                if getattr(obj, param_name) is not None:
-                    res[label][param_name] = list(getattr(obj, param_name))
-
-        return jsonify(res)
-
-    @app.route('/toml', methods=['GET'])
-    def toml_route():
-        """ Builds and sends a toml file for each model in the user's session in a
-        zip folder. These can be used to input into the `halomod` library by
-        running the following in your shell:
-        `halomod run --config "tomlFileName.toml"`.
+    @app.route('/ascii', methods=['GET'])
+    def ascii():
+        """ Builds and sends the text data for each model stored in the session,
+        which is then bundled into a zip file.
 
         get:
         responses:
             200:
-            description: "Returns the zip file containining the different toml files for each model in the user's session"
+            description: "Returns the zip file containining the different data files for each model in the user's session"
             content:
                 application/zip:
         """
@@ -361,26 +290,48 @@ def create_app(test_config=None):
         else:
             models = {}
 
+        labels = list(models.keys())
+        objects = list(models.values())
+
         # Open up file-like objects for response
         buff = io.BytesIO()
         archive = zipfile.ZipFile(buff, "w", zipfile.ZIP_DEFLATED)
 
-        for label, object in models.items():
-            s = io.BytesIO()
-            s.write(toml.dumps(framework_to_dict(object),
-                               encoder=toml.TomlNumpyEncoder()).encode())
-            archive.writestr(f"{label}.toml", s.getvalue())
-            s.close()
+        # Write out mass-based, k-based and r-based data files
+        for index, object in enumerate(objects):
+            for kind in utils.XLABELS:
+                s = io.BytesIO()
+
+                s.write(f"# [0] {utils.XLABELS[kind]}".encode())
+
+                items = {
+                    k: utils.KEYMAP[k]["ylab"]
+                    for k in utils.KEYMAP
+                    if utils.KEYMAP[k]["xlab"] == utils.XLABELS[kind]
+                }
+
+                for j, (label, ylab) in enumerate(items.items()):
+                    if getattr(object, label) is not None:
+                        s.write(f"# [{j+1}] {ylab}".encode())
+
+                out = np.array(
+                    [getattr(object, kind)] + [
+                        getattr(object, label)
+                        for label in items
+                        if getattr(object, label) is not None
+                    ]
+                ).T
+                np.savetxt(s, out)
+
+                archive.writestr(f"{kind}Vector_test{labels[index]}.txt", s.getvalue())
+
+                s.close()
 
         archive.close()
 
         # Reset the location of the buffer to the beginning
         buff.seek(0)
 
-        # Cache timeout set to 3 seconds, which seems like enough time for the user
-        # to change a paremeter and try to download again, but prevents spamming.
-        return send_file(buff, as_attachment=True,
-                         attachment_filename="all_plots_toml.zip",
-                         cache_timeout=3)
+        return send_file(buff, as_attachment=True, attachment_filename="all_plots.zip")
 
     return app
