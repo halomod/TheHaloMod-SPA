@@ -154,7 +154,7 @@ const FORMS = {
     id: 'cosmo',
     title: 'Cosmology',
     modelKey: 'cosmo_model',
-    core_params: ['z', 'n', 'sigma_8'],
+    coreParams: ['z', 'n', 'sigma_8'],
     modelChoices: MODEL_CHOICES.cosmo,
     paramsKey: 'cosmo_params',
   },

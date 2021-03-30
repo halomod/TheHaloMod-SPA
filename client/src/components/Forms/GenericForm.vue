@@ -1,21 +1,72 @@
 <template>
   <form novalidate>
+    <!-- Core Paramaters (common to all model options)-->
+    <div v-for="key in subformMeta.coreParams" :key="key">
+      <div v-if="!isVisible(key) || subformState[key] === null"/>
+      <md-checkbox
+        v-else-if="typeof subformState[key] === 'boolean'"
+        class="md-primary"
+        v-model="subformState[key]">
+        {{key}}
+      </md-checkbox>
+      <md-field v-else-if="typeof subformState[key] === 'string'">
+        <label>{{getParameterLabel(key)}}</label>
+        <md-select v-model="subformState[key]">
+          <md-option
+            v-for="(choiceName, choiceKey) in getParameterOptions(key)"
+            :key="choiceKey"
+            :value="choiceKey">
+            {{choiceName}}
+          </md-option>
+        </md-select>
+      </md-field>
+      <double-field
+        v-else
+        :init="subformState[key]"
+        v-model="subformState[key]"
+        v-bind="getDoubleFieldProps(key)"/>
+    </div>
 
-    <div class='md-layout md-gutter'>
-      <div v-for="(value, key) in subformState" :key="key" class='md-layout-item'>
-        <div v-if="key === subformMeta.modelKey">
-          <md-field>
-            <label>{{subformMeta.title}}</label>
-            <md-select v-model="subformState[subformMeta.modelKey]">
-              <md-option
-                v-for="(value, choice) in subformMeta.modelChoices"
-                :key="choice"
-                :value="value">
-                {{choice}}
-              </md-option>
-            </md-select>
-          </md-field>
-        </div>
+    <!-- Model Selection -->
+    <md-field>
+      <label>{{subformMeta.title}}</label>
+      <md-select v-model="subformState[subformMeta.modelKey]">
+        <md-option
+          v-for="(value, choice) in subformMeta.modelChoices"
+          :key="choice"
+          :value="value">
+          {{choice}}
+        </md-option>
+      </md-select>
+    </md-field>
+
+    <!-- Subparameters (unique to model selection) -->
+    <div v-for="(value, key) in subformState[subformMeta.paramsKey]" :key="key">
+      <div v-if="!isVisible(key) || value === null"/>
+      <md-checkbox
+        v-else-if="typeof value === 'boolean'"
+        class="md-primary"
+        v-model="subformState[subformMeta.paramsKey][key]">
+        {{key}}
+      </md-checkbox>
+      <md-field v-else-if="typeof value === 'string'">
+        <label>{{getParameterLabel(key)}}</label>
+        <md-select v-model="subformState[subformMeta.paramsKey][key]">
+          <md-option
+            v-for="(choiceName, choiceKey) in getParameterOptions(key)"
+            :key="choiceKey"
+            :value="choiceKey">
+            {{choiceName}}
+          </md-option>
+        </md-select>
+      </md-field>
+      <double-field
+        v-else
+        :init="subformState[subformMeta.paramsKey][key]"
+        v-model="subformState[subformMeta.paramsKey][key]"
+        v-bind="getDoubleFieldProps(key)"/>
+    </div>
+
         <!-- <div v-else>
           <div v-if="key === subformMeta.paramsKey" >
             <div
@@ -89,14 +140,12 @@
               v-bind="getDoubleFieldProps(key)"/>
           </div>
         </div> -->
-      </div>
-    </div>
   </form>
 </template>
 
 <script>
 import clonedeep from 'lodash.clonedeep';
-// import DoubleField from '@/components/DoubleField.vue';
+import DoubleField from '@/components/DoubleField.vue';
 // import InputSlider from '@/components/InputSlider.vue';
 import Debug from 'debug';
 import isEqual from 'lodash.isequal';
@@ -123,7 +172,7 @@ export default {
     },
   },
   components: {
-    // DoubleField,
+    DoubleField,
     // InputSlider,
   },
   data() {
@@ -147,11 +196,14 @@ export default {
         return this.subformState[this.subformMeta.modelKey];
       },
       (newModelName, oldModelName) => {
+        console.log('happening');
         if (oldModelName === newModelName) return;
         if (this.formId === 'cosmo') {
           this.cachedSubformInputs.cosmo[oldModelName] = this.subformState;
           this.subformState.cosmo = this.cachedSubformInputs[newModelName];
+          console.log();
         } else {
+          console.log('here');
           this.cachedSubformInputs[this.formId] = {
             ...this.subformState[this.subformMeta.paramsKey],
           };
