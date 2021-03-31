@@ -24,7 +24,7 @@
           <md-divider/>
           <div v-for="(form, index) in Object.values(forms)" :key="index">
             <FormWrapper
-              :id="`form_wrapper_${form.id}`"
+              :id="form.id"
               :title="form.title"
               @currently-visible="() => setCurrentlyVisible(form.id, form.title)">
               <GenericForm

@@ -20,23 +20,32 @@ const mapping = {
   halo_profile: 'Profile_params',
   tracer_profile: 'Profile_params',
   halo_exclusion: 'Exclusion_params',
+  transfer: 'TransferComponent_params',
 };
 
 const BACKEND_CONSTANTS = generatedBackendConstants;
 const FORM_OPTION_DEFAULTS = {};
 const DEFAULT_FORM_STATE = {};
 
-Object.entries(forms).forEach(([key, { core_params, modelKey, paramsKey }]) => {
+/* halo_model is weird */
+FORM_OPTION_DEFAULTS.halo_model = {};
+
+Object.entries(forms).forEach(([key, { coreParams, modelKey, paramsKey }]) => {
   /* pulls option defaults from BACKEND_CONSTANTS */
   FORM_OPTION_DEFAULTS[key] = BACKEND_CONSTANTS[mapping[key]];
 
   /* builds initial state for each subform */
-  const items = [...(!core_params ? [] : core_params), modelKey];
+  const items = modelKey
+    ? [...(!coreParams ? [] : coreParams), modelKey]
+    : [...(!coreParams ? [] : coreParams)];
+
   const initial = {};
   items.forEach((item) => {
     initial[item] = BACKEND_CONSTANTS[item];
   });
-  initial[paramsKey] = FORM_OPTION_DEFAULTS[key][initial[modelKey]];
+  if (paramsKey) {
+    initial[paramsKey] = FORM_OPTION_DEFAULTS[key][initial[modelKey]];
+  }
   DEFAULT_FORM_STATE[key] = initial;
 });
 
@@ -73,8 +82,5 @@ FORM_OPTION_DEFAULTS.cosmo = {
     sigma_8: 0.817,
   },
 };
-
-console.log(DEFAULT_FORM_STATE);
-console.log(FORM_OPTION_DEFAULTS);
 
 export { DEFAULT_FORM_STATE, FORM_OPTION_DEFAULTS };

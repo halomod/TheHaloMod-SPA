@@ -4,6 +4,7 @@ import Vue from 'vue';
 import Store from '@/utils/Store.js';
 import { PLOT_AXIS_OPIONS } from '@/constants/PLOT.js';
 import makeServer from '../mockServer';
+import { DEFAULT_FORM_STATE } from '@/constants/backend_constants.js';
 
 // Disable dev notice info logs. Just a quality of life thing.
 Vue.config.productionTip = false;
@@ -21,7 +22,7 @@ describe('Graph tests', () => {
     const localVue = createLocalVue();
     const store = new Store();
     await store.init();
-    defaultModel = store.getFormStateFromConstants();
+    defaultModel = DEFAULT_FORM_STATE;
     if (typeof store.state !== 'object') {
       throw new Error('Store wasn\'t initialized correctly in test. The store is'
       + ` ${JSON.stringify(store)}`);

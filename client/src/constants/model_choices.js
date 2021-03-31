@@ -105,4 +105,10 @@ export default {
     'Ellipsoidal Halos': 'DblEllipsoid',
     'Density-Matched (Tinker 2005)': 'NgMatched',
   },
+  halo_model: {
+    linear: 'linear',
+    nonlinear: 'nonlinear',
+    'filtered linear': 'filtered_lin',
+    'filtered non-linear': 'filtered_n1',
+  },
 };

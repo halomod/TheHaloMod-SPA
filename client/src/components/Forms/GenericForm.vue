@@ -28,7 +28,7 @@
     </div>
 
     <!-- Model Selection -->
-    <md-field>
+    <md-field v-if="subformMeta.modelKey">
       <label>{{subformMeta.title}}</label>
       <md-select v-model="subformState[subformMeta.modelKey]">
         <md-option
@@ -66,80 +66,6 @@
         v-model="subformState[subformMeta.paramsKey][key]"
         v-bind="getDoubleFieldProps(key)"/>
     </div>
-
-        <!-- <div v-else>
-          <div v-if="key === subformMeta.paramsKey" >
-            <div
-              v-for="(paramsValue, paramsKey) in value"
-              :key="paramsKey"
-            >
-              <div v-if="!isVisible(paramsKey) || paramsValue === null"/>
-              <md-checkbox
-                v-else-if="typeof paramsValue === 'boolean'"
-                class="md-primary"
-                v-model="subformState[paramsKey]">
-                {{paramsKey}}
-              </md-checkbox>
-              <md-field v-else-if="typeof paramsValue === 'string'">
-                <label>{{getParameterLabel(paramsKey)}}</label>
-                <md-select v-model="subformState[currentFormStateParamsKey][paramsKey]">
-                  <md-option
-                    v-for="(choiceName, choiceKey) in getParameterOptions(paramsKey)"
-                    :key="choiceKey"
-                    :value="choiceKey">
-                    {{choiceName}}
-                  </md-option>
-                </md-select>
-              </md-field>
-              <div v-else-if="isSlider(paramsKey)">
-                <div v-if="isSliderMin(paramsKey)">
-                  <InputSlider
-                    v-if="isSliderMin(paramsKey)"
-                    :minParameterKey="paramsKey"
-                    v-model="subformState[currentFormStateParamsKey]"
-                  />
-                </div>
-              </div>
-              <double-field
-                v-else
-                :init="subformState[currentFormStateParamsKey][paramsKey]"
-                v-model="subformState[currentFormStateParamsKey][paramsKey]"
-                v-bind="getDoubleFieldProps(paramsKey)"/>
-            </div>
-          </div>
-          <div v-else>
-            <div v-if="!isVisible(key)"/>
-            <md-checkbox
-              v-else-if="typeof value === 'boolean'"
-              class="md-primary"
-              v-model="subformState[key]">
-              {{key}}
-            </md-checkbox>
-            <md-field v-else-if="typeof value === 'string'">
-              <label>{{getParameterLabel(key)}}</label>
-              <md-select v-model="subformState[key]">
-                <md-option
-                  v-for="(choiceName, choiceKey) in getParameterOptions(key)"
-                  :key="choiceKey"
-                  :value="choiceKey">
-                  {{choiceName}}
-                </md-option>
-              </md-select>
-            </md-field>
-            <div v-else-if="isSlider(key)">
-              <InputSlider
-                v-if="isSliderMin(key)"
-                :minParameterKey="key"
-                v-model="subformState"
-              />
-            </div>
-            <double-field
-              v-else
-              :init="subformState[key]"
-              v-model="subformState[key]"
-              v-bind="getDoubleFieldProps(key)"/>
-          </div>
-        </div> -->
   </form>
 </template>
 
@@ -148,7 +74,6 @@ import clonedeep from 'lodash.clonedeep';
 import DoubleField from '@/components/DoubleField.vue';
 // import InputSlider from '@/components/InputSlider.vue';
 import Debug from 'debug';
-import isEqual from 'lodash.isequal';
 import PARAMETER_PROPS from '@/constants/parameter_properties.js';
 import forms from '@/constants/forms.js';
 import { FORM_OPTION_DEFAULTS } from '@/constants/backend_constants.js';
@@ -196,20 +121,18 @@ export default {
         return this.subformState[this.subformMeta.modelKey];
       },
       (newModelName, oldModelName) => {
-        console.log('happening');
-        if (oldModelName === newModelName) return;
         if (this.formId === 'cosmo') {
-          this.cachedSubformInputs.cosmo[oldModelName] = this.subformState;
-          this.subformState.cosmo = this.cachedSubformInputs[newModelName];
-          console.log();
+          this.cachedSubformInputs[oldModelName] = this.subformState;
+          this.subformState = {
+            ...this.cachedSubformInputs[newModelName],
+            [this.subformMeta.modelKey]: newModelName,
+          };
         } else {
-          console.log('here');
-          this.cachedSubformInputs[this.formId] = {
+          this.cachedSubformInputs[oldModelName] = {
             ...this.subformState[this.subformMeta.paramsKey],
           };
-          this.subformState[this.formId] = {
-            ...this.subformState,
-            [this.subformMeta.paramsKey]: this.cachedSubformInputs[newModelName],
+          this.subformState[this.subformMeta.paramsKey] = {
+            ...this.cachedSubformInputs[newModelName],
           };
         }
       },
@@ -228,12 +151,11 @@ export default {
     /**
      * If the state is changed by the parent, change the local values.
      */
-    relevantFormState: {
+    initialSubformState: {
       deep: true,
-      handler(newFormState) {
-        if (!isEqual(this.subformState, newFormState)) {
-          this.subformState = clonedeep(this.relevantFormState);
-        }
+      handler() {
+        this.subformState = clonedeep(this.initialSubformState);
+        this.cachedSubformInputs = clonedeep(FORM_OPTION_DEFAULTS[this.formId]);
       },
     },
   },

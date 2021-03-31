@@ -1,9 +1,8 @@
 import GenericForm from '@/components/Forms/GenericForm.vue';
 import { mount, createLocalVue } from '@vue/test-utils';
-import FORMS from '@/constants/forms.js';
 import VueMaterial from 'vue-material';
 import clone from 'lodash.clonedeep';
-import Store from '@/utils/Store';
+import { DEFAULT_FORM_STATE, FORM_OPTION_DEFAULTS } from '@/constants/backend_constants.js';
 
 describe('Mounted GenericForm', () => {
   const localVue = createLocalVue();
@@ -13,17 +12,12 @@ describe('Mounted GenericForm', () => {
   let currentFormState;
 
   beforeEach(() => {
-    currentFormState = (new Store()).getFormStateFromConstants();
+    currentFormState = clone(DEFAULT_FORM_STATE);
     wrapper = mount(GenericForm, {
       localVue,
       propsData: {
-        relevantFormState: FORMS.bias.getRelevantFormState(currentFormState),
-        title: FORMS.bias.title,
-        modelKey: FORMS.bias.modelKey,
-        currentFormStateParamsKey: FORMS.bias.currentFormStateParamsKey,
-        modelChoices: FORMS.bias.modelChoices,
-        modelChoicesData: FORMS.bias.getModelChoicesDataFromFlat(currentFormState),
-        updateModelChoice: FORMS.bias.updateModelChoice,
+        initialSubformState: currentFormState.bias,
+        formId: 'bias',
       },
       stubs: {
         'vue-observe-visibility': true,
@@ -38,63 +32,63 @@ describe('Mounted GenericForm', () => {
    */
 
   test('initializes with correct data', () => {
-    expect(wrapper.vm.localFormState).toEqual(wrapper.vm.relevantFormState);
-    expect(wrapper.vm.localModelChoicesData).toEqual(wrapper.vm.modelChoicesData);
+    expect(wrapper.vm.subformState).toEqual(wrapper.vm.initialSubformState);
+    expect(wrapper.vm.cachedSubformInputs).toEqual(FORM_OPTION_DEFAULTS.bias);
   });
 
   test('correctly updates cache when model selection changes',
     async () => {
-      wrapper.vm.localFormState.bias_params.B = 0.184;
-      const initialState = wrapper.vm.localFormState.bias_params;
+      wrapper.vm.subformState.bias_params.B = 0.184;
+      const initialState = wrapper.vm.subformState.bias_params;
       await localVue.nextTick();
       await localVue.nextTick();
-      wrapper.vm.localFormState.bias_model = 'Tinker10PBSplit';
+      wrapper.vm.subformState.bias_model = 'Tinker10PBSplit';
       await localVue.nextTick();
       await localVue.nextTick();
-      expect(wrapper.vm.localModelChoicesData.Tinker10).toEqual(initialState);
+      expect(wrapper.vm.cachedSubformInputs.Tinker10).toEqual(initialState);
     });
 
   test('correctly updates available parameters when model selection changes',
     async () => {
-      const initialState = wrapper.vm.localFormState.bias_params;
-      wrapper.vm.localFormState.bias_model = 'Tinker10PBSplit';
+      const initialState = wrapper.vm.subformState.bias_params;
+      wrapper.vm.subformState.bias_model = 'Tinker10PBSplit';
       await localVue.nextTick();
       await localVue.nextTick();
-      expect(wrapper.vm.localFormState.bias_params).not.toEqual(initialState);
+      expect(wrapper.vm.subformState.bias_params).not.toEqual(initialState);
     });
 
   test('emits onChange event whenever model selection or params changed',
     async () => {
       const emitted = wrapper.emitted();
       let prevCount = 0;
-      wrapper.vm.localFormState.bias_params.B = 0.184;
+      wrapper.vm.subformState.bias_params.B = 0.184;
       await localVue.nextTick();
       await localVue.nextTick();
       expect(emitted.onChange.length).toBeGreaterThan(prevCount);
       prevCount = emitted.onChange.length;
-      wrapper.vm.localFormState.bias_model = 'Tinker10PBSplit';
+      wrapper.vm.subformState.bias_model = 'Tinker10PBSplit';
       await localVue.nextTick();
       await localVue.nextTick();
       expect(emitted.onChange.length).toBeGreaterThan(prevCount);
     });
 
-  test('properly updates localFormState, defaults and cache when '
-  + 'initial_state prop changes',
+  test('properly updates subformState, defaults and cache when '
+  + 'initialSubformState prop changes',
   async () => {
-    wrapper.vm.localFormState.bias_params.B = 1;
-    wrapper.vm.localFormState.bias_model = 'Tinker10PBSplit';
+    wrapper.vm.subformState.bias_params.B = 1;
+    wrapper.vm.subformState.bias_model = 'Tinker10PBSplit';
     await localVue.nextTick();
     await localVue.nextTick();
-    const initialFormState = wrapper.vm.localFormState;
-    const initialModelChoicesData = wrapper.vm.localModelChoicesData;
+    const currentSubformState = wrapper.vm.subformState;
+    const currentCache = wrapper.vm.cachedSubformInputs;
     wrapper.setProps({
       ...wrapper.vm.propsData,
-      relevantFormState: clone(FORMS.bias.getRelevantFormState(currentFormState)),
+      initialSubformState: clone(DEFAULT_FORM_STATE.bias),
     });
     await localVue.nextTick();
     await localVue.nextTick();
-    expect(wrapper.vm.localFormState).not.toEqual(initialFormState);
-    expect(wrapper.vm.localModelChoicesData).not.toEqual(initialModelChoicesData);
+    expect(wrapper.vm.subformState).not.toEqual(currentSubformState);
+    expect(wrapper.vm.cachedSubformInputs).not.toEqual(currentCache);
   });
 
   /**
@@ -104,27 +98,27 @@ describe('Mounted GenericForm', () => {
   test('renders correct number of fields when model selection changes',
     async () => {
       let fields = wrapper.findAllComponents({ name: 'DoubleField' }).wrappers;
-      expect(fields).toHaveLength(Object.keys(wrapper.vm.localModelChoicesData
+      expect(fields).toHaveLength(Object.keys(wrapper.vm.cachedSubformInputs
         .Tinker10).length);
-      wrapper.vm.localFormState.bias_model = 'Tinker10PBSplit';
+      wrapper.vm.subformState.bias_model = 'Tinker10PBSplit';
       await localVue.nextTick();
       await localVue.nextTick();
       fields = wrapper.findAllComponents({ name: 'DoubleField' });
-      expect(fields).toHaveLength(Object.keys(wrapper.vm.localModelChoicesData
+      expect(fields).toHaveLength(Object.keys(wrapper.vm.cachedSubformInputs
         .Tinker10PBSplit).length);
     });
 
   test('renders correct values and names for fields even when model selection changes',
     async () => {
-      let params = Object.entries(wrapper.vm.localFormState.bias_params);
+      let params = Object.entries(wrapper.vm.subformState.bias_params);
       params.forEach(([key, value]) => {
         expect(wrapper.html()).toEqual(expect.stringMatching(new RegExp(`.*${key}.*`)));
         expect(wrapper.html()).toEqual(expect.stringMatching(new RegExp(`.*${value}.*`)));
       });
-      wrapper.vm.localFormState.bias_model = 'Tinker10PBSplit';
+      wrapper.vm.subformState.bias_model = 'Tinker10PBSplit';
       await localVue.nextTick();
       await localVue.nextTick();
-      params = Object.entries(wrapper.vm.localFormState.bias_params);
+      params = Object.entries(wrapper.vm.subformState.bias_params);
       params.forEach(([key, value]) => {
         expect(wrapper.html()).toEqual(expect.stringMatching(new RegExp(`.*${key}.*`)));
         expect(wrapper.html()).toEqual(expect.stringMatching(new RegExp(`.*${value}.*`)));
@@ -134,12 +128,9 @@ describe('Mounted GenericForm', () => {
   test('renders correct title based on props',
     async () => {
       expect(wrapper.html()).toEqual(expect.stringMatching(new RegExp('.*Bias.*')));
-      wrapper.setProps({
-        ...wrapper.vm.propsData,
-        title: 'Another Model',
-      });
+      wrapper.vm.subformMeta.title = 'New Form';
       await localVue.nextTick();
       await localVue.nextTick();
-      expect(wrapper.html()).toEqual(expect.stringMatching(new RegExp('.*Another Model.*')));
+      expect(wrapper.html()).toEqual(expect.stringMatching(new RegExp('.*New Form.*')));
     });
 });

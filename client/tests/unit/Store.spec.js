@@ -2,6 +2,7 @@ import Store from '@/utils/Store.js';
 import Vue from 'vue';
 import isEqual from 'lodash.isequal';
 import makeServer from '../mockServer';
+import { DEFAULT_FORM_STATE, FORM_OPTION_DEFAULTS } from '@/constants/backend_constants.js';
 
 // Disable dev notice info logs. Just a quality of life thing.
 Vue.config.productionTip = false;
@@ -19,7 +20,7 @@ describe('Store tests', () => {
     store = new Store();
     expect(store).toBeDefined();
     await store.init();
-    defaultModel = store.getFormStateFromConstants();
+    defaultModel = DEFAULT_FORM_STATE;
     expect(store.state.plot.y).toBeDefined();
     expect(store.state.plot.x).toBeDefined();
   });
