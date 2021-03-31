@@ -12,6 +12,7 @@
         <Download/>
       </div>
     </div>
+    <button @click="doSomething">This is a test</button>
   </div>
 </template>
 
@@ -33,11 +34,18 @@ export default {
     Navbar,
     Download,
   },
+  methods: {
+    doSomething() {
+      console.log(this.$material.theming);
+      this.$material.theming.theme = 'dark';
+    },
+  },
 };
 
 </script>
 
-<style scoped>
+<style lang="scss">
+  @import "./theme";
 
   .home {
     display: grid;

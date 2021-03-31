@@ -1,0 +1,21 @@
+@import "~vue-material/dist/theme/engine"; // Import the theme engine
+
+/**
+ * The below sets the themes for the application. This can be accessed and 
+ * modified inside a component by using `this.$material.theming.theme`. For
+ * example, to switch to dark mode, the following can be used:
+ * ```
+ * this.$material.theming.theme = 'dark';
+ * ```
+ */
+@include md-register-theme("default", (
+  primary: #B1E6D0, // The primary color of your application
+  accent: #888988, // The accent or secondary color
+));
+@include md-register-theme("dark", (
+  primary: #B1E6D0, // The primary color of your application
+  accent: #888988, // The accent or secondary color
+  theme: dark
+));
+
+@import "~vue-material/dist/theme/all"; // Apply the theme
