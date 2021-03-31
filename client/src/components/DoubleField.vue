@@ -7,7 +7,6 @@
     <div class="md-error" v-if="!isDefined">Value must be defined</div>
     <div class="md-error" v-else-if="!isNumeric">Value must be numeric</div>
     <div class="md-error" v-else-if="!isBetween">Value must be between {{min}} and {{max}}</div>
-     <span class="md-helper-text">{{min}} - {{max}}</span>
   </md-field>
 </template>
 
@@ -38,7 +37,7 @@ export default {
     };
   },
   computed: {
-    isBetween() { return this.range ? between(this.current, this.min, this.max) : true; },
+    isBetween() { return between(this.current, this.min, this.max); },
     isNumeric() { return numeric(this.current); },
     isDefined() { return defined(this.current); },
     isValid() { return this.isDefined && this.isNumeric && this.isBetween; },

@@ -31,7 +31,7 @@
                 v-if="initialHMModelFlat"
                 v-bind="buildProps(form)"
                 :testName="form.title"
-                @is-valid="(valid) => form.valid = valid"
+                @is-valid="(valid) => isValid(form, valid)"
                 @onChange="handleFormDataChange"/>
             </FormWrapper>
             <md-divider/>
@@ -80,7 +80,7 @@ export default {
   data() {
     console.log(this);
     return {
-      forms: FORMS,
+      forms: clonedeep(FORMS),
       currentlyVisible: null,
       hmModelFlat: clonedeep(this.initialHMModelFlat),
     };
@@ -130,6 +130,20 @@ export default {
     },
     handleFormDataChange(formData) {
       Object.assign(this.hmModelFlat, formData);
+    },
+    isValid(f, valid) {
+      const form = f;
+      form.valid = valid;
+      this.$emit('is-valid', this.testValid());
+      this.$forceUpdate();
+    },
+    testValid() {
+      let res = true;
+      Object.keys(this.forms).forEach((form) => {
+        res = res && this.forms[form].valid;
+      });
+      console.log(res);
+      return res;
     },
   },
 };
