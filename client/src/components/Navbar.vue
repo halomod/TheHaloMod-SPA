@@ -3,7 +3,7 @@
         <md-avatar>
           <img src="../assets/thm_logo.png">
         </md-avatar>
-        <h3 class="md-title" style="flex: 1">The Halo Mod</h3>
+        <h3 class="md-title" style="flex: 1">TheHaloMod</h3>
           <router-link to="/"><md-button class="md-primary">Home</md-button></router-link>
           <router-link to="/about"><md-button class="md-primary">About</md-button></router-link>
       </md-toolbar>
