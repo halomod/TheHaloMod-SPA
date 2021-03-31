@@ -20,8 +20,13 @@
           </md-option>
         </md-select>
       </md-field>
+      <input-slider
+        v-else-if="isSlider(key) && isSliderMin(key)"
+        :minParameterKey="key"
+        v-model="subformState"
+      />
       <double-field
-        v-else
+        v-else-if="!isSlider(key)"
         :init="subformState[key]"
         v-model="subformState[key]"
         v-bind="getDoubleFieldProps(key)"/>
@@ -72,7 +77,7 @@
 <script>
 import clonedeep from 'lodash.clonedeep';
 import DoubleField from '@/components/DoubleField.vue';
-// import InputSlider from '@/components/InputSlider.vue';
+import InputSlider from '@/components/InputSlider.vue';
 import Debug from 'debug';
 import PARAMETER_PROPS from '@/constants/parameter_properties.js';
 import forms from '@/constants/forms.js';
@@ -98,7 +103,7 @@ export default {
   },
   components: {
     DoubleField,
-    // InputSlider,
+    InputSlider,
   },
   data() {
     return {
