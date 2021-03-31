@@ -1,11 +1,19 @@
 <template>
     <md-toolbar class="md-primary" md-elevation="1">
-        <md-avatar>
-          <img src="../assets/thm_logo.png">
-        </md-avatar>
-        <h3 class="md-title" style="flex: 1">TheHaloMod</h3>
-          <router-link to="/"><md-button class="md-primary">Home</md-button></router-link>
+        <router-link to="/">
+          <md-button class="title-button">
+            <div class="clickable-title">
+              <md-avatar>
+                <img class="logo" src="../assets/thm_logo.png">
+              </md-avatar>
+              <h1 class="md-title">TheHaloMod</h1>
+            </div>
+          </md-button>
+        </router-link>
+
+        <div>
           <router-link to="/about"><md-button class="md-primary">About</md-button></router-link>
+        </div>
       </md-toolbar>
 </template>
 
@@ -16,14 +24,29 @@
  */
 export default {
   name: 'Navbar',
-  components: {
-  },
 };
 </script>
 
 <style scoped>
+  .title-button {
+    height: auto;
+    /* Ignores the uppercase transform of the button */
+    text-transform: none;
+  }
+  .logo {
+    margin: 0;
+  }
+  .clickable-title {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+  }
   .md-toolbar {
     position: 'fixed';
     z-index: 9;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
   }
 </style>
