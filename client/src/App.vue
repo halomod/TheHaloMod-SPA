@@ -13,7 +13,9 @@
 
 <script>
 export default {
-
+  beforeCreate() {
+    this.$material.theming.theme = this.$store.state.theme;
+  },
 };
 </script>
 

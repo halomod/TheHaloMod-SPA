@@ -11,6 +11,7 @@ import {
 } from 'idb-keyval';
 import BACKEND_CONSTANTS from '@/constants/backend_constants';
 import FORMS from '@/constants/forms';
+import { DEFAULT_THEME } from '@/constants/themeOptions';
 
 axios.defaults.withCredentials = true;
 
@@ -34,6 +35,7 @@ export default class Store {
       error: false,
       errorType: '',
       errorMessage: '',
+      theme: '',
     };
   }
 
@@ -42,16 +44,25 @@ export default class Store {
    */
   init = async () => {
     const k = await keys();
-    const models = new Map();
-    k.forEach((key) => {
-      const obj = get(key);
-      models.set(key, obj);
-    });
-    await Promise.all(models);
 
-    this.state.models = Object.fromEntries(models);
+    // If the models object does not exist, create it.
+    if (!k.includes('models')) {
+      await set('models', {});
+    }
+
+    // If the theme value does not exist, create it.
+    if (!k.includes('theme')) {
+      await set('theme', DEFAULT_THEME);
+    }
+
+    const models = await get('models');
+    const theme = await get('theme');
+    this.state.models = models;
+    this.state.theme = theme;
     this.state.modelNames = this.getModelNames();
-    this.getPlotData();
+    if (Object.keys(models).length !== 0) {
+      this.getPlotData();
+    }
   }
 
   /**
@@ -162,16 +173,13 @@ export default class Store {
         new_model_name: newName,
       });
       const model = this.state.models[oldName];
-      await Promise.all([
-        set(newName, model),
-        del(oldName),
-      ]);
       this.state.models[newName] = model;
       delete this.state.models[oldName];
       this.state.modelNames = this.getModelNames();
+      await set('models', this.state.models);
       this.getPlotData();
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   }
 
@@ -251,9 +259,9 @@ export default class Store {
    */
   setModel = async (name, model) => {
     try {
-      await set(name, model);
       this.state.models[name] = model;
       this.state.modelNames = this.getModelNames();
+      await set('models', this.state.models);
     } catch (error) {
       console.error(error);
     }
@@ -349,5 +357,20 @@ export default class Store {
       this.state.plot[axis] = plotType;
       if (refresh) await this.getPlotData();
     }
+  }
+
+  /**
+   * Updates the theme for the application and saves it to the store.
+   *
+   * @param {string} newTheme should be one of the constants exported from
+   * `@/constants/themeOptions.js`
+   * @param {Vue} vueInstance the instance of Vue for the application. This
+   * can be simply passed as `this` if called in a component.
+   */
+  async setTheme(newTheme, vueInstance) {
+    const material = vueInstance.$material;
+    this.state.theme = newTheme;
+    material.theming.theme = newTheme;
+    await set('theme', newTheme);
   }
 }

@@ -36,8 +36,7 @@ export default {
   },
   methods: {
     doSomething() {
-      console.log(this.$material.theming);
-      this.$material.theming.theme = 'dark';
+      this.$store.setTheme('dark', this);
     },
   },
 };
