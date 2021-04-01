@@ -117,21 +117,14 @@ export default {
       });
     });
 
-    console.log('x axis choices is: ', this.xAxisChoices);
-
     // If xAxisChoice has not been chosen, choose the first one in the list.
-
-    console.log('before setting the xAxisChoice, it is: ', this.xAxisChoice);
-
     if (this.xAxisChoice === '') {
       const [newXAxisChoice] = Object.keys(this.xAxisChoices);
-      console.log('new x axis choice is: ', newXAxisChoice);
       this.xAxisChoice = newXAxisChoice;
       this.updateXAxisChoice(newXAxisChoice, '');
     }
 
     if (this.yAxisChoice !== null) {
-      console.log('yAxisChoice was null');
       this.updateYAxisChoices(this.xAxisChoice);
     }
   },
@@ -159,7 +152,6 @@ export default {
   methods: {
     updateXAxisChoice(newXAxisChoice, oldXAxisChoice) {
       this.updateYAxisChoices(newXAxisChoice);
-      console.log('y axis choices is: ', this.yAxisChoices);
 
       // Set the new Y Axis and logy
       const [newYAxisChoice] = this.yAxisChoices;
@@ -173,7 +165,6 @@ export default {
       this.logx = this.$store.state.plot.logx;
     },
     updateYAxisChoices(xAxisChoice) {
-      console.log('x axis choice is: ', xAxisChoice);
       this.yAxisChoices = PLOT_AXIS_OPTIONS[this.xAxisChoices[xAxisChoice]].y;
     },
     /**

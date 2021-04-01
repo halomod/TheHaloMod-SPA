@@ -71,8 +71,6 @@ export default class Store {
       this.state.plot = await get('plot');
     }
 
-    console.log('plot is: ', this.state.plot);
-
     this.state.modelNames = this.getModelNames();
     if (Object.keys(this.state.models).length !== 0) {
       this.getPlotData();
