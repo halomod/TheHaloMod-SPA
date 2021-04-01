@@ -92,9 +92,9 @@ describe('Mounted FormView', () => {
 
   describe('subform tests', () => {
     test('updates composite form state whenever subform state changes', async () => {
-      await genericForms.forEach(async (genericForm) => {
-
-        const subformMeta = genericForm.vm.subformMeta;
+      await genericForms.forEach(async (component) => {
+        const genericForm = component;
+        const { subformMeta } = genericForm.vm;
         expect(subformMeta).toBeDefined();
 
         const newOption = subFormOptions[subformMeta.id];
@@ -111,7 +111,7 @@ describe('Mounted FormView', () => {
 
     test('does not update subform state when composite form state changes', async () => {
       await genericForms.forEach(async (genericForm) => {
-        const subformMeta = genericForm.vm.subformMeta;
+        const { subformMeta } = genericForm.vm;
         const newOption = subFormOptions[subformMeta.id];
         const modelKey = subformMeta.title === FORMS.halo_model.title
           ? 'hc_spectrum'

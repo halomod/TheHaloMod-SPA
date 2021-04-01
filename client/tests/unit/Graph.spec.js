@@ -3,8 +3,8 @@ import Graph from '@/components/Graph';
 import Vue from 'vue';
 import Store from '@/utils/Store.js';
 import { PLOT_AXIS_OPIONS } from '@/constants/PLOT.js';
-import makeServer from '../mockServer';
 import { DEFAULT_FORM_STATE } from '@/constants/backend_constants.js';
+import makeServer from '../mockServer';
 
 // Disable dev notice info logs. Just a quality of life thing.
 Vue.config.productionTip = false;

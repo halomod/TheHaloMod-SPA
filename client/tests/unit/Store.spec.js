@@ -1,8 +1,8 @@
 import Store from '@/utils/Store.js';
 import Vue from 'vue';
 import isEqual from 'lodash.isequal';
+import { DEFAULT_FORM_STATE } from '@/constants/backend_constants.js';
 import makeServer from '../mockServer';
-import { DEFAULT_FORM_STATE, FORM_OPTION_DEFAULTS } from '@/constants/backend_constants.js';
 
 // Disable dev notice info logs. Just a quality of life thing.
 Vue.config.productionTip = false;

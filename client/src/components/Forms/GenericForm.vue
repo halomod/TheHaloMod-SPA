@@ -7,7 +7,7 @@
         v-else-if="typeof subformState[key] === 'boolean'"
         class="md-primary"
         v-model="subformState[key]">
-        {{key}}
+        {{getParameterLabel(key)}}
       </md-checkbox>
       <md-field v-else-if="typeof subformState[key] === 'string'">
         <label>{{getParameterLabel(key)}}</label>
