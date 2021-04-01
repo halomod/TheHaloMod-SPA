@@ -78,7 +78,6 @@ export default {
     },
   },
   data() {
-    console.log(this);
     return {
       forms: clonedeep(FORMS),
       currentlyVisible: null,
@@ -142,7 +141,6 @@ export default {
       Object.keys(this.forms).forEach((form) => {
         res = res && this.forms[form].valid;
       });
-      console.log(res);
       return res;
     },
   },

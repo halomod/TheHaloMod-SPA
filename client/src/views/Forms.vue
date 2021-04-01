@@ -148,7 +148,6 @@ export default {
       this.$router.push('/');
     },
     isValid(valid) {
-      console.log('aksjfdlkasjfla');
       this.valid = valid;
       this.$forceUpdate();
     },
