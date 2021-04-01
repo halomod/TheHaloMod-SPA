@@ -62,7 +62,7 @@ export default {
 
 <style>
 .plot {
-  margin: 32px;
+  margin-bottom: 16px;
   display: flex;
   align-content: center;
   align-items: center;
