@@ -2,7 +2,7 @@ import axios from 'axios';
 import JSZip from 'jszip';
 import unzip from 'lodash.unzip';
 import baseUrl from '@/env';
-import PLOT_AXIS_OPTIONS from '@/constants/PLOT_AXIS_OPIONS.json';
+import PLOT_AXIS_OPTIONS from '@/constants/PLOT_AXIS_OPTIONS.json';
 import PLOT_AXIS_METADATA from '@/constants/PLOT_AXIS_METADATA.json';
 
 export async function downloadData() {

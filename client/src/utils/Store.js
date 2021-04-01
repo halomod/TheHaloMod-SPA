@@ -12,6 +12,7 @@ import {
 import BACKEND_CONSTANTS from '@/constants/backend_constants';
 import FORMS from '@/constants/forms';
 import { DEFAULT_THEME } from '@/constants/themeOptions';
+import PLOT_AXIS_METADATA from '@/constants/PLOT_AXIS_METADATA.json';
 
 axios.defaults.withCredentials = true;
 
@@ -31,6 +32,7 @@ export default class Store {
         x: '',
         y: '',
         plotData: null,
+        plotLogSettings: clonedeep(PLOT_AXIS_METADATA),
         logx: true,
         logy: true,
       },
@@ -50,19 +52,29 @@ export default class Store {
     // If the models object does not exist, create it.
     if (!k.includes('models')) {
       await set('models', {});
+    } else {
+      this.state.models = await get('models');
     }
 
     // If the theme value does not exist, create it.
     if (!k.includes('theme')) {
+      this.state.theme = DEFAULT_THEME;
       await set('theme', DEFAULT_THEME);
+    } else {
+      this.state.theme = await get('theme');
     }
 
-    const models = await get('models');
-    const theme = await get('theme');
-    this.state.models = models;
-    this.state.theme = theme;
+    // If the plot information does not exist, create it.
+    if (!k.includes('plot')) {
+      await set('plot', this.state.plot);
+    } else {
+      this.state.plot = await get('plot');
+    }
+
+    console.log('plot is: ', this.state.plot);
+
     this.state.modelNames = this.getModelNames();
-    if (Object.keys(models).length !== 0) {
+    if (Object.keys(this.state.models).length !== 0) {
       this.getPlotData();
     }
   }
@@ -100,17 +112,6 @@ export default class Store {
     });
     return hmModelFlat;
   }
-
-  /**
-   * The way that data is formatted for each plot option.
-   *
-   * @typedef PlotDetails
-   * @type {{
-   *  xlab: string,
-   *  ylab: string,
-   *  yScale: string
-   * }}
-   */
 
   /**
    * Sends the model data to server to create Tracer Halo Model Object. This
@@ -357,8 +358,31 @@ export default class Store {
   setPlotType = async (plotType, axis, refresh) => {
     if (plotType !== this.state.plot[axis]) {
       this.state.plot[axis] = plotType;
+
+      // Update the logarithmic value for this new axis
+      this.state.plot[`log${axis}`] = this.state.plot.plotLogSettings[this.state.plot[axis]]
+        .scale === 'log';
+
       if (refresh) await this.getPlotData();
+      await set('plot', this.state.plot);
     }
+  }
+
+  /**
+   * Sets the scale of the chosen axis of the plot to either logarithmic
+   * or linear.
+   *
+   * @param {'x' | 'y'} axis the axis to set, either x or y
+   * @param {boolean} isLog true if it should be logarithmic
+   */
+  setPlotAxisScale = async (axis, isLog) => {
+    this.state.plot[`log${axis}`] = isLog;
+    if (isLog) {
+      this.state.plot.plotLogSettings[this.state.plot[axis]].scale = 'log';
+    } else {
+      this.state.plot.plotLogSettings[this.state.plot[axis]].scale = 'linear';
+    }
+    await set('plot', this.state.plot);
   }
 
   /**

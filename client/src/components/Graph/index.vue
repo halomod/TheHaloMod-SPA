@@ -15,7 +15,7 @@
               :key="key"
               :value="key"
             >
-              {{plotData[key].name}}
+              {{plotMetaData[key].name}}
             </md-option>
           </md-select>
         </md-field>
@@ -40,7 +40,7 @@
               :key="choice"
               :value="choice"
             >
-              {{plotData[choice].name}}
+              {{plotMetaData[choice].name}}
             </md-option>
           </md-select>
         </md-field>
@@ -67,7 +67,7 @@
 <script>
 // import clonedeep from 'lodash.clonedeep';
 import Error from '@/components/Error.vue';
-import { PLOT_AXIS_METADATA, PLOT_AXIS_OPIONS } from '@/constants/PLOT.js';
+import { PLOT_AXIS_METADATA, PLOT_AXIS_OPTIONS } from '@/constants/PLOT.js';
 import Plot from './Plot.vue';
 
 export default {
@@ -82,7 +82,7 @@ export default {
       /**
        * @type {string | null}
        */
-      xAxisChoice: null,
+      xAxisChoice: this.$store.state.plot.x,
       /**
        * @type {string[] | null}
        */
@@ -90,9 +90,9 @@ export default {
       /**
        * @type {string | null}
        */
-      yAxisChoice: null,
+      yAxisChoice: this.$store.state.plot.y,
       plotElementId: 'd3-chart',
-      plotData: PLOT_AXIS_METADATA,
+      plotMetaData: PLOT_AXIS_METADATA,
       logx: this.$store.state.plot.logx,
       logy: this.$store.state.plot.logy,
     };
@@ -107,33 +107,75 @@ export default {
     },
   },
   created() {
-    Object.entries(PLOT_AXIS_OPIONS).forEach((entry) => {
-      entry[1].x.forEach((item) => {
-        [this.xAxisChoices[item]] = entry;
+    /**
+     * Go through each key, value pair in PLOT_AXIS_OPTIONS and add all the
+     * x values as an object with their associated axis section ("m", "r", etc.)
+     */
+    Object.entries(PLOT_AXIS_OPTIONS).forEach(([key, value]) => {
+      value.x.forEach((item) => {
+        this.xAxisChoices[item] = key;
       });
     });
-    [this.xAxisChoice] = Object.keys(this.xAxisChoices);
-  },
-  mounted() {
-    this.xlog = this.getAxisScale('x');
-    this.ylog = this.getAxisScale('y');
+
+    console.log('x axis choices is: ', this.xAxisChoices);
+
+    // If xAxisChoice has not been chosen, choose the first one in the list.
+
+    console.log('before setting the xAxisChoice, it is: ', this.xAxisChoice);
+
+    if (this.xAxisChoice === '') {
+      const [newXAxisChoice] = Object.keys(this.xAxisChoices);
+      console.log('new x axis choice is: ', newXAxisChoice);
+      this.xAxisChoice = newXAxisChoice;
+      this.updateXAxisChoice(newXAxisChoice, '');
+    }
+
+    if (this.yAxisChoice !== null) {
+      console.log('yAxisChoice was null');
+      this.updateYAxisChoices(this.xAxisChoice);
+    }
   },
   watch: {
     xAxisChoice(newXAxisChoice, oldXAxisChoice) {
-      this.yAxisChoices = PLOT_AXIS_OPIONS[this.xAxisChoices[newXAxisChoice]]?.y;
-      [this.yAxisChoice] = this.yAxisChoices;
-      this.$store.setPlotType(newXAxisChoice, 'x', this.xAxisChoices[newXAxisChoice] === this.xAxisChoices[oldXAxisChoice]);
+      this.updateXAxisChoice(newXAxisChoice, oldXAxisChoice);
     },
     yAxisChoice(newYAxisChoice, oldYAxisChoice) {
       if (newYAxisChoice !== null && newYAxisChoice !== oldYAxisChoice) {
         this.$store.setPlotType(newYAxisChoice, 'y', true);
+        this.logy = this.$store.state.plot.logy;
       }
     },
-    logx() {
-      console.log('logx was changed');
+    logx(newLog, oldLog) {
+      if (newLog !== oldLog) {
+        this.$store.setPlotAxisScale('x', newLog);
+      }
+    },
+    logy(newLog, oldLog) {
+      if (newLog !== oldLog) {
+        this.$store.setPlotAxisScale('y', newLog);
+      }
     },
   },
   methods: {
+    updateXAxisChoice(newXAxisChoice, oldXAxisChoice) {
+      this.updateYAxisChoices(newXAxisChoice);
+      console.log('y axis choices is: ', this.yAxisChoices);
+
+      // Set the new Y Axis and logy
+      const [newYAxisChoice] = this.yAxisChoices;
+      this.yAxisChoice = newYAxisChoice;
+      this.$store.setPlotType(newYAxisChoice, 'y', false);
+      this.logy = this.$store.state.plot.logy;
+
+      // Set the new X Axis and logx. Only refresh if the old x axis is in the
+      // same section as the new x.
+      this.$store.setPlotType(newXAxisChoice, 'x', this.xAxisChoices[newXAxisChoice] === this.xAxisChoices[oldXAxisChoice]);
+      this.logx = this.$store.state.plot.logx;
+    },
+    updateYAxisChoices(xAxisChoice) {
+      console.log('x axis choice is: ', xAxisChoice);
+      this.yAxisChoices = PLOT_AXIS_OPTIONS[this.xAxisChoices[xAxisChoice]].y;
+    },
     /**
      * Determines if plot data exists.
      *
@@ -142,10 +184,6 @@ export default {
     plotDataExists() {
       const { plotData } = this.$store.state.plot;
       return plotData !== null && Object.keys(plotData.plot_data).length !== 0;
-    },
-    getAxisScale(axis) {
-      const plottype = this.READ_ONLY.plot[axis];
-      return PLOT_AXIS_METADATA[plottype]?.scale === 'log';
     },
   },
 };
