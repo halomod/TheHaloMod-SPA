@@ -18,4 +18,22 @@
   theme: dark
 ));
 
+/**
+ * Anything in the application that needs to be colored manually based on the 
+ * theme needs to happen here because of scoping rules with SCSS it looks like. 
+ * The scoping rules with SCSS / SASS imports seem to be different than the
+ * scoping rules of Vue.
+ */
+@include md-theme-component() {
+  @if md-get-theme-mode() == 'dark' {
+    text.label {
+      @include md-theme-property(fill, text-primary);
+    }
+  } @else {
+    text.label {
+      @include md-theme-property(fill, text-primary, text-primary);
+    }
+  }
+}
+
 @import "~vue-material/dist/theme/all"; // Apply the theme

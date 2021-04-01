@@ -11,19 +11,56 @@
           </md-button>
         </router-link>
 
-        <div>
+        <div class="right-side">
+
+          <md-button class="md-icon-button" @click="switchTheme">
+            <md-tooltip>{{themeTooltipText}}</md-tooltip>
+            <md-icon>{{themeIconName}}</md-icon>
+          </md-button>
+
           <router-link to="/about"><md-button class="md-primary">About</md-button></router-link>
         </div>
       </md-toolbar>
 </template>
 
 <script>
+import { DEFAULT_THEME, DARK_THEME } from '@/constants/themeOptions';
 
 /**
  * Holds the primary nav bar for the application.
  */
 export default {
   name: 'Navbar',
+  data() {
+    return {
+      currentTheme: this.$store.state.theme,
+    };
+  },
+  methods: {
+    switchTheme() {
+      if (this.currentTheme === DEFAULT_THEME) {
+        this.currentTheme = DARK_THEME;
+        this.$store.setTheme(DARK_THEME, this);
+      } else {
+        this.currentTheme = DEFAULT_THEME;
+        this.$store.setTheme(DEFAULT_THEME, this);
+      }
+    },
+  },
+  computed: {
+    themeIconName() {
+      if (this.currentTheme === DARK_THEME) {
+        return 'light_mode';
+      }
+      return 'dark_mode';
+    },
+    themeTooltipText() {
+      if (this.currentTheme === DARK_THEME) {
+        return 'Switch to Light Mode';
+      }
+      return 'Switch to Dark Mode';
+    },
+  },
 };
 </script>
 
@@ -35,6 +72,11 @@ export default {
   }
   .logo {
     margin: 0;
+  }
+  .right-side {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
   }
   .clickable-title {
     display: flex;

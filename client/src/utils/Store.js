@@ -368,9 +368,10 @@ export default class Store {
    * can be simply passed as `this` if called in a component.
    */
   async setTheme(newTheme, vueInstance) {
-    const material = vueInstance.$material;
+    const vue = vueInstance;
     this.state.theme = newTheme;
-    material.theming.theme = newTheme;
+    vue.$theme = newTheme;
+    vue.$material.theming.theme = newTheme;
     await set('theme', newTheme);
   }
 }

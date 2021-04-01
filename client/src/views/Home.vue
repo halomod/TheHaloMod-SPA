@@ -12,7 +12,6 @@
         <Download/>
       </div>
     </div>
-    <button @click="doSomething">This is a test</button>
   </div>
 </template>
 
@@ -34,18 +33,14 @@ export default {
     Navbar,
     Download,
   },
-  methods: {
-    doSomething() {
-      this.$store.setTheme('dark', this);
-    },
-  },
 };
 
 </script>
 
 <style lang="scss">
   @import "./theme";
-
+</style>
+<style scoped>
   .home {
     display: grid;
     grid-template-columns: 1fr 2fr;
