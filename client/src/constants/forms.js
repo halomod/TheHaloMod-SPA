@@ -1,5 +1,3 @@
-/* eslint-disable */
-
 import MODEL_CHOICES from '@/constants/model_choices.js';
 import Debug from 'debug';
 
@@ -24,14 +22,14 @@ debug.enabled = false;
  *
  * The `title` is the title that will be shown to the user when they look
  * at that form. It is also used in navigation.
- * 
+ *
  * `modelKey` is what is searched for in the `backend_constants` file to
  * retrieve the model that is currently chosen for the form. If there is no
  * model for the form, this property can be left out.
- * 
+ *
  * `coreParams` lists the parameters associated with the subform common
  * to all model selections associated with that subform.
- * 
+ *
  * `paramsKey` is what is used as the params key that is sent to
  * the server.
  *
@@ -40,7 +38,7 @@ debug.enabled = false;
  *  id: string,
  *  title: string,
  *  modelKey: string | undefined,
- *  coreParams: String[]
+ *  coreParams: string[] | undefined,
  *  modelChoices: ModelChoices,
  *  paramsKey: string,
  * }}
@@ -59,12 +57,11 @@ debug.enabled = false;
  */
 
  /**
-  * Defines the parameters associated with the subform common to all model
-  * selections associated with that subform.
-  * @typedef CoreParams
-  * @type {Array.String}
-  */
-
+ * The primary source of information on subform specific metadata. This is
+ * referenced extensively when building and rendering forms.
+ *
+ * @type {Forms}
+ */
 const FORMS = {
   cosmo: {
     id: 'cosmo',
@@ -108,14 +105,14 @@ const FORMS = {
     id: 'hmf',
     title: 'HMF',
     modelKey: 'hmf_model',
-    coreParams:['Mmin', 'Mmax', 'dlog10m'],
+    coreParams: ['Mmin', 'Mmax', 'dlog10m'],
     modelChoices: MODEL_CHOICES.hmf,
     paramsKey: 'hmf_params',
   },
   halo_model: {
     id: 'halo_model',
     title: 'Halo Model',
-    coreParams:[
+    coreParams: [
       'rmin',
       'rmax',
       'rnum',

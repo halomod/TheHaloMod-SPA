@@ -63,7 +63,7 @@ export default class Store {
    * }}
    */
 
-  /**
+  /** Flattens the model object to prepare it for use by the server
    *
    * @param {object} model
    */
