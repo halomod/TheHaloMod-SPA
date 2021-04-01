@@ -31,6 +31,8 @@ export default class Store {
         x: '',
         y: '',
         plotData: null,
+        logx: true,
+        logy: true,
       },
       error: false,
       errorType: '',
