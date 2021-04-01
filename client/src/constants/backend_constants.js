@@ -10,14 +10,14 @@ import deepFreeze from 'deep-freeze';
  * }}
  */
 
- /**
+/**
   * Establishes the potential formats for each subform's unique state
   * @typedef SubformState
   * @type {{
   *   [coreParameter: string]?: string | int | boolean,
   *   [modelKey: string]?: string,
   *   [paramKey: string]?: object
-  * }} 
+  * }}
   */
 
 /**
@@ -28,7 +28,6 @@ import deepFreeze from 'deep-freeze';
  *  [formId]: {Object.<string, number>}
  * }}
  */
-
 
 const mapping = {
   growth: '_GrowthFactor_params',
@@ -70,7 +69,7 @@ Object.entries(forms).forEach(([key, { coreParams, modelKey, paramsKey }]) => {
   default_form_state[key] = initial;
 });
 
-/* 
+/*
 *  Cosmo is special because it updates its core parameters, too, when a new option
 *  is selected. These extra parameters are manually included in form_option_defaults to
 *  reflect that.
@@ -110,15 +109,15 @@ form_option_defaults.cosmo = {
 
 /**
  * Contains the default state for all forms
- * 
+ *
  * @type {DefaultFormState}
  */
 const DEFAULT_FORM_STATE = deepFreeze(default_form_state);
 
-/** 
+/**
  * Contains the defaults associated with changes to model selection
  * within individual forms
- * 
+ *
  * @type {FormOptionDefaults}
  */
 const FORM_OPTION_DEFAULTS = deepFreeze(form_option_defaults);

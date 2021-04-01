@@ -56,7 +56,7 @@ debug.enabled = false;
  * }}
  */
 
- /**
+/**
  * The primary source of information on subform specific metadata. This is
  * referenced extensively when building and rendering forms.
  *
