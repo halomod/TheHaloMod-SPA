@@ -14,8 +14,9 @@ import * as d3 from 'd3';
  */
 function addInlineCSS(elements) {
   if (elements && elements.length) {
-    elements.forEach(function (d) {
-      d3.selectAll(d.el).each(() => {
+    elements.forEach((d) => {
+      // eslint-disable-next-line
+      d3.selectAll(d.el).each(function () {
         const element = this;
         if (d.properties && d.properties.length) {
           d.properties.forEach((prop) => {
