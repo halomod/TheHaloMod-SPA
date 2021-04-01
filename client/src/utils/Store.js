@@ -358,8 +358,10 @@ export default class Store {
       this.state.plot[axis] = plotType;
 
       // Update the logarithmic value for this new axis
-      this.state.plot[`log${axis}`] = this.state.plot.plotLogSettings[this.state.plot[axis]]
-        .scale === 'log';
+      const plotLogSetting = this.state.plot.plotLogSettings[this.state.plot[axis]];
+      if (plotLogSetting) {
+        this.state.plot[`log${axis}`] = plotLogSetting.scale === 'log';
+      }
 
       if (refresh) await this.getPlotData();
       await set('plot', this.state.plot);
