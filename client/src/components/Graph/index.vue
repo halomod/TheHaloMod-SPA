@@ -150,6 +150,11 @@ export default {
     },
   },
   methods: {
+    /**
+     * Updates the X Axis Choice. The purpose of this is to separate the logic
+     * of updating the x axis choice so it can be called in a watcher and in
+     * the initialization logic.
+     */
     updateXAxisChoice(newXAxisChoice, oldXAxisChoice) {
       this.updateYAxisChoices(newXAxisChoice);
 

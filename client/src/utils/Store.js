@@ -39,7 +39,7 @@ export default class Store {
       error: false,
       errorType: '',
       errorMessage: '',
-      theme: '',
+      theme: DEFAULT_THEME,
     };
   }
 
@@ -58,7 +58,6 @@ export default class Store {
 
     // If the theme value does not exist, create it.
     if (!k.includes('theme')) {
-      this.state.theme = DEFAULT_THEME;
       await set('theme', DEFAULT_THEME);
     } else {
       this.state.theme = await get('theme');
