@@ -29,6 +29,15 @@
   a:not(.md-button) {
     @include md-theme-property(color, accent);
   }
+  // Colors the tick values in the sliders
+  .e-control-wrapper.e-slider-container .e-scale .e-tick .e-tick-value {
+    @include md-theme-property(color, text-accent);
+  }
+  // Colors the sliders and their handles
+  .e-control-wrapper.e-slider-container .e-slider .e-range,
+  .e-control-wrapper.e-slider-container .e-slider .e-handle {
+    @include md-theme-property(background-color, accent);
+  }
 }
 
 /**
@@ -43,6 +52,15 @@
 @include md-theme-component() {
   text.label {
     @include md-theme-property(fill, text-primary);
+  }
+  // Colors the tick values in the sliders
+  .e-control-wrapper.e-slider-container .e-scale .e-tick .e-tick-value {
+    @include md-theme-property(color, text-accent);
+  }
+  // Colors the sliders and their handles
+  .e-control-wrapper.e-slider-container .e-slider .e-range,
+  .e-control-wrapper.e-slider-container .e-slider .e-handle {
+    @include md-theme-property(background-color, primary);
   }
 }
 
