@@ -101,7 +101,8 @@
   },
   "how_big": {
     "label": "Box Size, $L$ Mpc$h^{-1}$",
-    "scale": "log"
+    "scale": "log",
+    "name": "Box Size"
   },
   "lnsigma": {
     "label": "$\\ln(\\sigma^{-1})$",
