@@ -59,6 +59,6 @@ export default {
     align-items: center;
   }
   .code-link {
-    padding: 24px;
+    padding: 32px;
   }
 </style>
