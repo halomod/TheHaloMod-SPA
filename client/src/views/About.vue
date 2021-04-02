@@ -32,6 +32,9 @@
         <a href="https://github.com/dblevin1">Daniel Blevins</a>, and
         <a href="https://github.com/aneuhold">Anton Neuhold</a>.</p>
       </md-content>
+      <span class="md-subheading code-link">See the code for this web app
+        <a target="_blank" href="https://github.com/halomod/TheHaloMod-SPA">here</a>
+      </span>
     </div>
   </div>
 </template>
@@ -54,5 +57,8 @@ export default {
     display: flex;
     flex-direction: column;
     align-items: center;
+  }
+  .code-link {
+    padding: 24px;
   }
 </style>
