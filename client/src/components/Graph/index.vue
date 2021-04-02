@@ -65,7 +65,6 @@
 </template>
 
 <script>
-// import clonedeep from 'lodash.clonedeep';
 import Error from '@/components/Error.vue';
 import { PLOT_AXIS_METADATA, PLOT_AXIS_OPTIONS } from '@/constants/PLOT.js';
 import Plot from './Plot.vue';

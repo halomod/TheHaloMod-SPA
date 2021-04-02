@@ -75,12 +75,16 @@ function generateAxisLabels(svg, plot) {
   const w = svg.node().getBoundingClientRect().width;
 
   // x-Axis label initial placement
-  svg.append('svg')
-    .attr('id', 'x-axis-label')
-    .attr('y', h - 24);
-  const xAxisNode = document.getElementById('x-axis-label');
   const xAxisLatexSvg = createLatexSvgFromString(PLOT_AXIS_METADATA[x].label);
+  svg.append('svg')
+    .attr('id', 'x-axis-label');
+  const xAxisNode = document.getElementById('x-axis-label');
+
   xAxisNode.append(xAxisLatexSvg);
+
+  // The bounding client rect doesn't have a height until it is applied to the
+  // svg.
+  xAxisNode.setAttribute('y', h - xAxisNode.getBoundingClientRect().height);
 
   // Center the x-axis
   xAxisNode.setAttribute('x', (w / 2)
@@ -102,7 +106,7 @@ function generateAxisLabels(svg, plot) {
   yAxisNode.setAttribute('transform', 'rotate(-90)');
 
   /* Get the yAxisLatexSvg back to the top left of the SVG after rotation
-       then calculate the half way point to line it up at */
+  then calculate the half way point to line it up at */
   const yAxisLatexBBox = yAxisLatexSvg.getBoundingClientRect();
   yAxisContainer.setAttribute('y', yAxisLatexBBox.height
     + (h / 2)
@@ -120,7 +124,8 @@ function generateAxisLabels(svg, plot) {
  *
  * @param {string} elementId the ID of the element to manipulate which will
  * become the parent of the SVG plot
- * @param {} plot the plot data which should be held in `$store` of the Vue instance
+ * @param {} plot the plot data which should be held in `$store` of the Vue
+ * instance
  */
 export default (elementId, plot, xlog, ylog) => {
   const { plotData } = plot;
