@@ -18,8 +18,17 @@
         </p>
         <p>
           One more thing. If you find TheHaloMod to be a useful tool, help us
-          out by starring the git repository, and let us know what you're
-          using it for! This helps to justify development in the future!
+          out by starring the
+          <a
+            href="https://github.com/halomod/TheHaloMod-SPA"
+            target="_blank"
+          >git repository</a>, and
+          <a
+            href="https://github.com/halomod/TheHaloMod-SPA/discussions/new?category=Show-and-tell"
+            target="_blank"
+          >let us know</a>
+          what you're using it for! This helps to
+          justify development in the future!
         </p>
       </md-content>
     </div>
