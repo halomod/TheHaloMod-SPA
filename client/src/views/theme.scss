@@ -12,27 +12,37 @@
   primary: #B1E6D0, // The primary color of your application
   accent: #FF6188, // The accent or secondary color
 ));
+
+/**
+ * Anything written like the below after a theme, will be placed for that
+ * particular theme. So in this example, the below will be applied only to the
+ * "default" theme. This needs to be written in-order for it to be applied
+ * correctly to each theme. The scoping rules with SCSS / SASS imports seem to 
+ * be different than the scoping rules of Vue, so it all needs to be written
+ * in this file.
+ */
+@include md-theme-component() {
+  text.label {
+    @include md-theme-property(fill, text-primary);
+  }
+  // Change the color of links because it didn't contrast enough
+  a:not(.md-button) {
+    @include md-theme-property(color, accent);
+  }
+}
+
+/**
+ * Dark theme.
+ */
 @include md-register-theme("dark", (
   primary: #B1E6D0, // The primary color of your application
   accent: #FF6188, // The accent or secondary color
   theme: dark
 ));
 
-/**
- * Anything in the application that needs to be colored manually based on the 
- * theme needs to happen here because of scoping rules with SCSS it looks like. 
- * The scoping rules with SCSS / SASS imports seem to be different than the
- * scoping rules of Vue.
- */
 @include md-theme-component() {
-  @if md-get-theme-mode() == 'dark' {
-    text.label {
-      @include md-theme-property(fill, text-primary);
-    }
-  } @else {
-    text.label {
-      @include md-theme-property(fill, text-primary, text-primary);
-    }
+  text.label {
+    @include md-theme-property(fill, text-primary);
   }
 }
 
