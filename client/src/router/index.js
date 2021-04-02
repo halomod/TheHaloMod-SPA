@@ -77,9 +77,9 @@ const routes = [
     component: () => import(/* webpackChunkname: "edit" */ '../views/Forms.vue'),
   },
   {
-    path: '/acknowledgment',
-    name: 'Acknowledgment',
-    component: () => import(/* webpackChunkname: "acknowledgment" */ '../views/Acknowledgement.vue'),
+    path: '/acknowledge',
+    name: 'Acknowledge',
+    component: () => import(/* webpackChunkname: "acknowledgment" */ '../views/Acknowledge.vue'),
   },
 ];
 
