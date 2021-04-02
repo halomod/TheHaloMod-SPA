@@ -76,6 +76,11 @@ const routes = [
     name: 'Edit',
     component: () => import(/* webpackChunkname: "edit" */ '../views/Forms.vue'),
   },
+  {
+    path: '/acknowledgment',
+    name: 'Acknowledgment',
+    component: () => import(/* webpackChunkname: "acknowledgment" */ '../views/Acknowledgement.vue'),
+  },
 ];
 
 const router = new VueRouter({

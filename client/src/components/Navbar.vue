@@ -18,7 +18,11 @@
             <md-icon>{{themeIconName}}</md-icon>
           </md-button>
 
+          <router-link to="/acknowledgment">
+            <md-button class="md-primary">Acknowledgement</md-button>
+          </router-link>
           <router-link to="/about"><md-button class="md-primary">About</md-button></router-link>
+
         </div>
       </md-toolbar>
 </template>
