@@ -128,6 +128,7 @@ function generateAxisLabels(svg, plot) {
  * instance
  */
 export default (elementId, plot, xlog, ylog) => {
+  debug('plot rendering triggered');
   const { plotData } = plot;
   debug('Generate plot triggered with the following plotData', plotData);
   // Clear all SVGs within the main element if they exist
