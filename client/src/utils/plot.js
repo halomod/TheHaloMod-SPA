@@ -227,8 +227,12 @@ export default (elementId, plot, xlog, ylog) => {
     svg.append('path');
   });
 
-  const xAxis = d3.axisBottom(xScale);
-  const yAxis = d3.axisLeft(yScale);
+  const xAxis = d3.axisBottom(xScale)
+    // For large numbers, set the format to 2 decimal places and scientific
+    // notation
+    .tickFormat(d3.format('.2'));
+  const yAxis = d3.axisLeft(yScale)
+    .tickFormat(d3.format('.2'));
 
   svg.append('g')
     .attr('id', 'x-axis')
