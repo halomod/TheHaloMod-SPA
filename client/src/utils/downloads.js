@@ -15,6 +15,7 @@ export async function downloadData() {
     if (kind === 'm') params = params.filter((value) => value !== 'how_big');
     const labels = params.map((param) => PLOT_AXIS_METADATA[param].label);
     
+    // TODO change this
     /* API request */
     const response = await axios.post(`${baseUrl}/get_object_data`, {
       param_names: params,

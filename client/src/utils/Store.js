@@ -108,7 +108,7 @@ export default class Store {
    */
   createModel = async (model, name) => {
     try {
-      await axios.post(`${baseurl}/create`, {
+      await axios.post(`${baseurl}/model`, {
         params: this.cleanUpModel(model),
         label: name,
       });
@@ -133,7 +133,7 @@ export default class Store {
    */
   updateModel = async (name, model) => {
     try {
-      await axios.post(`${baseurl}/update`, {
+      await axios.put(`${baseurl}/model`, {
         params: this.cleanUpModel(model),
         model_name: name,
       });
@@ -157,7 +157,7 @@ export default class Store {
    */
   renameModel = async (oldName, newName) => {
     try {
-      await axios.post(`${baseurl}/rename`, {
+      await axios.patch(`${baseurl}/model`, {
         model_name: oldName,
         new_model_name: newName,
       });
@@ -183,7 +183,7 @@ export default class Store {
    */
   cloneModel = async (oldName, newName) => {
     try {
-      await axios.post(`${baseurl}/clone`, {
+      await axios.put(`${baseurl}/models`, {
         model_name: oldName,
         new_model_name: newName,
       });
@@ -273,7 +273,7 @@ export default class Store {
    */
   deleteModel = async (name) => {
     try {
-      await axios.post(`${baseurl}/delete`, {
+      await axios.delete(`${baseurl}/model`, {
         model_name: name,
       });
       this.state.error = false;
@@ -298,7 +298,7 @@ export default class Store {
    */
   clearModels = async () => {
     try {
-      await axios.post(`${baseurl}/clear`);
+      await axios.delete(`${baseurl}/models`);
       await clear();
       this.state.models = {};
       this.state.modelNames = this.getModelNames();
@@ -318,7 +318,7 @@ export default class Store {
       return;
     }
     try {
-      const data = await axios.post(`${baseurl}/get_plot_data`, {
+      const data = await axios.get(`${baseurl}/plot`, {
         x: this.state.plot.x,
         y: this.state.plot.y,
       });
