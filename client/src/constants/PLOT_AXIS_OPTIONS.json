@@ -1,39 +1,4 @@
 {
-  "m": {
-    "x": [
-      "m",
-      "sigma",
-      "radii",
-      "lnsigma",
-      "halo_bias",
-      "n_eff",
-      "dndm",
-      "ngtm",
-      "dndlnm",
-      "dndlog10m",
-      "rho_gtm",
-      "rho_ltm"
-    ],
-    "y": [
-      "central_occupation",
-      "cmz_relation",
-      "dndlnm",
-      "dndlog10m",
-      "dndm",
-      "fsigma",
-      "halo_bias",
-      "lnsigma",
-      "n_eff",
-      "ngtm",
-      "radii",
-      "rho_gtm",
-      "rho_ltm",
-      "satellite_occupation",
-      "sigma",
-      "total_occupation",
-      "tracer_cmz_relation"
-    ]
-  },
   "k": {
     "x": [
       "k"
@@ -82,6 +47,41 @@
       "corr_cross_tracer_matter",
       "corr_linear_mm",
       "sd_bias_correction"
+    ]
+  },
+  "m": {
+    "x": [
+      "m",
+      "sigma",
+      "radii",
+      "lnsigma",
+      "halo_bias",
+      "n_eff",
+      "dndm",
+      "ngtm",
+      "dndlnm",
+      "dndlog10m",
+      "rho_gtm",
+      "rho_ltm"
+    ],
+    "y": [
+      "central_occupation",
+      "cmz_relation",
+      "dndlnm",
+      "dndlog10m",
+      "dndm",
+      "fsigma",
+      "halo_bias",
+      "lnsigma",
+      "n_eff",
+      "ngtm",
+      "radii",
+      "rho_gtm",
+      "rho_ltm",
+      "satellite_occupation",
+      "sigma",
+      "total_occupation",
+      "tracer_cmz_relation"
     ]
   }
 }

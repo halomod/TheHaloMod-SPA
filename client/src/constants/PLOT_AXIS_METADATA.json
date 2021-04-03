@@ -1,4 +1,24 @@
 {
+  "k": {
+    "label": "Wavenumber, $k$ [$h$/Mpc]",
+    "scale": "log",
+    "name": "Fourier Scale, k (linear)"
+  },
+  "k_hm": {
+    "label": "Fourier Scale, $k$ [$h$/Mpc]",
+    "scale": "log",
+    "name": "Fourier Scale, k (halo model)"
+  },
+  "r": {
+    "label": "Scale, $r$ [Mpc/$h$]",
+    "scale": "log",
+    "name": "Comoving Scale, r"
+  },
+  "m": {
+    "label": "Mass $(M_{\\odot}h^{-1})$",
+    "scale": "log",
+    "name": "Halo Mass, m"
+  },
   "central_occupation": {
     "label": "Central Tracer Occupation",
     "scale": "log",
@@ -228,25 +248,5 @@
     "label": "$T(k)$, [Mpc$^3 h^{-3}$]",
     "scale": "log",
     "name": "Transfer Function"
-  },
-  "k": {
-    "label": "Wavenumber, $k$ [$h$/Mpc]",
-    "scale": "log",
-    "name": "Fourier Scale, k (linear)"
-  },
-  "k_hm": {
-    "label": "Fourier Scale, $k$ [$h$/Mpc]",
-    "scale": "log",
-    "name": "Fourier Scale, k (halo model)"
-  },
-  "m": {
-    "label": "Mass $(M_{\\odot}h^{-1})$",
-    "scale": "log",
-    "name": "Halo Mass, m"
-  },
-  "r": {
-    "label": "Scale, $r$ [Mpc/$h$]",
-    "scale": "log",
-    "name": "Comoving Scale, r"
   }
 }
