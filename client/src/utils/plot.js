@@ -227,12 +227,16 @@ export default (elementId, plot, xlog, ylog) => {
     svg.append('path');
   });
 
-  const xAxis = d3.axisBottom(xScale)
-    // For large numbers, set the format to 2 decimal places and scientific
-    // notation
-    .tickFormat(d3.format('.2'));
-  const yAxis = d3.axisLeft(yScale)
-    .tickFormat(d3.format('.2'));
+  let xAxis = d3.axisBottom(xScale);
+  let yAxis = d3.axisLeft(yScale);
+  // For large numbers, set the format to 2 decimal places and scientific
+  // notation
+  if (!xlog) {
+    xAxis = xAxis.tickFormat(d3.format('.2'));
+  }
+  if (!ylog) {
+    yAxis = yAxis.tickFormat(d3.format('.2'));
+  }
 
   svg.append('g')
     .attr('id', 'x-axis')
