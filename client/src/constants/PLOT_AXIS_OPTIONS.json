@@ -22,7 +22,6 @@
       "dndm",
       "fsigma",
       "halo_bias",
-      "how_big",
       "lnsigma",
       "n_eff",
       "ngtm",
@@ -36,7 +35,9 @@
     ]
   },
   "k": {
-    "x": ["k"],
+    "x": [
+      "k"
+    ],
     "y": [
       "delta_k",
       "nonlinear_delta_k",
@@ -46,7 +47,9 @@
     ]
   },
   "k_hm": {
-    "x": ["k_hm"],
+    "x": [
+      "k_hm"
+    ],
     "y": [
       "power_1h_auto_matter",
       "power_1h_auto_tracer",
@@ -62,7 +65,9 @@
     ]
   },
   "r": {
-    "x": ["r"],
+    "x": [
+      "r"
+    ],
     "y": [
       "corr_1h_auto_matter",
       "corr_1h_auto_tracer",
