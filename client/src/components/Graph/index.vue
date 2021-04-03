@@ -105,7 +105,7 @@ export default {
       return this.xAxisChoice !== null;
     },
   },
-  created() {
+  async created() {
     /**
      * Go through each key, value pair in PLOT_AXIS_OPTIONS and add all the
      * x values as an object with their associated axis section ("m", "r", etc.)
@@ -116,11 +116,15 @@ export default {
       });
     });
 
-    // If xAxisChoice has not been chosen, choose the first one in the list.
+    // If xAxisChoice has not been chosen, choose the one specified by issue
+    // #110, power_auto_tracer as the y and "k_hm" as the x.
     if (this.xAxisChoice === '') {
-      const [newXAxisChoice] = Object.keys(this.xAxisChoices);
+      const newXAxisChoice = 'k_hm';
+      const newYAxisChoice = 'power_auto_tracer';
       this.xAxisChoice = newXAxisChoice;
       this.updateXAxisChoice(newXAxisChoice, '');
+      await this.$nextTick();
+      this.yAxisChoice = newYAxisChoice;
     }
 
     if (this.yAxisChoice !== null) {
