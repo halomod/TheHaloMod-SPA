@@ -1,0 +1,67 @@
+@import "~vue-material/dist/theme/engine"; // Import the theme engine
+
+/**
+ * The below sets the themes for the application. This can be accessed and 
+ * modified inside a component by using `this.$material.theming.theme`. For
+ * example, to switch to dark mode, the following can be used:
+ * ```
+ * this.$material.theming.theme = 'dark';
+ * ```
+ */
+@include md-register-theme("default", (
+  primary: #B1E6D0, // The primary color of your application
+  accent: #FF6188, // The accent or secondary color
+));
+
+/**
+ * Anything written like the below after a theme, will be placed for that
+ * particular theme. So in this example, the below will be applied only to the
+ * "default" theme. This needs to be written in-order for it to be applied
+ * correctly to each theme. The scoping rules with SCSS / SASS imports seem to 
+ * be different than the scoping rules of Vue, so it all needs to be written
+ * in this file.
+ */
+@include md-theme-component() {
+  text.label {
+    @include md-theme-property(fill, text-primary);
+  }
+  // Change the color of links because it didn't contrast enough
+  a:not(.md-button) {
+    @include md-theme-property(color, accent);
+  }
+  // Colors the tick values in the sliders
+  .e-control-wrapper.e-slider-container .e-scale .e-tick .e-tick-value {
+    @include md-theme-property(color, text-accent);
+  }
+  // Colors the sliders and their handles
+  .e-control-wrapper.e-slider-container .e-slider .e-range,
+  .e-control-wrapper.e-slider-container .e-slider .e-handle {
+    @include md-theme-property(background-color, accent);
+  }
+}
+
+/**
+ * Dark theme.
+ */
+@include md-register-theme("dark", (
+  primary: #B1E6D0, // The primary color of your application
+  accent: #FF6188, // The accent or secondary color
+  theme: dark
+));
+
+@include md-theme-component() {
+  text.label {
+    @include md-theme-property(fill, text-primary);
+  }
+  // Colors the tick values in the sliders
+  .e-control-wrapper.e-slider-container .e-scale .e-tick .e-tick-value {
+    @include md-theme-property(color, text-accent);
+  }
+  // Colors the sliders and their handles
+  .e-control-wrapper.e-slider-container .e-slider .e-range,
+  .e-control-wrapper.e-slider-container .e-slider .e-handle {
+    @include md-theme-property(background-color, primary);
+  }
+}
+
+@import "~vue-material/dist/theme/all"; // Apply the theme

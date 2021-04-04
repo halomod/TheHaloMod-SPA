@@ -5,19 +5,22 @@ name: Server Deployment
 
 on: 
   push:
+    # Another branch can be added below if the server is being tested, but note
+    # that if the site is deployed, or anyone else is testing it, it will be 
+    # changed for everyone.
     branches:
       - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    # Require that the 'test' job completes first
-    #needs: test
-    #defaults:
-    #  run:
-    #    working-directory: server
 
     steps:
+    - name: Extract branch name
+      shell: bash
+      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      id: extract_branch
+
     - name: DeployServer
       uses: appleboy/ssh-action@master
       with:
@@ -31,16 +34,17 @@ jobs:
           export FLASK_RUN_PORT=8010
           export FLASK_KEY=${{ secrets.FLASK_KEY }}
           cd ./TheHaloMod-SPA/server
-          ls
           docker-compose down
           cd ../..
           rm -r ./TheHaloMod-SPA
           git clone https://github.com/halomod/TheHaloMod-SPA
           cd ./TheHaloMod-SPA
-          git fetch origin
-          git checkout -b master origin/master
+          git fetch origin -a
+
+          # Clone the branch that this workflow is being deployed for
+          git checkout ${{ steps.extract_branch.outputs.branch }}
+
           git status
-          # Stop the server with docker-compose down
           cd ./server
           ls
           docker-compose up --build --remove-orphans -d

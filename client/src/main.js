@@ -33,6 +33,7 @@ if (process.env.VUE_APP_SENTRY_ON !== 'FALSE') {
   await store.init();
   Vue.config.productionTip = false;
   Vue.prototype.$store = store;
+  Vue.prototype.$theme = store.state.theme;
 
   new Vue({
     router,

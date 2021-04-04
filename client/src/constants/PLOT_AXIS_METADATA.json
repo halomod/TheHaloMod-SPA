@@ -1,4 +1,24 @@
 {
+  "k": {
+    "label": "Wavenumber, $k$ [$h$/Mpc]",
+    "scale": "log",
+    "name": "Fourier Scale, k (linear)"
+  },
+  "k_hm": {
+    "label": "Fourier Scale, $k$ [$h$/Mpc]",
+    "scale": "log",
+    "name": "Fourier Scale, k (halo model)"
+  },
+  "r": {
+    "label": "Scale, $r$ [Mpc/$h$]",
+    "scale": "log",
+    "name": "Comoving Scale, r"
+  },
+  "m": {
+    "label": "Mass $(M_{\\odot}h^{-1})$",
+    "scale": "log",
+    "name": "Halo Mass, m"
+  },
   "central_occupation": {
     "label": "Central Tracer Occupation",
     "scale": "log",
@@ -7,7 +27,7 @@
   "cmz_relation": {
     "label": "Halo Concentration",
     "scale": "log",
-    "name": "Halo Concentration-Mass Relation"
+    "name": "Halo Concentration"
   },
   "corr_1h_auto_matter": {
     "label": "1-halo matter correlation, $\\xi_{1h}(r)$",
@@ -98,10 +118,6 @@
     "label": "Halo Bias",
     "scale": "log",
     "name": "Halo Bias"
-  },
-  "how_big": {
-    "label": "Box Size, $L$ Mpc$h^{-1}$",
-    "scale": "log"
   },
   "lnsigma": {
     "label": "$\\ln(\\sigma^{-1})$",
@@ -226,31 +242,11 @@
   "tracer_cmz_relation": {
     "label": "Tracer Concentration",
     "scale": "log",
-    "name": "Tracer conentration-mass relation"
+    "name": "Tracer Concentration"
   },
   "transfer_function": {
     "label": "$T(k)$, [Mpc$^3 h^{-3}$]",
     "scale": "log",
     "name": "Transfer Function"
-  },
-  "k": {
-    "label": "Wavenumber, $k$ [$h$/Mpc]",
-    "scale": "log",
-    "name": "Wavenumber"
-  },
-  "k_hm": {
-    "label": "Fourier Scale, $k$ [$h$/Mpc]",
-    "scale": "log",
-    "name": "Fourier Scale"
-  },
-  "m": {
-    "label": "Mass $(M_{\\odot}h^{-1})$",
-    "scale": "log",
-    "name": "Mass Function"
-  },
-  "r": {
-    "label": "Scale, $r$ [Mpc/$h$]",
-    "scale": "log",
-    "name": "Scale"
   }
 }

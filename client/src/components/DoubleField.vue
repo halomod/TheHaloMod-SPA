@@ -40,7 +40,11 @@ export default {
     isBetween() { return between(this.current, this.min, this.max); },
     isNumeric() { return numeric(this.current); },
     isDefined() { return defined(this.current); },
-    isValid() { return this.isDefined && this.isNumeric && this.isBetween; },
+    isValid() {
+      const valid = this.isDefined && this.isNumeric && this.isBetween;
+      this.$emit('is-valid', valid);
+      return valid;
+    },
     validationClass() { return { 'md-invalid': !this.isValid }; },
   },
   watch: {
@@ -48,9 +52,6 @@ export default {
       if (this.isValid) {
         this.$emit('input', Number(this.current));
       }
-    },
-    isValid(valid) {
-      this.$emit('is-valid', valid);
     },
     /* handles case where init has been updated to a new value during a switch to a new route */
     init() {
@@ -60,6 +61,9 @@ export default {
   /* handles case where values need to be reset because of a return to old route */
   activated() {
     this.current = this.init;
+  },
+  destroyed() {
+    this.$emit('is-valid', true);
   },
 };
 </script>
