@@ -9,7 +9,7 @@
   <div id="float">
     <md-button @click="showCancelDialog = true" class="md-raised">Cancel</md-button>
     <div style="display: inline-block">
-      <md-button :disabled="!valid" @click="activateSaveDialog" class="md-raised md-primary">
+      <md-button :disabled="!valid"  @click="activateSaveDialog" class="md-raised md-primary">
         {{saveButton}}
       </md-button>
       <md-tooltip v-if="!valid" md-direction="top">
