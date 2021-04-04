@@ -36,26 +36,26 @@ jobs:
         mkdir -p gfortran-symlinks
         ln -s /usr/bin/gfortran-8 gfortran-symlinks/gfortran
         export PATH=$PWD/gfortran-symlinks:$PATH
-    
-    - name: Set up Python 3.8
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.8
 
     - name: Python Caching
       uses: actions/cache@v2
       with:
         path: ~/.cache/pip
-        key: ${{ hashFiles('server/requirements.txt') }}
+        # Makes the hashing depend on changes to requirements.txt
+        key: ${{ hashFiles('server/requirements.txt') }}v2
+    
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8.8
 
     - name: Install Dependencies
       run: |
         python3 -m pip install --upgrade pip
-        . ./run.sh --install
+        sh run.sh --install
     
     - name: Lint
-      run: . ./run.sh --lint
+      run: sh run.sh --lint
     
     - name: Test
-      run: | 
-        . ./run.sh --test
+      run: sh run.sh --test
