@@ -16,11 +16,6 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node-version }}
-    
     - name: Cache node modules
       uses: actions/cache@v2
       env:
@@ -34,6 +29,18 @@ jobs:
           ${{ runner.os }}-build-
           ${{ runner.os }}-
 
+    - name: Python Caching
+      uses: actions/cache@v2
+      with:
+        path: ~/.cache/pip
+        # Makes the hashing depend on changes to requirements.txt
+        key: ${{ hashFiles('server/requirements.txt') }}
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    
     - name: Setup gfortran
       run: |
         sudo apt-get install gfortran-8
@@ -45,13 +52,6 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: 3.8
-
-    - name: Python Caching
-      uses: actions/cache@v2
-      with:
-        path: ~/.cache/pip
-        # Makes the hashing depend on changes to requirements.txt
-        key: ${{ hashFiles('server/requirements.txt') }}
 
     - name: Generate constants    
       run: sh generate_constants.sh
