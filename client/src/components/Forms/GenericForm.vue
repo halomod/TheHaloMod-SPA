@@ -1,75 +1,83 @@
 <template>
   <form novalidate>
     <!-- Core Paramaters (common to all model options)-->
-    <div v-for="key in subformMeta.coreParams" :key="key">
-      <div v-if="!isVisible(key) || subformState[key] === null"/>
-      <md-checkbox
-        v-else-if="typeof subformState[key] === 'boolean'"
-        class="md-primary"
-        v-model="subformState[key]">
-        {{getParameterLabel(key)}}
-      </md-checkbox>
-      <md-field v-else-if="typeof subformState[key] === 'string'">
-        <label>{{getParameterLabel(key)}}</label>
-        <md-select v-model="subformState[key]">
-          <md-option
-            v-for="(choiceName, choiceKey) in getParameterOptions(key)"
-            :key="choiceKey"
-            :value="choiceKey">
-            {{choiceName}}
-          </md-option>
-        </md-select>
-      </md-field>
-      <input-slider
-        v-else-if="isSlider(key) && isSliderMin(key)"
-        :minParameterKey="key"
-        v-model="subformState"
-      />
-      <double-field
-        v-else-if="!isSlider(key)"
-        :init="subformState[key]"
-        v-model="subformState[key]"
-        v-bind="getDoubleFieldProps(key)"/>
-    </div>
-
-    <!-- Model Selection -->
-    <md-field v-if="subformMeta.modelKey">
-      <label>{{subformMeta.title}}</label>
-      <md-select v-model="subformState[subformMeta.modelKey]">
-        <md-option
-          v-for="(value, choice) in subformMeta.modelChoices"
-          :key="choice"
-          :value="value">
-          {{choice}}
-        </md-option>
-      </md-select>
-    </md-field>
-
-    <!-- Subparameters (unique to model selection) -->
-    <div v-for="(value, key) in subformState[subformMeta.paramsKey]" :key="key">
-      <div v-if="!isVisible(key) || value === null"/>
-      <md-checkbox
-        v-else-if="typeof value === 'boolean'"
-        class="md-primary"
-        v-model="subformState[subformMeta.paramsKey][key]">
-        {{key}}
-      </md-checkbox>
-      <md-field v-else-if="typeof value === 'string'">
-        <label>{{getParameterLabel(key)}}</label>
-        <md-select v-model="subformState[subformMeta.paramsKey][key]">
-          <md-option
-            v-for="(choiceName, choiceKey) in getParameterOptions(key)"
-            :key="choiceKey"
-            :value="choiceKey">
-            {{choiceName}}
-          </md-option>
-        </md-select>
-      </md-field>
-      <double-field
-        v-else
-        :init="subformState[subformMeta.paramsKey][key]"
-        v-model="subformState[subformMeta.paramsKey][key]"
-        v-bind="getDoubleFieldProps(key)"/>
+    <div :class="subformMeta.coreParams ? 'md-layout md-gutter' : ''">
+      <div :class="subformMeta.coreParams ? 'md-layout-item' : ''">
+        <div v-for="key in subformMeta.coreParams" :key="key">
+          <div v-if="!isVisible(key) || subformState[key] === null"/>
+          <md-checkbox
+            v-else-if="typeof subformState[key] === 'boolean'"
+            class="md-primary"
+            v-model="subformState[key]">
+            {{getParameterLabel(key)}}
+          </md-checkbox>
+          <md-field v-else-if="typeof subformState[key] === 'string'">
+            <label>{{getParameterLabel(key)}}</label>
+            <md-select v-model="subformState[key]">
+              <md-option
+                v-for="(choiceName, choiceKey) in getParameterOptions(key)"
+                :key="choiceKey"
+                :value="choiceKey">
+                {{choiceName}}
+              </md-option>
+            </md-select>
+          </md-field>
+          <input-slider
+            v-else-if="isSlider(key) && isSliderMin(key)"
+            :minParameterKey="key"
+            v-model="subformState"
+          />
+          <double-field
+            v-else-if="!isSlider(key)"
+            :init="subformState[key]"
+            v-model="subformState[key]"
+            v-bind="getDoubleFieldProps(key)"/>
+        </div>
+        <div class="md-layout md-gutter">
+          <div class="md-layout-item">
+            <!-- Model Selection -->
+            <md-field v-if="subformMeta.modelKey">
+              <label>{{subformMeta.title}}</label>
+              <md-select v-model="subformState[subformMeta.modelKey]">
+                <md-option
+                  v-for="(value, choice) in subformMeta.modelChoices"
+                  :key="choice"
+                  :value="value">
+                  {{choice}}
+                </md-option>
+              </md-select>
+            </md-field>
+          </div>
+          <div class="md-layout-item">
+            <!-- Subparameters (unique to model selection) -->
+            <div v-for="(value, key) in subformState[subformMeta.paramsKey]" :key="key">
+              <div v-if="!isVisible(key) || value === null"/>
+              <md-checkbox
+                v-else-if="typeof value === 'boolean'"
+                class="md-primary"
+                v-model="subformState[subformMeta.paramsKey][key]">
+                {{key}}
+              </md-checkbox>
+              <md-field v-else-if="typeof value === 'string'">
+                <label>{{getParameterLabel(key)}}</label>
+                <md-select v-model="subformState[subformMeta.paramsKey][key]">
+                  <md-option
+                    v-for="(choiceName, choiceKey) in getParameterOptions(key)"
+                    :key="choiceKey"
+                    :value="choiceKey">
+                    {{choiceName}}
+                  </md-option>
+                </md-select>
+              </md-field>
+              <double-field
+                v-else
+                :init="subformState[subformMeta.paramsKey][key]"
+                v-model="subformState[subformMeta.paramsKey][key]"
+                v-bind="getDoubleFieldProps(key)"/>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </form>
 </template>
