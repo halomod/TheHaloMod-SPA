@@ -36,6 +36,8 @@ Returns:
 #              <model_label>: {"xs": <array_of_xs>, "ys": <array_of_ys>},
 #              ...
 #           }}
+
+
 @endpoint_plot.route('/plot', methods=["GET"])
 def get_plot_data():
     res = {"plot_data": {}}
@@ -74,11 +76,12 @@ def get_plot_data():
 
     return jsonify(res)
 
+
 """Generates a figure
 POST /plot
 
 Parameters:
-    - fig_type: 
+    - fig_type:
     - img_type: string
 Returns:
 - figure: b64_serialized_figure
@@ -89,6 +92,8 @@ Returns:
 # expects: {"fig_type": <fig_type> (see utils.KEYMAP for options),
 #           "image type": <format of returned image> (png, svg, etc...)}
 # outputs {"figure": <b64_serialized_figure>}
+
+
 @endpoint_plot.route('/plot', methods=["POST"])
 def plot():
     request_json = request.get_json()
@@ -114,4 +119,4 @@ def plot():
     response = {}
     response["figure"] = base64_png
 
-    return jsonify(response)   
+    return jsonify(response)

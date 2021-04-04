@@ -28,6 +28,8 @@ endpoint_models = Blueprint('endpoint_models', __name__)
     Returns:
     - model_names: string[]
 """
+
+
 @endpoint_models.route('/models', methods=["GET"])
 def get_models_data():
     request_json = request.get_json()
@@ -38,13 +40,13 @@ def get_models_data():
         #
         # expects: None
         # outputs: {"model_names": <list_of_model_names_in_session>}
-        #@app.route('/get_names', methods=["GET"])
-        #def get_names():
+        # @app.route('/get_names', methods=["GET"])
+        # def get_names():
         res = {"model_names": get_model_names()}
         return jsonify(res)  # returns list of model names
     elif dataType == "ascii":
-        #@app.route('/get_object_data', methods=['POST'])
-        #def get_object_data():
+        # @app.route('/get_object_data', methods=['POST'])
+        # def get_object_data():
         """
         Returns vectors associated with each model in the session for each
         parameter passed to the endpoint
@@ -70,8 +72,8 @@ def get_models_data():
 
         return jsonify(res)
     elif dataType == "toml":
-        #@app.route('/toml', methods=['GET'])
-        #def toml_route():
+        # @app.route('/toml', methods=['GET'])
+        # def toml_route():
         """ Builds and sends a toml file for each model in the user's session in a
         zip folder. These can be used to input into the `halomod` library by
         running the following in your shell:
@@ -129,6 +131,8 @@ Returns:
 #
 # expects: {"model_name": <model_name_to_clone>, "new_model_name": <name_for_new_model>}
 # outputs: {"model_names": <list_of_model_names_in_session>}
+
+
 @endpoint_models.route('/models', methods=["PUT"])
 def clone():
 
@@ -163,6 +167,8 @@ Returns:
 #
 # expects: None
 # outputs: {"model_names": <list_of_model_names_in_session>}
+
+
 @endpoint_models.route('/models', methods=["DELETE"])
 def clear():
     session["models"] = pickle.dumps({})

@@ -4,6 +4,8 @@ from halomod import TracerHaloModel
 import pickle
 
 # GET
+
+
 def test_get_plot_data(client):
     with client.session_transaction() as sess:
         sess["models"] = pickle.dumps({"TheModel": TracerHaloModel()})
@@ -12,6 +14,8 @@ def test_get_plot_data(client):
     assert "TheModel" in response.json["plot_data"]
 
 # POST
+
+
 def test_get_object_data(client):
     params = ["m", "k", "r", "k_hm"]
     with client.session_transaction() as sess:

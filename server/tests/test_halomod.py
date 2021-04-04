@@ -2,6 +2,7 @@
 
 from halomod import TracerHaloModel
 
+
 def test_home(client):
-    response = home(client)
+    response = client.get('/')
     assert response.json['start'] == 'This is the HaloModApp'

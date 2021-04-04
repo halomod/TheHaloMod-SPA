@@ -6,6 +6,8 @@ import io
 import zipfile
 
 # GET
+
+
 def test_get_names(client):
     with client.session_transaction() as sess:
         sess["models"] = pickle.dumps({"TheModel": {}, "AnotherModel": {}})
@@ -20,6 +22,8 @@ def test_get_names(client):
     assert "AnotherModel" in names
 
 # GET
+
+
 def test_get_object_data(client):
     params = ["m", "k", "r", "k_hm"]
     with client.session_transaction() as sess:
@@ -27,25 +31,29 @@ def test_get_object_data(client):
     response = client.get('/models', json={
         "param_names": params,
         "dataType": "ascii",
-        })
+    })
     assert "TheModel" in response.json
     for param in params:
         assert param in response.json["TheModel"]
         assert response.json["TheModel"][param]
 
 # GET
+
+
 def test_toml(client):
     with client.session_transaction() as sess:
         sess["models"] = pickle.dumps({"TheModel": TracerHaloModel()})
     response = client.get('/models', json={
         "dataType": "toml",
-        })
+    })
     assert response is not None
     assert response.status_code == 200
     returnFile = io.BytesIO(response.data)
     assert zipfile.is_zipfile(returnFile)
 
 # PUT
+
+
 def test_clone(client):
     with client.session_transaction() as sess:
         sess["models"] = pickle.dumps({"TheModel": TracerHaloModel()})
@@ -61,6 +69,8 @@ def test_clone(client):
     assert "NewModel" in names
 
 # DELETE
+
+
 def test_clear(client):
     with client.session_transaction() as sess:
         sess["models"] = pickle.dumps({

@@ -28,6 +28,8 @@ Parameters:
 Returns:
 - model_names: string[]
 """
+
+
 @endpoint_model.route('/model', methods=["POST"])
 def create():
     """Handles the creation of models and saving the created model to the session
@@ -60,6 +62,8 @@ Parameters:
 Returns:
 - model_names: string[]
 """
+
+
 @endpoint_model.route('/model', methods=["PUT"])
 def update():
     # This endpoint updates a model based on name & params and updates the session
@@ -94,6 +98,8 @@ def update():
     Returns:
     - model_names: string[]
 """
+
+
 @endpoint_model.route('/model', methods=["DELETE"])
 def delete():
     # This endpoint deletes a model based on name and updates the session
@@ -117,6 +123,7 @@ def delete():
     res = {"model_names": get_model_names()}
     return jsonify(res)
 
+
 """Renames model
     PATCH /model
 
@@ -126,7 +133,9 @@ def delete():
 
     Returns:
     - model_names: string[]
-"""    
+"""
+
+
 @endpoint_model.route('/model', methods=["PATCH"])
 def rename():
     # This endpoint renames a model based on name and new name
@@ -151,5 +160,3 @@ def rename():
 
     res = {"model_names": get_model_names()}
     return jsonify(res)
-
-
