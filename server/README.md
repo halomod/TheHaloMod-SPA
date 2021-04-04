@@ -24,7 +24,7 @@ Before doing any of the commands below, make sure to install the Python packages
 1. In the first shell window, run `. ./run.sh --dev`
 1. The server should now be located at `localhost:5000`
 
-If an issue comes up where it says that the port is already used, check to see if redis is running in another terminal somewhere. Or it might have been installed as a service and running in the background, which means it does not need to be started again.
+If an issue comes up where it says that the port is already used, check to see if redis is running in another terminal somewhere, or in a background service. By default redis runs as a service, so it might not be necessary to run it in another terminal if it is.
 
 Sometimes while developing it can be useful to clear the redis DB of data if issues arise with the models. This can be done in a separate terminal than that which is running redis by typing `redis-cli FLUSHDB`.
 
