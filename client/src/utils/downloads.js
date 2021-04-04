@@ -57,6 +57,6 @@ export async function downloadParamValsJson(store) {
 }
 
 // TODO
-export function downloadParamValsTocml() {
+export function downloadParamValsToml() {
   return `${baseUrl}/models`;
 }
