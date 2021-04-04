@@ -273,9 +273,9 @@ export default class Store {
    */
   deleteModel = async (name) => {
     try {
-      await axios.delete(`${baseurl}/model`, {
+      await axios.delete(`${baseurl}/model`, { data: {
         model_name: name,
-      });
+      }});
       this.state.error = false;
       await del(name);
       /* eslint-disable */

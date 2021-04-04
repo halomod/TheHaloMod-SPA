@@ -83,6 +83,7 @@ describe('Store tests', () => {
   });
 
   test('Clearing models should remove all existing models', async () => {
+    await store.clearModels();
     await store.createModel(defaultModel, 'MyModel');
     await store.createModel(defaultModel, 'AnotherModel');
     await store.createModel(defaultModel, 'AndAnotherOne');
@@ -115,6 +116,7 @@ describe('Store tests', () => {
   });
 
   test('Adding models and getting all models should return all of the models', async () => {
+    await store.clearModels();
     const testModelName1 = 'Some test model';
     const testModelName2 = 'Some other test model';
     await store.createModel(defaultModel, testModelName1);

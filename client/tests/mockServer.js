@@ -39,7 +39,8 @@ export default function makeServer(environment) {
        * Creates a new model
        */
       this.post(`${baseurl}/model`, (schema, request) => {
-        const modelName = request.requestBody.label;
+        const json = JSON.parse(request.requestBody);
+        const modelName = json.label;
         return schema.haloModels.create({
           name: modelName,
         });
@@ -57,22 +58,29 @@ export default function makeServer(environment) {
        * Clones the model
        */
       this.put(`${baseurl}/models`, (schema, request) => {
-        const newModelName = request.requestBody.new_model_name;
+        const json = JSON.parse(request.requestBody);
+        const newModelName = json.new_model_name;
         return schema.haloModels.create(newModelName);
       });
 
       // Renames the model
       this.patch(`${baseurl}/model`, (schema, request) => {
-        const newModelName = request.requestBody.new_model_name;
-        const oldModelName = request.requestBody.model_name;
+        const json = JSON.parse(request.requestBody);
+        const newModelName = json.new_model_name;
+        const oldModelName = json.model_name;
         schema.haloModels.create(newModelName);
         return schema.haloModels.findBy({ name: oldModelName }).destroy();
       });
 
       // Deletes the model
       this.delete(`${baseurl}/model`, (schema, request) => {
-        const modelName = request.requestBody.model_name;
-        return schema.haloModels.findBy({ name: modelName }).destroy();
+        const json = JSON.parse(request.requestBody);
+        const modelName = json["model_name"];
+        const tmodel = schema.haloModels.findBy({ name: modelName })
+        if (tmodel) {
+          return tmodel.destroy();
+        }
+        return null;
       });
 
       // Deletes all models

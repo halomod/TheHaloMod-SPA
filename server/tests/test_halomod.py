@@ -1,9 +1,6 @@
 """Houses the tests for the server."""
 
 from halomod import TracerHaloModel
-import pickle
-import io
-import zipfile
 
 """
 def test_home(client):

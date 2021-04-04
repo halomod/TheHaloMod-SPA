@@ -2,6 +2,8 @@
 
 from halomod import TracerHaloModel
 import pickle
+import io
+import zipfile
 
 # GET
 def test_get_names(client):
