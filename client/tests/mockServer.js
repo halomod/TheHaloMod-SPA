@@ -36,45 +36,50 @@ export default function makeServer(environment) {
       So that doesn't work for localhost:5000 aka the server address. */
 
       /**
-       * Defines what the mock server will do on a POST request to `/create`.
-       *
-       * If the real server arguments are changed, this should be changed too.
+       * Creates a new model
        */
-      this.post(`${baseurl}/create`, (schema, request) => {
+      this.post(`${baseurl}/model`, (schema, request) => {
         const modelName = request.requestBody.label;
         return schema.haloModels.create({
           name: modelName,
         });
       });
 
-      this.post(`${baseurl}/get_plot_data`, () => plotData.data);
+      // Gets plot data
+      this.get(`${baseurl}/plot`, () => plotData.data);
 
-      this.post(`${baseurl}/update`, () => ({}));
+      // Updates the model
+      this.put(`${baseurl}/model`, () => ({}));
 
       /**
        * Simply adds the new model name to the list of halo models. Doesn't
        * add the model itself.
+       * Clones the model
        */
-      this.post(`${baseurl}/clone`, (schema, request) => {
+      this.put(`${baseurl}/models`, (schema, request) => {
         const newModelName = request.requestBody.new_model_name;
         return schema.haloModels.create(newModelName);
       });
 
-      this.post(`${baseurl}/rename`, (schema, request) => {
+      // Renames the model
+      this.patch(`${baseurl}/model`, (schema, request) => {
         const newModelName = request.requestBody.new_model_name;
         const oldModelName = request.requestBody.model_name;
         schema.haloModels.create(newModelName);
         return schema.haloModels.findBy({ name: oldModelName }).destroy();
       });
 
-      this.post(`${baseurl}/delete`, (schema, request) => {
+      // Deletes the model
+      this.delete(`${baseurl}/model`, (schema, request) => {
         const modelName = request.requestBody.model_name;
         return schema.haloModels.findBy({ name: modelName }).destroy();
       });
 
-      this.post(`${baseurl}/clear`, (schema) => schema.haloModels.all().destroy());
+      // Deletes all models
+      this.delete(`${baseurl}/models`, (schema) => schema.haloModels.all().destroy());
 
-      this.get(`${baseurl}/get_plot_types`, () => plotTypes);
+      // Gets plot data
+      this.get(`${baseurl}/plot`, () => plotTypes);
     },
   });
 }
