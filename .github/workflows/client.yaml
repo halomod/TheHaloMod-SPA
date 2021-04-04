@@ -34,7 +34,7 @@ jobs:
       with:
         path: ~/.cache/pip
         # Makes the hashing depend on changes to requirements.txt
-        key: ${{ hashFiles('server/requirements.txt') }}v2
+        key: ${{ hashFiles('server/requirements.txt') }}
 
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
