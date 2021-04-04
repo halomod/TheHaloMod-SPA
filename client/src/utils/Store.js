@@ -11,6 +11,8 @@ import {
 } from 'idb-keyval';
 import BACKEND_CONSTANTS from '@/constants/backend_constants';
 import FORMS from '@/constants/forms';
+import { DEFAULT_THEME } from '@/constants/themeOptions';
+import PLOT_AXIS_METADATA from '@/constants/PLOT_AXIS_METADATA.json';
 
 axios.defaults.withCredentials = true;
 
@@ -30,10 +32,14 @@ export default class Store {
         x: '',
         y: '',
         plotData: null,
+        plotLogSettings: clonedeep(PLOT_AXIS_METADATA),
+        logx: true,
+        logy: true,
       },
       error: false,
       errorType: '',
       errorMessage: '',
+      theme: DEFAULT_THEME,
     };
   }
 
@@ -42,16 +48,32 @@ export default class Store {
    */
   init = async () => {
     const k = await keys();
-    const models = new Map();
-    k.forEach((key) => {
-      const obj = get(key);
-      models.set(key, obj);
-    });
-    await Promise.all(models);
 
-    this.state.models = Object.fromEntries(models);
+    // If the models object does not exist, create it.
+    if (!k.includes('models')) {
+      await set('models', {});
+    } else {
+      this.state.models = await get('models');
+    }
+
+    // If the theme value does not exist, create it.
+    if (!k.includes('theme')) {
+      await set('theme', DEFAULT_THEME);
+    } else {
+      this.state.theme = await get('theme');
+    }
+
+    // If the plot information does not exist, create it.
+    if (!k.includes('plot')) {
+      await set('plot', this.state.plot);
+    } else {
+      this.state.plot = await get('plot');
+    }
+
     this.state.modelNames = this.getModelNames();
-    this.getPlotData();
+    if (Object.keys(this.state.models).length !== 0) {
+      this.getPlotData();
+    }
   }
 
   /**
@@ -87,17 +109,6 @@ export default class Store {
     });
     return hmModelFlat;
   }
-
-  /**
-   * The way that data is formatted for each plot option.
-   *
-   * @typedef PlotDetails
-   * @type {{
-   *  xlab: string,
-   *  ylab: string,
-   *  yScale: string
-   * }}
-   */
 
   /**
    * Sends the model data to server to create Tracer Halo Model Object. This
@@ -162,16 +173,13 @@ export default class Store {
         new_model_name: newName,
       });
       const model = this.state.models[oldName];
-      await Promise.all([
-        set(newName, model),
-        del(oldName),
-      ]);
       this.state.models[newName] = model;
       delete this.state.models[oldName];
       this.state.modelNames = this.getModelNames();
+      await set('models', this.state.models);
       this.getPlotData();
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   }
 
@@ -251,9 +259,9 @@ export default class Store {
    */
   setModel = async (name, model) => {
     try {
-      await set(name, model);
       this.state.models[name] = model;
       this.state.modelNames = this.getModelNames();
+      await set('models', this.state.models);
     } catch (error) {
       console.error(error);
     }
@@ -347,7 +355,48 @@ export default class Store {
   setPlotType = async (plotType, axis, refresh) => {
     if (plotType !== this.state.plot[axis]) {
       this.state.plot[axis] = plotType;
+
+      // Update the logarithmic value for this new axis
+      const plotLogSetting = this.state.plot.plotLogSettings[this.state.plot[axis]];
+      if (plotLogSetting) {
+        this.state.plot[`log${axis}`] = plotLogSetting.scale === 'log';
+      }
+
       if (refresh) await this.getPlotData();
+      await set('plot', this.state.plot);
     }
+  }
+
+  /**
+   * Sets the scale of the chosen axis of the plot to either logarithmic
+   * or linear.
+   *
+   * @param {'x' | 'y'} axis the axis to set, either x or y
+   * @param {boolean} isLog true if it should be logarithmic
+   */
+  setPlotAxisScale = async (axis, isLog) => {
+    this.state.plot[`log${axis}`] = isLog;
+    if (isLog) {
+      this.state.plot.plotLogSettings[this.state.plot[axis]].scale = 'log';
+    } else {
+      this.state.plot.plotLogSettings[this.state.plot[axis]].scale = 'linear';
+    }
+    await set('plot', this.state.plot);
+  }
+
+  /**
+   * Updates the theme for the application and saves it to the store.
+   *
+   * @param {string} newTheme should be one of the constants exported from
+   * `@/constants/themeOptions.js`
+   * @param {Vue} vueInstance the instance of Vue for the application. This
+   * can be simply passed as `this` if called in a component.
+   */
+  async setTheme(newTheme, vueInstance) {
+    const vue = vueInstance;
+    this.state.theme = newTheme;
+    vue.$theme = newTheme;
+    vue.$material.theming.theme = newTheme;
+    await set('theme', newTheme);
   }
 }
