@@ -9,6 +9,7 @@
   - [How to build and run the production version of the client locally](#how-to-build-and-run-the-production-version-of-the-client-locally)
   - [Development commands](#development-commands)
 - [Architecture](#architecture)
+  - [Styling based on theme](#styling-based-on-theme)
 
 ## Usage
 
@@ -41,6 +42,7 @@ The `client` is the front-end to TheHaloMod-SPA. It makes requests to the api (t
 - Client-side Storage: Data is stored on the client side using [idb-keyval](https://github.com/jakearchibald/idb-keyval). This is used to store things like model parameters, and plot information so that a trip doesn't need to be made to the server on every page refresh. This information can be cleared by having the user clear their browser cache for the site. All of the local storage operations are coordinated by the `Store` which is located at [`client/src/utils/Store.js`](src/utils/Store.js).
 - Linting: Linting is handled by [ESLint](https://eslint.org/), and the configuration for ESLint is held in [`client/.eslintrc.js`](.eslintrc.js).
 - Package Management: Package management is handled mostly by [npm](https://www.npmjs.com/). Although there is a `yarn.lock` file which can be used for [yarn](https://yarnpkg.com/).
+- Visual Design: Visual design and, more generally, the CSS of the application is done by [vue-material](https://vuematerial.io/). A [material design](https://material.io/design) framework for Vue.
 
 Some folder descriptions are below:
 
@@ -50,3 +52,7 @@ Some folder descriptions are below:
 - `client/src/utils`: Holds JavaScript files that provide some kind of utility to the application, but do not house any Vue functionality themselves.
 
 Besides the things mentioned here, documentation exists in each file to provide guidance on what each does. 
+
+### Styling based on theme
+
+Styling based on the theme mode (dark / light) is done in [`client/src/views/theme.scss`](src/views/theme.scss). If anything visual needs to be manually adjusted based on the currently selected mode, see that file for examples on how to do so. 

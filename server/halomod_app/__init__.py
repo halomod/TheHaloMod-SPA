@@ -3,7 +3,7 @@ import sentry_sdk
 from werkzeug.exceptions import HTTPException
 from flask_session import Session
 from flask_cors import CORS
-from flask import Flask, jsonify, request, session, abort, send_file
+from flask import Flask, jsonify, request, session, abort, send_file, Response
 from . import utils
 from .utils import get_model_names
 from hmf.helpers.cfg_utils import framework_to_dict
@@ -13,6 +13,7 @@ import dill as pickle
 import zipfile
 import io
 import base64
+import re
 
 from .endpoint_model import endpoint_model
 from .endpoint_models import endpoint_models
@@ -46,7 +47,16 @@ def create_app(test_config=None):
     # Everything in config.py Config class is loaded into the Flask app config
     app.config.from_object('config.Config')
 
-    CORS(app, origins="http://localhost:*", supports_credentials=True)  # enable CORS
+    # The different origins that the server will allow connections from.
+    # These are specified as RegEx.
+    origins = [
+        re.compile(r'http\:\/\/localhost\:.*'),
+        re.compile(r'https:\/\/.*thehalomod\.netlify\.app.*'),
+        re.compile(r'https:\/\/.*thehalomod\.app.*'),
+    ]
+
+    CORS(app, origins=origins, supports_credentials=True)  # enable CORS
+
     sess.init_app(app)  # enable Sessions
 
     # Register the Endpoints
@@ -67,9 +77,29 @@ def create_app(test_config=None):
     # Generic Exception handler for 500 Internal Server Error
     # Returns manually formatted JSON response object with 500 code,
     # exception name, and description
+    if app.config['SESSION_COOKIE_SAMESITE'] == 'None':
+        @app.after_request
+        def cookies(response: Response):
+            """Manually overrides the session cookie to fix an issue with
+            Flask-Session.
+
+            `SameSite=None` needs to be specified in order for the remote server
+            to set cookies on a client.
+
+            See here: https://github.com/fengsp/flask-session/pull/116
+            For the pull request that would fix that issue and make this function
+            unecessary."""
+            response.headers.add(
+                "Set-Cookie", f"session={session.sid}; Secure; SameSite=None; Path=/;"
+            )
+            return response
 
     @app.errorhandler(Exception)
     def handle_generic_exception(e):
+        """Generic Exception handler for 500 Internal Server Error
+        Returns manually formatted JSON response object with 500 code,
+        exception name, and description
+        """
         # pass HTTPExceptions to HTTPException handler
         if isinstance(e, HTTPException):
             return e
@@ -111,5 +141,5 @@ def create_app(test_config=None):
     @app.route('/')
     def home():
         return jsonify({"start": 'This is the HaloModApp'})
-    
+
     return app

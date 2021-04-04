@@ -30,7 +30,8 @@
     "vue-jest": "^3.0.7",
     "vue-material": "1.0.0-beta-14",
     "vue-observe-visibility": "^0.4.6",
-    "vue-router": "^3.4.9"
+    "vue-router": "^3.4.9",
+    "webpack": "^4.46.0"
   },
   "dependenciesDoc": {
     "@sentry": "Used to hook up sentry.io to the site for tracking of errors.",
@@ -58,6 +59,8 @@
     "fake-indexeddb": "^3.1.2",
     "lint-staged": "^9.5.0",
     "miragejs": "^0.1.41",
+    "node-sass": "^5.0.0",
+    "sass-loader": "~10.0.1",
     "vue-template-compiler": "^2.6.11"
   },
   "gitHooks": {
