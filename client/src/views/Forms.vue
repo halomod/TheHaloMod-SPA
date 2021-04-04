@@ -8,9 +8,16 @@
     @onChange="(data) => currentHMModelFlat = data" v-if="initialHMModelFlat"/>
   <div id="float">
     <md-button @click="showCancelDialog = true" class="md-raised">Cancel</md-button>
-    <md-button :disabled="!valid" @click="showSaveDialog = true" class="md-raised md-primary">
-      {{saveButton}}
-    </md-button>
+    <div style="display: inline-block">
+      <md-button :disabled="!valid" @click="showSaveDialog = true" class="md-raised md-primary">
+        {{saveButton}}
+      </md-button>
+      <md-tooltip v-if="!valid" md-direction="top">
+        <span class="md-body-1">
+          Fix errors in red
+        </span>
+      </md-tooltip>
+    </div>
   </div>
   <div v-if="!loading">
     <md-dialog :md-active.sync="showSaveDialog" v-if="edit">
