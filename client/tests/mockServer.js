@@ -87,7 +87,7 @@ export default function makeServer(environment) {
       this.delete(`${baseurl}/models`, (schema) => schema.haloModels.all().destroy());
 
       // Gets plot data
-      this.get(`${baseurl}/plot`, () => plotTypes);
+      this.post(`${baseurl}/plot`, () => plotTypes);
     },
   });
 }
