@@ -53,6 +53,8 @@
                 v-else
                 :init="localHMModelFlat[hmModelFlatParamsKey][paramsKey]"
                 v-model="localHMModelFlat[hmModelFlatParamsKey][paramsKey]"
+                @is-valid="(valid) =>
+                  isValid(localHMModelFlatValid[hmModelFlatParamsKey], paramsKey, valid)"
                 v-bind="getDoubleFieldProps(paramsKey)"/>
             </div>
           </div>
@@ -85,6 +87,7 @@
             <double-field
               v-else
               :init="localHMModelFlat[key]"
+              @is-valid="(valid) => isValid(localHMModelFlatValid, key, valid)"
               v-model="localHMModelFlat[key]"
               v-bind="getDoubleFieldProps(key)"/>
           </div>
@@ -158,6 +161,7 @@ export default {
        * A local version of the relevant hmModelFlat.
        */
       localHMModelFlat: clonedeep(this.relevantHMModelFlat),
+      localHMModelFlatValid: clonedeep(this.relevantHMModelFlat),
       /**
        * The cached options that the user has selected previously for the
        * different models, but possibly haven't been saved to the server yet.
@@ -166,6 +170,8 @@ export default {
     };
   },
   created() {
+    this.initValid(this.localHMModelFlatValid);
+    this.$emit('is-valid', this.testValid(this.localHMModelFlatValid));
     this.$watch(
       function toWatch() {
         return this.localHMModelFlat[this.model_key];
@@ -262,6 +268,33 @@ export default {
     isSliderMin(parameterKey) {
       return this.isSlider(parameterKey) && PARAMETER_PROPS[parameterKey]
         .rangeSlider.isRangeSliderMin;
+    },
+    isValid(o, key, valid) {
+      const obj = o;
+      obj[key] = valid;
+      this.$emit('is-valid', this.testValid(this.localHMModelFlatValid));
+    },
+    initValid(ob) {
+      const obj = ob;
+      Object.keys(obj).forEach((key) => {
+        if (Object.prototype.toString.call(obj[key]) === '[object Object]') {
+          return this.initValid(obj[key]);
+        }
+        obj[key] = true;
+        return null;
+      });
+    },
+    testValid(obj) {
+      let res = true;
+      Object.keys(obj).forEach((key) => {
+        if (Object.prototype.toString.call(obj[key]) === '[object Object]') {
+          res = res && this.testValid(obj[key]);
+          return null;
+        }
+        res = res && obj[key];
+        return null;
+      });
+      return res;
     },
   },
 };
