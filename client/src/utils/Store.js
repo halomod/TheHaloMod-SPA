@@ -9,8 +9,6 @@ import {
   get,
   clear,
 } from 'idb-keyval';
-import BACKEND_CONSTANTS from '@/constants/backend_constants';
-import FORMS from '@/constants/forms';
 import { DEFAULT_THEME } from '@/constants/themeOptions';
 import PLOT_AXIS_METADATA from '@/constants/PLOT_AXIS_METADATA.json';
 
@@ -270,10 +268,10 @@ export default class Store {
    */
   deleteModel = async (name) => {
     try {
-      await axios.delete(`${baseurl}/model`, { 
+      await axios.delete(`${baseurl}/model`, {
         data: {
           model_name: name,
-        }
+        },
       });
       this.state.error = false;
       await del(name);
