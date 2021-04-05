@@ -3,6 +3,7 @@ import Graph from '@/components/Graph';
 import Vue from 'vue';
 import Store from '@/utils/Store.js';
 import { PLOT_AXIS_OPTIONS } from '@/constants/PLOT.js';
+import { DEFAULT_FORM_STATE } from '@/constants/backend_constants.js';
 import makeServer from '../mockServer';
 
 // Disable dev notice info logs. Just a quality of life thing.
@@ -21,7 +22,7 @@ describe('Graph tests', () => {
     const localVue = createLocalVue();
     const store = new Store();
     await store.init();
-    defaultModel = store.getHMModelFlatFromConstants();
+    defaultModel = DEFAULT_FORM_STATE;
     if (typeof store.state !== 'object') {
       throw new Error('Store wasn\'t initialized correctly in test. The store is'
       + ` ${JSON.stringify(store)}`);

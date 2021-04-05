@@ -28,11 +28,11 @@
               :title="form.title"
               @currently-visible="() => setCurrentlyVisible(form.id, form.title)">
               <GenericForm
-                v-if="initialHMModelFlat"
-                v-bind="buildProps(form)"
-                :testName="form.title"
+                v-if="initialFormState"
+                :formId="form.id"
+                :initialSubformState="initialFormState[form.id]"
                 @is-valid="(valid) => isValid(form, valid)"
-                @onChange="handleFormDataChange"/>
+                v-model="currentFormState[form.id]"/>
             </FormWrapper>
             <md-divider/>
           </div>
@@ -64,7 +64,7 @@ export default {
     /**
      * The state of the model.
      */
-    initialHMModelFlat: {
+    initialFormState: {
       type: Object,
       required: true,
     },
@@ -81,7 +81,7 @@ export default {
     return {
       forms: clonedeep(FORMS),
       currentlyVisible: null,
-      hmModelFlat: clonedeep(this.initialHMModelFlat),
+      currentFormState: clonedeep(this.initialFormState),
     };
   },
   activated() {
@@ -91,17 +91,17 @@ export default {
     /**
      * If state is propogated up, then pass it along to this components parent.
      */
-    hmModelFlat: {
+    currentFormState: {
       deep: true,
-      handler() { this.$emit('onChange', clonedeep(this.hmModelFlat)); },
+      handler() { this.$emit('onChange', clonedeep(this.currentFormState)); },
     },
     /**
      * If state is propogated down, then pass it along to the children.
      */
-    initialHMModelFlat: {
+    initialFormState: {
       deep: true,
       handler() {
-        this.hmModelFlat = clonedeep(this.initialHMModelFlat);
+        this.currentFormState = clonedeep(this.initialFormState);
       },
     },
   },
@@ -116,20 +116,7 @@ export default {
       this.currentlyVisible = title;
       window.history.replaceState({}, '', `#${id}`);
     },
-    buildProps(form) {
-      return {
-        relevantHMModelFlat: form.getRelevantHMModelFlat(this.hmModelFlat),
-        title: form.title,
-        model_key: form.model_key,
-        hmModelFlatParamsKey: form.hmModelFlatParamsKey,
-        modelChoices: form.modelChoices,
-        modelChoicesData: form.getModelChoicesDataFromFlat(this.hmModelFlat),
-        updateModelChoice: form.updateModelChoice,
-      };
-    },
-    handleFormDataChange(formData) {
-      Object.assign(this.hmModelFlat, formData);
-    },
+
     isValid(f, valid) {
       const form = f;
       form.valid = valid;
