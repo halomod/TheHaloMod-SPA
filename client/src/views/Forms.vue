@@ -4,12 +4,20 @@
     :initialHMModelFlat="initialHMModelFlat"
     :contextPrimary="contextPrimary"
     :contextSecondary="contextSecondary"
+    @is-valid="isValid"
     @onChange="(data) => currentHMModelFlat = data" v-if="initialHMModelFlat"/>
   <div id="float">
     <md-button @click="showCancelDialog = true" class="md-raised">Cancel</md-button>
-    <md-button @click="activateSaveDialog" class="md-raised md-primary">
-      {{saveButton}}
-    </md-button>
+    <div style="display: inline-block">
+      <md-button :disabled="!valid"  @click="activateSaveDialog" class="md-raised md-primary">
+        {{saveButton}}
+      </md-button>
+      <md-tooltip v-if="!valid" md-direction="top">
+        <span class="md-body-1">
+          Fix errors in red
+        </span>
+      </md-tooltip>
+    </div>
   </div>
   <div v-if="!loading">
     <md-dialog :md-active.sync="showSaveDialog" v-if="edit" @keyup.enter="save">
@@ -89,6 +97,7 @@ export default {
       loadingTitle: 'Creating your model...',
       contextPrimary: 'Create',
       contextSecondary: 'New Model',
+      valid: true,
     };
   },
   async activated() {
@@ -144,6 +153,10 @@ export default {
       this.loading = false;
       this.showSaveDialog = false;
       this.$router.push('/');
+    },
+    isValid(valid) {
+      this.valid = valid;
+      this.$forceUpdate();
     },
     activateSaveDialog() {
       this.showSaveDialog = true;
