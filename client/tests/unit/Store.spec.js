@@ -1,6 +1,7 @@
 import Store from '@/utils/Store.js';
 import Vue from 'vue';
 import isEqual from 'lodash.isequal';
+import { DEFAULT_FORM_STATE } from '@/constants/backend_constants.js';
 import PLOT_AXIS_METADATA from '@/constants/PLOT_AXIS_METADATA.json';
 import makeServer from '../mockServer';
 
@@ -20,7 +21,7 @@ describe('Store tests', () => {
     store = new Store();
     expect(store).toBeDefined();
     await store.init();
-    defaultModel = store.getHMModelFlatFromConstants();
+    defaultModel = DEFAULT_FORM_STATE;
     expect(store.state.plot.y).toBeDefined();
     expect(store.state.plot.x).toBeDefined();
   });

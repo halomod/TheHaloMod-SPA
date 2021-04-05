@@ -92,40 +92,34 @@ describe('Mounted FormView', () => {
 
   describe('subform tests', () => {
     test('updates composite form state whenever subform state changes', async () => {
-      await genericForms.forEach(async (genericForm) => {
-        const component = genericForm;
-        const formTitle = component.vm.title;
-        expect(formTitle).toBeDefined();
-        const formObj = Object.values(FORMS).find((form) => form.title === formTitle);
-        expect(formObj).toBeDefined();
-        const newOption = subFormOptions[formObj.id];
-        const originalState = wrapper.vm.currentHMModelFlat;
-        const keys = Object.keys(component.vm.localHMModelFlat);
-        const modelKey = formTitle === FORMS.halo_model.title
+      await genericForms.forEach(async (component) => {
+        const genericForm = component;
+        const { subformMeta } = genericForm.vm;
+        expect(subformMeta).toBeDefined();
+
+        const newOption = subFormOptions[subformMeta.id];
+        const originalState = wrapper.vm.currentFormState;
+        const modelKey = subformMeta.title === FORMS.halo_model.title
           ? 'hc_spectrum'
-          : keys.filter((key) => key.includes('model'))[0];
-        component.vm.localHMModelFlat[modelKey] = newOption;
+          : subformMeta.modelKey;
+
+        genericForm.vm.subformState[modelKey] = newOption;
         await wrapper.vm.$nextTick();
-        expect(wrapper.vm.currentHMModelFlat).not.toBe(originalState);
+        expect(wrapper.vm.currentFormState).not.toBe(originalState);
       });
     });
 
     test('does not update subform state when composite form state changes', async () => {
       await genericForms.forEach(async (genericForm) => {
-        const component = genericForm;
-        const formTitle = component.vm.title;
-        expect(formTitle).toBeDefined();
-        const formObj = Object.values(FORMS).find((form) => form.title === formTitle);
-        expect(formObj).toBeDefined();
-        const newOption = subFormOptions[formObj.id];
-        const keys = Object.keys(component.vm.localHMModelFlat);
-        const modelKey = formTitle === FORMS.halo_model.title
+        const { subformMeta } = genericForm.vm;
+        const newOption = subFormOptions[subformMeta.id];
+        const modelKey = subformMeta.title === FORMS.halo_model.title
           ? 'hc_spectrum'
-          : keys.filter((key) => key.includes('model'))[0];
-        const originalState = component.vm.localHMModelFlat[modelKey];
-        wrapper.vm.currentHMModelFlat[modelKey] = newOption;
+          : subformMeta.modelKey;
+        const originalState = genericForm.vm.subformState[modelKey];
+        wrapper.vm.currentFormState[modelKey] = newOption;
         await wrapper.vm.$nextTick();
-        expect(component.vm.localHMModelFlat[modelKey]).toBe(originalState);
+        expect(genericForm.vm.subformState[modelKey]).toBe(originalState);
       });
     });
   });

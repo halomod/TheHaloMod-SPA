@@ -77,37 +77,26 @@ export default class Store {
   }
 
   /**
-   * Cleans up a model for sending to the server. This removes parameters
-   * that aren't accepted by the server but come from backend constants.
+   * The way that data is formatted for each plot option.
    *
-   * @param {import('@/constants/forms').HMModelFlat} model the model to clean
-   * @returns {import('@/constants/forms').HMModelFlat} the cleaned model,
-   * ready to send to the server
+   * @typedef PlotDetails
+   * @type {{
+   *  xlab: string,
+   *  ylab: string,
+   *  yScale: string
+   * }}
    */
-  cleanUpModel = (model) => {
-    const cleanedModel = clonedeep(model);
-    delete cleanedModel.WDM_params;
-    delete cleanedModel.WDMRecalibrateMF_params;
-    delete cleanedModel.Profile_params;
-    delete cleanedModel.CMRelation_params;
-    delete cleanedModel.ScaleDepBias_params;
-    delete cleanedModel._HODCross_params;
-    return cleanedModel;
-  }
 
-  /**
-   * Gets an `HMModelFlat` from the backend constants file by flattening it.
-   * This can be used to supply a default flattened file to the server or any
-   * other purposes like initializing state.
+  /** Flattens the model object to prepare it for use by the server
    *
-   * @returns {import('@/constants/forms').HMModelFlat}
+   * @param {object} model
    */
-  getHMModelFlatFromConstants = () => {
-    let hmModelFlat = clonedeep(BACKEND_CONSTANTS);
-    Object.values(FORMS).forEach((form) => {
-      hmModelFlat = form.flattenHMModel(hmModelFlat);
+  flatten = (model) => {
+    let flattened = {};
+    Object.values(model).forEach((subform) => {
+      flattened = { ...flattened, ...subform };
     });
-    return hmModelFlat;
+    return flattened;
   }
 
   /**
@@ -120,7 +109,7 @@ export default class Store {
   createModel = async (model, name) => {
     try {
       await axios.post(`${baseurl}/model`, {
-        params: this.cleanUpModel(model),
+        params: this.flatten(model),
         label: name,
       });
       this.state.error = false;
@@ -145,7 +134,7 @@ export default class Store {
   updateModel = async (name, model) => {
     try {
       await axios.put(`${baseurl}/model`, {
-        params: this.cleanUpModel(model),
+        params: this.flatten(model),
         model_name: name,
       });
       this.state.error = false;
@@ -281,9 +270,11 @@ export default class Store {
    */
   deleteModel = async (name) => {
     try {
-      await axios.delete(`${baseurl}/model`, { data: {
-        model_name: name,
-      }});
+      await axios.delete(`${baseurl}/model`, { 
+        data: {
+          model_name: name,
+        }
+      });
       this.state.error = false;
       await del(name);
       /* eslint-disable */
