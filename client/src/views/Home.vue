@@ -37,8 +37,10 @@ export default {
 
 </script>
 
+<style lang="scss">
+  @import "./theme";
+</style>
 <style scoped>
-
   .home {
     display: grid;
     grid-template-columns: 1fr 2fr;

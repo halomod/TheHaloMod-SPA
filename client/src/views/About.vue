@@ -10,7 +10,11 @@
         Model of Large Scale Structure, written by
         <a href="http://loco.lab.asu.edu/steven-murray/">Steven Murray</a>.
         It is intended
-        to be used for both research and education, and I'd be very happy to hear
+        to be used for both research and education, and I'd be very
+        <a
+          href="https://github.com/halomod/TheHaloMod-SPA/discussions/new?category=Show-and-tell"
+          target="_blank"
+        >happy to hear</a>
         how you're using it!</p>
 
         <p>The backend for this app is written in Python. If you have a working
@@ -32,6 +36,9 @@
         <a href="https://github.com/dblevin1">Daniel Blevins</a>, and
         <a href="https://github.com/aneuhold">Anton Neuhold</a>.</p>
       </md-content>
+      <span class="md-subheading code-link">See the code for this web app
+        <a target="_blank" href="https://github.com/halomod/TheHaloMod-SPA">here</a>
+      </span>
     </div>
   </div>
 </template>
@@ -54,5 +61,8 @@ export default {
     display: flex;
     flex-direction: column;
     align-items: center;
+  }
+  .code-link {
+    padding: 32px;
   }
 </style>

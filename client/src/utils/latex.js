@@ -10,9 +10,6 @@ const latex2svg = (inputLatex) => {
   // Get the MathJax obect, which is inserted in the `public/index.html` file
   const { MathJax } = window;
 
-  // Reset MathJax for numbering reasons in equations
-  MathJax.texReset();
-
   const correctedString = processLatexString(inputLatex);
 
   // Use the first child because the parent has unneeded extra fluff

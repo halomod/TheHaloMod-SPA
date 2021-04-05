@@ -18,15 +18,16 @@ debug.enabled = false;
  */
 function generateLegend(svg, colorGen, plotData) {
   const dataSetNames = Object.keys(plotData.plot_data);
-  const w = svg.node().getBoundingClientRect().width;
-  const h = svg.node().getBoundingClientRect().height;
+  const plotWidth = svg.node().getBoundingClientRect().width;
+  const plotHeight = svg.node().getBoundingClientRect().height;
   svg.append('g')
     .attr('id', 'legendColor')
-    .attr('transform', `translate(${w / 2},20)`);
+    .attr('transform', `translate(${plotWidth / 2},20)`);
   const colorLegend = legendColor()
     .scale(colorGen)
     .orient('veritcal')
     .labels(dataSetNames)
+    // Set the wrap of the legend to 100 pixels
     .labelWrap(150)
     .on('cellclick', (event) => {
       const tspanNode = event.target.parentNode.querySelector('tspan');
@@ -51,8 +52,8 @@ function generateLegend(svg, colorGen, plotData) {
     .call(colorLegend);
   const legendNode = svg.select('#legendColor').node();
   const legendBBox = legendNode.getBoundingClientRect();
-  const targetX = w - legendBBox.width;
-  const targetY = (h / 2) - (legendBBox.height / 2);
+  const targetX = plotWidth - legendBBox.width;
+  const targetY = (plotHeight / 2) - (legendBBox.height / 2);
   legendNode.setAttribute('transform', `translate(${targetX},${targetY})`);
   return legendBBox.width;
 }
@@ -74,12 +75,16 @@ function generateAxisLabels(svg, plot) {
   const w = svg.node().getBoundingClientRect().width;
 
   // x-Axis label initial placement
-  svg.append('svg')
-    .attr('id', 'x-axis-label')
-    .attr('y', h - 24);
-  const xAxisNode = document.getElementById('x-axis-label');
   const xAxisLatexSvg = createLatexSvgFromString(PLOT_AXIS_METADATA[x].label);
+  svg.append('svg')
+    .attr('id', 'x-axis-label');
+  const xAxisNode = document.getElementById('x-axis-label');
+
   xAxisNode.append(xAxisLatexSvg);
+
+  // The bounding client rect doesn't have a height until it is applied to the
+  // svg.
+  xAxisNode.setAttribute('y', h - xAxisNode.getBoundingClientRect().height);
 
   // Center the x-axis
   xAxisNode.setAttribute('x', (w / 2)
@@ -101,7 +106,7 @@ function generateAxisLabels(svg, plot) {
   yAxisNode.setAttribute('transform', 'rotate(-90)');
 
   /* Get the yAxisLatexSvg back to the top left of the SVG after rotation
-       then calculate the half way point to line it up at */
+  then calculate the half way point to line it up at */
   const yAxisLatexBBox = yAxisLatexSvg.getBoundingClientRect();
   yAxisContainer.setAttribute('y', yAxisLatexBBox.height
     + (h / 2)
@@ -119,9 +124,11 @@ function generateAxisLabels(svg, plot) {
  *
  * @param {string} elementId the ID of the element to manipulate which will
  * become the parent of the SVG plot
- * @param {} plot the plot data which should be held in `$store` of the Vue instance
+ * @param {} plot the plot data which should be held in `$store` of the Vue
+ * instance
  */
 export default (elementId, plot, xlog, ylog) => {
+  debug('plot rendering triggered');
   const { plotData } = plot;
   debug('Generate plot triggered with the following plotData', plotData);
   // Clear all SVGs within the main element if they exist
@@ -133,7 +140,7 @@ export default (elementId, plot, xlog, ylog) => {
     .attr('id', 'svg-plot')
     .attr('width', '100%')
     .attr('height', 500)
-    .attr('margin', '16px');
+    .attr('margin', 0);
 
   const w = svg.node().getBoundingClientRect().width;
   const h = svg.node().getBoundingClientRect().height;
@@ -154,6 +161,7 @@ export default (elementId, plot, xlog, ylog) => {
 
   const legendWidth = generateLegend(svg, colorGen, plotData);
 
+  // Adding extra room to the yLabel and xLabel to fit the axis values
   const leftPadding = yLabelWidth + 45;
   const bottomPadding = xLabelHeight + 30;
   const rightPadding = legendWidth;
@@ -163,8 +171,6 @@ export default (elementId, plot, xlog, ylog) => {
   const maxXVal = d3.max(datasets, (d) => d3.max(d.xs));
   const maxYVal = d3.max(datasets, (d) => d3.max(d.ys));
 
-  // x-scale is always logarithmic
-  // let xScale = xlog ? d3.scaleLog() : d3.scaleLinear;
   let xScale = xlog ? d3.scaleLog() : d3.scaleLinear();
   let yScale = ylog ? d3.scaleLog() : d3.scaleLinear();
   xScale = xScale
@@ -173,6 +179,34 @@ export default (elementId, plot, xlog, ylog) => {
   yScale = yScale
     .domain([minYVal, maxYVal])
     .range([h - bottomPadding, bottomPadding]);
+
+  // gridlines in x axis function
+  function make_x_gridlines() {
+    return d3.axisBottom(xScale)
+      .ticks(6);
+  }
+
+  // gridlines in y axis function
+  function make_y_gridlines() {
+    return d3.axisLeft(yScale)
+      .ticks(6);
+  }
+
+  // add the X gridlines, needs to go before the data is plotted
+  svg.append('g')
+    .attr('class', 'grid')
+    .attr('transform', `translate(0,${h - bottomPadding})`)
+    .call(make_x_gridlines()
+      .tickSize(-(h - bottomPadding * 2))
+      .tickFormat(''));
+
+  // add the Y gridlines, needs to go before the data is plotted
+  svg.append('g')
+    .attr('class', 'grid')
+    .attr('transform', `translate(${leftPadding},0)`)
+    .call(make_y_gridlines()
+      .tickSize(-(w - rightPadding - leftPadding))
+      .tickFormat(''));
 
   // Take each set of data points and put them on the plot
   Object.values(datasets).forEach((dataset, i) => {
@@ -193,8 +227,16 @@ export default (elementId, plot, xlog, ylog) => {
     svg.append('path');
   });
 
-  const xAxis = d3.axisBottom(xScale);
-  const yAxis = d3.axisLeft(yScale);
+  let xAxis = d3.axisBottom(xScale);
+  let yAxis = d3.axisLeft(yScale);
+  // For large numbers, set the format to 2 decimal places and scientific
+  // notation
+  if (!xlog) {
+    xAxis = xAxis.tickFormat(d3.format('.2'));
+  }
+  if (!ylog) {
+    yAxis = yAxis.tickFormat(d3.format('.2'));
+  }
 
   svg.append('g')
     .attr('id', 'x-axis')
@@ -207,32 +249,4 @@ export default (elementId, plot, xlog, ylog) => {
     .attr('id', 'y-axis')
     .attr('transform', `translate(${leftPadding},0)`)
     .call(yAxis);
-
-  // gridlines in x axis function
-  function make_x_gridlines() {
-    return d3.axisBottom(xScale)
-      .ticks(6);
-  }
-
-  // gridlines in y axis function
-  function make_y_gridlines() {
-    return d3.axisLeft(yScale)
-      .ticks(6);
-  }
-
-  // add the X gridlines
-  svg.append('g')
-    .attr('class', 'grid')
-    .attr('transform', `translate(0,${h - bottomPadding})`)
-    .call(make_x_gridlines()
-      .tickSize(-(h - bottomPadding * 2))
-      .tickFormat(''));
-
-  // add the Y gridlines
-  svg.append('g')
-    .attr('class', 'grid')
-    .attr('transform', `translate(${leftPadding},0)`)
-    .call(make_y_gridlines()
-      .tickSize(-(w - rightPadding - leftPadding))
-      .tickFormat(''));
 };

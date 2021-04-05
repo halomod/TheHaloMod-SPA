@@ -111,5 +111,9 @@ def generate_constants() -> BackendConstants:
     return backend_constants
 
 
-with open('./backend_constants.json', 'w') as fp:
-    json.dump(generate_constants(), fp)
+# Ran as a try block to log to the console if the file cannot be written to
+try:
+    constants_file = open('./backend_constants.json', 'w')
+    json.dump(generate_constants(), constants_file)
+except Exception as e:
+    print("Couldn't open the constants file to write. Error is as follows:", e)

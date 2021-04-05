@@ -28,13 +28,16 @@ export default {
       type: Boolean,
     },
   },
-  mounted() {
-    // Init
+  async mounted() {
+    // Wait until the component is fully rendered so that the plot gets the
+    // right size.
+    await this.$nextTick();
     this.generatePlot();
+
     /* Debounce only runs the function, even after many calls, once every
     so many ms listed in the second arg. This helps speed up the UI on
     resize. https://lodash.com/docs/4.17.15#debounce */
-    window.addEventListener('resize', debounce(this.generatePlot, 400));
+    window.addEventListener('resize', debounce(this.generatePlot, 200));
   },
   watch: {
     plotData() {
@@ -62,7 +65,7 @@ export default {
 
 <style>
 .plot {
-  margin: 32px;
+  margin-bottom: 16px;
   display: flex;
   align-content: center;
   align-items: center;

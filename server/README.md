@@ -24,6 +24,10 @@ Before doing any of the commands below, make sure to install the Python packages
 1. In the first shell window, run `. ./run.sh --dev`
 1. The server should now be located at `localhost:5000`
 
+If an issue comes up where it says that the port is already used, check to see if redis is running in another terminal somewhere, or in a background service. By default redis runs as a service, so it might not be necessary to run it in another terminal if it is.
+
+Sometimes while developing it can be useful to clear the redis DB of data if issues arise with the models. This can be done in a separate terminal than that which is running redis by typing `redis-cli FLUSHDB`.
+
 ### Development commands
 
 - To test, run `. ./run.sh --test`
@@ -31,18 +35,29 @@ Before doing any of the commands below, make sure to install the Python packages
 
 ### Production deployment using docker
 
-To run docker manually, first export the needed environment variables. For deployment of this repository, Github actions will use Github secrets to define these variables. View [serverDeployment.yaml](.github\workflows\serverDeployment.yaml) for the Github action that is performed for deployment.
-
-```
-export FLASK_RUN_HOST=0.0.0.0
-export FLASK_RUN_PORT=5000
-export FLASK_KEY=${{ secrets.FLASK_KEY }}     [optional, if none is defined a default value is used]
-docker-compose up --build --remove-orphans -d
-```
+To run docker manually, first export the needed environment variables. For deployment of this repository, Github actions will use Github secrets to define these variables. View [serverDeployment.yaml](../.github/workflows/serverDeployment.yaml) for the Github action that is performed for deployment. That action has the most up-to-date commands that should be used to deploy the server locally. 
 
 To stop the container:
 
 `docker-compose down`
+
+When trying to configure something that impacts the server running docker, it can be helpful to view the logs of the server in real-time. To view the current readout of the docker container that is running the TheHaloMod-SPA server, first find the docker container with `docker container ls`, which should give a readout similar to the image below:
+
+<image src="https://i.imgur.com/abtYIo7.png" width="400" alt="docker container readout screenshot">
+
+We want the conatiner ID, which in the previous image is `f3c98fe2517`. After finding the ID go ahead and type in the following to get an active feed of the ouptut from the server:
+
+```
+docker container logs <containerID> -f
+```
+
+which in this case would be:
+
+```
+docker container logs f3c98fe2517 -f
+```
+
+`-f` means to follow the feed, so as new data comes in the logs will update automatically. To close out of the active feed, use ctrl+c. 
 
 ## Architecture
 

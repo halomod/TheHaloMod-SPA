@@ -2,6 +2,7 @@ import Store from '@/utils/Store.js';
 import Vue from 'vue';
 import isEqual from 'lodash.isequal';
 import { DEFAULT_FORM_STATE } from '@/constants/backend_constants.js';
+import PLOT_AXIS_METADATA from '@/constants/PLOT_AXIS_METADATA.json';
 import makeServer from '../mockServer';
 
 // Disable dev notice info logs. Just a quality of life thing.
@@ -126,5 +127,33 @@ describe('Store tests', () => {
     expect(typeof allModels === 'object').toBeTruthy();
     expect(allModels[testModelName1]).toBeDefined();
     expect(allModels[testModelName2]).toBeDefined();
+  });
+
+  test('Changing the plot axis log scale changes both the state log and '
+  + 'the logSettings entry for that axis', async () => {
+    await store.createModel(defaultModel, 'Some model name');
+    expect(store.getModelNames().length === 1).toBeTruthy();
+    store.setPlotType(Object.keys(PLOT_AXIS_METADATA)[0], 'x', false);
+    expect(typeof store.state.plot.x).toBe('string');
+    const previousXLogState = store.state.plot.logx;
+    expect(typeof previousXLogState).toBe('boolean');
+
+    const previousXLogSetting = store.state.plot
+      .plotLogSettings[store.state.plot.x].scale;
+    expect(typeof previousXLogSetting).toBe('string');
+    if (previousXLogState) {
+      expect(previousXLogSetting).toBe('log');
+    } else {
+      expect(previousXLogSetting).toBe('linear');
+    }
+    await store.setPlotAxisScale('x', !previousXLogState);
+    expect(store.state.plot.logx).toBe(!previousXLogState);
+    const newXLogSetting = store.state.plot
+      .plotLogSettings[store.state.plot.x].scale;
+    if (previousXLogState) {
+      expect(newXLogSetting).toBe('linear');
+    } else {
+      expect(newXLogSetting).toBe('log');
+    }
   });
 });
