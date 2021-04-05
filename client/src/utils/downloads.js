@@ -37,24 +37,23 @@ export async function downloadData() {
   for (const [kind, options] of Object.entries(PLOT_AXIS_OPTIONS)) {
     /* Gets relevant fields from constants files */
     let params = [kind, ...options.y];
-    if (kind === "m") params = params.filter(value => value !== "how_big");
-    const labels = params.map(param => PLOT_AXIS_METADATA[param].label);
+    if (kind === 'm') params = params.filter((value) => value !== 'how_big');
+    const labels = params.map((param) => PLOT_AXIS_METADATA[param].label);
 
     /* API request */
     const response = await axios.post(`${baseUrl}/get_object_data`, {
-      param_names: params
+      param_names: params,
     });
     const json = response.data;
 
     /* Construct CSV */
     Object.entries(json).forEach(([name, parameters]) => {
       const data = unzip(Object.values(parameters));
-      const csv = `${labels.join("\t")}\n${data.map(row => `${row.join("\t")}\n`).join()}`;
+      const csv = `${labels.join('\t')}\n${data.map((row) => `${row.join('\t')}\n`).join()}`;
       zip.file(`${name}_${kind}_vector.csv`, csv);
     });
   }
   /* eslint-enable */
-
   const blob = await zip.generateAsync({ type: 'blob' });
   return window.URL.createObjectURL(blob);
 }
