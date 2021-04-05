@@ -4,6 +4,31 @@ import unzip from 'lodash.unzip';
 import baseUrl from '@/env';
 import PLOT_AXIS_OPTIONS from '@/constants/PLOT_AXIS_OPTIONS.json';
 import PLOT_AXIS_METADATA from '@/constants/PLOT_AXIS_METADATA.json';
+import * as d3 from 'd3';
+
+/**
+ * Adds inline CSS styles to the D3 SVG element by extracting
+ * style properties using Window.getComputedStyles.
+ *
+ * @param {Array} elements array of elements and style properties
+ */
+function addInlineCSS(elements) {
+  if (elements && elements.length) {
+    elements.forEach((d) => {
+      // eslint-disable-next-line
+      d3.selectAll(d.el).each(function () {
+        const element = this;
+        if (d.properties && d.properties.length) {
+          d.properties.forEach((prop) => {
+            const computedStyle = getComputedStyle(element, null);
+            const value = computedStyle.getPropertyValue(prop);
+            element.style[prop] = value;
+          });
+        }
+      });
+    });
+  }
+}
 
 export async function downloadData() {
   const zip = new JSZip();
@@ -14,13 +39,13 @@ export async function downloadData() {
     let params = [kind, ...options.y];
     if (kind === 'm') params = params.filter((value) => value !== 'how_big');
     const labels = params.map((param) => PLOT_AXIS_METADATA[param].label);
-    
+
     /* API request */
     const response = await axios.post(`${baseUrl}/get_object_data`, {
       param_names: params,
     });
     const json = response.data;
-    
+
     /* Construct CSV */
     Object.entries(json).forEach(([name, parameters]) => {
       const data = unzip(Object.values(parameters));
@@ -29,12 +54,21 @@ export async function downloadData() {
     });
   }
   /* eslint-enable */
-
   const blob = await zip.generateAsync({ type: 'blob' });
   return window.URL.createObjectURL(blob);
 }
 
 export async function downloadPlotImage() {
+  const svgElements = [
+    { el: '.graph-line', properties: ['fill', 'stroke', 'stroke-width'] },
+    {
+      el: '.grid line',
+      properties: ['stroke', 'stroke-opacity', 'shape-rendering'],
+    },
+    { el: '.grid path', properties: ['stroke-width'] },
+    { el: '.axis-label g text', properties: ['font-size', 'font-family'] },
+  ];
+  addInlineCSS(svgElements);
   const svgNode = document.getElementById('svg-plot');
   const serializer = new XMLSerializer();
   let plotString = serializer.serializeToString(svgNode);
