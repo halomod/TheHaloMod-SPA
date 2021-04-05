@@ -7,9 +7,9 @@
       md-fixed>
       <md-list>
         <md-list-item v-for="(form, index) in Object.values(forms)" :key="index"
-          :class="{'router-link-active': currentlyVisible == form.title}"
+          :class="{ 'router-link-active': currentlyVisible == form.title }"
           :to="`#${form.id}`">
-          {{form.title}}
+          <span :style="{'color': !form.valid ? 'red' : null }">{{form.title}}</span>
         </md-list-item>
       </md-list>
     </md-app-drawer>
@@ -31,6 +31,7 @@
                 v-if="initialFormState"
                 :formId="form.id"
                 :initialSubformState="initialFormState[form.id]"
+                @is-valid="(valid) => isValid(form, valid)"
                 v-model="currentFormState[form.id]"/>
             </FormWrapper>
             <md-divider/>
@@ -78,7 +79,7 @@ export default {
   },
   data() {
     return {
-      forms: FORMS,
+      forms: clonedeep(FORMS),
       currentlyVisible: null,
       currentFormState: clonedeep(this.initialFormState),
     };
@@ -114,6 +115,20 @@ export default {
     setCurrentlyVisible(id, title) {
       this.currentlyVisible = title;
       window.history.replaceState({}, '', `#${id}`);
+    },
+
+    isValid(f, valid) {
+      const form = f;
+      form.valid = valid;
+      this.$emit('is-valid', this.testValid());
+      this.$forceUpdate();
+    },
+    testValid() {
+      let res = true;
+      Object.keys(this.forms).forEach((form) => {
+        res = res && this.forms[form].valid;
+      });
+      return res;
     },
   },
 };

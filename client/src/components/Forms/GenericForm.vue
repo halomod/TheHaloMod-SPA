@@ -31,6 +31,7 @@
             v-else-if="!isSlider(key)"
             :init="subformState[key]"
             v-model="subformState[key]"
+            @is-valid="(valid) => isValid(subformValid, key, valid)"
             v-bind="getDoubleFieldProps(key)"/>
         </div>
         <div class="md-layout md-gutter">
@@ -73,6 +74,8 @@
                 v-else
                 :init="subformState[subformMeta.paramsKey][key]"
                 v-model="subformState[subformMeta.paramsKey][key]"
+                @is-valid="(valid) =>
+                  isValid(subformValid[subformMeta.paramsKey], key, valid)"
                 v-bind="getDoubleFieldProps(key)"/>
             </div>
           </div>
@@ -119,6 +122,7 @@ export default {
        * A local version of the relevant portion of currentFormState.
        */
       subformState: clonedeep(this.initialSubformState),
+      subformValid: clonedeep(this.initialSubformState),
       /**
        * The cached options that the user has selected previously for the
        * different models, but possibly haven't been saved to the server yet.
@@ -129,6 +133,8 @@ export default {
     };
   },
   created() {
+    this.initValid(this.subformValid);
+    this.$emit('is-valid', this.testValid(this.subformValid));
     this.$watch(
       function toWatch() {
         return this.subformState[this.subformMeta.modelKey];
@@ -223,6 +229,33 @@ export default {
     isSliderMin(parameterKey) {
       return this.isSlider(parameterKey) && PARAMETER_PROPS[parameterKey]
         .rangeSlider.isRangeSliderMin;
+    },
+    isValid(o, key, valid) {
+      const obj = o;
+      obj[key] = valid;
+      this.$emit('is-valid', this.testValid(this.subformValid));
+    },
+    initValid(ob) {
+      const obj = ob;
+      Object.keys(obj).forEach((key) => {
+        if (Object.prototype.toString.call(obj[key]) === '[object Object]') {
+          return this.initValid(obj[key]);
+        }
+        obj[key] = true;
+        return null;
+      });
+    },
+    testValid(obj) {
+      let res = true;
+      Object.keys(obj).forEach((key) => {
+        if (Object.prototype.toString.call(obj[key]) === '[object Object]') {
+          res = res && this.testValid(obj[key]);
+          return null;
+        }
+        res = res && obj[key];
+        return null;
+      });
+      return res;
     },
   },
 };
