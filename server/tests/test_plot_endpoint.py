@@ -2,6 +2,7 @@
 
 from halomod import TracerHaloModel
 import pickle
+import json
 
 # POST
 
@@ -9,6 +10,6 @@ import pickle
 def test_get_plot_data(client):
     with client.session_transaction() as sess:
         sess["models"] = pickle.dumps({"TheModel": TracerHaloModel()})
-    response = client.post('/plot', json={"x": "m", "y": "dndm"})
-    assert "plot_data" in response.json
-    assert "TheModel" in response.json["plot_data"]
+    response = client.get('/plot', query_string=dict(x= "m", y= "dndm"))
+    assert "plot_data" in json.loads(response.get_data(as_text=True))
+    assert "TheModel" in json.loads(response.get_data(as_text=True))["plot_data"]

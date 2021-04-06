@@ -4,6 +4,7 @@ from halomod import TracerHaloModel
 import pickle
 import io
 import zipfile
+import json
 
 # GET
 
@@ -11,9 +12,7 @@ import zipfile
 def test_get_names(client):
     with client.session_transaction() as sess:
         sess["models"] = pickle.dumps({"TheModel": {}, "AnotherModel": {}})
-    response = client.get('/models', json={
-        "dataType": "names",
-    })
+    response = client.get('/models/names')
     assert response is not None
     assert response.status_code == 200
     assert "model_names" in response.json
@@ -28,14 +27,16 @@ def test_get_object_data(client):
     params = ["m", "k", "r", "k_hm"]
     with client.session_transaction() as sess:
         sess["models"] = pickle.dumps({"TheModel": TracerHaloModel()})
-    response = client.get('/models', json={
-        "param_names": params,
-        "dataType": "ascii",
-    })
-    assert "TheModel" in response.json
+
+    query_data = str()
     for param in params:
-        assert param in response.json["TheModel"]
-        assert response.json["TheModel"][param]
+       query_data += str("param_names[]=") + str(param) + "&"
+    
+    response = client.get('/models/object', query_string=query_data)
+    assert "TheModel" in json.loads(response.get_data(as_text=True))
+    for param in params:
+        assert param in json.loads(response.get_data(as_text=True))["TheModel"]
+        assert json.loads(response.get_data(as_text=True))["TheModel"][param]
 
 # GET
 
@@ -43,9 +44,7 @@ def test_get_object_data(client):
 def test_toml(client):
     with client.session_transaction() as sess:
         sess["models"] = pickle.dumps({"TheModel": TracerHaloModel()})
-    response = client.get('/models', json={
-        "dataType": "toml",
-    })
+    response = client.get('/models/toml')
     assert response is not None
     assert response.status_code == 200
     returnFile = io.BytesIO(response.data)
