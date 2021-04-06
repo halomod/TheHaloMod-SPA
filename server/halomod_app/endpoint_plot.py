@@ -41,9 +41,8 @@ Returns:
 @endpoint_plot.route('/plot', methods=["GET"])
 def get_plot_data():
     res = {"plot_data": {}}
-    request_json = request.get_json()
-    x_param = request_json["x"]
-    y_param = request_json["y"]
+    x_param = request.args.get("x")
+    y_param = request.args.get("y")
 
     models = None
     if 'models' in session:
@@ -51,7 +50,7 @@ def get_plot_data():
     else:
         models = {}
     # if model_names in json use those else use all
-    names = request_json["model_names"] if "model_names" in request_json else list(
+    names = request.args.getlist("model_names") if "model_names" in request.args else list(
         models.keys())
 
     for name in names:
@@ -73,50 +72,4 @@ def get_plot_data():
 
     # save post-calculation models to session to take advantage of compute
     session["models"] = pickle.dumps(models)
-
     return jsonify(res)
-
-
-"""Generates a figure
-POST /plot
-
-Parameters:
-    - fig_type:
-    - img_type: string
-Returns:
-- figure: b64_serialized_figure
-"""
-# Generates a figure using session data & matplotlib rendering and
-# returns it to client
-#
-# expects: {"fig_type": <fig_type> (see utils.KEYMAP for options),
-#           "image type": <format of returned image> (png, svg, etc...)}
-# outputs {"figure": <b64_serialized_figure>}
-
-
-@endpoint_plot.route('/plot', methods=["POST"])
-def plot():
-    request_json = request.get_json()
-    fig_type = request_json["fig_type"]
-    img_type = request_json["img_type"]
-
-    if 'models' in session:
-        models = pickle.loads(session["models"])
-    else:
-        models = {}
-
-    # generates figure/plot
-    buf, errors = utils.create_canvas(
-        models, fig_type, utils.KEYMAP[fig_type], img_type)
-
-    # serializes image so it can be sent via JSON
-    png_base64_bytes = base64.b64encode(buf.getvalue())
-    base64_png = png_base64_bytes.decode('ascii')
-
-    # save post-calculation models to session
-    session["models"] = pickle.dumps(models)
-
-    response = {}
-    response["figure"] = base64_png
-
-    return jsonify(response)

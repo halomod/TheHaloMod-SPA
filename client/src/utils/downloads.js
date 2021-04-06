@@ -41,9 +41,10 @@ export async function downloadData() {
     const labels = params.map((param) => PLOT_AXIS_METADATA[param].label);
     
     /* API request - Get Object data */
-    const response = await axios.get(`${baseUrl}/models`, {
-      param_names: params,
-      dataType: "ascii"
+    const response = await axios.get(`${baseUrl}/models/object`, {
+      params: {
+        param_names: params,
+      },
     });
     const json = response.data;
 
@@ -89,7 +90,6 @@ export async function downloadParamValsJson(store) {
   return dataStr;
 }
 
-// TODO
 export function downloadParamValsToml() {
-  return `${baseUrl}/models`;
+  return `${baseUrl}/models/toml`;
 }

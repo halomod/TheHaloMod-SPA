@@ -75,8 +75,8 @@ export default function makeServer(environment) {
       // Deletes the model
       this.delete(`${baseurl}/model`, (schema, request) => {
         const json = JSON.parse(request.requestBody);
-        const modelName = json["model_name"];
-        const tmodel = schema.haloModels.findBy({ name: modelName })
+        const modelName = json.model_name;
+        const tmodel = schema.haloModels.findBy({ name: modelName });
         if (tmodel) {
           return tmodel.destroy();
         }
@@ -86,8 +86,6 @@ export default function makeServer(environment) {
       // Deletes all models
       this.delete(`${baseurl}/models`, (schema) => schema.haloModels.all().destroy());
 
-      // Gets plot data
-      this.post(`${baseurl}/plot`, () => plotTypes);
     },
   });
 }

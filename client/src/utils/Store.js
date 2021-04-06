@@ -316,8 +316,10 @@ export default class Store {
     }
     try {
       const data = await axios.get(`${baseurl}/plot`, {
-        x: this.state.plot.x,
-        y: this.state.plot.y,
+        params: {
+          x: this.state.plot.x,
+          y: this.state.plot.y,
+        },
       });
       this.state.plot.plotData = data.data;
       this.state.error = false;
