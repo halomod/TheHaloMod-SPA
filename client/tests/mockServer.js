@@ -2,7 +2,6 @@ import { createServer, Model } from 'miragejs';
 import baseurl from '@/env';
 // import { schemeAccent } from 'd3';
 import plotData from './example_data/plotData.json';
-import plotTypes from './example_data/plotTypes.json';
 
 /**
  * Creates a mock server for use in tests on the front-end.
