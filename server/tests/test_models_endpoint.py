@@ -30,8 +30,8 @@ def test_get_object_data(client):
 
     query_data = str()
     for param in params:
-       query_data += str("param_names[]=") + str(param) + "&"
-    
+        query_data += str("param_names[]=") + str(param) + "&"
+
     response = client.get('/models/object', query_string=query_data)
     assert "TheModel" in json.loads(response.get_data(as_text=True))
     for param in params:
