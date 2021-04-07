@@ -152,7 +152,7 @@ export default (elementId, plot, xlog, ylog) => {
   // Build the color generator for the lines and legend
   const colors = datasets.map((val, i) => d3.rgb(
     // The different color options are here: https://github.com/d3/d3-scale-chromatic
-    d3.interpolateCool(i / datasets.length),
+    d3.schemeCategory10[i % 10],
   ).formatHex());
   debug('colors are: ', colors);
   const colorGen = d3.scaleOrdinal()
