@@ -39,10 +39,12 @@ export async function downloadData() {
     let params = [kind, ...options.y];
     if (kind === 'm') params = params.filter((value) => value !== 'how_big');
     const labels = params.map((param) => PLOT_AXIS_METADATA[param].label);
-
-    /* API request */
-    const response = await axios.post(`${baseUrl}/get_object_data`, {
-      param_names: params,
+    
+    /* API request - Get Object data */
+    const response = await axios.get(`${baseUrl}/models/object`, {
+      params: {
+        param_names: params,
+      },
     });
     const json = response.data;
 
@@ -89,5 +91,5 @@ export async function downloadParamValsJson(store) {
 }
 
 export function downloadParamValsToml() {
-  return `${baseUrl}/toml`;
+  return `${baseUrl}/models/toml`;
 }
