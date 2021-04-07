@@ -13,10 +13,6 @@ debug.enabled = false;
 export default {
   name: 'Plot',
   props: {
-    plotData: {
-      type: Object,
-      required: true,
-    },
     plotElementId: {
       type: String,
       required: true,
@@ -54,7 +50,13 @@ export default {
   methods: {
     generatePlot() {
       debug('plot being built');
-      buildPlot(this.plotElementId, this.$store.state.plot, this.xlog, this.ylog);
+      buildPlot(
+        this.plotElementId,
+        this.$store.state.plot,
+        this.$store.state.modelNames,
+        this.xlog,
+        this.ylog,
+      );
     },
   },
   beforeDestroy() {

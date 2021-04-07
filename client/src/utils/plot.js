@@ -14,11 +14,10 @@ debug.enabled = true;
  * representing the plot svg
  * @param {d3.ScaleOrdinal<string, any, never>} colorGen the d3 color scale
  * for the plot
- * @param {object} plotData the data for the plot
+ * @param {string[]} dataSetNames the array of names of the models
  * @returns {Number} the width of the Legend
  */
-function generateLegend(svg, colorGen, plotData) {
-  const dataSetNames = Object.keys(plotData.plot_data);
+function generateLegend(svg, colorGen, dataSetNames) {
   debug('dataSetNames provided to generateLegend is: ', dataSetNames);
   const plotWidth = svg.node().getBoundingClientRect().width;
   const plotHeight = svg.node().getBoundingClientRect().height;
@@ -128,8 +127,12 @@ function generateAxisLabels(svg, plot) {
  * become the parent of the SVG plot
  * @param {} plot the plot data which should be held in `$store` of the Vue
  * instance
+ * @param {string[]} modelNames the ordered model names that are currently
+ * stored
+ * @param {boolean} xlog if the x axis should be logarithmic
+ * @param {boolean} ylog if the y axis should be logarithmic
  */
-export default (elementId, plot, xlog, ylog) => {
+export default (elementId, plot, modelNames, xlog, ylog) => {
   debug('plot rendering triggered');
   const { plotData } = plot;
   debug('Generate plot triggered with the following plotData', plotData);
@@ -149,7 +152,7 @@ export default (elementId, plot, xlog, ylog) => {
 
   const { yLabelWidth, xLabelHeight } = generateAxisLabels(svg, plot);
 
-  const datasets = Object.values(plotData.plot_data);
+  const datasets = modelNames.map((modelName) => plotData.plot_data[modelName]);
   debug('datasets is: ', datasets);
 
   // Build the color generator for the lines and legend
@@ -161,7 +164,7 @@ export default (elementId, plot, xlog, ylog) => {
     .domain(Object.keys(plotData.plot_data))
     .range(colors);
 
-  const legendWidth = generateLegend(svg, colorGen, plotData);
+  const legendWidth = generateLegend(svg, colorGen, modelNames);
 
   // Adding extra room to the yLabel and xLabel to fit the axis values
   const leftPadding = yLabelWidth + 45;
