@@ -85,7 +85,10 @@ not render correctly. */
   stroke-width: 0;
 }
 .dashed {
-  stroke-dasharray: 5,5;
+  stroke-dasharray: 6,6;
+}
+.dotted {
+  stroke-dasharray: 3,3;
 }
 /* End usage from `plot.js` file */
 </style>

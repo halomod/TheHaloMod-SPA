@@ -5,7 +5,26 @@ import { PLOT_AXIS_METADATA } from '@/constants/PLOT.js';
 import createLatexSvgFromString from './latex';
 
 const debug = Debug('plot.js');
-debug.enabled = true;
+debug.enabled = false;
+
+/**
+ * Gets the additional class name for a line in the plot to determine if it
+ * should be dotted, dashed, or solid based on its index in the list of
+ * models.
+ *
+ * This is based on the idea that the colors are finite for the plot
+ * lines. Currently, this function is written as if there are 10 colors.
+ *
+ * @param {number} index the index of model (line) in the list of models
+ */
+function getLineClass(index) {
+  if (index < 10) {
+    return 'solid';
+  } if (index < 20) {
+    return 'dashed';
+  }
+  return 'dotted';
+}
 
 /**
  * Creates the legend for the plot.
@@ -24,12 +43,20 @@ function generateLegend(svg, colorGen, dataSetNames) {
   svg.append('g')
     .attr('id', 'legendColor')
     .attr('transform', `translate(${plotWidth / 2},20)`);
+
+  // The below scale makes it so class names are output to each legend icon
+  const legendScale = d3.scaleOrdinal()
+    .domain(dataSetNames)
+    .range(['legend-line']);
+
   const colorLegend = legendColor()
-    .scale(colorGen)
-    .orient('veritcal')
+    .scale(legendScale)
     .labels(dataSetNames)
-    // Set the wrap of the legend to 150 pixels
+    // Set the word wrap of the legend to 150 pixels
     .labelWrap(150)
+    .shape('line')
+    .shapeWidth(30)
+    .useClass(true)
     .on('cellclick', (event) => {
       const tspanNode = event.target.parentNode.querySelector('tspan');
       const nodeText = tspanNode.textContent;
@@ -49,8 +76,16 @@ function generateLegend(svg, colorGen, dataSetNames) {
       }
     });
 
+  // Apply the legend
   svg.select('#legendColor')
-    .call(colorLegend);
+    .call(colorLegend)
+    // Modify the lines for the legend and set their colors as well as
+    // modification class if needed.
+    .selectAll('.legend-line')
+    .attr('stroke', (_, i) => colorGen(i))
+    .attr('stroke-width', 4)
+    .attr('class', (_, i) => `legend-line ${getLineClass(i)}`);
+
   const legendNode = svg.select('#legendColor').node();
   const legendBBox = legendNode.getBoundingClientRect();
   const targetX = plotWidth - legendBBox.width;
@@ -222,16 +257,8 @@ export default (elementId, plot, modelNames, xlog, ylog) => {
     ]);
 
     // Determine if the line should be dashed or solid and in what way based
-    // upon the color wrap around. Right now it will start making it dashed
-    // or dotted if it gets above 10 and 20 models respectively.
-    let cssClassString = `line-${i}`;
-    if (i < 10) {
-      cssClassString += ' solid';
-    } else if (i < 20) {
-      cssClassString += ' dashed';
-    } else {
-      cssClassString += ' dotted';
-    }
+    // upon the color wrap around.
+    const cssClassString = `line-${i} ${getLineClass(i)}`;
 
     svg.append('path')
       .datum(coordsArr)
