@@ -13,6 +13,10 @@ debug.enabled = false;
 export default {
   name: 'Plot',
   props: {
+    plotData: {
+      type: Object,
+      required: true,
+    },
     plotElementId: {
       type: String,
       required: true,

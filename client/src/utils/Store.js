@@ -109,7 +109,7 @@ export default class Store {
    */
   createModel = async (model, name) => {
     try {
-      await axios.post(`${baseurl}/create`, {
+      await axios.post(`${baseurl}/model`, {
         params: this.flatten(model),
         label: name,
       });
@@ -138,7 +138,7 @@ export default class Store {
    */
   updateModel = async (name, model) => {
     try {
-      await axios.post(`${baseurl}/update`, {
+      await axios.put(`${baseurl}/model`, {
         params: this.flatten(model),
         model_name: name,
       });
@@ -162,7 +162,7 @@ export default class Store {
    */
   renameModel = async (oldName, newName) => {
     try {
-      await axios.post(`${baseurl}/rename`, {
+      await axios.patch(`${baseurl}/model`, {
         model_name: oldName,
         new_model_name: newName,
       });
@@ -185,7 +185,7 @@ export default class Store {
    */
   cloneModel = async (oldName, newName) => {
     try {
-      await axios.post(`${baseurl}/clone`, {
+      await axios.put(`${baseurl}/models`, {
         model_name: oldName,
         new_model_name: newName,
       });
@@ -259,8 +259,10 @@ export default class Store {
    */
   deleteModel = async (name) => {
     try {
-      await axios.post(`${baseurl}/delete`, {
-        model_name: name,
+      await axios.delete(`${baseurl}/model`, {
+        data: {
+          model_name: name,
+        },
       });
       this.state.error = false;
       this.state.models.delete(name);
@@ -282,7 +284,7 @@ export default class Store {
    */
   clearModels = async () => {
     try {
-      await axios.post(`${baseurl}/clear`);
+      await axios.delete(`${baseurl}/models`);
       await del('models');
       this.state.models = new Map();
       this.state.modelNames = this.getModelNames();
@@ -302,9 +304,11 @@ export default class Store {
       return;
     }
     try {
-      const data = await axios.post(`${baseurl}/get_plot_data`, {
-        x: this.state.plot.x,
-        y: this.state.plot.y,
+      const data = await axios.get(`${baseurl}/plot`, {
+        params: {
+          x: this.state.plot.x,
+          y: this.state.plot.y,
+        },
       });
       this.state.plot.plotData = data.data;
       this.state.error = false;

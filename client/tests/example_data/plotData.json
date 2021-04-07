@@ -3266,8 +3266,8 @@
     "content-type": "application/json"
   },
   "config": {
-    "url": "http://localhost:5000/get_plot_data",
-    "method": "post",
+    "url": "http://localhost:5000/plot",
+    "method": "get",
     "data": "{\"fig_type\":\"dndm\"}",
     "headers": {
       "Accept": "application/json, text/plain, */*",
