@@ -82,5 +82,8 @@ not render correctly. */
 .grid path {
   stroke-width: 0;
 }
+.dashed {
+  stroke-dasharray: 5,5;
+}
 /* End usage from `plot.js` file */
 </style>

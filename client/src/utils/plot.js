@@ -5,7 +5,7 @@ import { PLOT_AXIS_METADATA } from '@/constants/PLOT.js';
 import createLatexSvgFromString from './latex';
 
 const debug = Debug('plot.js');
-debug.enabled = false;
+debug.enabled = true;
 
 /**
  * Creates the legend for the plot.
@@ -14,10 +14,12 @@ debug.enabled = false;
  * representing the plot svg
  * @param {d3.ScaleOrdinal<string, any, never>} colorGen the d3 color scale
  * for the plot
+ * @param {object} plotData the data for the plot
  * @returns {Number} the width of the Legend
  */
 function generateLegend(svg, colorGen, plotData) {
   const dataSetNames = Object.keys(plotData.plot_data);
+  debug('dataSetNames provided to generateLegend is: ', dataSetNames);
   const plotWidth = svg.node().getBoundingClientRect().width;
   const plotHeight = svg.node().getBoundingClientRect().height;
   svg.append('g')
@@ -27,7 +29,7 @@ function generateLegend(svg, colorGen, plotData) {
     .scale(colorGen)
     .orient('veritcal')
     .labels(dataSetNames)
-    // Set the wrap of the legend to 100 pixels
+    // Set the wrap of the legend to 150 pixels
     .labelWrap(150)
     .on('cellclick', (event) => {
       const tspanNode = event.target.parentNode.querySelector('tspan');
@@ -148,13 +150,13 @@ export default (elementId, plot, xlog, ylog) => {
   const { yLabelWidth, xLabelHeight } = generateAxisLabels(svg, plot);
 
   const datasets = Object.values(plotData.plot_data);
+  debug('datasets is: ', datasets);
 
   // Build the color generator for the lines and legend
   const colors = datasets.map((val, i) => d3.rgb(
     // The different color options are here: https://github.com/d3/d3-scale-chromatic
     d3.schemeCategory10[i % 10],
   ).formatHex());
-  debug('colors are: ', colors);
   const colorGen = d3.scaleOrdinal()
     .domain(Object.keys(plotData.plot_data))
     .range(colors);
@@ -215,10 +217,23 @@ export default (elementId, plot, xlog, ylog) => {
       val,
       dataset.ys[index],
     ]);
+
+    // Determine if the line should be dashed or solid and in what way based
+    // upon the color wrap around. Right now it will start making it dashed
+    // or dotted if it gets above 10 and 20 models respectively.
+    let cssClassString = `line-${i}`;
+    if (i < 10) {
+      cssClassString += ' solid';
+    } else if (i < 20) {
+      cssClassString += ' dashed';
+    } else {
+      cssClassString += ' dotted';
+    }
+
     svg.append('path')
       .datum(coordsArr)
       .attr('fill', 'none')
-      .attr('class', `line-${i}`)
+      .attr('class', cssClassString)
       .attr('stroke', colorGen(i))
       .attr('stroke-width', 1.5)
       .attr('d', d3.line()
