@@ -231,7 +231,7 @@ export default class Store {
    *  [modelName: string]: Object
    * } | undefined} A copy of all the models with their names or undefined
    */
-  getAllModels = () => clonedeep(Array.from(this.state.models.entries()));
+  getAllModels = () => clonedeep(Object.fromEntries(this.state.models.entries()));
 
   /**
    * Sets a model with the given name.
