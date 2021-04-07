@@ -10,6 +10,7 @@ on:
     # changed for everyone.
     branches:
       - main
+      - US336-PlotLines
 
 jobs:
   build:
