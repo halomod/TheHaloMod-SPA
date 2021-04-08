@@ -95,7 +95,7 @@ import forms from '@/constants/forms.js';
 import { FORM_OPTION_DEFAULTS } from '@/constants/backend_constants.js';
 
 const debug = Debug('GenericForm.vue');
-debug.enabled = true;
+debug.enabled = false;
 
 export default {
   name: 'GenericForm',
