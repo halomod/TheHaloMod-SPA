@@ -84,7 +84,6 @@ export default function makeServer(environment) {
 
       // Deletes all models
       this.delete(`${baseurl}/models`, (schema) => schema.haloModels.all().destroy());
-
     },
   });
 }

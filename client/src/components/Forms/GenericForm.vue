@@ -95,7 +95,7 @@ import forms from '@/constants/forms.js';
 import { FORM_OPTION_DEFAULTS } from '@/constants/backend_constants.js';
 
 const debug = Debug('GenericForm.vue');
-debug.enabled = false;
+debug.enabled = true;
 
 export default {
   name: 'GenericForm',
@@ -231,9 +231,11 @@ export default {
         .rangeSlider.isRangeSliderMin;
     },
     isValid(o, key, valid) {
-      const obj = o;
-      obj[key] = valid;
-      this.$emit('is-valid', this.testValid(this.subformValid));
+      if (typeof o === 'object') {
+        const obj = o;
+        obj[key] = valid;
+        this.$emit('is-valid', this.testValid(this.subformValid));
+      }
     },
     initValid(ob) {
       const obj = ob;
