@@ -19,3 +19,7 @@ Runs server lint, unit and integration tests on every pull request.
 ### [Server Deployment](./serverDeployment.yaml)
 
 Builds and deploys server main branch to ASU's servers.
+
+### Secret Keys
+
+All secret keys for both client and server are kept [here](https://github.com/halomod/TheHaloMod-SPA/settings/secrets/actions)
