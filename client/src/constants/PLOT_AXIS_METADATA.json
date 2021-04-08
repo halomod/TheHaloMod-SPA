@@ -1,0 +1,252 @@
+{
+  "k": {
+    "label": "Wavenumber, $k$ [$h$/Mpc]",
+    "scale": "log",
+    "name": "Fourier Scale, k (linear)"
+  },
+  "k_hm": {
+    "label": "Fourier Scale, $k$ [$h$/Mpc]",
+    "scale": "log",
+    "name": "Fourier Scale, k (halo model)"
+  },
+  "r": {
+    "label": "Scale, $r$ [Mpc/$h$]",
+    "scale": "log",
+    "name": "Comoving Scale, r"
+  },
+  "m": {
+    "label": "Mass $(M_{\\odot}h^{-1})$",
+    "scale": "log",
+    "name": "Halo Mass, m"
+  },
+  "central_occupation": {
+    "label": "Central Tracer Occupation",
+    "scale": "log",
+    "name": "Occupation of central component"
+  },
+  "cmz_relation": {
+    "label": "Halo Concentration",
+    "scale": "log",
+    "name": "Halo Concentration"
+  },
+  "corr_1h_auto_matter": {
+    "label": "1-halo matter correlation, $\\xi_{1h}(r)$",
+    "scale": "log",
+    "name": "1-halo matter-matter correlation function"
+  },
+  "corr_1h_auto_tracer": {
+    "label": "1-halo tracer correlation, $\\xi_{1h}(r)$",
+    "scale": "log",
+    "name": "1-halo tracer-tracer correlation function"
+  },
+  "corr_1h_cross_tracer_matter": {
+    "label": "1-halo matter-tracer correlation, $\\xi_{1h}^{m\\times T}(r)$",
+    "scale": "linear",
+    "name": "1-halo matter-tracer correlation function"
+  },
+  "corr_1h_cs_auto_tracer": {
+    "label": "1-halo central-sallite tracer correlation, $\\xi_{1h}^{cs}(r)$",
+    "scale": "log",
+    "name": "1-halo central-satellite tracer correlation function"
+  },
+  "corr_1h_ss_auto_tracer": {
+    "label": "1-halo satellite-sallite tracer correlation, $\\xi_{1h}^{ss}(r)$",
+    "scale": "log",
+    "name": "1-halo satellite-satellite tracer correlation function"
+  },
+  "corr_2h_auto_matter": {
+    "label": "2-halo matter correlation, $\\xi_{2h}(r)$",
+    "scale": "log",
+    "name": "2-halo matter-matter correlation function"
+  },
+  "corr_2h_auto_tracer": {
+    "label": "2-halo tracer correlation, $\\xi_{2h}(r)$",
+    "scale": "log",
+    "name": "2-halo tracer-tracer correlation function"
+  },
+  "corr_2h_cross_tracer_matter": {
+    "label": "2-halo matter-tracer correlation, $\\xi_{2h}^{m\\times T}(r)$",
+    "scale": "log",
+    "name": "2-halo matter-tracer correlation function"
+  },
+  "corr_auto_matter": {
+    "label": "Matter correlation, $\\xi_{mm}(r)$",
+    "scale": "log",
+    "name": "Matter-matter correlation function"
+  },
+  "corr_auto_tracer": {
+    "label": "Tracer correlation, $\\xi_{2h}(r)$",
+    "scale": "log",
+    "name": "Tracer-tracer correlation function"
+  },
+  "corr_cross_tracer_matter": {
+    "label": "Matter-tracer correlation, $\\xi_{m\\times T}(r)$",
+    "scale": "log",
+    "name": "Matter-tracer correlation function"
+  },
+  "corr_linear_mm": {
+    "label": "Linear matter correlation, $\\xi_{m}^{\\rm lin}(r)$",
+    "scale": "log",
+    "name": "Linear matter correlation function"
+  },
+  "delta_k": {
+    "label": "$\\Delta(k)$",
+    "scale": "log",
+    "name": "Dimensionless Power Spectrum"
+  },
+  "dndlnm": {
+    "label": "Mass Function $\\left( \\frac{dn}{d\\ln M} \\right) h^3 Mpc^{-3}$",
+    "scale": "log",
+    "name": "dn/dln(m)"
+  },
+  "dndlog10m": {
+    "label": "Mass Function $\\left( \\frac{dn}{d\\log_{10}M} \\right) h^3 Mpc^{-3}$",
+    "scale": "log",
+    "name": "dn/dlog10(m)"
+  },
+  "dndm": {
+    "label": "Mass Function $\\left( \\frac{dn}{dM} \\right) h^4 Mpc^{-3}M_\\odot^{-1}$",
+    "scale": "log",
+    "name": "dn/dm"
+  },
+  "fsigma": {
+    "label": "$f(\\sigma) = \\nu f(\\nu)$",
+    "scale": "linear",
+    "name": "f(σ)"
+  },
+  "halo_bias": {
+    "label": "Halo Bias",
+    "scale": "log",
+    "name": "Halo Bias"
+  },
+  "lnsigma": {
+    "label": "$\\ln(\\sigma^{-1})$",
+    "scale": "linear",
+    "name": "ln(1/σ)"
+  },
+  "n_eff": {
+    "label": "Effective Spectral Index, $n_{eff}$",
+    "scale": "linear",
+    "name": "Effective Spectral Index"
+  },
+  "ngtm": {
+    "label": "$n(>M) h^3 Mpc^{-3}$",
+    "scale": "log",
+    "name": "n(>m)"
+  },
+  "nonlinear_delta_k": {
+    "label": "$\\Delta^2_{\\rm halofit}(k)$",
+    "scale": "log",
+    "name": "Non-linear dimensionless power spectrum (HALOFIT)"
+  },
+  "nonlinear_power": {
+    "label": "$P_{\\rm halofit}(k)$ [Mpc$^3 h^{-3}$]",
+    "scale": "log",
+    "name": "Non-linear power spectrum (HALOFIT)"
+  },
+  "power": {
+    "label": "$P(k)$, [Mpc$^3 h^{-3}$]",
+    "scale": "log",
+    "name": "Power Spectrum"
+  },
+  "power_1h_auto_matter": {
+    "label": "1-halo matter $P_{mm}^{1h}(k)$ [Mpc$^3 h^{-3}$]",
+    "scale": "log",
+    "name": "1-halo matter-matter power spectrum"
+  },
+  "power_1h_auto_tracer": {
+    "label": "1-halo tracer $P_{TT}^{1h}(k)$ [Mpc$^3 h^{-3}$]",
+    "scale": "log",
+    "name": "2-halo tracer-tracer power spectrum"
+  },
+  "power_1h_cross_tracer_matter": {
+    "label": "1-halo matter-tracer $P_{m\\times T}^{1h}(k)$ [Mpc$^3 h^{-3}$]",
+    "scale": "log",
+    "name": "1-halo tracer-matter power spectrum"
+  },
+  "power_1h_cs_auto_tracer": {
+    "label": "1-halo cen-sat tracer $P_{TT}^{1h, cs}(k)$ [Mpc$^3 h^{-3}$]",
+    "scale": "log",
+    "name": "1-halo central-satellite tracer power spectrum"
+  },
+  "power_1h_ss_auto_tracer": {
+    "label": "1-halo sat-sat tracer $P_{TT}^{1h, ss}(k)$ [Mpc$^3 h^{-3}$]",
+    "scale": "log",
+    "name": "1-halo satellite-satellite tracer power spectrum"
+  },
+  "power_2h_auto_matter": {
+    "label": "2-halo matter $P_{mm}^{2h}(k)$ [Mpc$^3 h^{-3}$]",
+    "scale": "log",
+    "name": "2-halo matter-matter power spectrum"
+  },
+  "power_2h_auto_tracer": {
+    "label": "2-halo tracer $P_{TT}^{2h}(k)$ [Mpc$^3 h^{-3}$]",
+    "scale": "log",
+    "name": "2-halo tracer-tracer power spectrum"
+  },
+  "power_2h_cross_tracer_matter": {
+    "label": "2-halo matter-tracer $P_{m\\times T}^{2h}(k)$ [Mpc$^3 h^{-3}$]",
+    "scale": "log",
+    "name": "2-halo matter-tracer power spectrum"
+  },
+  "power_auto_matter": {
+    "label": "2-halo matter $P_{mm}(k)$ [Mpc$^3 h^{-3}$]",
+    "scale": "log",
+    "name": "Matter-matter power spectrum"
+  },
+  "power_auto_tracer": {
+    "label": "Tracer $P_{TT}(k)$ [Mpc$^3 h^{-3}$]",
+    "scale": "log",
+    "name": "Tracer power spectrum"
+  },
+  "power_cross_tracer_matter": {
+    "label": "Matter-tracer $P_{m\\times T}(k)$ [Mpc$^3 h^{-3}$]",
+    "scale": "log",
+    "name": "Matter-tracer power spectrum"
+  },
+  "radii": {
+    "label": "Radius [Mpc/$h$]",
+    "scale": "log",
+    "name": "Radii of spherical regions"
+  },
+  "rho_gtm": {
+    "label": "$\\rho(>M)$, $M_{\\odot}h^{2}Mpc^{-3}$",
+    "scale": "log",
+    "name": "ρ(>m)"
+  },
+  "rho_ltm": {
+    "label": "$\\rho(<M)$, $M_{\\odot}h^{2}Mpc^{-3}$",
+    "scale": "linear",
+    "name": "ρ(<m)"
+  },
+  "satellite_occupation": {
+    "label": "Satellite Tracer Occupation",
+    "scale": "log",
+    "name": "Occupation of satellite component"
+  },
+  "sd_bias_correction": {
+    "label": "Scale-dependent bias correction",
+    "scale": "linear",
+    "name": "Scale-dependent bias correction"
+  },
+  "sigma": {
+    "label": "Mass Variance, $\\sigma$",
+    "scale": "linear",
+    "name": "σ (mass variance)"
+  },
+  "total_occupation": {
+    "label": "Total Tracer Occupation",
+    "scale": "log",
+    "name": "Tracer occupation"
+  },
+  "tracer_cmz_relation": {
+    "label": "Tracer Concentration",
+    "scale": "log",
+    "name": "Tracer Concentration"
+  },
+  "transfer_function": {
+    "label": "$T(k)$, [Mpc$^3 h^{-3}$]",
+    "scale": "log",
+    "name": "Transfer Function"
+  }
+}

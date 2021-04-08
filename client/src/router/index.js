@@ -25,7 +25,7 @@ import 'vue-material/dist/vue-material.min.css';
 import 'vue-material/dist/theme/default.css';
 import { SliderPlugin } from '@syncfusion/ej2-vue-inputs';
 
-import Home from '../views/Home.vue';
+import Home from '@/views/Home.vue';
 
 Vue.use(VueRouter);
 Vue.use(VueObserveVisibility);
@@ -75,6 +75,11 @@ const routes = [
     path: '/edit/:id',
     name: 'Edit',
     component: () => import(/* webpackChunkname: "edit" */ '../views/Forms.vue'),
+  },
+  {
+    path: '/acknowledge',
+    name: 'Acknowledge',
+    component: () => import(/* webpackChunkname: "acknowledgment" */ '../views/Acknowledge.vue'),
   },
 ];
 

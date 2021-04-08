@@ -6,10 +6,10 @@
       class="md-primary"
       md-fixed>
       <md-list>
-        <md-list-item v-for="(form, index) in forms" :key="index"
-          :class="{'router-link-active': currentlyVisible == form.title}"
+        <md-list-item v-for="(form, index) in Object.values(forms)" :key="index"
+          :class="{ 'router-link-active': currentlyVisible == form.title }"
           :to="`#${form.id}`">
-          {{form.title}}
+          <span :style="{'color': !form.valid ? 'red' : null }">{{form.title}}</span>
         </md-list-item>
       </md-list>
     </md-app-drawer>
@@ -22,15 +22,17 @@
             <h2 class="md-title">{{contextSecondary}}</h2>
           </div>
           <md-divider/>
-          <div v-for="(form, index) in forms" :key="index">
+          <div v-for="(form, index) in Object.values(forms)" :key="index">
             <FormWrapper
               :id="form.id"
               :title="form.title"
               @currently-visible="() => setCurrentlyVisible(form.id, form.title)">
-              <component
-                v-bind="buildProps(form)"
-                :is="form.component"
-                v-model="params[form.model]"/>
+              <GenericForm
+                v-if="initialFormState"
+                :formId="form.id"
+                :initialSubformState="initialFormState[form.id]"
+                @is-valid="(valid) => isValid(form, valid)"
+                v-model="currentFormState[form.id]"/>
             </FormWrapper>
             <md-divider/>
           </div>
@@ -45,22 +47,24 @@
 import FormWrapper from '@/components/FormWrapper.vue';
 import Navbar from '@/components/Navbar.vue';
 import clonedeep from 'lodash.clonedeep';
-import Debug from 'debug';
 import FORMS from '@/constants/forms';
+import GenericForm from '@/components/Forms/GenericForm.vue';
 
-const debug = Debug('Create.vue');
-debug.enabled = true;
 export default {
   name: 'Forms',
   components: {
     FormWrapper,
     Navbar,
+    GenericForm,
   },
   model: {
     event: 'onChange',
   },
   props: {
-    init: {
+    /**
+     * The state of the model.
+     */
+    initialFormState: {
       type: Object,
       required: true,
     },
@@ -75,36 +79,56 @@ export default {
   },
   data() {
     return {
-      forms: FORMS,
+      forms: clonedeep(FORMS),
       currentlyVisible: null,
-      params: clonedeep(this.init),
-      default: clonedeep(this.init),
+      currentFormState: clonedeep(this.initialFormState),
     };
   },
   activated() {
     this.currentlyVisible = null;
   },
   watch: {
-    params: {
+    /**
+     * If state is propogated up, then pass it along to this components parent.
+     */
+    currentFormState: {
       deep: true,
-      handler() { this.$emit('onChange', clonedeep(this.params)); },
+      handler() { this.$emit('onChange', clonedeep(this.currentFormState)); },
     },
-    init: {
+    /**
+     * If state is propogated down, then pass it along to the children.
+     */
+    initialFormState: {
       deep: true,
       handler() {
-        this.params = clonedeep(this.init);
-        this.default = clonedeep(this.init);
+        this.currentFormState = clonedeep(this.initialFormState);
       },
     },
   },
   methods: {
+    /**
+     * At the moment, this function triggers a re-render of the forms.
+     * It might be good to find a way to make this not happen. This can be
+     * seen by setting up a debugging statement in a lifecycle hook for a
+     * re-render in the generic form.
+     */
     setCurrentlyVisible(id, title) {
       this.currentlyVisible = title;
       window.history.replaceState({}, '', `#${id}`);
     },
-    buildProps(form) {
-      // console.log(this.default[form.id]);
-      return { ...form.props, init: this.default[form.id], title: form.title };
+
+    isValid(f, valid) {
+      const form = f;
+      form.valid = valid;
+      this.$emit('is-valid', this.testValid());
+      this.$forceUpdate();
+    },
+    testValid() {
+      let res = true;
+      Object.keys(this.forms).forEach((form) => {
+        res = res && this.forms[form].valid;
+      });
+      return res;
     },
   },
 };

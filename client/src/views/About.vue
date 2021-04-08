@@ -10,7 +10,11 @@
         Model of Large Scale Structure, written by
         <a href="http://loco.lab.asu.edu/steven-murray/">Steven Murray</a>.
         It is intended
-        to be used for both research and education, and I'd be very happy to hear
+        to be used for both research and education, and I'd be very
+        <a
+          href="https://github.com/halomod/TheHaloMod-SPA/discussions/new?category=Show-and-tell"
+          target="_blank"
+        >happy to hear</a>
         how you're using it!</p>
 
         <p>The backend for this app is written in Python. If you have a working
@@ -20,10 +24,21 @@
         <p>TheHaloMod is hosted on a cluster maintained by the
         <a href="http://loco.lab.asu.edu/">Low-frequency Cosmology</a> (LoCo)
         lab at the <a href="http://sese.asu.edu%20target%3D/">School of Earth
-        and Space Exploration</a> at ASU. Shout-outs to Judd Bowman, Danny Jacobs,
-        Adam Beardsley and Matt
-        Kolopanis for assisting greatly with server setup and maintenance.</p>
+        and Space Exploration</a> at ASU. </p>
+
+        <p>Shout-outs to Judd Bowman, Danny Jacobs, Adam Beardsley and Matt
+        Kolopanis for assisting greatly with server
+        setup and maintenance. Also shoutout to the ASU students who helped
+        build this version of the website:
+        <a href="https://github.com/vperuzzi">Tia Peruzzi</a>,
+        <a href="https://github.com/aschnapp">Michael Schnapp</a>,
+        <a href="https://github.com/Tengelma">Trent Engleman</a>,
+        <a href="https://github.com/dblevin1">Daniel Blevins</a>, and
+        <a href="https://github.com/aneuhold">Anton Neuhold</a>.</p>
       </md-content>
+      <span class="md-subheading code-link">See the code for this web app
+        <a target="_blank" href="https://github.com/halomod/TheHaloMod-SPA">here</a>
+      </span>
     </div>
   </div>
 </template>
@@ -31,6 +46,9 @@
 <script>
 import Navbar from '@/components/Navbar.vue';
 
+/**
+ * Represents the "About" page of the website.
+ */
 export default {
   components: {
     Navbar,
@@ -43,5 +61,8 @@ export default {
     display: flex;
     flex-direction: column;
     align-items: center;
+  }
+  .code-link {
+    padding: 32px;
   }
 </style>

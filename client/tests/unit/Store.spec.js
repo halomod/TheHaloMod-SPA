@@ -1,7 +1,8 @@
 import Store from '@/utils/Store.js';
-import DEFAULT_MODEL from '@/constants/initial_state.json';
 import Vue from 'vue';
 import isEqual from 'lodash.isequal';
+import { DEFAULT_FORM_STATE } from '@/constants/backend_constants.js';
+import PLOT_AXIS_METADATA from '@/constants/PLOT_AXIS_METADATA.json';
 import makeServer from '../mockServer';
 
 // Disable dev notice info logs. Just a quality of life thing.
@@ -12,6 +13,7 @@ Vue.config.devtools = false;
 require('fake-indexeddb/auto');
 
 describe('Store tests', () => {
+  let defaultModel;
   let store;
   let server;
   beforeAll(async () => {
@@ -19,7 +21,9 @@ describe('Store tests', () => {
     store = new Store();
     expect(store).toBeDefined();
     await store.init();
-    expect(store.state.plotType).toBeDefined();
+    defaultModel = DEFAULT_FORM_STATE;
+    expect(store.state.plot.y).toBeDefined();
+    expect(store.state.plot.x).toBeDefined();
   });
 
   // Clearing of store after each test
@@ -33,7 +37,8 @@ describe('Store tests', () => {
   });
 
   test('Store should be initialized', () => {
-    expect(store.state.plotType).toBeDefined();
+    expect(store.state.plot.y).toBeDefined();
+    expect(store.state.plot.x).toBeDefined();
   });
 
   test('Store should retrieve no model names if no models have been added', () => {
@@ -42,17 +47,17 @@ describe('Store tests', () => {
 
   test('Store should be able to create models and return them', async () => {
     const testModelName1 = 'Some test model';
-    await store.createModel(DEFAULT_MODEL, testModelName1);
+    await store.createModel(defaultModel, testModelName1);
     expect(store.getModelNames().length === 1).toBeTruthy();
-    await store.createModel(DEFAULT_MODEL, 'Some other test model');
+    await store.createModel(defaultModel, 'Some other test model');
     expect(store.getModelNames()).toContain(testModelName1);
   });
 
   test('Store should be able to create models and delete them', async () => {
     const testModelName1 = 'Some test model';
-    await store.createModel(DEFAULT_MODEL, testModelName1);
+    await store.createModel(defaultModel, testModelName1);
     expect(store.getModelNames().length === 1).toBeTruthy();
-    await store.createModel(DEFAULT_MODEL, 'Some other test model');
+    await store.createModel(defaultModel, 'Some other test model');
     expect(store.getModelNames()).toHaveLength(2);
     await store.deleteModel(testModelName1);
     expect(store.getModelNames().includes(testModelName1)).toBeFalsy();
@@ -61,7 +66,7 @@ describe('Store tests', () => {
   test('Cloning a model should add one and keep the original', async () => {
     const testModelName1 = 'Some test model';
     const testModelName2 = 'Some other test model';
-    await store.createModel(DEFAULT_MODEL, testModelName1);
+    await store.createModel(defaultModel, testModelName1);
     expect(store.getModelNames().length === 1).toBeTruthy();
     await store.cloneModel(testModelName1, testModelName2);
     const modelNames = store.getModelNames();
@@ -72,7 +77,7 @@ describe('Store tests', () => {
   test('Renaming model should create one and remove the original', async () => {
     const oldModelName = 'Model';
     const newModelName = 'Renamed Model';
-    await store.createModel(DEFAULT_MODEL, oldModelName);
+    await store.createModel(defaultModel, oldModelName);
     expect(store.getModelNames()).toContain(oldModelName);
     await store.renameModel(oldModelName, newModelName);
     expect(store.getModelNames()).not.toContain(oldModelName);
@@ -80,9 +85,10 @@ describe('Store tests', () => {
   });
 
   test('Clearing models should remove all existing models', async () => {
-    await store.createModel(DEFAULT_MODEL, 'MyModel');
-    await store.createModel(DEFAULT_MODEL, 'AnotherModel');
-    await store.createModel(DEFAULT_MODEL, 'AndAnotherOne');
+    await store.clearModels();
+    await store.createModel(defaultModel, 'MyModel');
+    await store.createModel(defaultModel, 'AnotherModel');
+    await store.createModel(defaultModel, 'AndAnotherOne');
     expect(store.getModelNames()).toHaveLength(3);
     await store.clearModels();
     expect(store.getModelNames()).toHaveLength(0);
@@ -90,35 +96,66 @@ describe('Store tests', () => {
 
   test('Changing the plot type should reflect in state', async () => {
     const newPlotType = 'somePlotType';
-    await store.setPlotType(newPlotType);
-    expect(store.state.plotType).toBe(newPlotType);
+    await store.setPlotType(newPlotType, 'x', false);
+    await store.setPlotType(newPlotType, 'y', false);
+    expect(store.state.plot.x).toBe(newPlotType);
+    expect(store.state.plot.y).toBe(newPlotType);
   });
 
   test('Getting a model should return its data', async () => {
     const testModelName1 = 'Some test model';
-    await store.createModel(DEFAULT_MODEL, testModelName1);
+    await store.createModel(defaultModel, testModelName1);
     const returnedModel = await store.getModel(testModelName1);
-    expect(isEqual(returnedModel, DEFAULT_MODEL)).toBeTruthy();
+    expect(isEqual(returnedModel, defaultModel)).toBeTruthy();
   });
 
   test('Getting a model returns null if a model doesnt exist', async () => {
     const returnedValue1 = await store.getModel('Some model not there');
     expect(returnedValue1).toBeUndefined();
-    await store.createModel(DEFAULT_MODEL, 'Some test model');
+    await store.createModel(defaultModel, 'Some test model');
     const returnedValue2 = await store.getModel('Some other model');
     expect(returnedValue2).toBeUndefined();
   });
 
   test('Adding models and getting all models should return all of the models', async () => {
+    await store.clearModels();
     const testModelName1 = 'Some test model';
     const testModelName2 = 'Some other test model';
-    await store.createModel(DEFAULT_MODEL, testModelName1);
+    await store.createModel(defaultModel, testModelName1);
     expect(store.getModelNames().length === 1).toBeTruthy();
-    await store.createModel(DEFAULT_MODEL, testModelName2);
+    await store.createModel(defaultModel, testModelName2);
     expect(store.getModelNames()).toContain(testModelName2);
     const allModels = await store.getAllModels();
     expect(typeof allModels === 'object').toBeTruthy();
     expect(allModels[testModelName1]).toBeDefined();
     expect(allModels[testModelName2]).toBeDefined();
+  });
+
+  test('Changing the plot axis log scale changes both the state log and '
+  + 'the logSettings entry for that axis', async () => {
+    await store.createModel(defaultModel, 'Some model name');
+    expect(store.getModelNames().length === 1).toBeTruthy();
+    store.setPlotType(Object.keys(PLOT_AXIS_METADATA)[0], 'x', false);
+    expect(typeof store.state.plot.x).toBe('string');
+    const previousXLogState = store.state.plot.logx;
+    expect(typeof previousXLogState).toBe('boolean');
+
+    const previousXLogSetting = store.state.plot
+      .plotLogSettings[store.state.plot.x].scale;
+    expect(typeof previousXLogSetting).toBe('string');
+    if (previousXLogState) {
+      expect(previousXLogSetting).toBe('log');
+    } else {
+      expect(previousXLogSetting).toBe('linear');
+    }
+    await store.setPlotAxisScale('x', !previousXLogState);
+    expect(store.state.plot.logx).toBe(!previousXLogState);
+    const newXLogSetting = store.state.plot
+      .plotLogSettings[store.state.plot.x].scale;
+    if (previousXLogState) {
+      expect(newXLogSetting).toBe('linear');
+    } else {
+      expect(newXLogSetting).toBe('log');
+    }
   });
 });

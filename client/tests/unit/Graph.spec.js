@@ -2,7 +2,8 @@ import { shallowMount, createLocalVue } from '@vue/test-utils';
 import Graph from '@/components/Graph';
 import Vue from 'vue';
 import Store from '@/utils/Store.js';
-import DEFAULT_MODEL from '@/constants/initial_state.json';
+import { PLOT_AXIS_OPTIONS } from '@/constants/PLOT.js';
+import { DEFAULT_FORM_STATE } from '@/constants/backend_constants.js';
 import makeServer from '../mockServer';
 
 // Disable dev notice info logs. Just a quality of life thing.
@@ -13,6 +14,7 @@ Vue.config.devtools = false;
 require('fake-indexeddb/auto');
 
 describe('Graph tests', () => {
+  let defaultModel;
   let server;
   let wrapper;
   beforeAll(async () => {
@@ -20,6 +22,7 @@ describe('Graph tests', () => {
     const localVue = createLocalVue();
     const store = new Store();
     await store.init();
+    defaultModel = DEFAULT_FORM_STATE;
     if (typeof store.state !== 'object') {
       throw new Error('Store wasn\'t initialized correctly in test. The store is'
       + ` ${JSON.stringify(store)}`);
@@ -51,9 +54,34 @@ describe('Graph tests', () => {
    */
   test('When model data is provided, it renders a plot', async () => {
     expect(wrapper.vm.$store).toBeDefined();
-    await wrapper.vm.$store.createModel(DEFAULT_MODEL, 'Some test model name');
+    await wrapper.vm.$store.createModel(defaultModel, 'Some test model name');
     const node = wrapper.find('#d3-chart');
     expect(node.exists()).toBe(true);
     expect(node.isVisible()).toBe(true);
+  });
+
+  test('Whenever an X axis is chosen, the correct set of Y values are set as options', async () => {
+    // Set the xAxisChoice to the first choice of X Axis choices
+    const { xAxisChoices } = wrapper.vm.$data;
+    expect(xAxisChoices).toBeDefined();
+    expect(Object.keys(xAxisChoices).length).toBeGreaterThanOrEqual(1);
+
+    /* Loop through each x axis choice and make sure each corresponding Y axis
+    option is different. */
+    let previousYAxisChoice = wrapper.vm.$data.yAxisChoice;
+    expect(previousYAxisChoice).toBeDefined();
+    for (let i = 0; i < Object.keys(xAxisChoices).length; i += 1) {
+      const xChoice = Object.keys(xAxisChoices)[i];
+      wrapper.vm.$data.xAxisChoice = xChoice;
+      // It seems that await has to be used here to allow the render to occur
+      // eslint-disable-next-line no-await-in-loop
+      await wrapper.vm.$nextTick();
+      const { yAxisChoices } = wrapper.vm.$data;
+      expect(yAxisChoices).toBeDefined();
+      expect(yAxisChoices.length).toBeGreaterThanOrEqual(1);
+      const { yAxisChoice } = wrapper.vm.$data;
+      expect(yAxisChoice).toBe(PLOT_AXIS_OPTIONS[xAxisChoices[xChoice]].y[0]);
+      [previousYAxisChoice] = yAxisChoices;
+    }
   });
 });

@@ -7,16 +7,12 @@ on:
   push:
     branches:
       - main
+      - dev
+  pull_request:
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    # Require that the 'test' job completes first
-    needs: test
-    defaults:
-      run:
-        working-directory: client
-
     steps:
     - name: Checkout 🛎️
       uses: actions/checkout@v2
@@ -30,21 +26,67 @@ jobs:
       with:
         # npm cache files are stored in `~/.npm` on Linux/macOS
         path: ~/.npm
-        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+        key: ${{ runner.os }}-build-v2-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
         restore-keys: |
           ${{ runner.os }}-build-${{ env.cache-name }}-
           ${{ runner.os }}-build-
           ${{ runner.os }}-
 
-    - name: Install and Build 🔧
-      run: |
-        npm install
-        npm run build
-
-    - name: Deploy 🚀
-      uses: JamesIves/github-pages-deploy-action@3.7.1
+    - name: Python Caching
+      uses: actions/cache@v2
       with:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        BRANCH: gh-pages # The branch the action should deploy to.
-        FOLDER: client/dist # The folder the action should deploy.
-        CLEAN: true # Automatically remove deleted files from the deploy branch
+        path: ~/.cache/pip
+        # Makes the hashing depend on changes to requirements.txt
+        key: ${{ hashFiles('server/requirements.txt') }}
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    
+    - name: Install dependencies
+      run: cd client && npm install
+
+    - name: Setup gfortran
+      run: |
+        sudo apt-get install gfortran-8
+        mkdir -p gfortran-symlinks
+        ln -s /usr/bin/gfortran-8 gfortran-symlinks/gfortran
+        export PATH=$PWD/gfortran-symlinks:$PATH
+
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8.8
+
+    - name: Generate constants    
+      run: sh generate_constants.sh
+
+    - name: Build
+      env: 
+        VUE_APP_SERVER_URL: https://api.thehalomod.app
+      run: cd client && npm run build
+
+    - name: Deploy to Netlify
+      uses: nwtgck/actions-netlify@v1.1
+      with:
+        publish-dir: './client/dist'
+        # The "production-branch" means that any deploy to the specified branch
+        # will deploy as the production site. For example at 
+        # thehalomod.netlify.app
+        production-branch: main
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        deploy-message: Deployed from GitHub Actions for branch "${{ github.ref }}"
+        enable-commit-status: true
+        # Disables commenting on individual commits with the deploy location
+        # Instead, the deploy location can be found in the github action log
+        # for this workflow and this step.
+        enable-commit-comment: false
+        # Enable having a comment on the PR that shows the link to the
+        # deployment. This is overwritten on each consecutive deployment.
+        enable-pull-request-comment: true
+        github-deployment-environment: Netlify
+      env:
+        NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_OAUTH_TOKEN }}
+        NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+      timeout-minutes: 1

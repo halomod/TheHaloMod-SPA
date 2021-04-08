@@ -99,6 +99,10 @@ export default {
     height: 0px
   }
   .md-field {
-    margin: 0px 0px 0px 0px
+    margin: 0px 0px 0px 0px;
+    padding: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
   }
 </style>

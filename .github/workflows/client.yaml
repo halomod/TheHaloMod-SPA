@@ -8,10 +8,6 @@ on: [push]
 jobs:
   test:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: client
-
     strategy:
       matrix:
         node-version: [14.x]
@@ -20,11 +16,6 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node-version }}
-    
     - name: Cache node modules
       uses: actions/cache@v2
       env:
@@ -32,12 +23,42 @@ jobs:
       with:
         # npm cache files are stored in `~/.npm` on Linux/macOS
         path: ~/.npm
-        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+        key: ${{ runner.os }}-build-v2-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
         restore-keys: |
           ${{ runner.os }}-build-${{ env.cache-name }}-
           ${{ runner.os }}-build-
           ${{ runner.os }}-
+
+    - name: Python Caching
+      uses: actions/cache@v2
+      with:
+        path: ~/.cache/pip
+        # Makes the hashing depend on changes to requirements.txt
+        key: ${{ hashFiles('server/requirements.txt') }}
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
     
-    - run: npm ci
-    - run: npm run lint
-    - run: npm run test:unit
+    - name: Setup gfortran
+      run: |
+        sudo apt-get install gfortran-8
+        mkdir -p gfortran-symlinks
+        ln -s /usr/bin/gfortran-8 gfortran-symlinks/gfortran
+        export PATH=$PWD/gfortran-symlinks:$PATH
+
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8.8
+
+    - name: Generate constants    
+      run: sh generate_constants.sh
+
+    - name: Run Tests
+      run: |
+        cd client
+        npm ci
+        npm run lint
+        npm run test

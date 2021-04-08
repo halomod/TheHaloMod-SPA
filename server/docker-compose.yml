@@ -1,0 +1,30 @@
+version: '3.5'
+
+services:
+  thehalomod-server:
+    build: .
+    ports: 
+      - ${FLASK_RUN_PORT}:${FLASK_RUN_PORT}
+    links:
+      - redis
+    container_name: hmf-server
+    # The default stop signal for flask apps is SIGINT, while by default
+    # docker uses SIGTERM
+    stop_signal: SIGINT
+    environment: 
+      - FLASK_RUN_PORT=${FLASK_RUN_PORT}
+      - FLASK_RUN_HOST=${FLASK_RUN_HOST}
+      - FLASK_ENV="production"
+      - FLASK_DEBUG=False
+      - FLASK_APP=halomod_app
+      # Set so that python will output print statements when flask is running
+      - PYTHONUNBUFFERED=False
+      # Set so that the HTTPS cookies will go through on the remote server. 
+      # The behavior is defined in "config.py"
+      - USE_HTTPS_SESSION=True
+
+  redis:
+    image: "redis"
+    container_name: hmf-redis-cache
+    expose: 
+      - 6379

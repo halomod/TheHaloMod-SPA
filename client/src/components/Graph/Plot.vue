@@ -21,35 +21,40 @@ export default {
       type: String,
       required: true,
     },
-    /**
-     * Used to just determine edge cases for logarithmic scales in the x-axis.
-     * This data could likely be stored at a higher level about each plot type.
-     * Right now, only the y-axis has some kind of indicator that it is
-     * logarithmic.
-     */
-    plotType: {
-      type: String,
-      required: false,
+    xlog: {
+      type: Boolean,
+    },
+    ylog: {
+      type: Boolean,
     },
   },
-  mounted() {
-    // Init
+  async mounted() {
+    // Wait until the component is fully rendered so that the plot gets the
+    // right size.
+    await this.$nextTick();
     this.generatePlot();
+
     /* Debounce only runs the function, even after many calls, once every
     so many ms listed in the second arg. This helps speed up the UI on
     resize. https://lodash.com/docs/4.17.15#debounce */
-    window.addEventListener('resize', debounce(this.generatePlot, 400));
+    window.addEventListener('resize', debounce(this.generatePlot, 200));
   },
   watch: {
     plotData() {
       debug('Data changed');
       this.generatePlot();
     },
+    xlog() {
+      this.generatePlot();
+    },
+    ylog() {
+      this.generatePlot();
+    },
   },
   methods: {
     generatePlot() {
       debug('plot being built');
-      buildPlot(this.plotElementId, this.plotData, this.plotType);
+      buildPlot(this.plotElementId, this.$store.state.plot, this.xlog, this.ylog);
     },
   },
   beforeDestroy() {
@@ -60,7 +65,7 @@ export default {
 
 <style>
 .plot {
-  margin: 32px;
+  margin-bottom: 16px;
   display: flex;
   align-content: center;
   align-items: center;

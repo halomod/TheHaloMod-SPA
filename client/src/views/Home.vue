@@ -21,6 +21,10 @@ import Graph from '@/components/Graph';
 import Navbar from '@/components/Navbar';
 import Download from '@/components/Download';
 
+/**
+ * Represents the view for the main page of the application. This is where
+ * most of the functionality related to the plot and the models are held.
+ */
 export default {
   name: 'Home',
   components: {
@@ -33,8 +37,10 @@ export default {
 
 </script>
 
+<style lang="scss">
+  @import "./theme";
+</style>
 <style scoped>
-
   .home {
     display: grid;
     grid-template-columns: 1fr 2fr;

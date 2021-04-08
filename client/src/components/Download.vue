@@ -35,72 +35,83 @@
     <md-dialog-title>{{loadingTitle}}</md-dialog-title>
     <md-dialog-content><md-progress-bar md-mode="indeterminate"/></md-dialog-content>
   </md-dialog>
-  <md-dialog v-if="asciiDialogVisible"
-    :md-active.sync="asciiDialogVisible">
-    <md-dialog-title>ASCII data will download soon...</md-dialog-title>
-    <md-button @click="asciiDialogVisible = false">Close</md-button>
+  <md-dialog v-if="serverDownloadDialogVisible"
+    :md-active.sync="serverDownloadDialogVisible">
+    <md-dialog-title>{{loadingTitle}}</md-dialog-title>
+    <md-button @click="serverDownloadDialogVisible = false">Close</md-button>
   </md-dialog>
   </div>
 </template>
 
 <script>
-import baseUrl from '@/env';
+import {
+  downloadData,
+  downloadPlotImage,
+  downloadParamValsJson,
+  downloadParamValsToml,
+} from '@/utils/downloads.js';
 
-const downloadChoiceObjs = {
-  plotImage: {
+const downloadOptions = {
+  PlotImage: {
+    name: 'PlotImage',
     displayName: 'Image of Plot',
-    name: 'plotImage',
-    downloadName: 'PlotImage',
+    fileName: 'PlotImage.svg',
     loadingTitle: 'Creating plot image...',
   },
-  ascii: {
-    displayName: 'ASCII',
-    name: 'ascii',
-    downloadName: 'AllData.zip',
-    loadingTitle: 'Retrieving ASCII data...',
+  ParamValsToml: {
+    displayName: 'Parameter Values in TOML Format',
+    name: 'ParamValsToml',
+    downloadName: 'AllModelParemeterValues.zip',
+    loadingTitle: 'Parameter value data will download soon...',
   },
-  paramVals: {
-    displayName: 'Parameter Values',
-    name: 'paramVals',
-    downloadName: 'ParameterValues.json',
+  ParamValsJson: {
+    name: 'ParamValsJson',
+    displayName: 'Parameter Values in JSON Format',
+    fileName: 'ParameterValues.json',
     loadingTitle: 'Loading parameter values...',
   },
+  Data: {
+    name: 'Data',
+    displayName: 'Vector Data',
+    fileName: 'ModelVectorData.zip',
+    loadingTitle: 'Getting all model data',
+  },
 };
+
+/**
+ * Represents the component which can be used to download things such as the
+ * plot, model data, and parameter values.
+ */
 export default {
   name: 'Download',
   data() {
     return {
-      downloadChoices: Object.values(downloadChoiceObjs),
-      downloadChoice: Object.values(downloadChoiceObjs)[0].name,
+      downloadChoices: Object.values(downloadOptions),
+      downloadChoice: Object.values(downloadOptions)[0].name,
       loading: false,
       loadingTitle: '',
-      asciiDialogVisible: false,
+      serverDownloadDialogVisible: false,
     };
   },
   methods: {
+    downloadData,
+    downloadPlotImage,
+    downloadParamValsJson,
+    downloadParamValsToml,
     async handleClick() {
       const downloadNode = document.getElementById('download-element');
-      const { downloadName, name, loadingTitle } = downloadChoiceObjs[this.downloadChoice];
+      const { fileName, name, loadingTitle } = downloadOptions[this.downloadChoice];
       this.loadingTitle = loadingTitle;
-      this.loading = true;
-      const href = await this[`download_${name}`]();
+      const href = await this[`download${name}`](this.$store);
+      if (name === 'ParamValsToml') {
+        this.serverDownloadDialogVisible = true;
+      } else {
+        this.loading = true;
+      }
       downloadNode.setAttribute('href', href);
-      downloadNode.setAttribute('download', downloadName);
+      downloadNode.setAttribute('download', fileName);
       downloadNode.click();
       this.loading = false;
-    },
-    async download_plotImage() {
-      await this.$store.createPlot();
-      return this.$store.state.plot;
-    },
-    async download_ascii() {
-      this.asciiDialogVisible = true;
-      return `${baseUrl}/ascii`;
-    },
-    async download_paramVals() {
-      const modelsJsonString = JSON.stringify(await this.$store.getAllModels(), null, 2);
-      const dataStr = `data:text/json;charset=utf-8,${encodeURIComponent(modelsJsonString)}`;
-      return dataStr;
     },
   },
 };

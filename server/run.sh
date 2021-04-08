@@ -7,14 +7,21 @@ for arg in "$@"
 do
   case $arg in
     "--install")
-      python3 -m pip install -r requirements.txt;;
+      pip3 install -r requirements.txt;;
     "--lint" )
+      autopep8 -a -r --in-place halomod_app
       flake8 tests halomod_app;;
     "--test" )
-      python -m pytest;;
+      python3 -m pytest;;
     "--dev" )
       export FLASK_APP=halomod_app
       export FLASK_ENV=development
+      # Doesn't run with SSL on dev so that certs do not need to be handled.
+      # To run with SSL on, the following could be run: 
+      # `flask run --cert-adhoc`
       flask run;;
+    "--generate-constants" )
+      echo "Generating constants from run.sh with generate_constants.py..."
+      python3 -m generate_constants.py;;
   esac
 done
