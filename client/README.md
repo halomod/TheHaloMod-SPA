@@ -10,6 +10,7 @@
   - [Development commands](#development-commands)
 - [Architecture](#architecture)
   - [Styling based on theme](#styling-based-on-theme)
+- [Analytics](#analytics)
 
 ## Usage
 
@@ -43,6 +44,7 @@ The `client` is the front-end to TheHaloMod-SPA. It makes requests to the api (t
 - Linting: Linting is handled by [ESLint](https://eslint.org/), and the configuration for ESLint is held in [`client/.eslintrc.js`](.eslintrc.js).
 - Package Management: Package management is handled mostly by [npm](https://www.npmjs.com/). Although there is a `yarn.lock` file which can be used for [yarn](https://yarnpkg.com/).
 - Visual Design: Visual design and, more generally, the CSS of the application is done by [vue-material](https://vuematerial.io/). A [material design](https://material.io/design) framework for Vue.
+- Analytics is done with a self-hosted [plausible.io](https://plausible.io/) container.
 
 Some folder descriptions are below:
 
@@ -56,3 +58,23 @@ Besides the things mentioned here, documentation exists in each file to provide 
 ### Styling based on theme
 
 Styling based on the theme mode (dark / light) is done in [`client/src/views/theme.scss`](src/views/theme.scss). If anything visual needs to be manually adjusted based on the currently selected mode, see that file for examples on how to do so. 
+
+## Analytics
+
+Analytics is done by using [plausible.io](https://plausible.io/). To start the analytics server up from scratch, the server must already have docker installed, as well as git. The assumption for the following instructions are that the server is running a Linux distro of some kind and has the `docker-compose` command available:
+
+1. Follow the instructions [here](https://plausible.io/docs/self-hosting#up-and-running) up to, but not including step 3: "Start the Server"
+2. Modify the `plausible-conf.env` file so that it has the extra value on a new line: `PORT=8124`. This needs to be done because there is already a server running that has port 8000 taken, which is the default for plausible. 
+3. Configure NGINX for the new server which should generally have the following info:
+```
+# the halo mod analytics server
+server {
+    server_name analytics.thehalomod.app;
+    location / {
+        proxy_pass http://localhost:8124;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+}
+```
+4. Continue the steps [here](https://plausible.io/docs/self-hosting#up-and-running)
