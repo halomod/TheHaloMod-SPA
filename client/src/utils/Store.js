@@ -5,9 +5,8 @@ import Debug from 'debug';
 import {
   set,
   keys,
-  del,
   get,
-  clear,
+  del,
 } from 'idb-keyval';
 import { DEFAULT_THEME } from '@/constants/themeOptions';
 import PLOT_AXIS_METADATA from '@/constants/PLOT_AXIS_METADATA.json';
@@ -24,7 +23,10 @@ debug.enabled = false;
 export default class Store {
   constructor() {
     this.state = {
-      models: {},
+      /**
+       * Stored as a map so that it retains insertion order.
+       */
+      models: new Map(),
       modelNames: [],
       plot: {
         x: '',
@@ -49,7 +51,7 @@ export default class Store {
 
     // If the models object does not exist, create it.
     if (!k.includes('models')) {
-      await set('models', {});
+      await set('models', new Map());
     } else {
       this.state.models = await get('models');
     }
@@ -69,7 +71,7 @@ export default class Store {
     }
 
     this.state.modelNames = this.getModelNames();
-    if (Object.keys(this.state.models).length !== 0) {
+    if (this.state.models.size !== 0) {
       this.getPlotData();
     }
   }
@@ -85,7 +87,8 @@ export default class Store {
    * }}
    */
 
-  /** Flattens the model object to prepare it for use by the server
+  /**
+   * Flattens the model object to prepare it for use by the server
    *
    * @param {object} model
    */
@@ -111,7 +114,11 @@ export default class Store {
         label: name,
       });
       this.state.error = false;
-      await Promise.all([this.setModel(name, model), this.getPlotData()]);
+      await Promise.all([
+        this.setModel(name, model),
+        this.getPlotData(),
+      ]);
+      this.state.modelNames = this.getModelNames();
     } catch (error) {
       console.error(error);
       this.state.error = true;
@@ -159,9 +166,9 @@ export default class Store {
         model_name: oldName,
         new_model_name: newName,
       });
-      const model = this.state.models[oldName];
-      this.state.models[newName] = model;
-      delete this.state.models[oldName];
+      const model = this.state.models.get(oldName);
+      this.state.models.set(newName, model);
+      this.state.models.delete(oldName);
       this.state.modelNames = this.getModelNames();
       await set('models', this.state.models);
       this.getPlotData();
@@ -215,7 +222,7 @@ export default class Store {
    * @returns {object | undefined} a copy of the target model, or undefined if
    * it doesn't exist
    */
-  getModel = async (name) => clonedeep(await this?.state.models[name]);
+  getModel = (name) => clonedeep(this.state.models.get(name));
 
   /**
    * Gets (clones) all models.
@@ -224,19 +231,7 @@ export default class Store {
    *  [modelName: string]: Object
    * } | undefined} A copy of all the models with their names or undefined
    */
-  getAllModels = async () => {
-    const modelNames = this.getModelNames();
-
-    /* Pull all models out of state and process because they are stored as
-    promises. */
-    const modelPromises = modelNames.map((modelName) => this?.state.models[modelName]);
-    const allModelObjs = clonedeep(await Promise.all(modelPromises));
-    const allModels = {};
-    modelNames.forEach((modelName, index) => {
-      allModels[modelName] = allModelObjs[index];
-    });
-    return allModels;
-  };
+  getAllModels = () => clonedeep(Object.fromEntries(this.state.models.entries()));
 
   /**
    * Sets a model with the given name.
@@ -245,13 +240,9 @@ export default class Store {
    * @param {object} model the model to set
    */
   setModel = async (name, model) => {
-    try {
-      this.state.models[name] = model;
-      this.state.modelNames = this.getModelNames();
-      await set('models', this.state.models);
-    } catch (error) {
-      console.error(error);
-    }
+    this.state.models.set(name, model);
+    this.state.modelNames = this.getModelNames();
+    await set('models', this.state.models);
   }
 
   /**
@@ -259,7 +250,7 @@ export default class Store {
    *
    * @returns {string[]} array of the model names
    */
-  getModelNames = () => Object.keys(this.state.models);
+  getModelNames = () => Array.from(this.state.models.keys());
 
   /**
    * Deletes a model.
@@ -274,11 +265,9 @@ export default class Store {
         },
       });
       this.state.error = false;
-      await del(name);
-      /* eslint-disable */
-      delete this?.state.models[name];
+      this.state.models.delete(name);
       this.state.modelNames = this.getModelNames();
-      /* eslint-enable */
+      await set('models', this.state.models);
       await this.getPlotData();
     } catch (error) {
       console.error(error);
@@ -296,8 +285,8 @@ export default class Store {
   clearModels = async () => {
     try {
       await axios.delete(`${baseurl}/models`);
-      await clear();
-      this.state.models = {};
+      await del('models');
+      this.state.models = new Map();
       this.state.modelNames = this.getModelNames();
       await this.getPlotData();
     } catch (error) {
