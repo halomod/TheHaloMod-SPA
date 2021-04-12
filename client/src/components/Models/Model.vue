@@ -15,7 +15,7 @@
       <span id="error">{{ invalidName ? 'Name is already in use' : '⠀'}}</span>
     </div>
 
-    <div v-if="editing">
+    <div v-if="editing" id="model-buttons">
       <md-button
         class="md-icon-button"
         @click="reset">
@@ -30,7 +30,7 @@
         <md-tooltip>Confirm</md-tooltip>
       </md-button>
     </div>
-    <div v-else>
+    <div v-else id="model-buttons">
       <md-button
         class="md-icon-button"
         @click="$emit('edit-click', name)"
@@ -123,6 +123,9 @@ export default {
     display: flex;
     flex-direction: row;
     align-items: center;
+  }
+  #model-buttons {
+    padding-bottom: 15px;
   }
   #error {
     color: red;
