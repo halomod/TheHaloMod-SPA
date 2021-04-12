@@ -3,23 +3,33 @@
     <md-toolbar class="md-large">
       <div class="md-toolbar-row">
         <div class="md-toolbar-section-start">
+          <div class="md-layout">
           <h3 class="md-title">Models</h3>
+          <md-icon class="tooltip">
+              help
+              <md-tooltip md-direction="right"
+                >Create, Edit, Delete, or Clone models</md-tooltip
+              >
+            </md-icon>
+          </div>
         </div>
         <div class="md-toolbar-section-end">
           <!-- At this moment, restarting causes some inconsistencies between
           the state held on the server and the state in the browser.
           <md-button @click="restart" class="md-accent">Restart</md-button>
           -->
-          <md-button @click="create" class="md-icon-button">
-            <md-icon>add</md-icon>
-            <md-tooltip>New Model</md-tooltip>
-          </md-button>
-          <md-button @click="showDeleteAllDialog = true"
-            v-if="STORE_STATE.modelNames.length > 0"
-            class="md-icon-button">
-            <md-icon>delete_forever</md-icon>
-            <md-tooltip>Delete All</md-tooltip>
-          </md-button>
+            <md-button @click="create" class="md-icon-button">
+              <md-icon>add</md-icon>
+              <md-tooltip>New Model</md-tooltip>
+            </md-button>
+            <md-button
+              @click="showDeleteAllDialog = true"
+              v-if="STORE_STATE.modelNames.length > 0"
+              class="md-icon-button"
+            >
+              <md-icon>delete_forever</md-icon>
+              <md-tooltip>Delete All</md-tooltip>
+            </md-button>
         </div>
       </div>
       <md-list v-if="STORE_STATE.modelNames.length > 0" class="model-list">
@@ -40,10 +50,12 @@
       <md-dialog
         :md-active.sync="showDeleteAllDialog"
         :md-close-on-esc="false"
-        :md-click-outside-to-close="false">
+        :md-click-outside-to-close="false"
+      >
         <md-dialog-title>Confirm Delete All</md-dialog-title>
         <md-dialog-content>
-          Are you sure you want to delete all of your models and start from scratch?
+          Are you sure you want to delete all of your models and start from
+          scratch?
         </md-dialog-content>
         <md-dialog-actions>
           <md-button @click="deleteAll">Delete Everything</md-button>
@@ -51,13 +63,13 @@
         </md-dialog-actions>
       </md-dialog>
     </md-toolbar>
-    <div v-if="loading"
-      style="display: grid; height: 100%">
+    <div v-if="loading" style="display: grid; height: 100%">
       <md-progress-spinner
         :md-diameter="100"
         :md-stroke="10"
         md-mode="indeterminate"
-        style="margin: auto;"/>
+        style="margin: auto"
+      />
     </div>
   </div>
 </template>
@@ -92,7 +104,9 @@ export default {
       if (this.modelNames.length !== 0) {
         this.loading = true;
         this.blocked = true;
-        await Promise.all(this.modelNames.map((modelName) => this.$store.deleteModel(modelName)));
+        await Promise.all(
+          this.modelNames.map((modelName) => this.$store.deleteModel(modelName)),
+        );
         this.blocked = false;
         this.loading = false;
       }
@@ -130,8 +144,11 @@ export default {
 </script>
 
 <style>
-  .model-list {
-    width: 100%;
-    margin-bottom: 16px;
-  }
+.model-list {
+  width: 100%;
+  margin-bottom: 16px;
+}
+.tooltip {
+  margin-left: 10px;
+}
 </style>

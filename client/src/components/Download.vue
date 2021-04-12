@@ -4,6 +4,12 @@
     <div class="md-toolbar-row">
       <div class="md-toolbar-section-start">
         <h3 class="md-title">Download</h3>
+        <md-icon class="tooltip">
+              help
+              <md-tooltip md-direction="right"
+                >Download plot SVG, vector data, and parameter values for all models</md-tooltip
+              >
+            </md-icon>
       </div>
     </div>
     <div class="download-container">
