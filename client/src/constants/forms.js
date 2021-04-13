@@ -172,6 +172,13 @@ const FORMS = {
     modelChoices: MODEL_CHOICES.halo_exclusion,
     paramsKey: 'exclusion_params',
   },
+  wdm: {
+    id: 'wdm',
+    title: 'WDM',
+    coreParams: [
+      'wdm_mass',
+    ],
+  },
 };
 
 export default FORMS;

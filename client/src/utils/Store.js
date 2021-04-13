@@ -92,11 +92,21 @@ export default class Store {
    *
    * @param {object} model
    */
-  flatten = (model) => {
+  cleanFormData = (model) => {
     let flattened = {};
-    Object.values(model).forEach((subform) => {
+
+    const cleaned_model = clonedeep(model);
+
+    // If wdm_mass is zero turn off all WDM stuff.
+    // Also delete stuff that can't go into HaloModelWDM...
+    if (model.wdm.wdm_mass === 0) {
+      delete cleaned_model.wdm;
+    }
+
+    Object.values(cleaned_model).forEach((subform) => {
       flattened = { ...flattened, ...subform };
     });
+    console.log(flattened);
     return flattened;
   }
 
@@ -110,7 +120,7 @@ export default class Store {
   createModel = async (model, name) => {
     try {
       await axios.post(`${baseurl}/model`, {
-        params: this.flatten(model),
+        params: this.cleanFormData(model),
         label: name,
       });
       this.state.error = false;
@@ -139,7 +149,7 @@ export default class Store {
   updateModel = async (name, model) => {
     try {
       await axios.put(`${baseurl}/model`, {
-        params: this.flatten(model),
+        params: this.cleanFormData(model),
         model_name: name,
       });
       this.state.error = false;

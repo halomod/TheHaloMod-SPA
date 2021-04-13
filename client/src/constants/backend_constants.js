@@ -14,7 +14,7 @@ import deepFreeze from 'deep-freeze';
   * Establishes the potential formats for each subform's unique state
   * @typedef SubformState
   * @type {{
-  *   [coreParameter: string]?: string | int | boolean,
+  *   [coreParameter: string]?: string | int | boolean | number,
   *   [modelKey: string]?: string,
   *   [paramKey: string]?: object
   * }}
@@ -73,6 +73,9 @@ Object.entries(forms).forEach(([key, { coreParams, modelKey, paramsKey }]) => {
   }
   default_form_state[key] = initial;
 });
+
+/* Setup WDM */
+default_form_state.wdm = { wdm_mass: 0.0 };
 
 /*
 *  Cosmo is special because it updates its core parameters, too, when a new option

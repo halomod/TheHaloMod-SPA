@@ -237,6 +237,11 @@ const PARAMETER_PROPERTIES = {
   kmax: {
     visible: false,
   },
+  wdm_mass: {
+    plainName: 'WDM Mass [keV]',
+    min: 0.0,
+    helpText: 'If using Warm Dark Matter, specify a mass > 0 keV.',
+  },
 };
 
 export default PARAMETER_PROPERTIES;
