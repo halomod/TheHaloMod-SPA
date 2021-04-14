@@ -34,8 +34,8 @@
             @is-valid="(valid) => isValid(subformValid, key, valid)"
             v-bind="getDoubleFieldProps(key)"/>
         </div>
-        <div class="md-layout md-gutter">
-          <div class="md-layout-item">
+        <div class="md-gutter">
+          <div class="md-layout">
             <!-- Model Selection -->
             <md-field v-if="subformMeta.modelKey">
               <label>{{subformMeta.title}}</label>
@@ -49,36 +49,45 @@
               </md-select>
             </md-field>
           </div>
-          <div class="md-layout-item">
-            <!-- Subparameters (unique to model selection) -->
-            <div v-for="(value, key) in subformState[subformMeta.paramsKey]" :key="key">
-              <div v-if="!isVisible(key) || value === null"/>
-              <md-checkbox
-                v-else-if="typeof value === 'boolean'"
-                class="md-primary"
-                v-model="subformState[subformMeta.paramsKey][key]">
-                {{key}}
-              </md-checkbox>
-              <md-field v-else-if="typeof value === 'string'">
-                <label>{{getParameterLabel(key)}}</label>
-                <md-select v-model="subformState[subformMeta.paramsKey][key]">
-                  <md-option
-                    v-for="(choiceName, choiceKey) in getParameterOptions(key)"
-                    :key="choiceKey"
-                    :value="choiceKey">
-                    {{choiceName}}
-                  </md-option>
-                </md-select>
-              </md-field>
-              <double-field
-                v-else
-                :init="subformState[subformMeta.paramsKey][key]"
-                v-model="subformState[subformMeta.paramsKey][key]"
-                @is-valid="(valid) =>
-                  isValid(subformValid[subformMeta.paramsKey], key, valid)"
-                v-bind="getDoubleFieldProps(key)"/>
-            </div>
-          </div>
+          <!-- Subparameters (unique to model selection) -->
+          <md-list v-if="subParametersExist" class="md-layout">
+            <md-list-item md-expand :md-expanded="true">
+              <span class="md-list-item-text">
+                {{currentModelDisplayName}} Parameters
+              </span>
+              <md-list slot="md-expand">
+                <md-list-item
+                  v-for="(value, key) in currentVisibleParameters"
+                  :key="key"
+                >
+                  <md-checkbox
+                    v-if="typeof value === 'boolean'"
+                    class="md-primary"
+                    v-model="subformState[subformMeta.paramsKey][key]">
+                    {{key}}
+                  </md-checkbox>
+                  <md-field v-else-if="typeof value === 'string'">
+                    <label>{{getParameterLabel(key)}}</label>
+                    <md-select v-model="subformState[subformMeta.paramsKey][key]">
+                      <md-option
+                        v-for="(choiceName, choiceKey) in getParameterOptions(key)"
+                        :key="choiceKey"
+                        :value="choiceKey">
+                        {{choiceName}}
+                      </md-option>
+                    </md-select>
+                  </md-field>
+                  <double-field
+                    v-else
+                    :init="subformState[subformMeta.paramsKey][key]"
+                    v-model="subformState[subformMeta.paramsKey][key]"
+                    @is-valid="(valid) =>
+                      isValid(subformValid[subformMeta.paramsKey], key, valid)"
+                    v-bind="getDoubleFieldProps(key)"/>
+                </md-list-item>
+              </md-list>
+            </md-list-item>
+          </md-list>
         </div>
       </div>
     </div>
@@ -131,18 +140,50 @@ export default {
       cachedSubformInputs: clonedeep(FORM_OPTION_DEFAULTS[this.formId]),
 
       subformMeta: forms[this.formId],
+
+      /**
+       * Holds the boolean determining if sub-parameters exist for the current
+       * model selection.
+       */
+      subParametersExist: false,
+      /**
+       * Holds the list of currently visible parameters for the current model
+       * selection.
+       */
+      currentVisibleParameters: {},
+      /**
+       * Holds the current model's display name if there is one. This is just
+       * used to be efficient about when the model name is found for the
+       * parameters drop-down.
+       */
+      currentModelDisplayName: '',
     };
   },
   created() {
     this.initValid(this.subformValid);
     this.$emit('is-valid', this.testValid(this.subformValid));
+    const subParametersExist = this.checkSubParametersExist(this.subformState);
+    this.subParametersExist = subParametersExist;
+    if (subParametersExist) {
+      this.currentVisibleParameters = this.getVisibleSubFormParameters(this.subformState);
+      this.currentModelDisplayName = this.getKeyByValue(
+        this.subformMeta.modelChoices,
+        this.subformState[this.subformMeta.modelKey],
+      );
+    }
     this.$watch(
       function toWatch() {
         return this.subformState[this.subformMeta.modelKey];
       },
       (newModelName, oldModelName) => {
+        let newSubformState;
+        // Special behavior for the cosmo model
         if (this.formId === 'cosmo') {
           this.cachedSubformInputs[oldModelName] = this.subformState;
+          newSubformState = {
+            ...this.cachedSubformInputs[newModelName],
+            [this.subformMeta.modelKey]: newModelName,
+          };
           this.subformState = {
             ...this.cachedSubformInputs[newModelName],
             [this.subformMeta.modelKey]: newModelName,
@@ -151,9 +192,22 @@ export default {
           this.cachedSubformInputs[oldModelName] = {
             ...this.subformState[this.subformMeta.paramsKey],
           };
-          this.subformState[this.subformMeta.paramsKey] = {
+          newSubformState = this.subformState;
+          newSubformState[this.subformMeta.paramsKey] = {
             ...this.cachedSubformInputs[newModelName],
           };
+        }
+        this.subformState = newSubformState;
+
+        // Check if sub-parameters exist
+        const subParamsExist = this.checkSubParametersExist(newSubformState);
+        this.subParametersExist = subParamsExist;
+        if (subParamsExist) {
+          this.currentVisibleParameters = this.getVisibleSubFormParameters(newSubformState);
+          this.currentModelDisplayName = this.getKeyByValue(
+            this.subformMeta.modelChoices,
+            newModelName,
+          );
         }
       },
     );
@@ -270,6 +324,58 @@ export default {
         return null;
       });
       return res;
+    },
+    /**
+     * Checks to see if subParameters exist for a particular model selection.
+     * This checks if there is a parameters key and that at least one
+     * parameter should be visible.
+     *
+     * @param {object} newSubFormState the new subformState
+     */
+    checkSubParametersExist(newSubFormState) {
+      if (newSubFormState[this.subformMeta.paramsKey]) {
+        const parameterKeys = Object.keys(newSubFormState[this.subformMeta.paramsKey]);
+        let visibleParameterFound = false;
+        let parameterIndex = 0;
+        while (!visibleParameterFound && parameterIndex < parameterKeys.length) {
+          if (this.isVisible(parameterKeys[parameterIndex])) {
+            debug('Parameter ', parameterKeys[parameterIndex], ' is visible');
+            visibleParameterFound = true;
+          }
+          parameterIndex += 1;
+        }
+        return visibleParameterFound;
+      }
+      return false;
+    },
+    /**
+     * Gets the visible subform parameters as an object. They are not visible if
+     * `isVisible` returns false or the value is `null`. The value does not
+     * update in real time so the value should only be used for checking the
+     * type in this way.
+     *
+     * This should be called whenever the model changes, and
+     * `checkSubParametersExist` returns true.
+     *
+     * @param {object} newSubFormState the new subformState
+     */
+    getVisibleSubFormParameters(newSubFormState) {
+      const visibleSubFormParameters = {};
+      if (newSubFormState[this.subformMeta.paramsKey]) {
+        Object.entries(newSubFormState[this.subformMeta.paramsKey]).forEach(([key, value]) => {
+          if (this.isVisible(key) && value !== null) {
+            visibleSubFormParameters[key] = value;
+          }
+        });
+      }
+      return visibleSubFormParameters;
+    },
+    /**
+     * Used to find the model name of the currently selected model.
+     */
+    getKeyByValue(object, value) {
+      debug('getKeyByValue ran');
+      return Object.keys(object).find((key) => object[key] === value);
     },
   },
 };
