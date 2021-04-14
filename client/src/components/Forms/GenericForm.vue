@@ -93,6 +93,7 @@ import Debug from 'debug';
 import PARAMETER_PROPS from '@/constants/parameter_properties.js';
 import forms from '@/constants/forms.js';
 import { FORM_OPTION_DEFAULTS } from '@/constants/backend_constants.js';
+import { getHtmlFromKey } from '@/utils/stringUtils';
 
 const debug = Debug('GenericForm.vue');
 debug.enabled = false;
@@ -179,12 +180,23 @@ export default {
     },
   },
   methods: {
+    /**
+     * @param {string} parameterKey
+     */
     getDoubleFieldProps(parameterKey) {
       const parameterProps = PARAMETER_PROPS[parameterKey];
       const doubleProps = {
         plainName: parameterKey,
         range: false,
       };
+
+      // Try to auto-convert key to HTML if a name isn't already defined
+      if (!parameterProps || !(parameterProps.plainName || parameterProps.html)) {
+        const htmlConversionResult = getHtmlFromKey(parameterKey);
+        if (htmlConversionResult) {
+          doubleProps.html = htmlConversionResult;
+        }
+      }
 
       // If properties do not exist, pass the default values
       if (!parameterProps) return doubleProps;
