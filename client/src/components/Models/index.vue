@@ -31,6 +31,7 @@
           @delete-click="del"
           @edit-click="edit"
           @copy-click="copy"
+          @bug-click="reportBug(modelName, $event)"
           @rename-click="(newName) => rename(modelName, newName)"
           @block="blocked = true"
           @release="blocked = false"
@@ -124,6 +125,13 @@ export default {
       await this.$store.cloneModel(modelName, `${modelName} copy`);
       this.blocked = false;
       this.loading = false;
+    },
+    async reportBug(modelName, bugDetails) {
+      this.loading = true;
+      this.blocked = true;
+      await this.$store.reportBug(modelName, bugDetails);
+      this.blocked = false;
+      this.loading = true;
     },
   },
 };
