@@ -134,6 +134,7 @@ export default {
     width: 100%;
     margin-bottom: 16px;
     margin-top: 16px;
+    padding-top: 32px;
     height: ''
   }
 </style>
