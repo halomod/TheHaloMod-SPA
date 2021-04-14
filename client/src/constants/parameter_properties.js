@@ -238,6 +238,9 @@ const PARAMETER_PROPERTIES = {
   kmax: {
     visible: false,
   },
+  takahashi: {
+    plainName: 'Use Takahashi?',
+  },
 };
 
 export default PARAMETER_PROPERTIES;
