@@ -77,14 +77,26 @@
  */
 const PARAMETER_PROPERTIES = {
   lnk_min: {
-    min: Math.log(1 * 10 ** -10),
-    max: Math.log(2 * 10 ** 6),
+    min: Math.round(Math.log(1 * 10 ** -10)),
+    max: Math.round(Math.log(2 * 10 ** 6)),
+    step: 0.25,
     range: true,
+    plainName: 'lnk Range',
+    rangeSlider: {
+      isRangeSliderMin: true,
+      rangeSliderMaxParameter: 'lnk_max',
+      rangeSliderTickInterval: 4,
+    },
   },
   lnk_max: {
-    min: Math.log(1 * 10 ** -10),
-    max: Math.log(2 * 10 ** 6),
+    min: Math.round(Math.log(1 * 10 ** -10)),
+    max: Math.round(Math.log(2 * 10 ** 6)),
+    step: 0.5,
     range: true,
+    rangeSlider: {
+      isRangeSliderMax: true,
+      rangeSliderMinParameter: 'lnk_min',
+    },
   },
   dlnk: {
     plainName: 'lnk Step Size',
@@ -240,6 +252,9 @@ const PARAMETER_PROPERTIES = {
   },
   takahashi: {
     plainName: 'Use Takahashi?',
+  },
+  extrapolate_with_eh: {
+    plainName: 'Extrapolate with EH?',
   },
 };
 
