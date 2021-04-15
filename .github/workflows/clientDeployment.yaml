@@ -60,7 +60,7 @@ jobs:
         python-version: 3.8.8
 
     - name: Generate constants    
-      run: sh generate_constants.sh
+      run: sh generate_client_files.sh
 
     - name: Build
       env: 
