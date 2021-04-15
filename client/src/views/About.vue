@@ -96,9 +96,6 @@ export default {
   .extra-info {
     padding-top: 32px;
   }
-  .center-text-vertical {
-    text-align: center;
-  }
   .center-align {
     display: flex;
     flex-direction: row;
