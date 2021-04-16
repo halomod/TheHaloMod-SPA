@@ -9,6 +9,9 @@
     - [Development commands](#development-commands)
     - [Production deployment using docker](#production-deployment-using-docker)
   - [Architecture](#architecture)
+  - [Manual setup](#manual-setup)
+  - [Common issues](#common-issues)
+    - [Model issues in redis](#model-issues-in-redis)
 
 ## Usage
 
@@ -69,8 +72,7 @@ The entrypoint of the server is [`server/halomod_app/__init__.py`](halomod_app/_
 
 Besides the things mentioned here, documentation exists in each file to provide guidance on what each does. 
 
-
-## Manual setup, server start, testing and linting
+## Manual setup
 Follow the steps below if you are unable to use [run.sh](./run.sh). Use run.sh as a reference to this section.
 
 Set up virtual env
