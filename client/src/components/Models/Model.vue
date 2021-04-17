@@ -1,16 +1,21 @@
 <template>
   <md-list-item>
     <div class="md-list-item-text">
-      <md-field>
+      <md-field :class="validationClass">
         <md-input
           @mousedown="(e) => blocked && !editing ? e.preventDefault() : null"
           @focus.native="editMode"
           :value="localName"
           v-model="localName"/>
       </md-field>
+      <!--
+        The whitespace character on the next line isn't a space.
+        It's used as a workaround to render something for formatting.
+       -->
+      <span id="error">{{ invalidName ? 'Name is already in use' : '⠀'}}</span>
     </div>
 
-    <div v-if="editing">
+    <div v-if="editing" id="model-buttons">
       <md-button
         class="md-icon-button"
         @click="reset">
@@ -19,12 +24,13 @@
       </md-button>
       <md-button
         class="md-icon-button"
+        :disabled="invalidName"
         @click="localName === name ? reset() : submit()">
         <md-icon>done</md-icon>
         <md-tooltip>Confirm</md-tooltip>
       </md-button>
     </div>
-    <div v-else>
+    <div v-else id="model-buttons">
       <md-button
         class="md-icon-button"
         @click="$emit('edit-click', name)"
@@ -71,6 +77,14 @@ export default {
       editing: false,
     };
   },
+  computed: {
+    invalidName() {
+      const invalid = this.$store.state.modelNames.includes(this.localName.trim())
+                      && this.localName.trim() !== this.name;
+      return invalid;
+    },
+    validationClass() { return { 'md-invalid': this.invalidName }; },
+  },
   methods: {
     reset() {
       this.editing = false;
@@ -84,6 +98,7 @@ export default {
     },
     submit() {
       this.editing = false;
+      this.localName = this.localName.trim();
       this.$emit('rename-click', this.localName);
       this.$emit('release');
     },
@@ -98,11 +113,22 @@ export default {
   .md-field:after {
     height: 0px
   }
+  .md-list-item {
+    display: flex;
+  }
   .md-field {
     margin: 0px 0px 0px 0px;
+    height: '100%';
     padding: 0;
     display: flex;
     flex-direction: row;
     align-items: center;
+  }
+  #model-buttons {
+    padding-bottom: 15px;
+  }
+  #error {
+    color: red;
+    font-size: small;
   }
 </style>

@@ -54,7 +54,13 @@ export default {
   methods: {
     generatePlot() {
       debug('plot being built');
-      buildPlot(this.plotElementId, this.$store.state.plot, this.xlog, this.ylog);
+      buildPlot(
+        this.plotElementId,
+        this.$store.state.plot,
+        this.$store.state.modelNames,
+        this.xlog,
+        this.ylog,
+      );
     },
   },
   beforeDestroy() {
@@ -81,6 +87,12 @@ not render correctly. */
 }
 .grid path {
   stroke-width: 0;
+}
+.dashed {
+  stroke-dasharray: 6,6;
+}
+.dotted {
+  stroke-dasharray: 3,3;
 }
 /* End usage from `plot.js` file */
 </style>

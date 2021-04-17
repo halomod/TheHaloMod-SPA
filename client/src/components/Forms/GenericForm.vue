@@ -231,9 +231,11 @@ export default {
         .rangeSlider.isRangeSliderMin;
     },
     isValid(o, key, valid) {
-      const obj = o;
-      obj[key] = valid;
-      this.$emit('is-valid', this.testValid(this.subformValid));
+      if (typeof o === 'object') {
+        const obj = o;
+        obj[key] = valid;
+        this.$emit('is-valid', this.testValid(this.subformValid));
+      }
     },
     initValid(ob) {
       const obj = ob;
