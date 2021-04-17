@@ -120,7 +120,7 @@ def create_app(test_config=None):
             "description": description,
         }))
         response.setdefault('content_type', "application/json")
-        return response
+        return response, 500
 
     @app.errorhandler(HTTPException)
     def handle_exception(e):

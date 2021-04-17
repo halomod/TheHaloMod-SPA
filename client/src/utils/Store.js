@@ -119,6 +119,7 @@ export default class Store {
       if (error.response) {
         this.state.errorMessage = error.response.data.description;
         this.state.errorType = (error.response.data.code >= 500) ? 'Server' : 'Model';
+        window.alert(error.response.data);
       }
     }
   }
