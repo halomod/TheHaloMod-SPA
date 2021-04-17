@@ -22,7 +22,7 @@
           </md-button>
         </div>
       </div>
-      <md-list v-if="STORE_STATE.modelNames.length > 0" class="model-list">
+      <md-list v-if="STORE_STATE.modelNames.length > 0" class="model-list md-double-line">
         <Model
           v-for="modelName in STORE_STATE.modelNames"
           :key="modelName"
@@ -133,5 +133,8 @@ export default {
   .model-list {
     width: 100%;
     margin-bottom: 16px;
+    margin-top: 16px;
+    padding-top: 32px;
+    height: ''
   }
 </style>
