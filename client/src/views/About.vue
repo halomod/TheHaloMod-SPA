@@ -31,7 +31,7 @@
         setup and maintenance. Also shoutout to the ASU students who helped
         build this version of the website:
         <a href="https://github.com/vperuzzi">Tia Peruzzi</a>,
-        <a href="https://github.com/aschnapp">Michael Schnapp</a>,
+        <a href="https://github.com/aschnapp">Alexander Schnapp</a>,
         <a href="https://github.com/Tengelma">Trent Engleman</a>,
         <a href="https://github.com/dblevin1">Daniel Blevins</a>, and
         <a href="https://github.com/aneuhold">Anton Neuhold</a>.</p>

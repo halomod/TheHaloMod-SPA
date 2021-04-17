@@ -1,6 +1,8 @@
 # This workflow will install Python dependencies, run tests and lint with a single version of Python
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
 
+# This workflow will run lint and unit tests for the python flask server on every push.
+
 name: Server CI
 
 on: [push, workflow_dispatch]
@@ -29,8 +31,9 @@ jobs:
             - 6379:6379
 
     steps:
-    - uses: actions/checkout@v2
+    # set up gfortran for camb
     - name: Setup gfortran
+    - uses: actions/checkout@v2
       run: |
         sudo apt-get install gfortran-8
         mkdir -p gfortran-symlinks
