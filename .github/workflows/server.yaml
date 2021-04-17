@@ -32,8 +32,8 @@ jobs:
 
     steps:
     # set up gfortran for camb
-    - name: Setup gfortran
     - uses: actions/checkout@v2
+    - name: Setup gfortran
       run: |
         sudo apt-get install gfortran-8
         mkdir -p gfortran-symlinks
