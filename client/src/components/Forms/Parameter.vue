@@ -40,7 +40,7 @@ import isequal from 'lodash.isequal';
 import Debug from 'debug';
 
 const debug = Debug('Parameter.vue');
-debug.enabled = true;
+debug.enabled = false;
 
 /**
  * The main component for a parameter in the GenericForm. This component

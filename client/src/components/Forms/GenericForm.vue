@@ -26,26 +26,36 @@
             </md-field>
           </div>
           <!-- Subparameters (unique to model selection) -->
-          <md-list v-if="subParametersExist" class="md-layout-item">
-            <md-list-item md-expand :md-expanded="true">
-              <span class="md-list-item-text">
-                {{currentModelDisplayName}} Parameters
-              </span>
-              <md-list slot="md-expand">
-                <md-list-item
-                  v-for="(value, key) in currentVisibleParameters"
-                  :key="key"
-                >
-                  <Parameter
-                    v-model="subformState[subformMeta.paramsKey]"
-                    :parameterKey="key"
-                    @is-valid="(valid) =>
-                      setValid(subformValid[subformMeta.paramsKey], key, valid)"
-                  />
-                </md-list-item>
-              </md-list>
-            </md-list-item>
-          </md-list>
+          <div v-if="subParametersExist" class="md-layout-item">
+            <md-list v-if="Object.keys(currentVisibleParameters).length > 3">
+              <md-list-item md-expand :md-expanded="true">
+                <span class="md-list-item-text">
+                  {{currentModelDisplayName}} Parameters
+                </span>
+                <md-list slot="md-expand">
+                  <md-list-item
+                    v-for="(value, key) in currentVisibleParameters"
+                    :key="key"
+                  >
+                    <Parameter
+                      v-model="subformState[subformMeta.paramsKey]"
+                      :parameterKey="key"
+                      @is-valid="(valid) =>
+                        setValid(subformValid[subformMeta.paramsKey], key, valid)"
+                    />
+                  </md-list-item>
+                </md-list>
+              </md-list-item>
+            </md-list>
+            <div v-else v-for="(value, key) in currentVisibleParameters" :key="key">
+              <Parameter
+                v-model="subformState[subformMeta.paramsKey]"
+                :parameterKey="key"
+                @is-valid="(valid) =>
+                  setValid(subformValid[subformMeta.paramsKey], key, valid)"
+              />
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -56,6 +66,7 @@
 import clonedeep from 'lodash.clonedeep';
 import Debug from 'debug';
 import forms from '@/constants/forms.js';
+import PARAMETER_PROPS from '@/constants/parameter_properties';
 import { FORM_OPTION_DEFAULTS } from '@/constants/backend_constants.js';
 import Parameter from '@/components/Forms/Parameter';
 
@@ -221,6 +232,12 @@ export default {
         return null;
       });
       return res;
+    },
+    isVisible(parameterKey) {
+      // Visible if parameter props do not exist or parameter props visible
+      // property is not equal to false
+      return !PARAMETER_PROPS[parameterKey]
+        || PARAMETER_PROPS[parameterKey].visible !== false;
     },
     /**
      * Checks to see if subParameters exist for a particular model selection.
