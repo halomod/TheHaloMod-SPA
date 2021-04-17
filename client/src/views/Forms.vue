@@ -69,6 +69,10 @@
 import clonedeep from 'lodash.clonedeep';
 import Forms from '@/components/Forms';
 import { DEFAULT_FORM_STATE } from '@/constants/backend_constants';
+import Debug from 'debug';
+
+const debug = Debug('Forms.vue');
+debug.enabled = false;
 
 /**
  * Represents the view of the forms for each type of data entered into halomod.
@@ -131,6 +135,7 @@ export default {
   },
   computed: {
     invalidName() {
+      if (this.edit) return false;
       const invalid = this.$store.state.modelNames
         .includes(this.name ? this.name.trim() : undefined);
       return invalid;
