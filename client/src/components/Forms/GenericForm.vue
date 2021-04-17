@@ -55,10 +55,8 @@
 <script>
 import clonedeep from 'lodash.clonedeep';
 import Debug from 'debug';
-import PARAMETER_PROPS from '@/constants/parameter_properties.js';
 import forms from '@/constants/forms.js';
 import { FORM_OPTION_DEFAULTS } from '@/constants/backend_constants.js';
-import { getHtmlFromKey } from '@/utils/stringUtils';
 import Parameter from '@/components/Forms/Parameter';
 
 const debug = Debug('GenericForm.vue');
@@ -190,68 +188,6 @@ export default {
     },
   },
   methods: {
-    /**
-     * @param {string} parameterKey
-     */
-    getDoubleFieldProps(parameterKey) {
-      const parameterProps = PARAMETER_PROPS[parameterKey];
-      const doubleProps = {
-        plainName: parameterKey,
-        range: false,
-      };
-
-      // Try to auto-convert key to HTML if a name isn't already defined
-      if (!parameterProps || !(parameterProps.plainName || parameterProps.html)) {
-        const htmlConversionResult = getHtmlFromKey(parameterKey);
-        if (htmlConversionResult) {
-          doubleProps.html = htmlConversionResult;
-        }
-      }
-
-      // If properties do not exist, pass the default values
-      if (!parameterProps) return doubleProps;
-
-      return Object.assign(doubleProps, parameterProps);
-    },
-    /**
-     * Gets a label for the given parameter. This should only be used on
-     * parameters that have a string value.
-     */
-    getParameterLabel(parameterKey) {
-      const parameterProps = PARAMETER_PROPS[parameterKey];
-      if (parameterProps && parameterProps.plainName) {
-        return parameterProps.plainName;
-      }
-      return parameterKey;
-    },
-    /**
-     * Gets the options for a given parameter. This should only be used on
-     * parameters that have a string value.
-     */
-    getParameterOptions(parameterKey) {
-      const parameterProps = PARAMETER_PROPS[parameterKey];
-      if (!parameterProps || !parameterProps.options) {
-        console.error(`Error in parameter "${parameterKey}" \n`
-        + 'No options were provided for the string value parameter in '
-        + 'parameter_properties.js');
-        return {};
-      }
-      return parameterProps.options;
-    },
-    isVisible(parameterKey) {
-      // Visible if parameter props do not exist or parameter props visible
-      // property is not equal to false
-      return !PARAMETER_PROPS[parameterKey]
-        || PARAMETER_PROPS[parameterKey].visible !== false;
-    },
-    isSlider(parameterKey) {
-      const parameterProps = PARAMETER_PROPS[parameterKey];
-      return parameterProps && parameterProps.rangeSlider;
-    },
-    isSliderMin(parameterKey) {
-      return this.isSlider(parameterKey) && PARAMETER_PROPS[parameterKey]
-        .rangeSlider.isRangeSliderMin;
-    },
     setValid(o, key, valid) {
       if (typeof o === 'object') {
         const obj = o;
