@@ -1,6 +1,6 @@
 from flask import Blueprint
 from flask_session import Session
-from flask_mail import mail
+from flask_mail import mail, Message
 import io
 import toml
 import numpy as np
@@ -23,8 +23,18 @@ def report_bug():
     buggy_model = models[model_name]
     mail = Mail()
 
+    str_msg = f"User's name: ${bug_details.bugContactName}\n"
+    str_msg += f"User's email: ${bug_details.bugContactEmail}\n"
+    str_msg += f"Description: ${bug_details.bugText}"
+
+    msg = Message(str_msg, subject=f"[THM Bug Report] Bug in {model_name}")
+    msg.attach(f"{model_name}.toml", "application/toml", build_toml(buggy_model))
+
+    mail.send(msg)
+
 
 def build_toml(model):
     buff = io.BytesIO()
     buff.write(toml.dumps(framework_to_dict(model)),
                           encoder=toml.TomlNumpyEncoder()).encode())
+    return buff.getValue()
