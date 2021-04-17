@@ -33,13 +33,14 @@
     <md-dialog :md-active.sync="showSaveDialog" v-else  @keyup.enter="save">
       <md-dialog-title>Save Model</md-dialog-title>
       <md-dialog-content>
-        <md-field>
+        <md-field :class="validationClass">
           <label>Model Name</label>
           <md-input ref="saveInput" v-model="name" :value="name"/>
+          <div class="md-error" v-if="invalidName">Name is already in use.</div>
         </md-field>
       </md-dialog-content>
       <md-dialog-actions>
-        <md-button @click="save">Save Model (Enter)</md-button>
+        <md-button :disabled="invalidName" @click="save">Save Model (Enter)</md-button>
         <md-button @click="showSaveDialog = false">Cancel</md-button>
       </md-dialog-actions>
     </md-dialog>
@@ -128,6 +129,14 @@ export default {
   updated() {
     this.scrollToAnchor();
   },
+  computed: {
+    invalidName() {
+      const invalid = this.$store.state.modelNames
+        .includes(this.name ? this.name.trim() : undefined);
+      return invalid;
+    },
+    validationClass() { return { 'md-invalid': this.invalidName }; },
+  },
   methods: {
     scrollToAnchor() {
       this.$nextTick(() => {
@@ -145,6 +154,7 @@ export default {
       this.$router.push('/');
     },
     async save() {
+      if (this.invalidName) return;
       this.loading = true;
       if (this.edit) {
         await this.$store.updateModel(this.name, this.currentFormState);

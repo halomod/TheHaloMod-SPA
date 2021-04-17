@@ -17,5 +17,5 @@ module.exports = {
   ],
   coverageReporters: ['lcov', 'text-summary'],
   setupFiles: ['./tests/setup.js'],
-  setupFilesAfterEnv: ['./tests/immutables.js'],
+  setupFilesAfterEnv: ['./tests/setupAfterEnv.js'],
 };
