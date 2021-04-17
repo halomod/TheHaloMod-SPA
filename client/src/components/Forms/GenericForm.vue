@@ -4,38 +4,14 @@
     <div :class="subformMeta.coreParams ? 'md-layout md-gutter' : ''">
       <div :class="subformMeta.coreParams ? 'md-layout-item' : ''">
         <div v-for="key in subformMeta.coreParams" :key="key">
-          <div v-if="!isVisible(key) || subformState[key] === null"/>
-          <md-checkbox
-            v-else-if="typeof subformState[key] === 'boolean'"
-            class="md-primary"
-            v-model="subformState[key]">
-            {{getParameterLabel(key)}}
-          </md-checkbox>
-          <md-field v-else-if="typeof subformState[key] === 'string'">
-            <label>{{getParameterLabel(key)}}</label>
-            <md-select v-model="subformState[key]">
-              <md-option
-                v-for="(choiceName, choiceKey) in getParameterOptions(key)"
-                :key="choiceKey"
-                :value="choiceKey">
-                {{choiceName}}
-              </md-option>
-            </md-select>
-          </md-field>
-          <input-slider
-            v-else-if="isSlider(key) && isSliderMin(key)"
-            :minParameterKey="key"
+          <Parameter
             v-model="subformState"
+            :parameterKey="key"
+            @is-valid="(valid) => setValid(subformValid, key, valid)"
           />
-          <double-field
-            v-else-if="!isSlider(key)"
-            :init="subformState[key]"
-            v-model="subformState[key]"
-            @is-valid="(valid) => isValid(subformValid, key, valid)"
-            v-bind="getDoubleFieldProps(key)"/>
         </div>
-        <div class="md-gutter">
-          <div class="md-layout">
+        <div class="md-gutter md-layout">
+          <div class="md-layout-item">
             <!-- Model Selection -->
             <md-field v-if="subformMeta.modelKey">
               <label>{{subformMeta.title}}</label>
@@ -50,7 +26,7 @@
             </md-field>
           </div>
           <!-- Subparameters (unique to model selection) -->
-          <md-list v-if="subParametersExist" class="md-layout">
+          <md-list v-if="subParametersExist" class="md-layout-item">
             <md-list-item md-expand :md-expanded="true">
               <span class="md-list-item-text">
                 {{currentModelDisplayName}} Parameters
@@ -60,30 +36,12 @@
                   v-for="(value, key) in currentVisibleParameters"
                   :key="key"
                 >
-                  <md-checkbox
-                    v-if="typeof value === 'boolean'"
-                    class="md-primary"
-                    v-model="subformState[subformMeta.paramsKey][key]">
-                    {{key}}
-                  </md-checkbox>
-                  <md-field v-else-if="typeof value === 'string'">
-                    <label>{{getParameterLabel(key)}}</label>
-                    <md-select v-model="subformState[subformMeta.paramsKey][key]">
-                      <md-option
-                        v-for="(choiceName, choiceKey) in getParameterOptions(key)"
-                        :key="choiceKey"
-                        :value="choiceKey">
-                        {{choiceName}}
-                      </md-option>
-                    </md-select>
-                  </md-field>
-                  <double-field
-                    v-else
-                    :init="subformState[subformMeta.paramsKey][key]"
-                    v-model="subformState[subformMeta.paramsKey][key]"
+                  <Parameter
+                    v-model="subformState[subformMeta.paramsKey]"
+                    :parameterKey="key"
                     @is-valid="(valid) =>
-                      isValid(subformValid[subformMeta.paramsKey], key, valid)"
-                    v-bind="getDoubleFieldProps(key)"/>
+                      setValid(subformValid[subformMeta.paramsKey], key, valid)"
+                  />
                 </md-list-item>
               </md-list>
             </md-list-item>
@@ -96,13 +54,12 @@
 
 <script>
 import clonedeep from 'lodash.clonedeep';
-import DoubleField from '@/components/DoubleField.vue';
-import InputSlider from '@/components/InputSlider.vue';
 import Debug from 'debug';
 import PARAMETER_PROPS from '@/constants/parameter_properties.js';
 import forms from '@/constants/forms.js';
 import { FORM_OPTION_DEFAULTS } from '@/constants/backend_constants.js';
 import { getHtmlFromKey } from '@/utils/stringUtils';
+import Parameter from '@/components/Forms/Parameter';
 
 const debug = Debug('GenericForm.vue');
 debug.enabled = false;
@@ -123,8 +80,7 @@ export default {
     },
   },
   components: {
-    DoubleField,
-    InputSlider,
+    Parameter,
   },
   data() {
     return {
@@ -296,7 +252,7 @@ export default {
       return this.isSlider(parameterKey) && PARAMETER_PROPS[parameterKey]
         .rangeSlider.isRangeSliderMin;
     },
-    isValid(o, key, valid) {
+    setValid(o, key, valid) {
       if (typeof o === 'object') {
         const obj = o;
         obj[key] = valid;
@@ -313,14 +269,19 @@ export default {
         return null;
       });
     },
+    /**
+     * Recursively tests if the provided object is valid.
+     */
     testValid(obj) {
       let res = true;
       Object.keys(obj).forEach((key) => {
         if (Object.prototype.toString.call(obj[key]) === '[object Object]') {
           res = res && this.testValid(obj[key]);
+          // Exit out of loop
           return null;
         }
         res = res && obj[key];
+        // Exit out of loop
         return null;
       });
       return res;
