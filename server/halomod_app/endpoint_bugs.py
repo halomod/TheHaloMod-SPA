@@ -20,7 +20,11 @@ def report_bug():
     else:
         models = {}
 
-    buggy_model = models[model_name]
+    if model_name in models:
+        buggy_model = models[model_name]
+    else:
+        return 404
+
     mail = Mail()
 
     str_msg = f"User's name: ${bug_details.bugContactName}\n"
