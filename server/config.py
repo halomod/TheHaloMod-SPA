@@ -53,5 +53,17 @@ class Config:
         # It is kept here in case there is an update to Flask-Session that fixes
         # it, and to make it clear what needs to be set once it is fixed.
         SESSION_COOKIE_SAMESITE = 'None'
+    
+    ''' Defines email address for the purposes of bug reporting (must be gmail) '''
+    if not environ.get("MAIL_USERNAME"):
+      MAIL_USERNAME = 'putYourEmailHere@gmail.com'
+    else:
+      MAIL_USERNAME = environ.get("MAIL_USERNAME")
+
+    ''' Defines password for above username for the purposes of bug reporting ''' 
+    if not environ.get("MAIL_PASSWORD"):
+      MAIL_PASSWORD = 'password'
+    else:
+      MAIL_PASSWORD = environ.get("MAIL_PASSWORD")
 
     PROPAGATE_EXCEPTIONS = True

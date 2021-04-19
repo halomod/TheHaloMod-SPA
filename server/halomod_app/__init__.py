@@ -18,6 +18,7 @@ import re
 from .endpoint_model import endpoint_model
 from .endpoint_models import endpoint_models
 from .endpoint_plot import endpoint_plot
+from .endpoint_bugs import endpoint_bugs
 
 sess = Session()
 
@@ -69,10 +70,12 @@ def create_app(test_config=None):
     PUT /models - Clones model
     DELETE /models - Deletes all saved models
     GET /plot - Get plot data
+    POST /bugs - Report a model specific bug
     """
     app.register_blueprint(endpoint_model)
     app.register_blueprint(endpoint_models)
     app.register_blueprint(endpoint_plot)
+    app.register_blueprint(endpoint_bugs)
 
     # Generic Exception handler for 500 Internal Server Error
     # Returns manually formatted JSON response object with 500 code,

@@ -1,18 +1,41 @@
-from flask import Blueprint
+from flask import Blueprint, request, session, current_app, Response
 from flask_session import Session
-from flask_mail import mail, Message
 import io
+import os
+import traceback
+import yagmail
 import toml
 import numpy as np
+import dill as pickle
 from hmf.helpers.cfg_utils import framework_to_dict
 
 endpoint_bugs = Blueprint('endpoint_bugs', __name__)
 
 
-@endpoint_bus.route('/bugs', methods=["POST"])
+@endpoint_bugs.route('/bugs', methods=["POST"])
 def report_bug():
+    """
+      Sends a model-specific bug reported by the user to the site's email
+
+      expects:
+        {
+          "bug_details": {
+            "bugContactName": <username>,
+            "bugContactEmail: <user_email>,
+            "bugDetails": <description_of_bug>
+          },
+          "model_name": <model's name>
+        },
+      returns:
+        'Success' on success
+        Server error on failure
+    """
+    # These need to be defined in config.py or through environment variables
+    email = current_app.config["MAIL_USERNAME"]
+    password = current_app.config["MAIL_PASSWORD"]
+
     model_name = request.get_json()["model_name"]
-    bug_details = request.getjson()["bug_details"]
+    bug_details = request.get_json()["bug_details"]
 
     models = None
     if 'models' in session:
@@ -23,22 +46,30 @@ def report_bug():
     if model_name in models:
         buggy_model = models[model_name]
     else:
-        return 404
+        return 'Model does not exist', 404
 
-    mail = Mail()
+    body = f"User's name: {bug_details['bugContactName']}\n"
+    body += f"User's email: {bug_details['bugContactEmail']}\n"
+    body += f"Bug Description: {bug_details['bugText']}"
 
-    str_msg = f"User's name: ${bug_details.bugContactName}\n"
-    str_msg += f"User's email: ${bug_details.bugContactEmail}\n"
-    str_msg += f"Description: ${bug_details.bugText}"
+    with open('model.toml', 'wb') as file:
+        file.write(build_toml(buggy_model))
 
-    msg = Message(str_msg, subject=f"[THM Bug Report] Bug in {model_name}")
-    msg.attach(f"{model_name}.toml", "application/toml", build_toml(buggy_model))
+    yag = yagmail.SMTP(user=email, password=password)
+    yag.send(
+        to=email,
+        subject=f"[THM Bug Report] Bug in {model_name}",
+        contents=body,
+        attachments='./model.toml'
+    )
 
-    mail.send(msg)
+    os.remove('model.toml')
+
+    return 'Success'
 
 
 def build_toml(model):
     buff = io.BytesIO()
-    buff.write(toml.dumps(framework_to_dict(model)),
+    buff.write(toml.dumps(framework_to_dict(model),
                           encoder=toml.TomlNumpyEncoder()).encode())
-    return buff.getValue()
+    return buff.getvalue()
