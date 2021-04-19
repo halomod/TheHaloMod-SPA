@@ -28,7 +28,7 @@ def hmf_driver(cls=TracerHaloModel,
                previous: Union[None, TracerHaloModel] = None, **kwargs):
     if previous is None:
         return cls(**kwargs)
-    elif "wdm_model" in kwargs and not isinstance(previous, HaloModelWDM):
+    elif "wdm_model" in kwargs or "wdm_mass" in kwargs and not isinstance(previous, HaloModelWDM):
         return HaloModelWDM(**kwargs)
     elif "wdm_model" not in kwargs and isinstance(previous, HaloModelWDM):
         return TracerHaloModel(**kwargs)

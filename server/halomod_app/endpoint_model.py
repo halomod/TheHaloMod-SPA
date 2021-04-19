@@ -39,6 +39,8 @@ def create():
     params = request.get_json()["params"]
     label = request.get_json()["label"]
 
+    print(params)
+
     models = None
     if 'models' in session:
         models = pickle.loads(session.get('models'))
