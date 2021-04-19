@@ -130,7 +130,7 @@ def delete():
     if name in models:
         del models[name]
 
-    if num_models < len(models):
+    if num_models > len(models):
         session["models"] = pickle.dumps(models)
     else:
         raise Exception("Error: Model not deleted.")
