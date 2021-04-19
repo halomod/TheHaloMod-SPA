@@ -1,6 +1,9 @@
 <template>
   <div>
-    <md-dialog :md-active.sync="showAlert">
+    <md-dialog
+    :md-active.sync="showAlert"
+    @md-closed="$emit('close')"
+    @md-clicked-outside="$emit('close')">
       <md-dialog-title>{{ title }} Error</md-dialog-title>
       <md-divider></md-divider>
       <md-dialog-content>{{ message }}</md-dialog-content>

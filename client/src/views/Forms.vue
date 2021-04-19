@@ -4,7 +4,9 @@
     :showAlert="showAlert"
     :title="READ_ONLY.errorType"
     :message="READ_ONLY.errorMessage"
-    @close="closeAlertDialog"/>
+    @close="closeAlertDialog"
+    @focusout="closeAlertDialog"
+    @change="closeAlertDialog"/>
   <Forms
     :initialFormState="initialFormState"
     :contextPrimary="contextPrimary"
@@ -161,6 +163,7 @@ export default {
     leave() {
       this.closeAlertDialog();
       this.showCancelDialog = false;
+      this.$forceUpdate();
       this.$router.push('/');
     },
     async save() {
@@ -175,10 +178,8 @@ export default {
       this.loading = false;
       this.showSaveDialog = false;
       if (this.$store.state.error) {
+        // Show the error alert dialog
         this.showAlert = true;
-        // Clears incorrect value from form
-        // this.currentFormState = clonedeep(this.initialFormState);
-        // this.$forceUpdate();
       } else {
         this.$router.push('/');
       }
