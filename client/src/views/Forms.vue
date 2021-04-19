@@ -4,7 +4,7 @@
     :showAlert="showAlert"
     :title="READ_ONLY.errorType"
     :message="READ_ONLY.errorMessage"
-    @close="showAlert = false"/>
+    @close="closeAlertDialog"/>
   <Forms
     :initialFormState="initialFormState"
     :contextPrimary="contextPrimary"
@@ -159,15 +159,17 @@ export default {
       });
     },
     leave() {
+      this.closeAlertDialog();
       this.showCancelDialog = false;
       this.$router.push('/');
     },
     async save() {
-      if (this.invalidName) return;
-      this.loading = true;
       if (this.edit) {
+        this.loading = true;
         await this.$store.updateModel(this.name, this.currentFormState);
       } else {
+        if (this.invalidName) return;
+        this.loading = true;
         await this.$store.createModel(this.currentFormState, this.name);
       }
       this.loading = false;

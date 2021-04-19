@@ -37,8 +37,10 @@ export default class Store {
         logy: true,
       },
       error: false,
+      graphError: false,
       errorType: '',
       errorMessage: '',
+      errorTrace: '',
       theme: DEFAULT_THEME,
     };
   }
@@ -124,11 +126,20 @@ export default class Store {
       this.state.error = true;
       console.error('ERROR OCCURED');
       if (error.response) {
-        const desc = (JSON.parse(error.response.data.data).description)[0];
-        const [simpleDescription, ...stkTrace] = desc;
+        const desc = (JSON.parse(error.response.data.data).description);
+        let simpleDescription;
+        let stkTrace;
+        if (typeof desc !== 'string') {
+          [simpleDescription, ...stkTrace] = desc;
+        } else {
+          simpleDescription = desc;
+          stkTrace = null;
+          console.log(simpleDescription);
+        }
         this.state.errorMessage = simpleDescription;
         this.state.errorType = (error.response.data.code >= 500) ? 'Server' : 'Model';
-        //console.error(stkTrace.join());
+        this.state.errorTrace = stkTrace.join();
+        // console.error(stkTrace.join());
       } else {
         const msg = 'The server did not respond. Please check your internet connection.';
         this.state.errorMessage = msg;
@@ -157,11 +168,20 @@ export default class Store {
       this.state.error = true;
       console.error('ERROR OCCURED');
       if (error.response) {
-        const desc = (JSON.parse(error.response.data.data).description)[0];
-        const [simpleDescription, ...stkTrace] = desc;
+        const desc = (JSON.parse(error.response.data.data).description);
+        let simpleDescription;
+        let stkTrace;
+        if (typeof desc !== 'string') {
+          [simpleDescription, ...stkTrace] = desc;
+        } else {
+          simpleDescription = desc;
+          stkTrace = null;
+          console.log(simpleDescription);
+        }
         this.state.errorMessage = simpleDescription;
         this.state.errorType = (error.response.data.code >= 500) ? 'Server' : 'Model';
-        //console.error(stkTrace.join());
+        this.state.errorTrace = stkTrace.join();
+        // console.error(stkTrace.join());
       } else {
         const msg = 'The server did not respond. Please check your internet connection.';
         this.state.errorMessage = msg;
@@ -194,11 +214,20 @@ export default class Store {
       this.state.error = true;
       console.error('ERROR OCCURED');
       if (error.response) {
-        const desc = (JSON.parse(error.response.data.data).description)[0];
-        const [simpleDescription, ...stkTrace] = desc;
+        const desc = (JSON.parse(error.response.data.data).description);
+        let simpleDescription;
+        let stkTrace;
+        if (typeof desc !== 'string') {
+          [simpleDescription, ...stkTrace] = desc;
+        } else {
+          simpleDescription = desc;
+          stkTrace = null;
+          console.log(simpleDescription);
+        }
         this.state.errorMessage = simpleDescription;
         this.state.errorType = (error.response.data.code >= 500) ? 'Server' : 'Model';
-        //console.error(stkTrace.join());
+        this.state.errorTrace = stkTrace.join();
+        // console.error(stkTrace.join());
       } else {
         const msg = 'The server did not respond. Please check your internet connection.';
         this.state.errorMessage = msg;
@@ -228,11 +257,20 @@ export default class Store {
       this.state.error = true;
       console.error('ERROR OCCURED');
       if (error.response) {
-        const desc = (JSON.parse(error.response.data.data).description)[0];
-        const [simpleDescription, ...stkTrace] = desc;
+        const desc = (JSON.parse(error.response.data.data).description);
+        let simpleDescription;
+        let stkTrace;
+        if (typeof desc !== 'string') {
+          [simpleDescription, ...stkTrace] = desc;
+        } else {
+          simpleDescription = desc;
+          stkTrace = null;
+          console.log(simpleDescription);
+        }
         this.state.errorMessage = simpleDescription;
         this.state.errorType = (error.response.data.code >= 500) ? 'Server' : 'Model';
-        //console.error(stkTrace.join());
+        this.state.errorTrace = stkTrace.join();
+        // console.error(stkTrace.join());
       } else {
         const msg = 'The server did not respond. Please check your internet connection.';
         this.state.errorMessage = msg;
@@ -314,11 +352,20 @@ export default class Store {
       this.state.error = true;
       console.error('ERROR OCCURED');
       if (error.response) {
-        const desc = (JSON.parse(error.response.data.data).description)[0];
-        const [simpleDescription, ...stkTrace] = desc;
+        const desc = (JSON.parse(error.response.data.data).description);
+        let simpleDescription;
+        let stkTrace;
+        if (typeof desc !== 'string') {
+          [simpleDescription, ...stkTrace] = desc;
+        } else {
+          simpleDescription = desc;
+          stkTrace = null;
+          console.log(simpleDescription);
+        }
         this.state.errorMessage = simpleDescription;
         this.state.errorType = (error.response.data.code >= 500) ? 'Server' : 'Model';
-        //console.error(stkTrace.join());
+        this.state.errorTrace = stkTrace.join();
+        // console.error(stkTrace.join());
       } else {
         const msg = 'The server did not respond. Please check your internet connection.';
         this.state.errorMessage = msg;
@@ -343,11 +390,20 @@ export default class Store {
       this.state.error = true;
       console.error('ERROR OCCURED');
       if (error.response) {
-        const desc = (JSON.parse(error.response.data.data).description)[0];
-        const [simpleDescription, ...stkTrace] = desc;
+        const desc = (JSON.parse(error.response.data.data).description);
+        let simpleDescription;
+        let stkTrace;
+        if (typeof desc !== 'string') {
+          [simpleDescription, ...stkTrace] = desc;
+        } else {
+          simpleDescription = desc;
+          stkTrace = null;
+          console.log(simpleDescription);
+        }
         this.state.errorMessage = simpleDescription;
         this.state.errorType = (error.response.data.code >= 500) ? 'Server' : 'Model';
-        //console.error(stkTrace.join());
+        this.state.errorTrace = stkTrace.join();
+        // console.error(stkTrace.join());
       } else {
         const msg = 'The server did not respond. Please check your internet connection.';
         this.state.errorMessage = msg;
@@ -377,14 +433,24 @@ export default class Store {
       this.state.error = false;
     } catch (error) {
       console.error(error);
-      this.state.error = true;
+      // this.state.error = true;
+      this.state.graphError = true;
       console.error('ERROR OCCURED');
       if (error.response) {
-        const desc = (JSON.parse(error.response.data.data).description)[0];
-        const [simpleDescription, ...stkTrace] = desc;
+        const desc = (JSON.parse(error.response.data.data).description);
+        let simpleDescription;
+        let stkTrace;
+        if (typeof desc !== 'string') {
+          [simpleDescription, ...stkTrace] = desc;
+        } else {
+          simpleDescription = desc;
+          stkTrace = null;
+          console.log(simpleDescription);
+        }
         this.state.errorMessage = simpleDescription;
         this.state.errorType = (error.response.data.code >= 500) ? 'Server' : 'Model';
-        //console.error(stkTrace.join());
+        this.state.errorTrace = stkTrace.join();
+        // console.error(stkTrace.join());
       } else {
         const msg = 'The server did not respond. Please check your internet connection.';
         this.state.errorMessage = msg;

@@ -14,6 +14,8 @@ import zipfile
 import io
 import base64
 import re
+import sys
+import traceback
 
 from .endpoint_model import endpoint_model
 from .endpoint_models import endpoint_models
@@ -100,6 +102,10 @@ def create_app(test_config=None):
         Returns manually formatted JSON response object with 500 code,
         exception name, and description
         """
+        a = sys.exc_info()
+        stkTrace = traceback.format_exception(*a)
+        stkTrace.insert(0, "Error: " + str(e))
+
         # Tell sentry
         sentry_sdk.capture_exception(e)
 
@@ -108,13 +114,7 @@ def create_app(test_config=None):
             return e
 
         response = {}
-        description = ""
-        if hasattr(e, 'description'):
-            description = e.description
-        elif hasattr(e, 'args'):
-            description = e.args
-        else:
-            description = 'Error has no description'
+        description = stkTrace
 
         # replace the body with JSON
         response.setdefault('data', json.dumps({

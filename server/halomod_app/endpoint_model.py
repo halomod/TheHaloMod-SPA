@@ -48,21 +48,21 @@ def create():
     else:
         models = {}
 
-    try:
-        num_models = len(models)
-        models[label] = utils.hmf_driver(previous=initial_model, **params)  # creates model from params
-        if num_models < len(models):
-            session["models"] = pickle.dumps(models)  # writes updated model dict to session
-        else: 
-            print("Error: Model not computed.")
-            raise Exception("Error: str(e)")
-    except Exception as e:
+    # try:
+    num_models = len(models)
+    models[label] = utils.hmf_driver(previous=initial_model, **params)  # creates model from params
+    if num_models < len(models):
+        session["models"] = pickle.dumps(models)  # writes updated model dict to session
+    else: 
+        print("Error: Model not computed.")
+        raise Exception("Error: Model not computed.")
+    #except Exception as e:
         #stkTrace = traceback.format_stack()
-        a = sys.exc_info()
-        stkTrace = traceback.format_exception(*a)
-        stkTrace.insert(0, "Error: " + str(e))
+    #    a = sys.exc_info()
+    #    stkTrace = traceback.format_exception(*a)
+    #    stkTrace.insert(0, "Error: " + str(e))
         #print(*stkTrace, sep = "\n")
-        raise Exception(stkTrace)
+    #    raise Exception(stkTrace)
 
     # returns new list of model names
     return jsonify({"model_names": get_model_names()})
