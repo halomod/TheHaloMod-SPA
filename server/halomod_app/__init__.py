@@ -114,13 +114,12 @@ def create_app(test_config=None):
             return e
 
         response = {}
-        description = stkTrace
 
         # replace the body with JSON
         response.setdefault('data', json.dumps({
             "code": '500',
             "name": e.name if hasattr(e, 'name') else str(type(e)),
-            "description": description,
+            "description": stkTrace,
         }))
         response.setdefault('content_type', "application/json")
         return response, 500
@@ -130,16 +129,20 @@ def create_app(test_config=None):
         """HTTP Exception Handler for error codes 400-499.
 
         Returns JSON object with error code, exception name, and description"""
+        a = sys.exc_info()
+        stkTrace = traceback.format_exception(*a)
+        stkTrace.insert(0, "Error: " + str(e))
+
         # Tell sentry
         sentry_sdk.capture_exception(e)
-        
+
         # start with the correct headers and status code from the error
         response = e.get_response()
         # replace the body with JSON
         response.data = json.dumps({
             "code": e.code,
             "name": e.name,
-            "description": e.description,
+            "description": stkTrace,
         })
         response.content_type = "application/json"
         return response
