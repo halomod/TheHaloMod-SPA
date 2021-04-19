@@ -85,7 +85,11 @@
         </form>
       </md-dialog-content>
       <md-dialog-actions>
-          <md-button @click="$emit('bug-click', bugDetails)">Submit</md-button>
+          <md-button @click="
+            $emit('bug-click', bugDetails);
+            showBugReportDialog = false">
+            Submit
+          </md-button>
           <md-button @click="showBugReportDialog = false">Cancel</md-button>
       </md-dialog-actions>
     </md-dialog>

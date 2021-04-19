@@ -214,18 +214,16 @@ export default class Store {
     this.state.errorMessage = errorMessage;
   }
 
-  /** Reports a bug associated with a particular model 
-   * 
+  /** Reports a bug associated with a particular model
+   *
    * @param {string} modelName the name of the model reported
    * @param {string} bugDetails the details of the bug submitted by the user
   */
   reportBug = async (modelName, bugDetails) => {
     try {
       await axios.post(`${baseurl}/bugs`, {
-        data: {
-          model_name: modelName,
-          bug_details: bugDetails,
-        },
+        model_name: modelName,
+        bug_details: bugDetails,
       });
     } catch (error) {
       console.error(error);

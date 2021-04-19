@@ -131,7 +131,7 @@ export default {
       this.blocked = true;
       await this.$store.reportBug(modelName, bugDetails);
       this.blocked = false;
-      this.loading = true;
+      this.loading = false;
     },
   },
 };
