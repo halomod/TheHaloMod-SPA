@@ -29,6 +29,7 @@ module.exports = {
      * have a leading underscore.
      */
     'no-underscore-dangle': [0],
+    'no-irregular-whitespace': [0],
   },
   overrides: [
     {

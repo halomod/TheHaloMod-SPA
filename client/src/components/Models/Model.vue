@@ -120,6 +120,14 @@ export default {
       editing: false,
     };
   },
+  computed: {
+    invalidName() {
+      const invalid = this.$store.state.modelNames.includes(this.localName.trim())
+                      && this.localName.trim() !== this.name;
+      return invalid;
+    },
+    validationClass() { return { 'md-invalid': this.invalidName }; },
+  },
   methods: {
     reset() {
       this.editing = false;
@@ -133,6 +141,7 @@ export default {
     },
     submit() {
       this.editing = false;
+      this.localName = this.localName.trim();
       this.$emit('rename-click', this.localName);
       this.$emit('release');
     },
@@ -147,8 +156,12 @@ export default {
   .md-field:after {
     height: 0px
   }
-  .rename-field {
+  .md-list-item {
+    display: flex;
+  }
+  .md-field {
     margin: 0px 0px 0px 0px;
+    height: '100%';
     padding: 0;
     display: flex;
     flex-direction: row;
@@ -160,5 +173,13 @@ export default {
   .md-textarea {
     width: 30vw;
     height: 40vh;
+  }
+
+  #model-buttons {
+    padding-bottom: 15px;
+  }
+  #error {
+    color: red;
+    font-size: small;
   }
 </style>

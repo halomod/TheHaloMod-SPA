@@ -1,6 +1,8 @@
 # This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
 
+# This workflow will deploy the client to netlify on when a commit is added to dev or main branch.
+
 name: Client Deployment
 
 on: 
@@ -46,7 +48,8 @@ jobs:
     
     - name: Install dependencies
       run: cd client && npm install
-
+    
+    # Set up gfortran for camb
     - name: Setup gfortran
       run: |
         sudo apt-get install gfortran-8
