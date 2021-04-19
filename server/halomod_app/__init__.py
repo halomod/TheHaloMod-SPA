@@ -100,6 +100,9 @@ def create_app(test_config=None):
         Returns manually formatted JSON response object with 500 code,
         exception name, and description
         """
+        # Tell sentry
+        sentry_sdk.capture_exception(e)
+
         # pass HTTPExceptions to HTTPException handler
         if isinstance(e, HTTPException):
             return e
@@ -127,6 +130,9 @@ def create_app(test_config=None):
         """HTTP Exception Handler for error codes 400-499.
 
         Returns JSON object with error code, exception name, and description"""
+        # Tell sentry
+        sentry_sdk.capture_exception(e)
+        
         # start with the correct headers and status code from the error
         response = e.get_response()
         # replace the body with JSON

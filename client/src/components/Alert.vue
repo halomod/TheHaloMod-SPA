@@ -1,9 +1,9 @@
 <template>
   <div>
     <md-dialog :md-active.sync="showAlert">
-      <md-dialog-title>{{ title }}</md-dialog-title>
+      <md-dialog-title>{{ title }} Error</md-dialog-title>
       <md-divider></md-divider>
-      <md-card-content>{{ message }}</md-card-content>
+      <md-dialog-content>{{ message }}</md-dialog-content>
       <md-divider></md-divider>
 
       <md-dialog-actions>

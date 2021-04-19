@@ -14,6 +14,7 @@ import zipfile
 import io
 import numpy as np
 import traceback
+import sys
 
 
 endpoint_model = Blueprint('endpoint_model', __name__)
@@ -55,7 +56,9 @@ def create():
             print("Error: Model not computed.")
             raise Exception("Error: str(e)")
     except Exception as e:
-        stkTrace = e.__traceback__.format_stack()
+        #stkTrace = traceback.format_stack()
+        a = sys.exc_info()
+        stkTrace = traceback.format_exception(*a)
         stkTrace.insert(0, "Error: " + str(e))
         #print(*stkTrace, sep = "\n")
         raise Exception(stkTrace)

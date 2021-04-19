@@ -31,8 +31,8 @@
         {{`Are you sure you want to overwrite '${name}?`}}
       </md-dialog-content>
       <md-dialog-actions>
-        <md-button @click.native="save">Confirm (Enter)</md-button>
-        <md-button @click.native="showSaveDialog = false">Cancel</md-button>
+        <md-button @click="save">Confirm (Enter)</md-button>
+        <md-button @click="showSaveDialog = false">Cancel</md-button>
       </md-dialog-actions>
     </md-dialog>
     <md-dialog :md-active.sync="showSaveDialog" v-else  @keyup.enter="save">
@@ -175,9 +175,11 @@ export default {
       if (this.$store.state.error) {
         this.showAlert = true;
         // Clears incorrect value from form
-        this.currentFormState = clonedeep(this.initialFormState);
+        // this.currentFormState = clonedeep(this.initialFormState);
+        // this.$forceUpdate();
+      } else {
+        this.$router.push('/');
       }
-      this.$router.push('/');
     },
     isValid(valid) {
       this.valid = valid;
@@ -188,6 +190,11 @@ export default {
       if (!this.edit) {
         setTimeout(() => { this.$refs.saveInput.$el.focus(); }, 300);
       }
+    },
+    closeAlertDialog() {
+      this.showAlert = false;
+      // Error has been shown so mark as false
+      this.$store.state.error = false;
     },
   },
 };

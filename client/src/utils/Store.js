@@ -122,14 +122,18 @@ export default class Store {
     } catch (error) {
       console.error(error);
       this.state.error = true;
-      console.log('ERROR OCCURRED');
+      console.error('ERROR OCCURED');
       if (error.response) {
-        this.state.errorMessage = JSON.parse(error.response.data.data).description[0];
+        const desc = (JSON.parse(error.response.data.data).description)[0];
+        const [simpleDescription, ...stkTrace] = desc;
+        this.state.errorMessage = simpleDescription;
         this.state.errorType = (error.response.data.code >= 500) ? 'Server' : 'Model';
-        // window.alert('Could not create model');
-        console.log(error.response.data);
-        console.log(error.response.data.data);
-        console.log(JSON.parse(error.response.data.data).description.join('\n'));
+        //console.error(stkTrace.join());
+      } else {
+        const msg = 'The server did not respond. Please check your internet connection.';
+        this.state.errorMessage = msg;
+        this.state.errorType = 'Server';
+        console.error(`Server Error: ${msg}`);
       }
     }
   }
@@ -151,9 +155,18 @@ export default class Store {
     } catch (error) {
       console.error(error);
       this.state.error = true;
+      console.error('ERROR OCCURED');
       if (error.response) {
-        this.state.errorMessage = error.response.data.description;
+        const desc = (JSON.parse(error.response.data.data).description)[0];
+        const [simpleDescription, ...stkTrace] = desc;
+        this.state.errorMessage = simpleDescription;
         this.state.errorType = (error.response.data.code >= 500) ? 'Server' : 'Model';
+        //console.error(stkTrace.join());
+      } else {
+        const msg = 'The server did not respond. Please check your internet connection.';
+        this.state.errorMessage = msg;
+        this.state.errorType = 'Server';
+        console.error(`Server Error: ${msg}`);
       }
     }
   }
@@ -178,6 +191,20 @@ export default class Store {
       this.getPlotData();
     } catch (error) {
       console.error(error);
+      this.state.error = true;
+      console.error('ERROR OCCURED');
+      if (error.response) {
+        const desc = (JSON.parse(error.response.data.data).description)[0];
+        const [simpleDescription, ...stkTrace] = desc;
+        this.state.errorMessage = simpleDescription;
+        this.state.errorType = (error.response.data.code >= 500) ? 'Server' : 'Model';
+        //console.error(stkTrace.join());
+      } else {
+        const msg = 'The server did not respond. Please check your internet connection.';
+        this.state.errorMessage = msg;
+        this.state.errorType = 'Server';
+        console.error(`Server Error: ${msg}`);
+      }
     }
   }
 
@@ -199,9 +226,18 @@ export default class Store {
     } catch (error) {
       console.error(error);
       this.state.error = true;
+      console.error('ERROR OCCURED');
       if (error.response) {
-        this.state.errorMessage = error.response.data.description;
+        const desc = (JSON.parse(error.response.data.data).description)[0];
+        const [simpleDescription, ...stkTrace] = desc;
+        this.state.errorMessage = simpleDescription;
         this.state.errorType = (error.response.data.code >= 500) ? 'Server' : 'Model';
+        //console.error(stkTrace.join());
+      } else {
+        const msg = 'The server did not respond. Please check your internet connection.';
+        this.state.errorMessage = msg;
+        this.state.errorType = 'Server';
+        console.error(`Server Error: ${msg}`);
       }
     }
   }
@@ -276,9 +312,18 @@ export default class Store {
     } catch (error) {
       console.error(error);
       this.state.error = true;
+      console.error('ERROR OCCURED');
       if (error.response) {
-        this.state.errorMessage = error.response.data.description;
+        const desc = (JSON.parse(error.response.data.data).description)[0];
+        const [simpleDescription, ...stkTrace] = desc;
+        this.state.errorMessage = simpleDescription;
         this.state.errorType = (error.response.data.code >= 500) ? 'Server' : 'Model';
+        //console.error(stkTrace.join());
+      } else {
+        const msg = 'The server did not respond. Please check your internet connection.';
+        this.state.errorMessage = msg;
+        this.state.errorType = 'Server';
+        console.error(`Server Error: ${msg}`);
       }
     }
   }
@@ -294,7 +339,21 @@ export default class Store {
       this.state.modelNames = this.getModelNames();
       await this.getPlotData();
     } catch (error) {
-      console.log(error);
+      console.error(error);
+      this.state.error = true;
+      console.error('ERROR OCCURED');
+      if (error.response) {
+        const desc = (JSON.parse(error.response.data.data).description)[0];
+        const [simpleDescription, ...stkTrace] = desc;
+        this.state.errorMessage = simpleDescription;
+        this.state.errorType = (error.response.data.code >= 500) ? 'Server' : 'Model';
+        //console.error(stkTrace.join());
+      } else {
+        const msg = 'The server did not respond. Please check your internet connection.';
+        this.state.errorMessage = msg;
+        this.state.errorType = 'Server';
+        console.error(`Server Error: ${msg}`);
+      }
     }
   }
 
@@ -319,9 +378,18 @@ export default class Store {
     } catch (error) {
       console.error(error);
       this.state.error = true;
+      console.error('ERROR OCCURED');
       if (error.response) {
-        this.state.errorMessage = error.response.data.description;
-        this.state.errorType = (error.response.data.code === 500) ? 'Server' : 'Model';
+        const desc = (JSON.parse(error.response.data.data).description)[0];
+        const [simpleDescription, ...stkTrace] = desc;
+        this.state.errorMessage = simpleDescription;
+        this.state.errorType = (error.response.data.code >= 500) ? 'Server' : 'Model';
+        //console.error(stkTrace.join());
+      } else {
+        const msg = 'The server did not respond. Please check your internet connection.';
+        this.state.errorMessage = msg;
+        this.state.errorType = 'Server';
+        console.error(`Server Error: ${msg}`);
       }
     }
   }
