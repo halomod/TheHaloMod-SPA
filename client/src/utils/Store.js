@@ -124,9 +124,12 @@ export default class Store {
       this.state.error = true;
       console.log('ERROR OCCURRED');
       if (error.response) {
-        this.state.errorMessage = error.response.data.description;
+        this.state.errorMessage = JSON.parse(error.response.data.data).description[0];
         this.state.errorType = (error.response.data.code >= 500) ? 'Server' : 'Model';
-        window.alert(error.response.data);
+        // window.alert('Could not create model');
+        console.log(error.response.data);
+        console.log(error.response.data.data);
+        console.log(JSON.parse(error.response.data.data).description.join('\n'));
       }
     }
   }

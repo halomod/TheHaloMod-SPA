@@ -1,5 +1,10 @@
 <template>
 <div>
+  <Alert
+    :showAlert="showAlert"
+    :title="READ_ONLY.errorType"
+    :message="READ_ONLY.errorMessage"
+    @close="showAlert = false"/>
   <Forms
     :initialFormState="initialFormState"
     :contextPrimary="contextPrimary"
@@ -26,8 +31,8 @@
         {{`Are you sure you want to overwrite '${name}?`}}
       </md-dialog-content>
       <md-dialog-actions>
-        <md-button @click="save">Confirm (Enter)</md-button>
-        <md-button @click="showSaveDialog = false">Cancel</md-button>
+        <md-button @click.native="save">Confirm (Enter)</md-button>
+        <md-button @click.native="showSaveDialog = false">Cancel</md-button>
       </md-dialog-actions>
     </md-dialog>
     <md-dialog :md-active.sync="showSaveDialog" v-else  @keyup.enter="save">
@@ -69,6 +74,7 @@
 import clonedeep from 'lodash.clonedeep';
 import Forms from '@/components/Forms';
 import { DEFAULT_FORM_STATE } from '@/constants/backend_constants';
+import Alert from '@/components/Alert';
 
 /**
  * Represents the view of the forms for each type of data entered into halomod.
@@ -80,6 +86,7 @@ export default {
   name: 'FormView',
   components: {
     Forms,
+    Alert,
   },
   data() {
     return {
@@ -100,6 +107,8 @@ export default {
       contextPrimary: 'Create',
       contextSecondary: 'New Model',
       valid: true,
+      READ_ONLY: this.$store.state,
+      showAlert: false,
     };
   },
   async activated() {
@@ -163,6 +172,11 @@ export default {
       }
       this.loading = false;
       this.showSaveDialog = false;
+      if (this.$store.state.error) {
+        this.showAlert = true;
+        // Clears incorrect value from form
+        this.currentFormState = clonedeep(this.initialFormState);
+      }
       this.$router.push('/');
     },
     isValid(valid) {

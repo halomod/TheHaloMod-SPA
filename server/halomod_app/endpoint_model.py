@@ -13,6 +13,7 @@ import dill as pickle
 import zipfile
 import io
 import numpy as np
+import traceback
 
 
 endpoint_model = Blueprint('endpoint_model', __name__)
@@ -50,10 +51,14 @@ def create():
         models[label] = utils.hmf_driver(**params)  # creates model from params
         if num_models < len(models):
             session["models"] = pickle.dumps(models)  # writes updated model dict to session
-        else: raise Exception
+        else: 
+            print("Error: Model not computed.")
+            raise Exception("Error: str(e)")
     except Exception as e:
-        print("Error: Model not computed.")
-        raise Exception("Error: Model not computed.")
+        stkTrace = e.__traceback__.format_stack()
+        stkTrace.insert(0, "Error: " + str(e))
+        #print(*stkTrace, sep = "\n")
+        raise Exception(stkTrace)
 
     # returns new list of model names
     return jsonify({"model_names": get_model_names()})
