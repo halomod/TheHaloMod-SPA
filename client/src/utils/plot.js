@@ -5,7 +5,7 @@ import { PLOT_AXIS_METADATA } from '@/constants/PLOT.js';
 import createLatexSvgFromString from './latex';
 
 const debug = Debug('plot.js');
-debug.enabled = false;
+debug.enabled = true;
 
 /**
  * Gets the additional class name for a line in the plot to determine if it
@@ -112,15 +112,15 @@ function generateAxisLabels(svg, plot) {
 
   // x-Axis label initial placement
   const xAxisLatexSvg = createLatexSvgFromString(PLOT_AXIS_METADATA[x].label);
-  svg.append('svg')
-    .attr('id', 'x-axis-label');
-  const xAxisNode = document.getElementById('x-axis-label');
+  const xAxisNode = svg.append('svg')
+    .attr('id', 'x-axis-label')
+    .node();
 
   xAxisNode.append(xAxisLatexSvg);
 
   // The bounding client rect doesn't have a height until it is applied to the
   // svg.
-  xAxisNode.setAttribute('y', h - xAxisNode.getBoundingClientRect().height);
+  xAxisNode.setAttribute('y', h - xAxisLatexSvg.getBoundingClientRect().height);
 
   // Center the x-axis
   xAxisNode.setAttribute('x', (w / 2)
@@ -186,6 +186,8 @@ export default (elementId, plot, modelNames, xlog, ylog) => {
   const h = svg.node().getBoundingClientRect().height;
 
   const { yLabelWidth, xLabelHeight } = generateAxisLabels(svg, plot);
+
+  debug(`xLabelHeight is: ${xLabelHeight}`);
 
   const datasets = modelNames.map((modelName) => plotData.plot_data[modelName]);
   debug('datasets is: ', datasets);
