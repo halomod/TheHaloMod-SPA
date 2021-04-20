@@ -5,7 +5,7 @@ import { PLOT_AXIS_METADATA } from '@/constants/PLOT.js';
 import createLatexSvgFromString from './latex';
 
 const debug = Debug('plot.js');
-debug.enabled = true;
+debug.enabled = false;
 
 /**
  * Gets the additional class name for a line in the plot to determine if it
