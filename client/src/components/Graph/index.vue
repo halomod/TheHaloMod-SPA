@@ -4,6 +4,13 @@
       <div class="md-toolbar-row">
         <div class="md-toolbar-section-start">
           <h3 class="md-title">Plot</h3>
+          <md-icon class="tooltip">
+              help
+              <md-tooltip md-direction="right"
+                >Interactive plots for all created models.
+                  X and Y axis are configurable.</md-tooltip
+              >
+            </md-icon>
         </div>
       </div>
       <div class="md-layout-item md-size-100 md-layout md-gutter">
