@@ -148,7 +148,7 @@ const FORMS = {
     id: 'tracer_concentration',
     title: 'Tracer Concentration',
     modelKey: 'tracer_concentration_model',
-    modelChoices: MODEL_CHOICES.concentration,
+    modelChoices: MODEL_CHOICES.tracer_concentration,
     paramsKey: 'tracer_concentration_params',
   },
   halo_profile: {
@@ -162,7 +162,7 @@ const FORMS = {
     id: 'tracer_profile',
     title: 'Tracer Profile',
     modelKey: 'tracer_profile_model',
-    modelChoices: MODEL_CHOICES.profile,
+    modelChoices: MODEL_CHOICES.tracer_profile,
     paramsKey: 'tracer_profile_params',
   },
   halo_exclusion: {

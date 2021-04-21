@@ -1,6 +1,8 @@
 # This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
 
+# This workflow will run lint and unit tests for the vue client on every push.
+
 name: Client CI
 
 on: [push]
@@ -28,7 +30,7 @@ jobs:
           ${{ runner.os }}-build-${{ env.cache-name }}-
           ${{ runner.os }}-build-
           ${{ runner.os }}-
-
+  
     - name: Python Caching
       uses: actions/cache@v2
       with:
@@ -41,6 +43,7 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     
+    # gfortran setup for camb
     - name: Setup gfortran
       run: |
         sudo apt-get install gfortran-8
@@ -54,7 +57,7 @@ jobs:
         python-version: 3.8.8
 
     - name: Generate constants    
-      run: sh generate_constants.sh
+      run: sh generate_client_files.sh
 
     - name: Run Tests
       run: |

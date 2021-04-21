@@ -1,6 +1,5 @@
 """Plotting and driving utilities for TheHaloMod-SPA."""
 
-import io
 import logging
 from flask import session
 from typing import Union
