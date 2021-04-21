@@ -1,23 +1,14 @@
 from flask import Blueprint
-from sentry_sdk.integrations.flask import FlaskIntegration
-import sentry_sdk
-from werkzeug.exceptions import HTTPException
-from flask_session import Session
-from flask_cors import CORS
-from flask import Flask, jsonify, request, session, abort, send_file
+from flask import jsonify, request, session
 from . import utils
 from .utils import get_model_names
 from halomod import TracerHaloModel
-import base64
-import json
 import dill as pickle
-import zipfile
-import io
-import numpy as np
 
 
 endpoint_model = Blueprint('endpoint_model', __name__)
-initial_model = TracerHaloModel(rmax=150, rnum=200, transfer_params={"kmax":1e3, 'extrapolate_with_eh': True})
+initial_model = TracerHaloModel(rmax=150, rnum=200, transfer_params={
+                                "kmax": 1e3, 'extrapolate_with_eh': True})
 
 """Create a new model
 POST /model
@@ -46,7 +37,8 @@ def create():
     else:
         models = {}
 
-    models[label] = utils.hmf_driver(previous=initial_model, **params)  # creates model from params
+    models[label] = utils.hmf_driver(
+        previous=initial_model, **params)  # creates model from params
     session["models"] = pickle.dumps(models)  # writes updated model dict to session
 
     # returns new list of model names

@@ -3,6 +3,7 @@ import { mount, createLocalVue } from '@vue/test-utils';
 import VueMaterial from 'vue-material';
 import clone from 'lodash.clonedeep';
 import { DEFAULT_FORM_STATE, FORM_OPTION_DEFAULTS } from '@/constants/backend_constants.js';
+import { getHtmlFromKey } from '@/utils/stringUtils';
 
 describe('Mounted GenericForm', () => {
   const localVue = createLocalVue();
@@ -112,7 +113,13 @@ describe('Mounted GenericForm', () => {
     async () => {
       let params = Object.entries(wrapper.vm.subformState.bias_params);
       params.forEach(([key, value]) => {
-        expect(wrapper.html()).toEqual(expect.stringMatching(new RegExp(`.*${key}.*`)));
+        // Just in case the key is automatically converted to a different style
+        const htmlKeyResult = getHtmlFromKey(key);
+        let matchKey = key;
+        if (htmlKeyResult) {
+          matchKey = htmlKeyResult;
+        }
+        expect(wrapper.html()).toEqual(expect.stringMatching(new RegExp(`.*${matchKey}.*`)));
         expect(wrapper.html()).toEqual(expect.stringMatching(new RegExp(`.*${value}.*`)));
       });
       wrapper.vm.subformState.bias_model = 'Tinker10PBSplit';
@@ -120,7 +127,13 @@ describe('Mounted GenericForm', () => {
       await localVue.nextTick();
       params = Object.entries(wrapper.vm.subformState.bias_params);
       params.forEach(([key, value]) => {
-        expect(wrapper.html()).toEqual(expect.stringMatching(new RegExp(`.*${key}.*`)));
+        // Just in case the key is automatically converted to a different style
+        const htmlKeyResult = getHtmlFromKey(key);
+        let matchKey = key;
+        if (htmlKeyResult) {
+          matchKey = htmlKeyResult;
+        }
+        expect(wrapper.html()).toEqual(expect.stringMatching(new RegExp(`.*${matchKey}.*`)));
         expect(wrapper.html()).toEqual(expect.stringMatching(new RegExp(`.*${value}.*`)));
       });
     });

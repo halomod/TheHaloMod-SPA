@@ -7,7 +7,10 @@
         </div>
       </div>
       <div class="md-layout-item md-size-100 md-layout md-gutter">
-        <md-field v-if="xAxisChoices" class="md-layout-item md-gutter md-size-85">
+        <md-field
+          v-if="xAxisChoices"
+          class="md-layout-item md-gutter md-medium-size-50 md-xsmall-size-100"
+        >
           <label for="xAxisChoice">X-Axis</label>
           <md-select v-model="xAxisChoice" id="xAxisChoices" name="xAxisChoice">
             <md-option
@@ -27,7 +30,7 @@
         </md-checkbox>
       </div>
       <div class="md-layout-item md-size-100 md-layout md-gutter">
-        <md-field class="md-layout-item md-gutter md-size-85">
+        <md-field class="md-layout-item md-gutter md-medium-size-50 md-xsmall-size-100">
           <label for="yAxisChoice">Y-Axis</label>
           <md-select
             v-if="xAxisChosen"

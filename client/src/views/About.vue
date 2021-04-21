@@ -36,7 +36,31 @@
         <a href="https://github.com/dblevin1">Daniel Blevins</a>, and
         <a href="https://github.com/aneuhold">Anton Neuhold</a>.</p>
       </md-content>
-      <span class="md-subheading code-link">See the code for this web app
+      <div class="md-subheading extra-info center-align">
+        <span>This site is using</span>
+        <md-button
+          class="link-button md-accent"
+          href="https://github.com/halomod/hmf"
+          target="_blank"
+        >
+          <div class="center-align">
+            <md-icon class="svg-icon" :md-src="require('../assets/github-icon.svg')" />
+            <span>hmf v{{hmfVersion}}</span>
+          </div>
+        </md-button>
+        <span>and</span>
+        <md-button
+          class="link-button md-accent"
+          href="https://github.com/halomod/halomod"
+          target="_blank"
+        >
+          <div class="center-align">
+            <md-icon class="svg-icon" :md-src="require('../assets/github-icon.svg')" />
+            <span>halomod v{{halomodVersion}}</span>
+          </div>
+        </md-button>
+      </div>
+      <span class="md-subheading extra-info">See the code for this web app
         <a target="_blank" href="https://github.com/halomod/TheHaloMod-SPA">here</a>
       </span>
     </div>
@@ -45,6 +69,7 @@
 
 <script>
 import Navbar from '@/components/Navbar.vue';
+import libraryVersions from '@/../generated/library_versions';
 
 /**
  * Represents the "About" page of the website.
@@ -52,6 +77,12 @@ import Navbar from '@/components/Navbar.vue';
 export default {
   components: {
     Navbar,
+  },
+  data() {
+    return {
+      hmfVersion: libraryVersions.hmf,
+      halomodVersion: libraryVersions.halomod,
+    };
   },
 };
 </script>
@@ -62,7 +93,21 @@ export default {
     flex-direction: column;
     align-items: center;
   }
-  .code-link {
-    padding: 32px;
+  .extra-info {
+    padding-top: 32px;
+  }
+  .center-align {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+  }
+  .svg-icon {
+    margin-right: 8px;
+  }
+  .link-button {
+    height: auto;
+    /* Ignores the uppercase transform of the button */
+    text-transform: none;
   }
 </style>
