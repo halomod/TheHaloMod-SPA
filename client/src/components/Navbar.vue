@@ -25,7 +25,13 @@
           <router-link to="/acknowledge">
             <md-button class="md-primary">Acknowledge</md-button>
           </router-link>
-          <router-link to="/about"><md-button class="md-primary">About</md-button></router-link>
+          <router-link to="/about">
+            <md-tooltip>Using:
+              hmf v{{hmfVersion}} &
+              halomod v{{halomodVersion}}
+            </md-tooltip>
+            <md-button class="md-primary">About</md-button>
+          </router-link>
           <md-button class="md-icon-button" @click="switchTheme">
             <md-tooltip>{{themeTooltipText}}</md-tooltip>
             <md-icon>{{themeIconName}}</md-icon>
@@ -37,6 +43,7 @@
 
 <script>
 import { DEFAULT_THEME, DARK_THEME } from '@/constants/themeOptions';
+import libraryVersions from '@/../generated/library_versions';
 
 /**
  * Holds the primary nav bar for the application.
@@ -46,6 +53,8 @@ export default {
   data() {
     return {
       currentTheme: this.$store.state.theme,
+      hmfVersion: libraryVersions.hmf,
+      halomodVersion: libraryVersions.halomod,
     };
   },
   methods: {

@@ -3,7 +3,8 @@ import forms from '@/constants/forms.js';
 import deepFreeze from 'deep-freeze';
 
 /**
- * Defines the default state for forms when a new model is being created
+ * Defines the default state for forms when a new model is being created.
+ *
  * @typedef DefaultFormState
  * @type {{
  *   [formId: string]: SubformState,
@@ -11,10 +12,11 @@ import deepFreeze from 'deep-freeze';
  */
 
 /**
-  * Establishes the potential formats for each subform's unique state
+  * Establishes the potential formats for each subform's unique state.
+  *
   * @typedef SubformState
   * @type {{
-  *   [coreParameter: string]?: string | int | boolean,
+  *   [coreParameter: string]?: string | number | boolean,
   *   [modelKey: string]?: string,
   *   [paramKey: string]?: object
   * }}
@@ -23,9 +25,10 @@ import deepFreeze from 'deep-freeze';
 /**
  * Defines the defaults associated with alternate model selections in each
  * subform.
+ *
  * @typedef FormOptionDefaults
  * @type {{
- *  [formId]: {Object.<string, number>}
+ *  [formId: string]: object
  * }}
  */
 
@@ -111,6 +114,20 @@ form_option_defaults.cosmo = {
     sigma_8: 0.817,
   },
 };
+
+/**
+ * Convert the tracer concentration and tracer profile null values to a
+ * null string. This will be converted back to an actual null value when
+ * the model is flattened / cleaned before being sent to the server. This
+ * allows a custom option to be generated for setting these values to null
+ * which is defined in `model_choices.js`.
+ */
+if (default_form_state.tracer_concentration[forms.tracer_concentration.modelKey] === null) {
+  default_form_state.tracer_concentration[forms.tracer_concentration.modelKey] = 'null';
+}
+if (default_form_state.tracer_profile[forms.tracer_profile.modelKey] === null) {
+  default_form_state.tracer_profile[forms.tracer_profile.modelKey] = 'null';
+}
 
 /**
  * Contains the default state for all forms

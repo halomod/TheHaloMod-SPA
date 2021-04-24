@@ -10,6 +10,7 @@ import {
 } from 'idb-keyval';
 import { DEFAULT_THEME } from '@/constants/themeOptions';
 import PLOT_AXIS_METADATA from '@/constants/PLOT_AXIS_METADATA.json';
+import forms from '@/constants/forms';
 
 axios.defaults.withCredentials = true;
 
@@ -90,7 +91,7 @@ export default class Store {
    */
 
   /**
-   * Flattens the model object to prepare it for use by the server
+   * Flattens the model object to prepare it for use by the server.
    *
    * @param {object} model
    */
@@ -99,6 +100,15 @@ export default class Store {
     Object.values(model).forEach((subform) => {
       flattened = { ...flattened, ...subform };
     });
+
+    // Convert null string to null value for specific models
+    if (flattened[forms.tracer_concentration.modelKey] === 'null') {
+      flattened[forms.tracer_concentration.modelKey] = null;
+    }
+    if (flattened[forms.tracer_profile.modelKey] === 'null') {
+      flattened[forms.tracer_profile.modelKey] = null;
+    }
+
     return flattened;
   }
 
