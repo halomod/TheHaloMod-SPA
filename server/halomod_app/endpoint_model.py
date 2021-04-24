@@ -57,7 +57,7 @@ def create():
     if num_models < len(models):
         session["models"] = pickle.dumps(models)  # writes updated model dict to session
     else:
-        raise Exception("Error: Model not computed.")
+        raise Exception("Model not computed.")
 
     return jsonify({"model_names": get_model_names()})
 
