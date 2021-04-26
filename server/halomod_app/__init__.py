@@ -8,7 +8,6 @@ import json
 import re
 import sys
 import traceback
-import warnings
 import os
 
 from .endpoint_model import endpoint_model
@@ -55,9 +54,6 @@ def create_app(test_config=None):
     CORS(app, origins=origins, supports_credentials=True)  # enable CORS
 
     sess.init_app(app)  # enable Sessions
-
-    # Set all warnings to trigger
-    warnings.filterwarnings("error")
 
     # Register the Endpoints
     """All endpoints:
@@ -151,7 +147,14 @@ def create_app(test_config=None):
     def handle_runtime_warning(e):
         """Generic Exception handler for 500 Internal Server Error
         Returns manually formatted JSON response object with 500 code,
-        exception name, and description
+        exception name, and description.
+
+        This is not currently used. To use it, the following needs to be added
+        to the code in this file. But, note that all errors will turn into
+        exceptions.
+        ```
+        warnings.filterwarnings("error")
+        ```
         """
         # Perform stack trace on original exception
         a = sys.exc_info()
@@ -159,33 +162,35 @@ def create_app(test_config=None):
 
         # Make the error message pretty for the user
         try:
-            warningSource = stkTrace[len(stkTrace)-2]
+            warningSource = stkTrace[len(stkTrace) - 2]
             fileIdx = warningSource.find(".py")
             if fileIdx != -1:
                 warningSource = warningSource.split(".py")[0]
-            
+
             if os.name == 'nt':
                 warningSourceFile = warningSource.split("\\")
             else:
                 warningSourceFile = warningSource.split("/")
-            
+
             warningSourceFile = warningSourceFile[-1]
         except Exception:
             warningSourceFile = " "
-        
+
         # Removes function name that caused the warning
         try:
             strException = str(e)
-            strException = strException[:strException.find(" in ")+1]
-            if strException == "": strException = str(e)
+            strException = strException[:strException.find(" in ") + 1]
+            if strException == "":
+                strException = str(e)
         except Exception:
             strException = str(e)
 
         if " " in warningSourceFile:
             stkTrace.insert(0, "Warning: " + strException)
         else:
-            stkTrace.insert(0, "Warning: " + strException + "\nWarning in: " + warningSourceFile)
-            
+            stkTrace.insert(0, "Warning: " + strException +
+                            "\nWarning in: " + warningSourceFile)
+
         # Tell sentry
         sentry_sdk.capture_exception(e)
 

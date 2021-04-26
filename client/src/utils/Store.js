@@ -15,7 +15,7 @@ import forms from '@/constants/forms';
 axios.defaults.withCredentials = true;
 
 const debug = Debug('Store.js');
-debug.enabled = false;
+debug.enabled = true;
 
 /**
  * This store is initialized at the beginning of the application startup. It
@@ -134,7 +134,6 @@ export default class Store {
     } catch (error) {
       console.error(error);
       this.state.error = true;
-      console.error('ERROR OCCURED');
       if (error.response) {
         const desc = (JSON.parse(error.response.data.data).description);
         let simpleDescription;
@@ -149,7 +148,6 @@ export default class Store {
         this.state.errorMessage = simpleDescription;
         this.state.errorType = (error.response.data.code >= 500) ? 'Server' : 'Model';
         this.state.errorTrace = stkTrace.join();
-        // console.error(stkTrace.join());
       } else {
         const msg = 'The server did not respond. Please check your internet connection.';
         this.state.errorMessage = msg;
@@ -464,7 +462,7 @@ export default class Store {
       this.state.error = false;
     } catch (error) {
       console.error(error);
-      // this.state.error = true;
+      this.state.error = true;
       this.state.graphError = true;
       console.error('ERROR OCCURED');
       if (error.response) {

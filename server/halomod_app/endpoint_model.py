@@ -9,24 +9,23 @@ endpoint_model = Blueprint('endpoint_model', __name__)
 initial_model = TracerHaloModel(rmax=150, rnum=200, transfer_params={
                                 "kmax": 1e3, 'extrapolate_with_eh': True})
 
-"""Create a new model
-POST /model
-
-Parameters:
-- params: dict
-- model_name: string
-
-Returns:
-- model_names: string[]
-"""
-
 
 @endpoint_model.route('/model', methods=["POST"])
 def create():
-    """Handles the creation of models and saving the created model to the session
+    """Create a new model
+    POST /model
 
-    expects: {"params": <dictionary of params>, "label": <model_name>}
-    outputs: {"model_names": <list_of_model_names_in_session>}"""
+    Parameters:
+    - params: dict
+    - model_name: string
+
+    Example Parameters:
+    - `{"params": <dictionary of params>, "label": <model_name>}`
+
+    Returns:
+    - model_names: string[]
+    - example: `{"model_names": <list_of_model_names_in_session>}`
+    """
     params = request.get_json()["params"]
     label = request.get_json()["label"]
 
