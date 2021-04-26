@@ -39,8 +39,6 @@ def create():
     models[label] = utils.hmf_driver(
         previous=initial_model,
         **params)  # creates model from params
-    print('The number of models is: ', num_models,
-          ' The length of models is:', len(models))
     if num_models < len(models):
         session["models"] = pickle.dumps(models)  # writes updated model dict to session
     else:

@@ -15,7 +15,7 @@ import forms from '@/constants/forms';
 axios.defaults.withCredentials = true;
 
 const debug = Debug('Store.js');
-debug.enabled = true;
+debug.enabled = false;
 
 /**
  * This store is initialized at the beginning of the application startup. It
