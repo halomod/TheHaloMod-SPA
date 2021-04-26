@@ -4,11 +4,6 @@ from . import utils
 from .utils import get_model_names
 from halomod import TracerHaloModel
 import dill as pickle
-import zipfile
-import io
-import numpy as np
-import traceback
-import sys
 
 endpoint_model = Blueprint('endpoint_model', __name__)
 initial_model = TracerHaloModel(rmax=150, rnum=200, transfer_params={
