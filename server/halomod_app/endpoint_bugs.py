@@ -1,11 +1,8 @@
-from flask import Blueprint, request, session, current_app, Response
-from flask_session import Session
+from flask import Blueprint, request, session, current_app
 import io
 import os
-import traceback
 import yagmail
 import toml
-import numpy as np
 import dill as pickle
 from hmf.helpers.cfg_utils import framework_to_dict
 
@@ -33,6 +30,7 @@ def report_bug():
     # These need to be defined in config.py or through environment variables
     email = current_app.config["MAIL_USERNAME"]
     password = current_app.config["MAIL_PASSWORD"]
+    to_email = current_app.config['MAIL_TO_EMAIL']
 
     model_name = request.get_json()["model_name"]
     bug_details = request.get_json()["bug_details"]
@@ -57,7 +55,7 @@ def report_bug():
 
     yag = yagmail.SMTP(user=email, password=password)
     yag.send(
-        to=email,
+        to=to_email,
         subject=f"[THM Bug Report] Bug in {model_name}",
         contents=body,
         attachments='./model.toml'
