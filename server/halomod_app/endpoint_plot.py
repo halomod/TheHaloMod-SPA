@@ -51,10 +51,10 @@ def get_plot_data():
             data["ys"] = list(ys[mask])  # apply mask and save ys into data dict
             data["xs"] = list(xs[mask])  # apply mask and save xs into data dict
         except Exception as e:
-            abort(
-                400, f"Error encountered getting {y_param} for model {name}. {str(e)}.")
             print(f"Error encountered getting {y_param} for model {name}")
             print(e)
+            abort(
+                400, f"Error encountered getting {y_param} for model {name}. {str(e)}.")
 
         res["plot_data"][name] = data  # put data in response object
 

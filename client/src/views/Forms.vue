@@ -1,5 +1,12 @@
 <template>
 <div>
+  <Alert
+    :showAlert="showAlert"
+    :title="READ_ONLY.errorType"
+    :message="READ_ONLY.errorMessage"
+    @close="closeAlertDialog"
+    @focusout="closeAlertDialog"
+    @change="closeAlertDialog"/>
   <Forms
     :initialFormState="initialFormState"
     :contextPrimary="contextPrimary"
@@ -69,6 +76,7 @@
 import clonedeep from 'lodash.clonedeep';
 import Forms from '@/components/Forms';
 import { DEFAULT_FORM_STATE } from '@/constants/backend_constants';
+import Alert from '@/components/Alert';
 import Debug from 'debug';
 
 const debug = Debug('Forms.vue');
@@ -84,6 +92,7 @@ export default {
   name: 'FormView',
   components: {
     Forms,
+    Alert,
   },
   data() {
     return {
@@ -104,6 +113,8 @@ export default {
       contextPrimary: 'Create',
       contextSecondary: 'New Model',
       valid: true,
+      READ_ONLY: this.$store.state,
+      showAlert: false,
     };
   },
   async activated() {
@@ -155,20 +166,28 @@ export default {
       });
     },
     leave() {
+      this.closeAlertDialog();
       this.showCancelDialog = false;
+      this.$forceUpdate();
       this.$router.push('/');
     },
     async save() {
-      if (this.invalidName) return;
-      this.loading = true;
       if (this.edit) {
+        this.loading = true;
         await this.$store.updateModel(this.name, this.currentFormState);
       } else {
+        if (this.invalidName) return;
+        this.loading = true;
         await this.$store.createModel(this.currentFormState, this.name);
       }
       this.loading = false;
       this.showSaveDialog = false;
-      this.$router.push('/');
+      if (this.$store.state.error) {
+        // Show the error alert dialog
+        this.showAlert = true;
+      } else {
+        this.$router.push('/');
+      }
     },
     isValid(valid) {
       this.valid = valid;
@@ -179,6 +198,11 @@ export default {
       if (!this.edit) {
         setTimeout(() => { this.$refs.saveInput.$el.focus(); }, 300);
       }
+    },
+    closeAlertDialog() {
+      this.showAlert = false;
+      // Error has been shown so mark as false
+      this.$store.state.error = false;
     },
   },
 };

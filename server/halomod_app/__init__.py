@@ -6,6 +6,9 @@ from flask_cors import CORS
 from flask import Flask, jsonify, session, Response
 import json
 import re
+import sys
+import traceback
+import os
 
 from .endpoint_model import endpoint_model
 from .endpoint_models import endpoint_models
@@ -95,43 +98,116 @@ def create_app(test_config=None):
         Returns manually formatted JSON response object with 500 code,
         exception name, and description
         """
+        a = sys.exc_info()
+        stkTrace = traceback.format_exception(*a)
+        stkTrace.insert(0, "Error: " + str(e))
+
+        # Tell sentry
+        sentry_sdk.capture_exception(e)
+
         # pass HTTPExceptions to HTTPException handler
         if isinstance(e, HTTPException):
             return e
 
         response = {}
-        description = ""
-        if hasattr(e, 'description'):
-            description = e.description
-        elif hasattr(e, 'args'):
-            description = e.args
-        else:
-            description = 'Error has no description'
 
         # replace the body with JSON
         response.setdefault('data', json.dumps({
             "code": '500',
             "name": e.name if hasattr(e, 'name') else str(type(e)),
-            "description": description,
+            "description": stkTrace,
         }))
         response.setdefault('content_type', "application/json")
-        return response
+        return response, 500
 
     @app.errorhandler(HTTPException)
     def handle_exception(e):
         """HTTP Exception Handler for error codes 400-499.
 
         Returns JSON object with error code, exception name, and description"""
+        a = sys.exc_info()
+        stkTrace = traceback.format_exception(*a)
+        stkTrace.insert(0, "Error: " + str(e))
+
+        # Tell sentry
+        sentry_sdk.capture_exception(e)
+
         # start with the correct headers and status code from the error
         response = e.get_response()
         # replace the body with JSON
         response.data = json.dumps({
             "code": e.code,
             "name": e.name,
-            "description": e.description,
+            "description": stkTrace,
         })
         response.content_type = "application/json"
         return response
+
+    @app.errorhandler(RuntimeWarning)
+    def handle_runtime_warning(e):
+        """Generic Exception handler for 500 Internal Server Error
+        Returns manually formatted JSON response object with 500 code,
+        exception name, and description.
+
+        This is not currently used. To use it, the following needs to be added
+        to the code in this file. But, note that all errors will turn into
+        exceptions.
+        ```
+        warnings.filterwarnings("error")
+        ```
+        """
+        # Perform stack trace on original exception
+        a = sys.exc_info()
+        stkTrace = traceback.format_exception(*a)
+
+        # Make the error message pretty for the user
+        try:
+            warningSource = stkTrace[len(stkTrace) - 2]
+            fileIdx = warningSource.find(".py")
+            if fileIdx != -1:
+                warningSource = warningSource.split(".py")[0]
+
+            if os.name == 'nt':
+                warningSourceFile = warningSource.split("\\")
+            else:
+                warningSourceFile = warningSource.split("/")
+
+            warningSourceFile = warningSourceFile[-1]
+        except Exception:
+            warningSourceFile = " "
+
+        # Removes function name that caused the warning
+        try:
+            strException = str(e)
+            strException = strException[:strException.find(" in ") + 1]
+            if strException == "":
+                strException = str(e)
+        except Exception:
+            strException = str(e)
+
+        if " " in warningSourceFile:
+            stkTrace.insert(0, "Warning: " + strException)
+        else:
+            stkTrace.insert(0, "Warning: " + strException +
+                            "\nWarning in: " + warningSourceFile)
+
+        # Tell sentry
+        sentry_sdk.capture_exception(e)
+
+        # pass HTTPExceptions to HTTPException handler
+        if isinstance(e, HTTPException):
+            return e
+
+        response = {}
+
+        # replace the body with JSON
+        response.setdefault('data', json.dumps({
+            "code": '500',
+            "name": e.name if hasattr(e, 'name') else str(type(e)),
+            "description": stkTrace,
+        }))
+        response.setdefault('content_type', "application/json")
+        return response, 500
 
     @app.route('/')
     def home():
