@@ -346,6 +346,7 @@ export default class Store {
     } catch (error) {
       this.state.graphError = true;
       this.setError(error);
+    }
   }
 
   /**
