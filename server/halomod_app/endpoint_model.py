@@ -48,24 +48,22 @@ def create():
     return jsonify({"model_names": get_model_names()})
 
 
-"""Update an existing model
-PUT /model
-
-Parameters:
-- params: dict
-- model_name: string
-
-Returns:
-- model_names: string[]
-"""
-
-
 @endpoint_model.route('/model', methods=["PUT"])
 def update():
-    # This endpoint updates a model based on name & params and updates the session
-    #
-    # expects: {"model_name": <model_name_to_update>, "params": <dictionary of params>}
-    # outputs: {"model_names": <list_of_model_names_in_session>}
+    """Update an existing model
+    PUT /model
+
+    Expected parameters:
+    - params: dict
+    - model_name: string
+
+    Example parameter:
+    - `{"model_name": <model_name_to_update>, "params": <dictionary of params>}`
+
+    Returns:
+    - model_names: string[]
+    - example: `{"model_names": <list_of_model_names_in_session>}`
+    """
     request_json = request.get_json()
     name = request_json["model_name"]
     params = request_json["params"]
@@ -85,23 +83,19 @@ def update():
     return jsonify(res)
 
 
-"""Delete a model
+@endpoint_model.route('/model', methods=["DELETE"])
+def delete():
+    """Delete a model
     DELETE /model
 
     Parameters:
     - model_name: string
+    - example: `{"model_name": <model_name_to_update>}`
 
     Returns:
     - model_names: string[]
-"""
-
-
-@endpoint_model.route('/model', methods=["DELETE"])
-def delete():
-    # This endpoint deletes a model based on name and updates the session
-    #
-    # expects: {"model_name": <model_name_to_update>}
-    # outputs: {"model_names": <list_of_model_names_in_session>}
+    - example: `{"model_names": <list_of_model_names_in_session>}`
+    """
     request_json = request.get_json()
     name = request_json["model_name"]
 
@@ -125,24 +119,22 @@ def delete():
     return jsonify(res)
 
 
-"""Renames model
+@endpoint_model.route('/model', methods=["PATCH"])
+def rename():
+    """Renames a model based on name and new name.
     PATCH /model
 
     Parameters:
     - model_name: string
     - new_model_name: string
 
+    Example parameter:
+    - `{"model_name": <model_name_to_rename>, "new_model_name": <new_model_name>}`
+
     Returns:
     - model_names: string[]
-"""
-
-
-@endpoint_model.route('/model', methods=["PATCH"])
-def rename():
-    # This endpoint renames a model based on name and new name
-    #
-    # expects: {"model_name": <model_name_to_rename>, "new_model_name": <new_model_name>}
-    # outputs: {"model_names": <list_of_model_names_in_session>}
+    - example: `{"model_names": <list_of_model_names_in_session>}`
+    """
     request_json = request.get_json()
     name = request_json["model_name"]
     new_name = request_json["new_model_name"]
