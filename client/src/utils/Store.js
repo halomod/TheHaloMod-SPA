@@ -224,6 +224,27 @@ export default class Store {
     this.state.errorMessage = errorMessage;
   }
 
+  /** Reports a bug associated with a particular model
+   *
+   * @param {string} modelName the name of the model reported
+   * @param {string} bugDetails the details of the bug submitted by the user
+  */
+  reportBug = async (modelName, bugDetails) => {
+    try {
+      await axios.post(`${baseurl}/bugs`, {
+        model_name: modelName,
+        bug_details: bugDetails,
+      });
+    } catch (error) {
+      console.error(error);
+      this.state.error = true;
+      if (error.response) {
+        this.state.errorMessage = error.response.data.description;
+        this.state.errorType = (error.response.data.code >= 500) ? 'Server' : 'Model';
+      }
+    }
+  }
+
   /**
    * Gets (clones) a model with the given name. This returns a deep cloned
    * copy of the model.

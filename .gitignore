@@ -349,5 +349,5 @@ test/
 # redis
 dump.rdb
 
-# Mac OSC files
+# Mac OSX
 *.DS_Store
