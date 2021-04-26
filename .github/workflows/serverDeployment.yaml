@@ -12,8 +12,7 @@ on:
     # changed for everyone.
     branches:
       - main
-      - US338ModelSpecificIssueReporting
-
+      
 jobs:
   build:
     runs-on: ubuntu-latest
