@@ -35,7 +35,8 @@
  *
  * `html` is an html string that doesn't need an enclosing element which will
  * determine how the title of the property is displayed. For example:
- * `n<sub>s</sub>`.
+ * `n<sub>s</sub>`. These values can also be automatically generated based on
+ * what is in `stringUtils.js` if this field and `plainName` is left undefined.
  *
  * `plainName` is a simple string with no HTML that will be the name of the
  * property and displayed to the user. If this exists, `html` should not exist.
@@ -76,14 +77,26 @@
  */
 const PARAMETER_PROPERTIES = {
   lnk_min: {
-    min: Math.log(1 * 10 ** -10),
-    max: Math.log(2 * 10 ** 6),
+    min: Math.round(Math.log(1 * 10 ** -10)),
+    max: Math.round(Math.log(2 * 10 ** 6)),
+    step: 0.25,
     range: true,
+    plainName: 'lnk Range',
+    rangeSlider: {
+      isRangeSliderMin: true,
+      rangeSliderMaxParameter: 'lnk_max',
+      rangeSliderTickInterval: 4,
+    },
   },
   lnk_max: {
-    min: Math.log(1 * 10 ** -10),
-    max: Math.log(2 * 10 ** 6),
+    min: Math.round(Math.log(1 * 10 ** -10)),
+    max: Math.round(Math.log(2 * 10 ** 6)),
+    step: 0.5,
     range: true,
+    rangeSlider: {
+      isRangeSliderMax: true,
+      rangeSliderMinParameter: 'lnk_min',
+    },
   },
   dlnk: {
     plainName: 'lnk Step Size',
@@ -159,7 +172,7 @@ const PARAMETER_PROPERTIES = {
     max: 1,
   },
   rmin: {
-    plainName: 'Scale (log10)',
+    plainName: 'Real-Space Scale Range (log10 Mpc/h)',
     min: -3.0,
     max: 3.0,
     step: 0.05,
@@ -169,7 +182,7 @@ const PARAMETER_PROPERTIES = {
     },
   },
   rmax: {
-    plainName: 'Scale (log10)',
+    plainName: 'Real-Space Scale Range (log10 Mpc/h)',
     min: -3.0,
     max: 3.0,
     step: 0.05,
@@ -179,13 +192,13 @@ const PARAMETER_PROPERTIES = {
     },
   },
   rnum: {
-    plainName: 'Number of r bins',
+    plainName: 'Number of Real-Space Scales',
     min: 5.0,
     max: 100,
     value: 5,
   },
   hm_logk_min: {
-    plainName: 'Wavenumber (log10)',
+    plainName: 'Fourier Scale Range (log10 h/Mpc)',
     min: -3.0,
     max: 3.0,
     step: 0.05,
@@ -195,7 +208,7 @@ const PARAMETER_PROPERTIES = {
     },
   },
   hm_logk_max: {
-    plainName: 'Wavenumber (log10)',
+    plainName: 'Fourier Scale Range (log10 h/Mpc)',
     min: -3.0,
     max: 3.0,
     step: 0.05,
@@ -236,6 +249,12 @@ const PARAMETER_PROPERTIES = {
   },
   kmax: {
     visible: false,
+  },
+  takahashi: {
+    plainName: 'Use Takahashi?',
+  },
+  extrapolate_with_eh: {
+    plainName: 'Extrapolate with EH?',
   },
 };
 

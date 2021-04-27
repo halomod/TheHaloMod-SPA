@@ -10,6 +10,7 @@ import {
 } from 'idb-keyval';
 import { DEFAULT_THEME } from '@/constants/themeOptions';
 import PLOT_AXIS_METADATA from '@/constants/PLOT_AXIS_METADATA.json';
+import forms from '@/constants/forms';
 
 axios.defaults.withCredentials = true;
 
@@ -37,8 +38,10 @@ export default class Store {
         logy: true,
       },
       error: false,
+      graphError: false,
       errorType: '',
       errorMessage: '',
+      errorTrace: '',
       theme: DEFAULT_THEME,
     };
   }
@@ -88,7 +91,7 @@ export default class Store {
    */
 
   /**
-   * Flattens the model object to prepare it for use by the server
+   * Flattens the model object to prepare it for use by the server.
    *
    * @param {object} model
    */
@@ -97,6 +100,15 @@ export default class Store {
     Object.values(model).forEach((subform) => {
       flattened = { ...flattened, ...subform };
     });
+
+    // Convert null string to null value for specific models
+    if (flattened[forms.tracer_concentration.modelKey] === 'null') {
+      flattened[forms.tracer_concentration.modelKey] = null;
+    }
+    if (flattened[forms.tracer_profile.modelKey] === 'null') {
+      flattened[forms.tracer_profile.modelKey] = null;
+    }
+
     return flattened;
   }
 
@@ -120,13 +132,7 @@ export default class Store {
       ]);
       this.state.modelNames = this.getModelNames();
     } catch (error) {
-      console.error(error);
-      this.state.error = true;
-      console.log('ERROR OCCURRED');
-      if (error.response) {
-        this.state.errorMessage = error.response.data.description;
-        this.state.errorType = (error.response.data.code >= 500) ? 'Server' : 'Model';
-      }
+      this.setError(error);
     }
   }
 
@@ -145,12 +151,7 @@ export default class Store {
       this.state.error = false;
       await Promise.all([this.setModel(name, model), this.getPlotData()]);
     } catch (error) {
-      console.error(error);
-      this.state.error = true;
-      if (error.response) {
-        this.state.errorMessage = error.response.data.description;
-        this.state.errorType = (error.response.data.code >= 500) ? 'Server' : 'Model';
-      }
+      this.setError(error);
     }
   }
 
@@ -173,7 +174,7 @@ export default class Store {
       await set('models', this.state.models);
       this.getPlotData();
     } catch (error) {
-      console.error(error);
+      this.setError(error);
     }
   }
 
@@ -193,6 +194,53 @@ export default class Store {
       const model = await this.getModel(oldName);
       await Promise.all([this.setModel(newName, model), this.getPlotData()]);
     } catch (error) {
+      this.setError(error);
+    }
+  }
+
+  /**
+   * Sets an erorr for the application. This becomes visible to the user.
+   *
+   * @param {Error} error the error to set
+   */
+  setError = (error) => {
+    console.error(error);
+    this.state.error = true;
+    console.error('ERROR OCCURED');
+    if (error.response) {
+      const desc = (JSON.parse(error.response.data.data).description);
+      let simpleDescription;
+      let stkTrace;
+      if (typeof desc !== 'string') {
+        [simpleDescription, ...stkTrace] = desc;
+      } else {
+        simpleDescription = desc;
+        stkTrace = null;
+        console.log(simpleDescription);
+      }
+      this.state.errorMessage = simpleDescription;
+      this.state.errorType = (error.response.data.code >= 500) ? 'Server' : 'Model';
+      this.state.errorTrace = stkTrace.join();
+    } else {
+      const msg = 'The server did not respond. Please check your internet connection.';
+      this.state.errorMessage = msg;
+      this.state.errorType = 'Server';
+      console.error(`Server Error: ${msg}`);
+    }
+  }
+
+  /** Reports a bug associated with a particular model
+   *
+   * @param {string} modelName the name of the model reported
+   * @param {string} bugDetails the details of the bug submitted by the user
+  */
+  reportBug = async (modelName, bugDetails) => {
+    try {
+      await axios.post(`${baseurl}/bugs`, {
+        model_name: modelName,
+        bug_details: bugDetails,
+      });
+    } catch (error) {
       console.error(error);
       this.state.error = true;
       if (error.response) {
@@ -200,18 +248,6 @@ export default class Store {
         this.state.errorType = (error.response.data.code >= 500) ? 'Server' : 'Model';
       }
     }
-  }
-
-  /**
-   * Sets an erorr for the application. This becomes visible to the user.
-   *
-   * @param {string} errorType the type of error
-   * @param {string} errorMessage the message for the error
-   */
-  setError = (errorType, errorMessage) => {
-    this.state.error = true;
-    this.state.errorType = errorType;
-    this.state.errorMessage = errorMessage;
   }
 
   /**
@@ -270,12 +306,7 @@ export default class Store {
       await set('models', this.state.models);
       await this.getPlotData();
     } catch (error) {
-      console.error(error);
-      this.state.error = true;
-      if (error.response) {
-        this.state.errorMessage = error.response.data.description;
-        this.state.errorType = (error.response.data.code >= 500) ? 'Server' : 'Model';
-      }
+      this.setError(error);
     }
   }
 
@@ -290,7 +321,7 @@ export default class Store {
       this.state.modelNames = this.getModelNames();
       await this.getPlotData();
     } catch (error) {
-      console.log(error);
+      this.setError(error);
     }
   }
 
@@ -313,12 +344,8 @@ export default class Store {
       this.state.plot.plotData = data.data;
       this.state.error = false;
     } catch (error) {
-      console.error(error);
-      this.state.error = true;
-      if (error.response) {
-        this.state.errorMessage = error.response.data.description;
-        this.state.errorType = (error.response.data.code === 500) ? 'Server' : 'Model';
-      }
+      this.state.graphError = true;
+      this.setError(error);
     }
   }
 

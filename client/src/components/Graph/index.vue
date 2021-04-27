@@ -4,10 +4,20 @@
       <div class="md-toolbar-row">
         <div class="md-toolbar-section-start">
           <h3 class="md-title">Plot</h3>
+          <md-icon class="tooltip">
+              help
+              <md-tooltip md-direction="right"
+                >Interactive plots for all created models.
+                  X and Y axis are configurable.</md-tooltip
+              >
+            </md-icon>
         </div>
       </div>
       <div class="md-layout-item md-size-100 md-layout md-gutter">
-        <md-field v-if="xAxisChoices" class="md-layout-item md-gutter md-size-85">
+        <md-field
+          v-if="xAxisChoices"
+          class="md-layout-item md-gutter md-medium-size-50 md-xsmall-size-100"
+        >
           <label for="xAxisChoice">X-Axis</label>
           <md-select v-model="xAxisChoice" id="xAxisChoices" name="xAxisChoice">
             <md-option
@@ -27,7 +37,7 @@
         </md-checkbox>
       </div>
       <div class="md-layout-item md-size-100 md-layout md-gutter">
-        <md-field class="md-layout-item md-gutter md-size-85">
+        <md-field class="md-layout-item md-gutter md-medium-size-50 md-xsmall-size-100">
           <label for="yAxisChoice">Y-Axis</label>
           <md-select
             v-if="xAxisChosen"
@@ -60,7 +70,10 @@
       />
     </div>
     <p id="no-graph-notification" v-else>No graph has been generated yet</p>
-    <Error v-if="READ_ONLY.error" :type="READ_ONLY.errorType" :message="READ_ONLY.errorMessage"/>
+    <Error
+      v-if="READ_ONLY.graphError"
+      :type="READ_ONLY.errorType"
+      :message="READ_ONLY.errorMessage"/>
   </md-toolbar>
 </template>
 

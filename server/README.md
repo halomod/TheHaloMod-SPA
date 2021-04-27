@@ -24,6 +24,7 @@ Before doing any of the commands below, make sure to install the Python packages
 
 1. Open a second shell window (secondary to the shell that has a working directory of `server`. See the first step above.)
 1. In the second shell window, start up a [Redis DB](https://redis.io/) by running `redis-server`, which may need to be installed first. If this isn't installed yet, [see here on how to install it](https://redis.io/topics/quickstart).
+1. If you need to have the bug reporting feature on while running the server locally, then set the username and password for the gmail account to use to send emails. This can be done by running `export MAIL_USERNAME=someemail@gmail.com` and then `export MAIL_PASSWORD=yourPassword` in the same shell that will be running the server. In production, this is handled with Github Secrets and the server deployment.
 1. In the first shell window, run `. ./run.sh --dev`
 1. The server should now be located at `localhost:5000`
 

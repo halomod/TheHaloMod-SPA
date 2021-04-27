@@ -1,18 +1,6 @@
 from flask import Blueprint
-from sentry_sdk.integrations.flask import FlaskIntegration
-import sentry_sdk
-from werkzeug.exceptions import HTTPException
-from flask_session import Session
-from flask_cors import CORS
-from flask import Flask, jsonify, request, session, abort, send_file
-from . import utils
-from halomod_app.utils import get_model_names
-import base64
-import json
+from flask import jsonify, request, session, abort
 import dill as pickle
-import zipfile
-import io
-import numpy as np
 
 endpoint_plot = Blueprint('endpoint_plot', __name__)
 
@@ -63,10 +51,10 @@ def get_plot_data():
             data["ys"] = list(ys[mask])  # apply mask and save ys into data dict
             data["xs"] = list(xs[mask])  # apply mask and save xs into data dict
         except Exception as e:
-            abort(
-                400, f"Error encountered getting {y_param} for model {name}. {str(e)}.")
             print(f"Error encountered getting {y_param} for model {name}")
             print(e)
+            abort(
+                400, f"Error encountered getting {y_param} for model {name}. {str(e)}.")
 
         res["plot_data"][name] = data  # put data in response object
 

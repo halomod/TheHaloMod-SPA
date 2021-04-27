@@ -23,5 +23,8 @@ do
     "--generate-constants" )
       echo "Generating constants from run.sh with generate_constants.py..."
       python3 -m generate_constants.py;;
+    "--generate-version-file" )
+      echo "Generating version file from run.sh with generate_version_file.py..."
+      python3 -m generate_version_file.py;;
   esac
 done
