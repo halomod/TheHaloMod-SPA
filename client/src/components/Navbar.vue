@@ -4,7 +4,7 @@
           <md-button class="title-button">
             <div class="combined-button">
               <md-avatar>
-                <img class="logo" src="../assets/thm_logo.png">
+                <img class="logo" src="../assets/thm_logo.svg">
               </md-avatar>
               <h1 class="md-title">TheHaloMod</h1>
             </div>
