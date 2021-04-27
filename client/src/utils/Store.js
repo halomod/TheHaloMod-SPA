@@ -11,6 +11,7 @@ import {
 import { DEFAULT_THEME } from '@/constants/themeOptions';
 import PLOT_AXIS_METADATA from '@/constants/PLOT_AXIS_METADATA.json';
 import forms from '@/constants/forms';
+import * as Sentry from '@sentry/vue';
 
 axios.defaults.withCredentials = true;
 
@@ -221,11 +222,27 @@ export default class Store {
       this.state.errorMessage = simpleDescription;
       this.state.errorType = (error.response.data.code >= 500) ? 'Server' : 'Model';
       this.state.errorTrace = stkTrace.join();
+      // Printing the stack trace to the console sends it to Sentry,
+      // this may be too much information being shared about a developers workstation.
+      if (process.env.VUE_APP_SENTRY_ON !== 'FALSE') {
+        console.error(stkTrace);
+      }
+      Sentry.captureMessage(simpleDescription);
     } else {
-      const msg = 'The server did not respond. Please check your internet connection.';
-      this.state.errorMessage = msg;
+      if (error.code === 'ECONNABORTED') {
+        const msg = 'Communication with the server timed-out. Please check your internet connection.';
+        this.state.errorMessage = msg;
+      } else if (error.code === 400) {
+        const msg = 'The server did not respond correctly.';
+        this.state.errorMessage = msg;
+      } else {
+        const msg = 'The server did not respond, it may be offline.';
+        this.state.errorMessage = msg;
+      }
       this.state.errorType = 'Server';
-      console.error(`Server Error: ${msg}`);
+      console.log(error.message);
+      console.error(`Server Error: ${this.state.errorMessage}`);
+      Sentry.captureMessage(error.message);
     }
   }
 
