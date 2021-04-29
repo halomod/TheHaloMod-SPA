@@ -17,6 +17,7 @@ if (process.env.VUE_APP_SENTRY_ON !== 'FALSE') {
       trackComponents: true,
     },
     environment: process.env.NODE_ENV,
+    autoBreadcrumbs: true,
   });
 }
 

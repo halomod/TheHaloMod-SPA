@@ -1,5 +1,5 @@
-// import axios from 'axios';
-// import axiosRetry from 'axios-retry';
+import axios from 'axios';
+import axiosRetry from 'axios-retry';
 import clonedeep from 'lodash.clonedeep';
 import baseurl from '@/env';
 import Debug from 'debug';
@@ -14,15 +14,20 @@ import PLOT_AXIS_METADATA from '@/constants/PLOT_AXIS_METADATA.json';
 import forms from '@/constants/forms';
 import * as Sentry from '@sentry/vue';
 
-const axios = require('axios').default;
-const axiosRetry = require('axios-retry');
-
 axios.defaults.withCredentials = true;
 axiosRetry(axios, {
   retries: 3,
   shouldResetTimeout: true,
   retryDelay: axiosRetry.exponentialDelay, // Exponential back-off retry delay between requests
-  retryCondition: () => true, // retry no matter what
+  // retryCondition: () => true, // retry no matter what
+  // If true it will retry
+  retryCondition: (error) => {
+    if (error.response) {
+      return (error.response.status !== 500 && error.response.status > 299);
+    }
+    // Always retry if no server response
+    return true;
+  },
 });
 
 const debug = Debug('Store.js');
@@ -219,45 +224,72 @@ export default class Store {
    * @param {Error} error the error to set
    */
   setError = (error) => {
-    console.error(error);
-    this.state.error = true;
-    console.error('ERROR OCCURED');
-    if (error.response) {
-      const desc = (JSON.parse(error.response.data.data).description);
-      let simpleDescription;
-      let stkTrace;
-      if (typeof desc !== 'string') {
-        [simpleDescription, ...stkTrace] = desc;
+    try {
+      // console.log(error);
+      this.state.error = true;
+      console.log('ERROR OCCURED');
+      if (error.response) {
+        const desc = (JSON.parse(error.response.data.data).description);
+        let simpleDescription;
+        let stkTrace;
+        if (typeof desc !== 'string') {
+          [simpleDescription, ...stkTrace] = desc;
+        } else {
+          simpleDescription = desc;
+          stkTrace = null;
+          console.log(simpleDescription);
+        }
+        this.state.errorMessage = simpleDescription;
+        this.state.errorType = (error.response.data.code >= 500) ? 'Server' : 'Model';
+        this.state.errorTrace = stkTrace.join();
+        // Printing the stack trace to the console sends it to Sentry
+        if (process.env.VUE_APP_SENTRY_ON !== 'FALSE') {
+          console.log(stkTrace);
+          // Sentry.captureMessage(simpleDescription);
+          const scope = new Sentry.Scope();
+          scope.setTag('ErrorCode', error.code);
+          scope.setContext('Store Model State', this.state);
+          scope.setContext('Error Object', error);
+          const e = new Error(simpleDescription);
+          e.name = error.message;
+          Sentry.captureException(e, scope);
+        }
       } else {
-        simpleDescription = desc;
-        stkTrace = null;
-        console.log(simpleDescription);
+        const scope = new Sentry.Scope();
+        scope.setTag('ErrorCode', error.code);
+        // All the errors that do not have a response
+        if (error.code === 'ECONNABORTED') {
+          const msg = 'Communication with the server timed-out. Please check your internet connection.';
+          this.state.errorMessage = msg;
+          scope.setTag('ErrorCode', 'Connection Aborted');
+          scope.setLevel('warning');
+        } else if (error.code === 400) {
+          const msg = 'The server did not respond correctly.';
+          this.state.errorMessage = msg;
+        } else if (typeof error.code === 'undefined') {
+          const msg = 'The server did not respond after 3 attempts, it may be offline.';
+          this.state.errorMessage = msg;
+          scope.setTag('ErrorCode', 'Null');
+          scope.setLevel('fatal');
+        } else {
+          const msg = `An unkown error occured tring to reach the server: ${error.code}`;
+          this.state.errorMessage = msg;
+        }
+        this.state.errorType = 'Server';
+        console.log(error.message);
+        console.log(`Server Error: ${this.state.errorMessage}`);
+        scope.setContext('Store Model State', this.state);
+        scope.setContext('Error Object', error);
+        const e = new Error(this.state.errorMessage);
+        e.name = error.message;
+        Sentry.captureException(e, scope);
       }
-      this.state.errorMessage = simpleDescription;
-      this.state.errorType = (error.response.data.code >= 500) ? 'Server' : 'Model';
-      this.state.errorTrace = stkTrace.join();
-      // Printing the stack trace to the console sends it to Sentry
-      if (process.env.VUE_APP_SENTRY_ON !== 'FALSE') {
-        console.error(stkTrace);
-        Sentry.captureMessage(simpleDescription);
-      }
-    } else {
-      // All the errors that do not have a response
-      const scope = new Sentry.Scope();
-      if (error.code === 'ECONNABORTED') {
-        const msg = 'Communication with the server timed-out. Please check your internet connection.';
-        this.state.errorMessage = msg;
-      } else if (error.code === 400) {
-        const msg = 'The server did not respond correctly.';
-        this.state.errorMessage = msg;
-      } else {
-        const msg = 'The server did not respond, it may be offline.';
-        this.state.errorMessage = msg;
-      }
-      this.state.errorType = 'Server';
-      console.log(error.message);
-      console.error(`Server Error: ${this.state.errorMessage}`);
-      Sentry.captureMessage(error.message);
+    } catch (e) {
+      const msg = 'An error occured while handling an error. The server admin has been notified.';
+      this.state.error = true;
+      this.state.errorType = 'Client';
+      this.state.errorMessage = msg;
+      Sentry.captureException(e, 'fatal');
     }
   }
 
