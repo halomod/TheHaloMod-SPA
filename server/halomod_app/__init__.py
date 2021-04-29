@@ -28,6 +28,11 @@ def create_app(test_config=None):
     # Everything in config.py Config class is loaded into the Flask app config
     app.config.from_object('config.Config')
 
+    this_env = ""
+    if "PYTEST_CURRENT_TEST" in os.environ:
+        this_env = "testing"
+    else:
+        this_env = app.env
     # add sentry sdk
     sentry_sdk.init(
         dsn="https://27537774b9d949b7ab5dcbe3ba4496c9@o516709.ingest.sentry.io/5624184",
@@ -43,7 +48,7 @@ def create_app(test_config=None):
         # SHA as release, however you may want to set
         # something more human-readable.
         # release="myapp@1.0.0",
-        environment=app.env
+        environment=this_env
     )
 
     # The different origins that the server will allow connections from.
