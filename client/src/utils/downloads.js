@@ -45,6 +45,7 @@ export async function downloadData() {
       params: {
         param_names: params,
       },
+      timeout: 3000,
     });
     const json = response.data;
 

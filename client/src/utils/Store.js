@@ -1,4 +1,5 @@
-import axios from 'axios';
+// import axios from 'axios';
+// import axiosRetry from 'axios-retry';
 import clonedeep from 'lodash.clonedeep';
 import baseurl from '@/env';
 import Debug from 'debug';
@@ -13,7 +14,16 @@ import PLOT_AXIS_METADATA from '@/constants/PLOT_AXIS_METADATA.json';
 import forms from '@/constants/forms';
 import * as Sentry from '@sentry/vue';
 
+const axios = require('axios').default;
+const axiosRetry = require('axios-retry');
+
 axios.defaults.withCredentials = true;
+axiosRetry(axios, {
+  retries: 3,
+  shouldResetTimeout: true,
+  retryDelay: axiosRetry.exponentialDelay, // Exponential back-off retry delay between requests
+  retryCondition: () => true, // retry no matter what
+});
 
 const debug = Debug('Store.js');
 debug.enabled = false;
@@ -125,6 +135,7 @@ export default class Store {
       await axios.post(`${baseurl}/model`, {
         params: this.flatten(model),
         label: name,
+        timeout: 3000,
       });
       this.state.error = false;
       await Promise.all([
@@ -148,6 +159,7 @@ export default class Store {
       await axios.put(`${baseurl}/model`, {
         params: this.flatten(model),
         model_name: name,
+        timeout: 3000,
       });
       this.state.error = false;
       await Promise.all([this.setModel(name, model), this.getPlotData()]);
@@ -167,6 +179,7 @@ export default class Store {
       await axios.patch(`${baseurl}/model`, {
         model_name: oldName,
         new_model_name: newName,
+        timeout: 3000,
       });
       const model = this.state.models.get(oldName);
       this.state.models.set(newName, model);
@@ -190,6 +203,7 @@ export default class Store {
       await axios.put(`${baseurl}/models`, {
         model_name: oldName,
         new_model_name: newName,
+        timeout: 3000,
       });
       this.state.error = false;
       const model = await this.getModel(oldName);
@@ -222,13 +236,14 @@ export default class Store {
       this.state.errorMessage = simpleDescription;
       this.state.errorType = (error.response.data.code >= 500) ? 'Server' : 'Model';
       this.state.errorTrace = stkTrace.join();
-      // Printing the stack trace to the console sends it to Sentry,
-      // this may be too much information being shared about a developers workstation.
+      // Printing the stack trace to the console sends it to Sentry
       if (process.env.VUE_APP_SENTRY_ON !== 'FALSE') {
         console.error(stkTrace);
+        Sentry.captureMessage(simpleDescription);
       }
-      Sentry.captureMessage(simpleDescription);
     } else {
+      // All the errors that do not have a response
+      const scope = new Sentry.Scope();
       if (error.code === 'ECONNABORTED') {
         const msg = 'Communication with the server timed-out. Please check your internet connection.';
         this.state.errorMessage = msg;
@@ -256,6 +271,7 @@ export default class Store {
       await axios.post(`${baseurl}/bugs`, {
         model_name: modelName,
         bug_details: bugDetails,
+        timeout: 3000,
       });
     } catch (error) {
       console.error(error);
@@ -316,6 +332,7 @@ export default class Store {
         data: {
           model_name: name,
         },
+        timeout: 3000,
       });
       this.state.error = false;
       this.state.models.delete(name);
@@ -332,7 +349,9 @@ export default class Store {
    */
   clearModels = async () => {
     try {
-      await axios.delete(`${baseurl}/models`);
+      await axios.delete(`${baseurl}/models`, {
+        timeout: 3000,
+      });
       await del('models');
       this.state.models = new Map();
       this.state.modelNames = this.getModelNames();
@@ -357,6 +376,7 @@ export default class Store {
           x: this.state.plot.x,
           y: this.state.plot.y,
         },
+        timeout: 3000,
       });
       this.state.plot.plotData = data.data;
       this.state.error = false;
