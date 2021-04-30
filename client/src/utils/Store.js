@@ -1,4 +1,5 @@
 import axios from 'axios';
+import axiosRetry from 'axios-retry';
 import clonedeep from 'lodash.clonedeep';
 import baseurl from '@/env';
 import Debug from 'debug';
@@ -11,8 +12,23 @@ import {
 import { DEFAULT_THEME } from '@/constants/themeOptions';
 import PLOT_AXIS_METADATA from '@/constants/PLOT_AXIS_METADATA.json';
 import forms from '@/constants/forms';
+import * as Sentry from '@sentry/vue';
 
 axios.defaults.withCredentials = true;
+axiosRetry(axios, {
+  retries: 3,
+  shouldResetTimeout: true,
+  retryDelay: axiosRetry.exponentialDelay, // Exponential back-off retry delay between requests
+  // retryCondition: () => true, // retry no matter what
+  // If true it will retry
+  retryCondition: (error) => {
+    if (error.response) {
+      return (error.response.status !== 500 && error.response.status > 299);
+    }
+    // Always retry if no server response
+    return true;
+  },
+});
 
 const debug = Debug('Store.js');
 debug.enabled = false;
@@ -124,6 +140,7 @@ export default class Store {
       await axios.post(`${baseurl}/model`, {
         params: this.flatten(model),
         label: name,
+        timeout: 3000,
       });
       this.state.error = false;
       await Promise.all([
@@ -147,6 +164,7 @@ export default class Store {
       await axios.put(`${baseurl}/model`, {
         params: this.flatten(model),
         model_name: name,
+        timeout: 3000,
       });
       this.state.error = false;
       await Promise.all([this.setModel(name, model), this.getPlotData()]);
@@ -166,6 +184,7 @@ export default class Store {
       await axios.patch(`${baseurl}/model`, {
         model_name: oldName,
         new_model_name: newName,
+        timeout: 3000,
       });
       const model = this.state.models.get(oldName);
       this.state.models.set(newName, model);
@@ -189,6 +208,7 @@ export default class Store {
       await axios.put(`${baseurl}/models`, {
         model_name: oldName,
         new_model_name: newName,
+        timeout: 3000,
       });
       this.state.error = false;
       const model = await this.getModel(oldName);
@@ -204,28 +224,72 @@ export default class Store {
    * @param {Error} error the error to set
    */
   setError = (error) => {
-    console.error(error);
-    this.state.error = true;
-    console.error('ERROR OCCURED');
-    if (error.response) {
-      const desc = (JSON.parse(error.response.data.data).description);
-      let simpleDescription;
-      let stkTrace;
-      if (typeof desc !== 'string') {
-        [simpleDescription, ...stkTrace] = desc;
+    try {
+      // console.log(error);
+      this.state.error = true;
+      console.log('ERROR OCCURED');
+      if (error.response) {
+        const desc = (JSON.parse(error.response.data.data).description);
+        let simpleDescription;
+        let stkTrace;
+        if (typeof desc !== 'string') {
+          [simpleDescription, ...stkTrace] = desc;
+        } else {
+          simpleDescription = desc;
+          stkTrace = null;
+          console.log(simpleDescription);
+        }
+        this.state.errorMessage = simpleDescription;
+        this.state.errorType = (error.response.data.code >= 500) ? 'Server' : 'Model';
+        this.state.errorTrace = stkTrace.join();
+        // Printing the stack trace to the console sends it to Sentry
+        if (process.env.VUE_APP_SENTRY_ON !== 'FALSE') {
+          console.log(stkTrace);
+          // Sentry.captureMessage(simpleDescription);
+          const scope = new Sentry.Scope();
+          scope.setTag('ErrorCode', error.code);
+          scope.setContext('Store Model State', this.state);
+          scope.setContext('Error Object', error);
+          const e = new Error(simpleDescription);
+          e.name = error.message;
+          Sentry.captureException(e, scope);
+        }
       } else {
-        simpleDescription = desc;
-        stkTrace = null;
-        console.log(simpleDescription);
+        const scope = new Sentry.Scope();
+        scope.setTag('ErrorCode', error.code);
+        // All the errors that do not have a response
+        if (error.code === 'ECONNABORTED') {
+          const msg = 'Communication with the server timed-out. Please check your internet connection.';
+          this.state.errorMessage = msg;
+          scope.setTag('ErrorCode', 'Connection Aborted');
+          scope.setLevel('warning');
+        } else if (error.code === 400) {
+          const msg = 'The server did not respond correctly.';
+          this.state.errorMessage = msg;
+        } else if (typeof error.code === 'undefined') {
+          const msg = 'The server did not respond after 3 attempts, it may be offline.';
+          this.state.errorMessage = msg;
+          scope.setTag('ErrorCode', 'Null');
+          scope.setLevel('fatal');
+        } else {
+          const msg = `An unkown error occured tring to reach the server: ${error.code}`;
+          this.state.errorMessage = msg;
+        }
+        this.state.errorType = 'Server';
+        console.log(error.message);
+        console.log(`Server Error: ${this.state.errorMessage}`);
+        scope.setContext('Store Model State', this.state);
+        scope.setContext('Error Object', error);
+        const e = new Error(this.state.errorMessage);
+        e.name = error.message;
+        Sentry.captureException(e, scope);
       }
-      this.state.errorMessage = simpleDescription;
-      this.state.errorType = (error.response.data.code >= 500) ? 'Server' : 'Model';
-      this.state.errorTrace = stkTrace.join();
-    } else {
-      const msg = 'The server did not respond. Please check your internet connection.';
+    } catch (e) {
+      const msg = 'An error occured while handling an error. The server admin has been notified.';
+      this.state.error = true;
+      this.state.errorType = 'Client';
       this.state.errorMessage = msg;
-      this.state.errorType = 'Server';
-      console.error(`Server Error: ${msg}`);
+      Sentry.captureException(e, 'fatal');
     }
   }
 
@@ -239,6 +303,7 @@ export default class Store {
       await axios.post(`${baseurl}/bugs`, {
         model_name: modelName,
         bug_details: bugDetails,
+        timeout: 3000,
       });
     } catch (error) {
       console.error(error);
@@ -299,6 +364,7 @@ export default class Store {
         data: {
           model_name: name,
         },
+        timeout: 3000,
       });
       this.state.error = false;
       this.state.models.delete(name);
@@ -315,7 +381,9 @@ export default class Store {
    */
   clearModels = async () => {
     try {
-      await axios.delete(`${baseurl}/models`);
+      await axios.delete(`${baseurl}/models`, {
+        timeout: 3000,
+      });
       await del('models');
       this.state.models = new Map();
       this.state.modelNames = this.getModelNames();
@@ -340,6 +408,7 @@ export default class Store {
           x: this.state.plot.x,
           y: this.state.plot.y,
         },
+        timeout: 3000,
       });
       this.state.plot.plotData = data.data;
       this.state.error = false;

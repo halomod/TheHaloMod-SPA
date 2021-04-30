@@ -1,6 +1,11 @@
 from flask import Blueprint
 from flask import jsonify, request, session, abort
 import dill as pickle
+import warnings
+import sentry_sdk
+from io import StringIO
+from contextlib import redirect_stdout, redirect_stderr
+import sys
 
 endpoint_plot = Blueprint('endpoint_plot', __name__)
 
@@ -28,6 +33,9 @@ Returns:
 
 @endpoint_plot.route('/plot', methods=["GET"])
 def get_plot_data():
+    # Disable Warnings behaving like Exceptions because, 
+    # If caught and released it interrupts the flow of hmf.
+    
     res = {"plot_data": {}}
     x_param = request.args.get("x")
     y_param = request.args.get("y")
@@ -45,19 +53,43 @@ def get_plot_data():
         model = models[name]  # gets model with label <name>
         data = {}
         try:
-            ys = getattr(model, y_param)  # gets y array
-            xs = getattr(model, x_param)  # gets x array
+            stdOut = ""
+            # Sets up a temporary warnings filter that just prints the warnings to the console
+            with warnings.catch_warnings():
+                warnings.filterwarnings("ignore")
+                warnings.filterwarnings("always")
+                # Capture stderr for later review
+                with StringIO() as buf, redirect_stderr(buf):
+                    ys = getattr(model, y_param)  # gets y array
+                    xs = getattr(model, x_param)  # gets x array
+                    stdOut = buf.getvalue().split("\n")
+            
             mask = ys > 1e-40 * ys.max()  # creates mask as seen in create_canvas in utils
             data["ys"] = list(ys[mask])  # apply mask and save ys into data dict
             data["xs"] = list(xs[mask])  # apply mask and save xs into data dict
+            
+            for error in stdOut:
+                if "UserWarning" in error:
+                    print(error)
+                    # Tell Sentry about the Warning
+                    with sentry_sdk.push_scope() as scope:
+                        scope.level = 'warning'
+                        sentry_sdk.capture_message(error[error.find("UserWarning"):])
+                if "DeprecationWarning" in error:
+                    print(error)
+                    # Tell Sentry about the Warning
+                    with sentry_sdk.push_scope() as scope:
+                        scope.level = 'warning'
+                        sentry_sdk.capture_message(error[error.find("DeprecationWarning"):])
         except Exception as e:
             print(f"Error encountered getting {y_param} for model {name}")
-            print(e)
-            abort(
-                400, f"Error encountered getting {y_param} for model {name}. {str(e)}.")
+            print(str(e))
+            warnings.filterwarnings("error")
+            raise(Exception(f"Error encountered getting {y_param} for model {name}"))
 
         res["plot_data"][name] = data  # put data in response object
 
     # save post-calculation models to session to take advantage of compute
     session["models"] = pickle.dumps(models)
+    # warnings.filterwarnings("error")
     return jsonify(res)

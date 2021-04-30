@@ -9,6 +9,7 @@ import re
 import sys
 import traceback
 import os
+import warnings
 
 from .endpoint_model import endpoint_model
 from .endpoint_models import endpoint_models
@@ -22,6 +23,16 @@ def create_app(test_config=None):
     """Acts as the main entrypoint for the server. Builds the Flask app and
     the routes."""
 
+    app = Flask(__name__, instance_relative_config=True)
+
+    # Everything in config.py Config class is loaded into the Flask app config
+    app.config.from_object('config.Config')
+
+    this_env = ""
+    if "PYTEST_CURRENT_TEST" in os.environ:
+        this_env = "testing"
+    else:
+        this_env = app.env
     # add sentry sdk
     sentry_sdk.init(
         dsn="https://27537774b9d949b7ab5dcbe3ba4496c9@o516709.ingest.sentry.io/5624184",
@@ -37,11 +48,8 @@ def create_app(test_config=None):
         # SHA as release, however you may want to set
         # something more human-readable.
         # release="myapp@1.0.0",
+        environment=this_env
     )
-    app = Flask(__name__, instance_relative_config=True)
-
-    # Everything in config.py Config class is loaded into the Flask app config
-    app.config.from_object('config.Config')
 
     # The different origins that the server will allow connections from.
     # These are specified as RegEx.
@@ -54,6 +62,9 @@ def create_app(test_config=None):
     CORS(app, origins=origins, supports_credentials=True)  # enable CORS
 
     sess.init_app(app)  # enable Sessions
+
+    # Set all warnings to trigger
+    warnings.filterwarnings("error")
 
     # Register the Endpoints
     """All endpoints:
@@ -141,7 +152,7 @@ def create_app(test_config=None):
             "description": stkTrace,
         })
         response.content_type = "application/json"
-        return response
+        return response, 400
 
     @app.errorhandler(RuntimeWarning)
     def handle_runtime_warning(e):
