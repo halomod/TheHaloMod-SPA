@@ -2,9 +2,13 @@ import axios from 'axios';
 import JSZip from 'jszip';
 import unzip from 'lodash.unzip';
 import baseUrl from '@/env';
-import PLOT_AXIS_OPTIONS from '@/constants/PLOT_AXIS_OPTIONS.json';
+import PLOT_AXIS_OPTIONS from '@/constants/plot_axis_options';
 import PLOT_AXIS_METADATA from '@/constants/PLOT_AXIS_METADATA.json';
 import * as d3 from 'd3';
+import Debug from 'debug';
+
+const debug = Debug('downloads.js');
+debug.enabled = false;
 
 /**
  * Adds inline CSS styles to the D3 SVG element by extracting
@@ -33,21 +37,20 @@ function addInlineCSS(elements) {
 export async function downloadData() {
   const zip = new JSZip();
 
-  /* eslint-disable */
-  for (const [kind, options] of Object.entries(PLOT_AXIS_OPTIONS)) {
+  await Promise.all(Object.entries(PLOT_AXIS_OPTIONS).map(async ([kind, options]) => {
     /* Gets relevant fields from constants files */
-    let params = [kind, ...options.y];
-    if (kind === 'm') params = params.filter((value) => value !== 'how_big');
+    const params = [kind, ...options.y];
     const labels = params.map((param) => PLOT_AXIS_METADATA[param].label);
-    
+
+    debug('Getting the data for params: ', params);
     /* API request - Get Object data */
     const response = await axios.get(`${baseUrl}/models/object`, {
       params: {
         param_names: params,
       },
-      timeout: 3000,
     });
     const json = response.data;
+    debug('retrieved data is: ', json);
 
     /* Construct CSV */
     Object.entries(json).forEach(([name, parameters]) => {
@@ -55,8 +58,8 @@ export async function downloadData() {
       const csv = `${labels.join('\t')}\n${data.map((row) => `${row.join('\t')}\n`).join()}`;
       zip.file(`${name}_${kind}_vector.csv`, csv);
     });
-  }
-  /* eslint-enable */
+  }));
+
   const blob = await zip.generateAsync({ type: 'blob' });
   return window.URL.createObjectURL(blob);
 }
