@@ -8,7 +8,7 @@ import * as d3 from 'd3';
 import Debug from 'debug';
 
 const debug = Debug('downloads.js');
-debug.enabled = true;
+debug.enabled = false;
 
 /**
  * Adds inline CSS styles to the D3 SVG element by extracting
