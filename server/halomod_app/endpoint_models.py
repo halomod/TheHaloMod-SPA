@@ -36,8 +36,6 @@ def get_models_data_names():
 
 @endpoint_models.route('/models/object', methods=["GET"])
 def get_models_data_object():
-    # @app.route('/get_object_data', methods=['POST'])
-    # def get_object_data():
     """
     Returns vectors associated with each model in the session for each
     parameter passed to the endpoint

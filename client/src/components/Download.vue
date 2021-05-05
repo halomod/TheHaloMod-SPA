@@ -43,7 +43,9 @@
     >
       <md-dialog-title>{{ loadingTitle }}</md-dialog-title>
       <md-dialog-content
-        ><md-progress-bar md-mode="indeterminate"
+        >
+        {{loadingDescription}}
+        <md-progress-bar md-mode="indeterminate"
       /></md-dialog-content>
     </md-dialog>
     <md-dialog
@@ -87,7 +89,9 @@ const downloadOptions = {
     name: 'Data',
     displayName: 'Vector Data',
     fileName: 'ModelVectorData.zip',
-    loadingTitle: 'Getting all model data',
+    loadingTitle: 'Getting all model data...',
+    loadingDescription: 'This might take a little while depending on how many '
+    + 'models there are.',
   },
 };
 
@@ -104,6 +108,7 @@ export default {
       loading: false,
       loadingTitle: '',
       serverDownloadDialogVisible: false,
+      loadingDescription: '',
     };
   },
   methods: {
@@ -113,10 +118,17 @@ export default {
     downloadParamValsToml,
     async handleClick() {
       const downloadNode = document.getElementById('download-element');
-      const { fileName, name, loadingTitle } = downloadOptions[
+      const {
+        fileName, name, loadingTitle, loadingDescription,
+      } = downloadOptions[
         this.downloadChoice
       ];
       this.loadingTitle = loadingTitle;
+      if (loadingDescription) {
+        this.loadingDescription = loadingDescription;
+      } else {
+        this.loadingDescription = '';
+      }
       if (name === 'ParamValsToml') {
         this.serverDownloadDialogVisible = true;
       } else {
