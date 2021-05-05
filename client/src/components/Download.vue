@@ -117,12 +117,12 @@ export default {
         this.downloadChoice
       ];
       this.loadingTitle = loadingTitle;
-      const href = await this[`download${name}`](this.$store);
       if (name === 'ParamValsToml') {
         this.serverDownloadDialogVisible = true;
       } else {
         this.loading = true;
       }
+      const href = await this[`download${name}`](this.$store);
       downloadNode.setAttribute('href', href);
       downloadNode.setAttribute('download', fileName);
       downloadNode.click();
