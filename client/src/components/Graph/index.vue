@@ -146,7 +146,7 @@ export default {
 
     // If xAxisChoice has not been chosen, choose the one specified by issue
     // #110, power_auto_tracer as the y and "k_hm" as the x.
-    if (this.xAxisChoice === '' || undefined) {
+    if (this.xAxisChoice === '' || this.xAxisChoice === undefined) {
       const newXAxisChoice = 'k_hm';
       const newYAxisChoice = 'power_auto_tracer';
       this.updateXAxisChoice(newXAxisChoice, '');
