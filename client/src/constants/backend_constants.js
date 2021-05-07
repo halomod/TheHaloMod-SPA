@@ -130,6 +130,17 @@ if (default_form_state.tracer_profile[forms.tracer_profile.modelKey] === null) {
 }
 
 /**
+ * Convert the rmin and rmax to their log 10 values. These are the only ones
+ * that need to be converted according to issue #168.
+ *
+ * These are converted back in the flatten function in `Store.js`.
+ */
+const initialRMin = default_form_state.halo_model.rmin;
+const initialRMax = default_form_state.halo_model.rmax;
+default_form_state.halo_model.rmin = Math.log10(initialRMin);
+default_form_state.halo_model.rmax = Math.log10(initialRMax);
+
+/**
  * Contains the default state for all forms
  *
  * @type {DefaultFormState}

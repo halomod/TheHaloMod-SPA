@@ -125,6 +125,11 @@ export default class Store {
       flattened[forms.tracer_profile.modelKey] = null;
     }
 
+    /* Convert the logartihmic rmin and rmax back as explained in
+     * `backend_constants.js` */
+    flattened.rmin = 10 ** flattened.rmin;
+    flattened.rmax = 10 ** flattened.rmax;
+
     return flattened;
   }
 
