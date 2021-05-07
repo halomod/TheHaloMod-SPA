@@ -233,7 +233,6 @@ export default class Store {
    */
   setError = (error) => {
     try {
-      // console.log(error);
       this.state.error = true;
       console.log('ERROR OCCURED');
       if (error.response) {

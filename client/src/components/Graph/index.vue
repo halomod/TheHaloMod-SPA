@@ -255,8 +255,10 @@ export default {
      * @param {string} xAxisChoice the new xAxisChoice
      */
     async updateYAxisChoices(xAxisChoice) {
-      const newYAxisChoices = PLOT_AXIS_OPTIONS[this.xAxisChoices[xAxisChoice]].y;
-      this.yAxisChoices = newYAxisChoices;
+      if (xAxisChoice) {
+        const newYAxisChoices = PLOT_AXIS_OPTIONS[this.xAxisChoices[xAxisChoice]].y;
+        this.yAxisChoices = newYAxisChoices;
+      }
     },
     /**
      * Determines if plot data exists.

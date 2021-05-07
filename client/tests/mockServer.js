@@ -1,6 +1,5 @@
 import { createServer, Model } from 'miragejs';
 import baseurl from '@/env';
-// import { schemeAccent } from 'd3';
 import plotData from './example_data/plotData.json';
 
 /**
