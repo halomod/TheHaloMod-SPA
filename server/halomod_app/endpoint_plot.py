@@ -4,8 +4,7 @@ import dill as pickle
 import warnings
 import sentry_sdk
 from io import StringIO
-from contextlib import redirect_stdout, redirect_stderr
-import sys
+from contextlib import redirect_stderr
 
 endpoint_plot = Blueprint('endpoint_plot', __name__)
 
@@ -33,9 +32,9 @@ Returns:
 
 @endpoint_plot.route('/plot', methods=["GET"])
 def get_plot_data():
-    # Disable Warnings behaving like Exceptions because, 
+    # Disable Warnings behaving like Exceptions because,
     # If caught and released it interrupts the flow of hmf.
-    
+
     res = {"plot_data": {}}
     x_param = request.args.get("x")
     y_param = request.args.get("y")
@@ -63,11 +62,11 @@ def get_plot_data():
                     ys = getattr(model, y_param)  # gets y array
                     xs = getattr(model, x_param)  # gets x array
                     stdOut = buf.getvalue().split("\n")
-            
+
             mask = ys > 1e-40 * ys.max()  # creates mask as seen in create_canvas in utils
             data["ys"] = list(ys[mask])  # apply mask and save ys into data dict
             data["xs"] = list(xs[mask])  # apply mask and save xs into data dict
-            
+
             for error in stdOut:
                 if "UserWarning" in error:
                     print(error)
@@ -80,7 +79,8 @@ def get_plot_data():
                     # Tell Sentry about the Warning
                     with sentry_sdk.push_scope() as scope:
                         scope.level = 'warning'
-                        sentry_sdk.capture_message(error[error.find("DeprecationWarning"):])
+                        sentry_sdk.capture_message(
+                            error[error.find("DeprecationWarning"):])
         except Exception as e:
             print(f"Error encountered getting {y_param} for model {name}")
             print(str(e))
