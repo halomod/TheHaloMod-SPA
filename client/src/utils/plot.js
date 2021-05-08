@@ -37,7 +37,6 @@ function getLineClass(index) {
  * @returns {Number} the width of the Legend
  */
 function generateLegend(svg, colorGen, dataSetNames) {
-  debug('dataSetNames provided to generateLegend is: ', dataSetNames);
   const plotWidth = svg.node().getBoundingClientRect().width;
   const plotHeight = svg.node().getBoundingClientRect().height;
   svg.append('g')
@@ -187,10 +186,7 @@ export default (elementId, plot, modelNames, xlog, ylog) => {
 
   const { yLabelWidth, xLabelHeight } = generateAxisLabels(svg, plot);
 
-  debug(`xLabelHeight is: ${xLabelHeight}`);
-
   const datasets = modelNames.map((modelName) => plotData.plot_data[modelName]);
-  debug('datasets is: ', datasets);
 
   // Build the color generator for the lines and legend
   const colors = datasets.map((val, i) => d3.rgb(

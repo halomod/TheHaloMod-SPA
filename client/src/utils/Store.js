@@ -39,12 +39,20 @@ debug.enabled = false;
  */
 export default class Store {
   constructor() {
+    /**
+     * The top level state stored for the application and generally persisted
+     * through restarts in the browser as long as the cache is maintained.
+     */
     this.state = {
       /**
        * Stored as a map so that it retains insertion order.
        */
       models: new Map(),
       modelNames: [],
+      /**
+       * The data for the plot in the store. Holds all info including settings
+       * for different plot types.
+       */
       plot: {
         x: '',
         y: '',
@@ -230,7 +238,6 @@ export default class Store {
    */
   setError = (error) => {
     try {
-      // console.log(error);
       this.state.error = true;
       console.log('ERROR OCCURED');
       if (error.response) {
@@ -431,9 +438,11 @@ export default class Store {
    * example: `dndm`.
    * @param {string} axis the axis to change. For example: `x`.
    * @param {boolean} refresh if true, gets new plot data
-   * @returns {void}
+   * @returns {Promise<object>} the cloned, updated plot object on the store's
+   * state
    */
   setPlotType = async (plotType, axis, refresh) => {
+    debug(`setPlotType triggered for ${axis} axis with ${plotType} plotType`);
     if (plotType !== this.state.plot[axis]) {
       this.state.plot[axis] = plotType;
 
@@ -443,9 +452,39 @@ export default class Store {
         this.state.plot[`log${axis}`] = plotLogSetting.scale === 'log';
       }
 
-      if (refresh) await this.getPlotData();
+      if (refresh) {
+        await this.getPlotData();
+      }
       await set('plot', this.state.plot);
     }
+    return clonedeep(this.state.plot);
+  }
+
+  /**
+   * Sets the plot type for both the x and y axis, then gets new plot data. If
+   * only one plot type needs to be changed, use `setPlotType`.
+   *
+   * @param {string} xAxisPlotType
+   * @param {string} yAxisPlotType
+   * @returns {Promise<object>} the cloned, updated plot object on the store's
+   * state
+   */
+  setBothPlotType = async (xAxisPlotType, yAxisPlotType) => {
+    this.state.plot.x = xAxisPlotType;
+    this.state.plot.y = yAxisPlotType;
+
+    // Update the logarithmic value for the new axis
+    const xPlotLogSetting = this.state.plot.plotLogSettings[this.state.plot.x];
+    if (xPlotLogSetting) {
+      this.state.plot.logx = xPlotLogSetting.scale === 'log';
+    }
+    const yPlotLogSetting = this.state.plot.plotLogSettings[this.state.plot.y];
+    if (yPlotLogSetting) {
+      this.state.plot.logy = yPlotLogSetting.scale === 'log';
+    }
+    await this.getPlotData();
+    await set('plot', this.state.plot);
+    return clonedeep(this.state.plot);
   }
 
   /**
@@ -454,6 +493,8 @@ export default class Store {
    *
    * @param {'x' | 'y'} axis the axis to set, either x or y
    * @param {boolean} isLog true if it should be logarithmic
+   * @returns {Promise<object>} the cloned, updated plot object on the store's
+   * state
    */
   setPlotAxisScale = async (axis, isLog) => {
     this.state.plot[`log${axis}`] = isLog;
@@ -463,6 +504,7 @@ export default class Store {
       this.state.plot.plotLogSettings[this.state.plot[axis]].scale = 'linear';
     }
     await set('plot', this.state.plot);
+    return clonedeep(this.state.plot);
   }
 
   /**
