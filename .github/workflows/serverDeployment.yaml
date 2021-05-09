@@ -12,6 +12,7 @@ on:
     # changed for everyone.
     branches:
       - main
+      - autoRestart
       
 jobs:
   build:
