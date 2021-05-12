@@ -11,6 +11,7 @@ services:
     # The default stop signal for flask apps is SIGINT, while by default
     # docker uses SIGTERM
     stop_signal: SIGINT
+    restart: unless-stopped
     environment: 
       - FLASK_RUN_PORT=${FLASK_RUN_PORT}
       - FLASK_RUN_HOST=${FLASK_RUN_HOST}
