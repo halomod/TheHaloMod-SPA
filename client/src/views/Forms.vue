@@ -153,7 +153,19 @@ export default {
     },
     validationClass() { return { 'md-invalid': this.invalidName }; },
   },
+  created() {
+    window.addEventListener('keypress', this._keyListener);
+  },
+  destroyed() {
+    window.removeEventListener('keypress', this._keyListener);
+  },
   methods: {
+    _keyListener(e) {
+      if (e.key === 'Enter') { // filter down to Ctrl+S (as an example)
+        // e.preventDefault(); // prevent the default action (save page in this case)
+        this.activateSaveDialog(); // or whatever method or code you want to run
+      }
+    },
     scrollToAnchor() {
       this.$nextTick(() => {
         if (this.$route.hash) {
