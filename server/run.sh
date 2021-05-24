@@ -7,6 +7,9 @@ for arg in "$@"
 do
   case $arg in
     "--install")
+      # Wheel is installed first because it is used for depenency installation.
+      # It basically just speeds things up.
+      pip3 install wheel
       pip3 install -r requirements.txt;;
     "--lint" )
       autopep8 -a -r --in-place halomod_app
