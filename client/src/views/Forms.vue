@@ -12,7 +12,8 @@
     :contextPrimary="contextPrimary"
     :contextSecondary="contextSecondary"
     @onChange="(data) => currentFormState = data" v-if="initialFormState"
-    @is-valid="isValid"/>
+    @is-valid="isValid"
+    @activate-save="activateSaveDialog"/>
   <div id="float">
     <md-button @click="showCancelDialog = true" class="md-raised">Cancel</md-button>
     <div style="display: inline-block">
@@ -118,6 +119,7 @@ export default {
     };
   },
   async activated() {
+    window.addEventListener('keypress', this.enterListener);
     if (this.$route.name === 'Edit') {
       this.edit = true;
       this.initialFormState = await this.$store.getModel(this.$route.params.id);
@@ -140,6 +142,9 @@ export default {
       this.initialFormState = DEFAULT_FORM_STATE;
     }
     this.currentFormState = clonedeep(this.initialFormState);
+  },
+  deactivated() {
+    window.removeEventListener('keypress', this.enterListener);
   },
   updated() {
     this.scrollToAnchor();
@@ -194,9 +199,11 @@ export default {
       this.$forceUpdate();
     },
     activateSaveDialog() {
-      this.showSaveDialog = true;
-      if (!this.edit) {
-        setTimeout(() => { this.$refs.saveInput.$el.focus(); }, 300);
+      if (!this.showSaveDialog && this.valid) {
+        this.showSaveDialog = true;
+        if (!this.edit) {
+          setTimeout(() => { this.$refs.saveInput.$el.focus(); }, 300);
+        }
       }
     },
     closeAlertDialog() {

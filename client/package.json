@@ -27,12 +27,10 @@
     "lodash.debounce": "^4.0.8",
     "lodash.isequal": "^4.5.0",
     "lodash.unzip": "^3.4.0",
-    "vue": "^2.6.11",
-    "vue-jest": "^3.0.7",
+    "vue": "^2.6.12",
     "vue-material": "1.0.0-beta-14",
     "vue-observe-visibility": "^0.4.6",
-    "vue-router": "^3.4.9",
-    "webpack": "^4.46.0"
+    "vue-router": "^3.4.9"
   },
   "dependenciesDoc": {
     "@sentry": "Used to hook up sentry.io to the site for tracking of errors.",
@@ -45,6 +43,7 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-optional-chaining": "^7.12.7",
+    "@babel/core": "^7.0.0",
     "@types/d3": "^6.3.0",
     "@vue/cli-plugin-babel": "^4.5.9",
     "@vue/cli-plugin-eslint": "^4.5.9",
@@ -58,10 +57,13 @@
     "eslint-plugin-import": "^2.20.2",
     "eslint-plugin-vue": "^6.2.2",
     "fake-indexeddb": "^3.1.2",
+    "core-js-bundle": "^3.6.4",
+    "regenerator-runtime": "^0.13.3",
     "lint-staged": "^9.5.0",
     "miragejs": "^0.1.41",
-    "node-sass": "^5.0.0",
-    "sass-loader": "~10.0.1",
+    "node-sass": "^6.0.0",
+    "sass-loader": "^10.1.1",
+    "vue-jest": "^3.0.7",
     "vue-template-compiler": "^2.6.11"
   },
   "gitHooks": {
