@@ -1,18 +1,34 @@
 import axios from 'axios';
+import axiosRetry from 'axios-retry';
 import clonedeep from 'lodash.clonedeep';
 import baseurl from '@/env';
 import Debug from 'debug';
 import {
   set,
   keys,
-  del,
   get,
-  clear,
+  del,
 } from 'idb-keyval';
 import { DEFAULT_THEME } from '@/constants/themeOptions';
 import PLOT_AXIS_METADATA from '@/constants/PLOT_AXIS_METADATA.json';
+import forms from '@/constants/forms';
+import * as Sentry from '@sentry/vue';
 
 axios.defaults.withCredentials = true;
+axiosRetry(axios, {
+  retries: 3,
+  shouldResetTimeout: true,
+  retryDelay: axiosRetry.exponentialDelay, // Exponential back-off retry delay between requests
+  // retryCondition: () => true, // retry no matter what
+  // If true it will retry
+  retryCondition: (error) => {
+    if (error.response) {
+      return (error.response.status !== 500 && error.response.status > 299);
+    }
+    // Always retry if no server response
+    return true;
+  },
+});
 
 const debug = Debug('Store.js');
 debug.enabled = false;
@@ -23,9 +39,20 @@ debug.enabled = false;
  */
 export default class Store {
   constructor() {
+    /**
+     * The top level state stored for the application and generally persisted
+     * through restarts in the browser as long as the cache is maintained.
+     */
     this.state = {
-      models: {},
+      /**
+       * Stored as a map so that it retains insertion order.
+       */
+      models: new Map(),
       modelNames: [],
+      /**
+       * The data for the plot in the store. Holds all info including settings
+       * for different plot types.
+       */
       plot: {
         x: '',
         y: '',
@@ -35,8 +62,10 @@ export default class Store {
         logy: true,
       },
       error: false,
+      graphError: false,
       errorType: '',
       errorMessage: '',
+      errorTrace: '',
       theme: DEFAULT_THEME,
     };
   }
@@ -49,7 +78,7 @@ export default class Store {
 
     // If the models object does not exist, create it.
     if (!k.includes('models')) {
-      await set('models', {});
+      await set('models', new Map());
     } else {
       this.state.models = await get('models');
     }
@@ -69,7 +98,7 @@ export default class Store {
     }
 
     this.state.modelNames = this.getModelNames();
-    if (Object.keys(this.state.models).length !== 0) {
+    if (this.state.models.size !== 0) {
       this.getPlotData();
     }
   }
@@ -85,7 +114,8 @@ export default class Store {
    * }}
    */
 
-  /** Flattens the model object to prepare it for use by the server
+  /**
+   * Flattens the model object to prepare it for use by the server.
    *
    * @param {object} model
    */
@@ -94,6 +124,20 @@ export default class Store {
     Object.values(model).forEach((subform) => {
       flattened = { ...flattened, ...subform };
     });
+
+    // Convert null string to null value for specific models
+    if (flattened[forms.tracer_concentration.modelKey] === 'null') {
+      flattened[forms.tracer_concentration.modelKey] = null;
+    }
+    if (flattened[forms.tracer_profile.modelKey] === 'null') {
+      flattened[forms.tracer_profile.modelKey] = null;
+    }
+
+    /* Convert the logartihmic rmin and rmax back as explained in
+     * `backend_constants.js` */
+    flattened.rmin = 10 ** flattened.rmin;
+    flattened.rmax = 10 ** flattened.rmax;
+
     return flattened;
   }
 
@@ -109,17 +153,16 @@ export default class Store {
       await axios.post(`${baseurl}/model`, {
         params: this.flatten(model),
         label: name,
+        timeout: 3000,
       });
       this.state.error = false;
-      await Promise.all([this.setModel(name, model), this.getPlotData()]);
+      await Promise.all([
+        this.setModel(name, model),
+        this.getPlotData(),
+      ]);
+      this.state.modelNames = this.getModelNames();
     } catch (error) {
-      console.error(error);
-      this.state.error = true;
-      console.log('ERROR OCCURRED');
-      if (error.response) {
-        this.state.errorMessage = error.response.data.description;
-        this.state.errorType = (error.response.data.code >= 500) ? 'Server' : 'Model';
-      }
+      this.setError(error);
     }
   }
 
@@ -134,16 +177,12 @@ export default class Store {
       await axios.put(`${baseurl}/model`, {
         params: this.flatten(model),
         model_name: name,
+        timeout: 3000,
       });
       this.state.error = false;
       await Promise.all([this.setModel(name, model), this.getPlotData()]);
     } catch (error) {
-      console.error(error);
-      this.state.error = true;
-      if (error.response) {
-        this.state.errorMessage = error.response.data.description;
-        this.state.errorType = (error.response.data.code >= 500) ? 'Server' : 'Model';
-      }
+      this.setError(error);
     }
   }
 
@@ -158,15 +197,16 @@ export default class Store {
       await axios.patch(`${baseurl}/model`, {
         model_name: oldName,
         new_model_name: newName,
+        timeout: 3000,
       });
-      const model = this.state.models[oldName];
-      this.state.models[newName] = model;
-      delete this.state.models[oldName];
+      const model = this.state.models.get(oldName);
+      this.state.models.set(newName, model);
+      this.state.models.delete(oldName);
       this.state.modelNames = this.getModelNames();
       await set('models', this.state.models);
       this.getPlotData();
     } catch (error) {
-      console.error(error);
+      this.setError(error);
     }
   }
 
@@ -181,10 +221,102 @@ export default class Store {
       await axios.put(`${baseurl}/models`, {
         model_name: oldName,
         new_model_name: newName,
+        timeout: 3000,
       });
       this.state.error = false;
       const model = await this.getModel(oldName);
       await Promise.all([this.setModel(newName, model), this.getPlotData()]);
+    } catch (error) {
+      this.setError(error);
+    }
+  }
+
+  /**
+   * Sets an erorr for the application. This becomes visible to the user.
+   *
+   * @param {Error} error the error to set
+   */
+  setError = (error) => {
+    try {
+      this.state.error = true;
+      console.log('ERROR OCCURED');
+      if (error.response) {
+        const desc = (JSON.parse(error.response.data.data).description);
+        let simpleDescription;
+        let stkTrace;
+        if (typeof desc !== 'string') {
+          [simpleDescription, ...stkTrace] = desc;
+        } else {
+          simpleDescription = desc;
+          stkTrace = null;
+          console.log(simpleDescription);
+        }
+        this.state.errorMessage = simpleDescription;
+        this.state.errorType = (error.response.data.code >= 500) ? 'Server' : 'Model';
+        this.state.errorTrace = stkTrace.join();
+        // Printing the stack trace to the console sends it to Sentry
+        if (process.env.VUE_APP_SENTRY_ON !== 'FALSE') {
+          console.log(stkTrace);
+          // Sentry.captureMessage(simpleDescription);
+          const scope = new Sentry.Scope();
+          scope.setTag('ErrorCode', error.code);
+          scope.setContext('Store Model State', this.state);
+          scope.setContext('Error Object', error);
+          const e = new Error(simpleDescription);
+          e.name = error.message;
+          Sentry.captureException(e, scope);
+        }
+      } else {
+        const scope = new Sentry.Scope();
+        scope.setTag('ErrorCode', error.code);
+        // All the errors that do not have a response
+        if (error.code === 'ECONNABORTED') {
+          const msg = 'Communication with the server timed-out. Please check your internet connection.';
+          this.state.errorMessage = msg;
+          scope.setTag('ErrorCode', 'Connection Aborted');
+          scope.setLevel('warning');
+        } else if (error.code === 400) {
+          const msg = 'The server did not respond correctly.';
+          this.state.errorMessage = msg;
+        } else if (typeof error.code === 'undefined') {
+          const msg = 'The server did not respond after 3 attempts, it may be offline.';
+          this.state.errorMessage = msg;
+          scope.setTag('ErrorCode', 'Null');
+          scope.setLevel('fatal');
+        } else {
+          const msg = `An unkown error occured tring to reach the server: ${error.code}`;
+          this.state.errorMessage = msg;
+        }
+        this.state.errorType = 'Server';
+        console.log(error.message);
+        console.log(`Server Error: ${this.state.errorMessage}`);
+        scope.setContext('Store Model State', this.state);
+        scope.setContext('Error Object', error);
+        const e = new Error(this.state.errorMessage);
+        e.name = error.message;
+        Sentry.captureException(e, scope);
+      }
+    } catch (e) {
+      const msg = 'An error occured while handling an error. The server admin has been notified.';
+      this.state.error = true;
+      this.state.errorType = 'Client';
+      this.state.errorMessage = msg;
+      Sentry.captureException(e, 'fatal');
+    }
+  }
+
+  /** Reports a bug associated with a particular model
+   *
+   * @param {string} modelName the name of the model reported
+   * @param {string} bugDetails the details of the bug submitted by the user
+  */
+  reportBug = async (modelName, bugDetails) => {
+    try {
+      await axios.post(`${baseurl}/bugs`, {
+        model_name: modelName,
+        bug_details: bugDetails,
+        timeout: 3000,
+      });
     } catch (error) {
       console.error(error);
       this.state.error = true;
@@ -196,18 +328,6 @@ export default class Store {
   }
 
   /**
-   * Sets an erorr for the application. This becomes visible to the user.
-   *
-   * @param {string} errorType the type of error
-   * @param {string} errorMessage the message for the error
-   */
-  setError = (errorType, errorMessage) => {
-    this.state.error = true;
-    this.state.errorType = errorType;
-    this.state.errorMessage = errorMessage;
-  }
-
-  /**
    * Gets (clones) a model with the given name. This returns a deep cloned
    * copy of the model.
    *
@@ -215,7 +335,7 @@ export default class Store {
    * @returns {object | undefined} a copy of the target model, or undefined if
    * it doesn't exist
    */
-  getModel = async (name) => clonedeep(await this?.state.models[name]);
+  getModel = (name) => clonedeep(this.state.models.get(name));
 
   /**
    * Gets (clones) all models.
@@ -224,19 +344,7 @@ export default class Store {
    *  [modelName: string]: Object
    * } | undefined} A copy of all the models with their names or undefined
    */
-  getAllModels = async () => {
-    const modelNames = this.getModelNames();
-
-    /* Pull all models out of state and process because they are stored as
-    promises. */
-    const modelPromises = modelNames.map((modelName) => this?.state.models[modelName]);
-    const allModelObjs = clonedeep(await Promise.all(modelPromises));
-    const allModels = {};
-    modelNames.forEach((modelName, index) => {
-      allModels[modelName] = allModelObjs[index];
-    });
-    return allModels;
-  };
+  getAllModels = () => clonedeep(Object.fromEntries(this.state.models.entries()));
 
   /**
    * Sets a model with the given name.
@@ -245,13 +353,9 @@ export default class Store {
    * @param {object} model the model to set
    */
   setModel = async (name, model) => {
-    try {
-      this.state.models[name] = model;
-      this.state.modelNames = this.getModelNames();
-      await set('models', this.state.models);
-    } catch (error) {
-      console.error(error);
-    }
+    this.state.models.set(name, model);
+    this.state.modelNames = this.getModelNames();
+    await set('models', this.state.models);
   }
 
   /**
@@ -259,7 +363,7 @@ export default class Store {
    *
    * @returns {string[]} array of the model names
    */
-  getModelNames = () => Object.keys(this.state.models);
+  getModelNames = () => Array.from(this.state.models.keys());
 
   /**
    * Deletes a model.
@@ -272,21 +376,15 @@ export default class Store {
         data: {
           model_name: name,
         },
+        timeout: 3000,
       });
       this.state.error = false;
-      await del(name);
-      /* eslint-disable */
-      delete this?.state.models[name];
+      this.state.models.delete(name);
       this.state.modelNames = this.getModelNames();
-      /* eslint-enable */
+      await set('models', this.state.models);
       await this.getPlotData();
     } catch (error) {
-      console.error(error);
-      this.state.error = true;
-      if (error.response) {
-        this.state.errorMessage = error.response.data.description;
-        this.state.errorType = (error.response.data.code >= 500) ? 'Server' : 'Model';
-      }
+      this.setError(error);
     }
   }
 
@@ -295,13 +393,15 @@ export default class Store {
    */
   clearModels = async () => {
     try {
-      await axios.delete(`${baseurl}/models`);
-      await clear();
-      this.state.models = {};
+      await axios.delete(`${baseurl}/models`, {
+        timeout: 3000,
+      });
+      await del('models');
+      this.state.models = new Map();
       this.state.modelNames = this.getModelNames();
       await this.getPlotData();
     } catch (error) {
-      console.log(error);
+      this.setError(error);
     }
   }
 
@@ -320,16 +420,13 @@ export default class Store {
           x: this.state.plot.x,
           y: this.state.plot.y,
         },
+        timeout: 3000,
       });
       this.state.plot.plotData = data.data;
       this.state.error = false;
     } catch (error) {
-      console.error(error);
-      this.state.error = true;
-      if (error.response) {
-        this.state.errorMessage = error.response.data.description;
-        this.state.errorType = (error.response.data.code === 500) ? 'Server' : 'Model';
-      }
+      this.state.graphError = true;
+      this.setError(error);
     }
   }
 
@@ -341,9 +438,11 @@ export default class Store {
    * example: `dndm`.
    * @param {string} axis the axis to change. For example: `x`.
    * @param {boolean} refresh if true, gets new plot data
-   * @returns {void}
+   * @returns {Promise<object>} the cloned, updated plot object on the store's
+   * state
    */
   setPlotType = async (plotType, axis, refresh) => {
+    debug(`setPlotType triggered for ${axis} axis with ${plotType} plotType`);
     if (plotType !== this.state.plot[axis]) {
       this.state.plot[axis] = plotType;
 
@@ -353,9 +452,39 @@ export default class Store {
         this.state.plot[`log${axis}`] = plotLogSetting.scale === 'log';
       }
 
-      if (refresh) await this.getPlotData();
+      if (refresh) {
+        await this.getPlotData();
+      }
       await set('plot', this.state.plot);
     }
+    return clonedeep(this.state.plot);
+  }
+
+  /**
+   * Sets the plot type for both the x and y axis, then gets new plot data. If
+   * only one plot type needs to be changed, use `setPlotType`.
+   *
+   * @param {string} xAxisPlotType
+   * @param {string} yAxisPlotType
+   * @returns {Promise<object>} the cloned, updated plot object on the store's
+   * state
+   */
+  setBothPlotType = async (xAxisPlotType, yAxisPlotType) => {
+    this.state.plot.x = xAxisPlotType;
+    this.state.plot.y = yAxisPlotType;
+
+    // Update the logarithmic value for the new axis
+    const xPlotLogSetting = this.state.plot.plotLogSettings[this.state.plot.x];
+    if (xPlotLogSetting) {
+      this.state.plot.logx = xPlotLogSetting.scale === 'log';
+    }
+    const yPlotLogSetting = this.state.plot.plotLogSettings[this.state.plot.y];
+    if (yPlotLogSetting) {
+      this.state.plot.logy = yPlotLogSetting.scale === 'log';
+    }
+    await this.getPlotData();
+    await set('plot', this.state.plot);
+    return clonedeep(this.state.plot);
   }
 
   /**
@@ -364,6 +493,8 @@ export default class Store {
    *
    * @param {'x' | 'y'} axis the axis to set, either x or y
    * @param {boolean} isLog true if it should be logarithmic
+   * @returns {Promise<object>} the cloned, updated plot object on the store's
+   * state
    */
   setPlotAxisScale = async (axis, isLog) => {
     this.state.plot[`log${axis}`] = isLog;
@@ -373,6 +504,7 @@ export default class Store {
       this.state.plot.plotLogSettings[this.state.plot[axis]].scale = 'linear';
     }
     await set('plot', this.state.plot);
+    return clonedeep(this.state.plot);
   }
 
   /**

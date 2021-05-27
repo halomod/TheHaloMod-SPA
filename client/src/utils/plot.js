@@ -8,27 +8,54 @@ const debug = Debug('plot.js');
 debug.enabled = false;
 
 /**
+ * Gets the additional class name for a line in the plot to determine if it
+ * should be dotted, dashed, or solid based on its index in the list of
+ * models.
+ *
+ * This is based on the idea that the colors are finite for the plot
+ * lines. Currently, this function is written as if there are 10 colors.
+ *
+ * @param {number} index the index of model (line) in the list of models
+ */
+function getLineClass(index) {
+  if (index < 10) {
+    return 'solid';
+  } if (index < 20) {
+    return 'dashed';
+  }
+  return 'dotted';
+}
+
+/**
  * Creates the legend for the plot.
  *
  * @param {d3.Selection<d3.BaseType, any, HTMLElement, any>} svg the d3 svg
  * representing the plot svg
  * @param {d3.ScaleOrdinal<string, any, never>} colorGen the d3 color scale
  * for the plot
+ * @param {string[]} dataSetNames the array of names of the models
  * @returns {Number} the width of the Legend
  */
-function generateLegend(svg, colorGen, plotData) {
-  const dataSetNames = Object.keys(plotData.plot_data);
+function generateLegend(svg, colorGen, dataSetNames) {
   const plotWidth = svg.node().getBoundingClientRect().width;
   const plotHeight = svg.node().getBoundingClientRect().height;
   svg.append('g')
     .attr('id', 'legendColor')
     .attr('transform', `translate(${plotWidth / 2},20)`);
+
+  // The below scale makes it so class names are output to each legend icon
+  const legendScale = d3.scaleOrdinal()
+    .domain(dataSetNames)
+    .range(['legend-line']);
+
   const colorLegend = legendColor()
-    .scale(colorGen)
-    .orient('veritcal')
+    .scale(legendScale)
     .labels(dataSetNames)
-    // Set the wrap of the legend to 100 pixels
+    // Set the word wrap of the legend to 150 pixels
     .labelWrap(150)
+    .shape('line')
+    .shapeWidth(30)
+    .useClass(true)
     .on('cellclick', (event) => {
       const tspanNode = event.target.parentNode.querySelector('tspan');
       const nodeText = tspanNode.textContent;
@@ -48,8 +75,16 @@ function generateLegend(svg, colorGen, plotData) {
       }
     });
 
+  // Apply the legend
   svg.select('#legendColor')
-    .call(colorLegend);
+    .call(colorLegend)
+    // Modify the lines for the legend and set their colors as well as
+    // modification class if needed.
+    .selectAll('.legend-line')
+    .attr('stroke', (_, i) => colorGen(i))
+    .attr('stroke-width', 4)
+    .attr('class', (_, i) => `legend-line ${getLineClass(i)}`);
+
   const legendNode = svg.select('#legendColor').node();
   const legendBBox = legendNode.getBoundingClientRect();
   const targetX = plotWidth - legendBBox.width;
@@ -76,15 +111,15 @@ function generateAxisLabels(svg, plot) {
 
   // x-Axis label initial placement
   const xAxisLatexSvg = createLatexSvgFromString(PLOT_AXIS_METADATA[x].label);
-  svg.append('svg')
-    .attr('id', 'x-axis-label');
-  const xAxisNode = document.getElementById('x-axis-label');
+  const xAxisNode = svg.append('svg')
+    .attr('id', 'x-axis-label')
+    .node();
 
   xAxisNode.append(xAxisLatexSvg);
 
   // The bounding client rect doesn't have a height until it is applied to the
   // svg.
-  xAxisNode.setAttribute('y', h - xAxisNode.getBoundingClientRect().height);
+  xAxisNode.setAttribute('y', h - xAxisLatexSvg.getBoundingClientRect().height);
 
   // Center the x-axis
   xAxisNode.setAttribute('x', (w / 2)
@@ -126,8 +161,12 @@ function generateAxisLabels(svg, plot) {
  * become the parent of the SVG plot
  * @param {} plot the plot data which should be held in `$store` of the Vue
  * instance
+ * @param {string[]} modelNames the ordered model names that are currently
+ * stored
+ * @param {boolean} xlog if the x axis should be logarithmic
+ * @param {boolean} ylog if the y axis should be logarithmic
  */
-export default (elementId, plot, xlog, ylog) => {
+export default (elementId, plot, modelNames, xlog, ylog) => {
   debug('plot rendering triggered');
   const { plotData } = plot;
   debug('Generate plot triggered with the following plotData', plotData);
@@ -147,19 +186,18 @@ export default (elementId, plot, xlog, ylog) => {
 
   const { yLabelWidth, xLabelHeight } = generateAxisLabels(svg, plot);
 
-  const datasets = Object.values(plotData.plot_data);
+  const datasets = modelNames.map((modelName) => plotData.plot_data[modelName]);
 
   // Build the color generator for the lines and legend
   const colors = datasets.map((val, i) => d3.rgb(
     // The different color options are here: https://github.com/d3/d3-scale-chromatic
-    d3.interpolateCool(i / datasets.length),
+    d3.schemeCategory10[i % 10],
   ).formatHex());
-  debug('colors are: ', colors);
   const colorGen = d3.scaleOrdinal()
     .domain(Object.keys(plotData.plot_data))
     .range(colors);
 
-  const legendWidth = generateLegend(svg, colorGen, plotData);
+  const legendWidth = generateLegend(svg, colorGen, modelNames);
 
   // Adding extra room to the yLabel and xLabel to fit the axis values
   const leftPadding = yLabelWidth + 45;
@@ -215,10 +253,15 @@ export default (elementId, plot, xlog, ylog) => {
       val,
       dataset.ys[index],
     ]);
+
+    // Determine if the line should be dashed or solid and in what way based
+    // upon the color wrap around.
+    const cssClassString = `line-${i} ${getLineClass(i)}`;
+
     svg.append('path')
       .datum(coordsArr)
       .attr('fill', 'none')
-      .attr('class', `line-${i}`)
+      .attr('class', cssClassString)
       .attr('stroke', colorGen(i))
       .attr('stroke-width', 1.5)
       .attr('d', d3.line()

@@ -1,11 +1,19 @@
 <template>
 <div>
+  <Alert
+    :showAlert="showAlert"
+    :title="READ_ONLY.errorType"
+    :message="READ_ONLY.errorMessage"
+    @close="closeAlertDialog"
+    @focusout="closeAlertDialog"
+    @change="closeAlertDialog"/>
   <Forms
     :initialFormState="initialFormState"
     :contextPrimary="contextPrimary"
     :contextSecondary="contextSecondary"
     @onChange="(data) => currentFormState = data" v-if="initialFormState"
-    @is-valid="isValid"/>
+    @is-valid="isValid"
+    @activate-save="activateSaveDialog"/>
   <div id="float">
     <md-button @click="showCancelDialog = true" class="md-raised">Cancel</md-button>
     <div style="display: inline-block">
@@ -33,13 +41,14 @@
     <md-dialog :md-active.sync="showSaveDialog" v-else  @keyup.enter="save">
       <md-dialog-title>Save Model</md-dialog-title>
       <md-dialog-content>
-        <md-field>
+        <md-field :class="validationClass">
           <label>Model Name</label>
           <md-input ref="saveInput" v-model="name" :value="name"/>
+          <div class="md-error" v-if="invalidName">Name is already in use.</div>
         </md-field>
       </md-dialog-content>
       <md-dialog-actions>
-        <md-button @click="save">Save Model (Enter)</md-button>
+        <md-button :disabled="invalidName" @click="save">Save Model (Enter)</md-button>
         <md-button @click="showSaveDialog = false">Cancel</md-button>
       </md-dialog-actions>
     </md-dialog>
@@ -68,6 +77,11 @@
 import clonedeep from 'lodash.clonedeep';
 import Forms from '@/components/Forms';
 import { DEFAULT_FORM_STATE } from '@/constants/backend_constants';
+import Alert from '@/components/Alert';
+import Debug from 'debug';
+
+const debug = Debug('Forms.vue');
+debug.enabled = false;
 
 /**
  * Represents the view of the forms for each type of data entered into halomod.
@@ -79,6 +93,7 @@ export default {
   name: 'FormView',
   components: {
     Forms,
+    Alert,
   },
   data() {
     return {
@@ -99,9 +114,12 @@ export default {
       contextPrimary: 'Create',
       contextSecondary: 'New Model',
       valid: true,
+      READ_ONLY: this.$store.state,
+      showAlert: false,
     };
   },
   async activated() {
+    window.addEventListener('keypress', this.enterListener);
     if (this.$route.name === 'Edit') {
       this.edit = true;
       this.initialFormState = await this.$store.getModel(this.$route.params.id);
@@ -125,8 +143,20 @@ export default {
     }
     this.currentFormState = clonedeep(this.initialFormState);
   },
+  deactivated() {
+    window.removeEventListener('keypress', this.enterListener);
+  },
   updated() {
     this.scrollToAnchor();
+  },
+  computed: {
+    invalidName() {
+      if (this.edit) return false;
+      const invalid = this.$store.state.modelNames
+        .includes(this.name ? this.name.trim() : undefined);
+      return invalid;
+    },
+    validationClass() { return { 'md-invalid': this.invalidName }; },
   },
   methods: {
     scrollToAnchor() {
@@ -141,29 +171,45 @@ export default {
       });
     },
     leave() {
+      this.closeAlertDialog();
       this.showCancelDialog = false;
+      this.$forceUpdate();
       this.$router.push('/');
     },
     async save() {
-      this.loading = true;
       if (this.edit) {
+        this.loading = true;
         await this.$store.updateModel(this.name, this.currentFormState);
       } else {
+        if (this.invalidName) return;
+        this.loading = true;
         await this.$store.createModel(this.currentFormState, this.name);
       }
       this.loading = false;
       this.showSaveDialog = false;
-      this.$router.push('/');
+      if (this.$store.state.error) {
+        // Show the error alert dialog
+        this.showAlert = true;
+      } else {
+        this.$router.push('/');
+      }
     },
     isValid(valid) {
       this.valid = valid;
       this.$forceUpdate();
     },
     activateSaveDialog() {
-      this.showSaveDialog = true;
-      if (!this.edit) {
-        setTimeout(() => { this.$refs.saveInput.$el.focus(); }, 300);
+      if (!this.showSaveDialog && this.valid) {
+        this.showSaveDialog = true;
+        if (!this.edit) {
+          setTimeout(() => { this.$refs.saveInput.$el.focus(); }, 300);
+        }
       }
+    },
+    closeAlertDialog() {
+      this.showAlert = false;
+      // Error has been shown so mark as false
+      this.$store.state.error = false;
     },
   },
 };

@@ -1,45 +1,60 @@
 <template>
   <div>
-  <md-toolbar class="md-large">
-    <div class="md-toolbar-row">
-      <div class="md-toolbar-section-start">
-        <h3 class="md-title">Download</h3>
+    <md-toolbar class="md-large">
+      <div class="md-toolbar-row">
+        <div class="md-toolbar-section-start">
+          <h3 class="md-title">Download</h3>
+          <md-icon class="tooltip">
+            help
+            <md-tooltip md-direction="right"
+              >Download plot SVG, vector data, and parameter values for all
+              models</md-tooltip
+            >
+          </md-icon>
+        </div>
       </div>
-    </div>
-    <div class="download-container">
-      <md-field class='download-select'>
-        <md-select v-model="downloadChoice" id="downloadChoices">
-          <md-option
-            v-for="choice in downloadChoices"
-            :key="choice.name"
-            :value="choice.name"
-          >
-            {{choice.displayName}}
-          </md-option>
-        </md-select>
-      </md-field>
-      <md-button
-        class="md-icon-button download-button md-raised md-primary"
-        @click="handleClick"
-        id="download-button"
-      >
-        <md-icon>download</md-icon>
-      </md-button>
-    </div>
-    <a id="download-element"/>
-  </md-toolbar>
-  <md-dialog v-if="loading"
-    :md-active.sync="loading"
-    :md-close-on-esc="false"
-    :md-click-outside-to-close="false">
-    <md-dialog-title>{{loadingTitle}}</md-dialog-title>
-    <md-dialog-content><md-progress-bar md-mode="indeterminate"/></md-dialog-content>
-  </md-dialog>
-  <md-dialog v-if="serverDownloadDialogVisible"
-    :md-active.sync="serverDownloadDialogVisible">
-    <md-dialog-title>{{loadingTitle}}</md-dialog-title>
-    <md-button @click="serverDownloadDialogVisible = false">Close</md-button>
-  </md-dialog>
+      <div class="download-container">
+        <md-field class="download-select">
+          <md-select v-model="downloadChoice" id="downloadChoices">
+            <md-option
+              v-for="choice in downloadChoices"
+              :key="choice.name"
+              :value="choice.name"
+            >
+              {{ choice.displayName }}
+            </md-option>
+          </md-select>
+        </md-field>
+        <md-button
+          class="md-icon-button download-button md-raised md-primary"
+          @click="handleClick"
+          id="download-button"
+        >
+          <md-icon>download</md-icon>
+        </md-button>
+      </div>
+      <a id="download-element" />
+    </md-toolbar>
+    <md-dialog
+      v-if="loading"
+      :md-active.sync="loading"
+      :md-close-on-esc="false"
+      :md-click-outside-to-close="false"
+    >
+      <md-dialog-title>{{ loadingTitle }}</md-dialog-title>
+      <md-dialog-content
+        >
+        {{loadingDescription}}
+        <md-progress-bar md-mode="indeterminate"
+      /></md-dialog-content>
+    </md-dialog>
+    <md-dialog
+      v-if="serverDownloadDialogVisible"
+      :md-active.sync="serverDownloadDialogVisible"
+    >
+      <md-dialog-title>{{ loadingTitle }}</md-dialog-title>
+      <md-button @click="serverDownloadDialogVisible = false">Close</md-button>
+    </md-dialog>
   </div>
 </template>
 
@@ -74,7 +89,9 @@ const downloadOptions = {
     name: 'Data',
     displayName: 'Vector Data',
     fileName: 'ModelVectorData.zip',
-    loadingTitle: 'Getting all model data',
+    loadingTitle: 'Getting all model data...',
+    loadingDescription: 'This might take a little while depending on how many '
+    + 'models there are.',
   },
 };
 
@@ -91,6 +108,7 @@ export default {
       loading: false,
       loadingTitle: '',
       serverDownloadDialogVisible: false,
+      loadingDescription: '',
     };
   },
   methods: {
@@ -100,14 +118,23 @@ export default {
     downloadParamValsToml,
     async handleClick() {
       const downloadNode = document.getElementById('download-element');
-      const { fileName, name, loadingTitle } = downloadOptions[this.downloadChoice];
+      const {
+        fileName, name, loadingTitle, loadingDescription,
+      } = downloadOptions[
+        this.downloadChoice
+      ];
       this.loadingTitle = loadingTitle;
-      const href = await this[`download${name}`](this.$store);
+      if (loadingDescription) {
+        this.loadingDescription = loadingDescription;
+      } else {
+        this.loadingDescription = '';
+      }
       if (name === 'ParamValsToml') {
         this.serverDownloadDialogVisible = true;
       } else {
         this.loading = true;
       }
+      const href = await this[`download${name}`](this.$store);
       downloadNode.setAttribute('href', href);
       downloadNode.setAttribute('download', fileName);
       downloadNode.click();

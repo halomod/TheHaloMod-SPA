@@ -7,6 +7,9 @@ for arg in "$@"
 do
   case $arg in
     "--install")
+      # Wheel is installed first because it is used for depenency installation.
+      # It basically just speeds things up.
+      pip3 install wheel
       pip3 install -r requirements.txt;;
     "--lint" )
       autopep8 -a -r --in-place halomod_app
@@ -23,5 +26,8 @@ do
     "--generate-constants" )
       echo "Generating constants from run.sh with generate_constants.py..."
       python3 -m generate_constants.py;;
+    "--generate-version-file" )
+      echo "Generating version file from run.sh with generate_version_file.py..."
+      python3 -m generate_version_file.py;;
   esac
 done

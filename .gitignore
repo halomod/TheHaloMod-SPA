@@ -348,3 +348,6 @@ test/
 
 # redis
 dump.rdb
+
+# Mac OSX
+*.DS_Store

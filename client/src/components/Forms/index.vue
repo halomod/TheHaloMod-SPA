@@ -1,5 +1,5 @@
 <template>
-  <md-app id="create" md-mode="fixed" md-waterfall>
+  <md-app id="create" md-mode="fixed" md-waterfall >
     <Navbar slot='md-app-toolbar'/>
     <md-app-drawer
       md-permanent="clipped"
@@ -84,8 +84,18 @@ export default {
       currentFormState: clonedeep(this.initialFormState),
     };
   },
+  created() {
+    document.addEventListener('keyup', this.enterListener);
+  },
   activated() {
     this.currentlyVisible = null;
+    document.addEventListener('keyup', this.enterListener);
+  },
+  deactivated() {
+    document.removeEventListener('keyup', this.enterListener);
+  },
+  destroyed() {
+    document.removeEventListener('keyup', this.enterListener);
   },
   watch: {
     /**
@@ -116,7 +126,17 @@ export default {
       this.currentlyVisible = title;
       window.history.replaceState({}, '', `#${id}`);
     },
-
+    enterListener(keyEvent) {
+      if (keyEvent.keyCode === 13) {
+        this.$emit('activate-save');
+      }
+    },
+    /**
+     * Triggers the save dialog to trigger in the parent forms component.
+     */
+    activateSave() {
+      this.$emit('activate-save');
+    },
     isValid(f, valid) {
       const form = f;
       form.valid = valid;

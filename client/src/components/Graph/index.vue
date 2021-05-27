@@ -4,10 +4,20 @@
       <div class="md-toolbar-row">
         <div class="md-toolbar-section-start">
           <h3 class="md-title">Plot</h3>
+          <md-icon class="tooltip">
+              help
+              <md-tooltip md-direction="right"
+                >Interactive plots for all created models.
+                  X and Y axis are configurable.</md-tooltip
+              >
+            </md-icon>
         </div>
       </div>
       <div class="md-layout-item md-size-100 md-layout md-gutter">
-        <md-field v-if="xAxisChoices" class="md-layout-item md-gutter md-size-85">
+        <md-field
+          v-if="xAxisChoices"
+          class="md-layout-item md-gutter md-medium-size-50 md-xsmall-size-100"
+        >
           <label for="xAxisChoice">X-Axis</label>
           <md-select v-model="xAxisChoice" id="xAxisChoices" name="xAxisChoice">
             <md-option
@@ -27,7 +37,7 @@
         </md-checkbox>
       </div>
       <div class="md-layout-item md-size-100 md-layout md-gutter">
-        <md-field class="md-layout-item md-gutter md-size-85">
+        <md-field class="md-layout-item md-gutter md-medium-size-50 md-xsmall-size-100">
           <label for="yAxisChoice">Y-Axis</label>
           <md-select
             v-if="xAxisChosen"
@@ -53,27 +63,45 @@
       </div>
       <Plot
         :id="plotElementId"
-        :plotData="READ_ONLY.plot.plotData"
+        :plotData="localPlotState"
         :plotElementId="plotElementId"
-        :xlog="logx"
-        :ylog="logy"
       />
     </div>
     <p id="no-graph-notification" v-else>No graph has been generated yet</p>
-    <Error v-if="READ_ONLY.error" :type="READ_ONLY.errorType" :message="READ_ONLY.errorMessage"/>
+    <Error
+      v-if="STORE_STATE.graphError"
+      :type="STORE_STATE.errorType"
+      :message="STORE_STATE.errorMessage"/>
   </md-toolbar>
 </template>
 
 <script>
 import Error from '@/components/Error.vue';
 import { PLOT_AXIS_METADATA, PLOT_AXIS_OPTIONS } from '@/constants/PLOT.js';
+import Debug from 'debug';
 import Plot from './Plot.vue';
+
+const debug = Debug('Graph');
+debug.enabled = true;
 
 export default {
   name: 'Graph',
   data() {
     return {
-      READ_ONLY: this.$store.state,
+      /**
+       * Holds a reference to the state of the store for the application, so
+       * whenever there is a change, this variable updates.
+       *
+       * This should not be edited directly or it will break the connection
+       * to the store. Edits should be made by using the functions in the
+       * store.
+       */
+      STORE_STATE: this.$store.state,
+      /**
+       * Stored locally so that updates to the plot only happen once when
+       * changes are made.
+       */
+      localPlotState: this.$store.state.plot,
       /**
        * @type {string[] | null}
        */
@@ -118,10 +146,9 @@ export default {
 
     // If xAxisChoice has not been chosen, choose the one specified by issue
     // #110, power_auto_tracer as the y and "k_hm" as the x.
-    if (this.xAxisChoice === '') {
+    if (this.xAxisChoice === '' || this.xAxisChoice === undefined) {
       const newXAxisChoice = 'k_hm';
       const newYAxisChoice = 'power_auto_tracer';
-      this.xAxisChoice = newXAxisChoice;
       this.updateXAxisChoice(newXAxisChoice, '');
       await this.$nextTick();
       this.yAxisChoice = newYAxisChoice;
@@ -132,23 +159,35 @@ export default {
     }
   },
   watch: {
+    localPlotState: {
+      deep: true,
+      handler(newPlotState) {
+        if (newPlotState.logx !== this.logx) {
+          this.logx = newPlotState.logx;
+        }
+        if (newPlotState.logy !== this.logy) {
+          this.logy = newPlotState.logy;
+        }
+      },
+    },
     xAxisChoice(newXAxisChoice, oldXAxisChoice) {
-      this.updateXAxisChoice(newXAxisChoice, oldXAxisChoice);
+      if (newXAxisChoice !== oldXAxisChoice) {
+        this.updateXAxisChoice(newXAxisChoice, oldXAxisChoice);
+      }
     },
     yAxisChoice(newYAxisChoice, oldYAxisChoice) {
-      if (newYAxisChoice !== null && newYAxisChoice !== oldYAxisChoice) {
-        this.$store.setPlotType(newYAxisChoice, 'y', true);
-        this.logy = this.$store.state.plot.logy;
+      if (newYAxisChoice !== oldYAxisChoice) {
+        this.updateYAxisChoice(newYAxisChoice, oldYAxisChoice);
       }
     },
-    logx(newLog, oldLog) {
-      if (newLog !== oldLog) {
-        this.$store.setPlotAxisScale('x', newLog);
+    async logx(newLogx) {
+      if (newLogx !== this.$store.state.plot.logx) {
+        this.localPlotState = await this.$store.setPlotAxisScale('x', newLogx);
       }
     },
-    logy(newLog, oldLog) {
-      if (newLog !== oldLog) {
-        this.$store.setPlotAxisScale('y', newLog);
+    async logy(newLogy) {
+      if (newLogy !== this.$store.state.plot.logy) {
+        this.localPlotState = await this.$store.setPlotAxisScale('y', newLogy);
       }
     },
   },
@@ -158,22 +197,68 @@ export default {
      * of updating the x axis choice so it can be called in a watcher and in
      * the initialization logic.
      */
-    updateXAxisChoice(newXAxisChoice, oldXAxisChoice) {
-      this.updateYAxisChoices(newXAxisChoice);
+    async updateXAxisChoice(newXAxisChoice, oldXAxisChoice) {
+      /*
+       * If the x axis is in a different axis section then both the x and the
+       * y as well as y choices need to be updated.
+       */
+      const isDifferentAxisSection = this.xAxisChoices[newXAxisChoice]
+        !== this.xAxisChoices[oldXAxisChoice];
+      if (isDifferentAxisSection) {
+        const newYAxisChoices = PLOT_AXIS_OPTIONS[this.xAxisChoices[newXAxisChoice]].y;
+        let newYAxisChoice = this.yAxisChoice;
+        if (!newYAxisChoices.includes(this.yAxisChoice)) {
+          [newYAxisChoice] = newYAxisChoices;
+        }
 
-      // Set the new Y Axis and logy
-      const [newYAxisChoice] = this.yAxisChoices;
-      this.yAxisChoice = newYAxisChoice;
-      this.$store.setPlotType(newYAxisChoice, 'y', false);
-      this.logy = this.$store.state.plot.logy;
-
-      // Set the new X Axis and logx. Only refresh if the old x axis is in the
-      // same section as the new x.
-      this.$store.setPlotType(newXAxisChoice, 'x', this.xAxisChoices[newXAxisChoice] === this.xAxisChoices[oldXAxisChoice]);
-      this.logx = this.$store.state.plot.logx;
+        // Change both the x and y axis in the store and set the state for
+        // the component all at once.
+        const newPlotState = await this.$store.setBothPlotType(newXAxisChoice, newYAxisChoice);
+        Object.assign(this, {
+          localPlotState: newPlotState,
+          xAxisChoice: newXAxisChoice,
+          yAxisChoices: newYAxisChoices,
+          yAxisChoice: newYAxisChoice,
+        });
+      } else {
+        if (newXAxisChoice !== this.$store.state.plot.x) {
+          this.localPlotState = await this.$store.setPlotType(newXAxisChoice, 'x', true);
+        }
+        if (newXAxisChoice !== this.xAxisChoice) {
+          this.xAxisChoice = newXAxisChoice;
+        }
+      }
     },
-    updateYAxisChoices(xAxisChoice) {
-      this.yAxisChoices = PLOT_AXIS_OPTIONS[this.xAxisChoices[xAxisChoice]].y;
+    /**
+     * Updates the Y Axis Choice and optionally updates the plot if that isn't
+     * already being done elsewhere.
+     *
+     * @param {string} newYAxisChoice
+     * @param {string} oldYAxisChoice
+     */
+    async updateYAxisChoice(newYAxisChoice, oldYAxisChoice) {
+      if (newYAxisChoice !== null && newYAxisChoice !== oldYAxisChoice) {
+        if (newYAxisChoice !== this.localPlotState.y) {
+          this.localPlotState = await this.$store.setPlotType(newYAxisChoice, 'y', true);
+        }
+
+        // Because this function is called sometimes when the current
+        // `yAxisChoice` hasn't been updated
+        if (this.yAxisChoice !== newYAxisChoice) {
+          this.yAxisChoice = newYAxisChoice;
+        }
+      }
+    },
+    /**
+     * Updates the Y axis choices.
+     *
+     * @param {string} xAxisChoice the new xAxisChoice
+     */
+    async updateYAxisChoices(xAxisChoice) {
+      if (xAxisChoice) {
+        const newYAxisChoices = PLOT_AXIS_OPTIONS[this.xAxisChoices[xAxisChoice]].y;
+        this.yAxisChoices = newYAxisChoices;
+      }
     },
     /**
      * Determines if plot data exists.

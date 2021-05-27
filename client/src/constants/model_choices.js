@@ -2,7 +2,7 @@
  * The model choices for different types of forms. This is held in its own file
  * because some forms have the same model choices between them.
  */
-export default {
+const modelChoices = {
   cosmo: {
     Planck13: 'Planck13',
     Planck15: 'Planck15',
@@ -106,3 +106,16 @@ export default {
     'Density-Matched (Tinker 2005)': 'NgMatched',
   },
 };
+
+// Add the tracer concentration null option
+modelChoices.tracer_concentration = {
+  'Same as Halo Concentration': 'null',
+  ...modelChoices.concentration,
+};
+// Add the tracer profile null option
+modelChoices.tracer_profile = {
+  'Same as Halo Profile': 'null',
+  ...modelChoices.profile,
+};
+
+export default modelChoices;

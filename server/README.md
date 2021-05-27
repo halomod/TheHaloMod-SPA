@@ -9,6 +9,9 @@
     - [Development commands](#development-commands)
     - [Production deployment using docker](#production-deployment-using-docker)
   - [Architecture](#architecture)
+  - [Manual setup](#manual-setup)
+  - [Common issues](#common-issues)
+    - [Model issues in redis](#model-issues-in-redis)
 
 ## Usage
 
@@ -21,12 +24,11 @@ Before doing any of the commands below, make sure to install the Python packages
 
 1. Open a second shell window (secondary to the shell that has a working directory of `server`. See the first step above.)
 1. In the second shell window, start up a [Redis DB](https://redis.io/) by running `redis-server`, which may need to be installed first. If this isn't installed yet, [see here on how to install it](https://redis.io/topics/quickstart).
+1. If you need to have the bug reporting feature on while running the server locally, then set the username and password for the gmail account to use to send emails. This can be done by running `export MAIL_USERNAME=someemail@gmail.com` and then `export MAIL_PASSWORD=yourPassword` in the same shell that will be running the server. In production, this is handled with Github Secrets and the server deployment.
 1. In the first shell window, run `. ./run.sh --dev`
 1. The server should now be located at `localhost:5000`
 
 If an issue comes up where it says that the port is already used, check to see if redis is running in another terminal somewhere, or in a background service. By default redis runs as a service, so it might not be necessary to run it in another terminal if it is.
-
-Sometimes while developing it can be useful to clear the redis DB of data if issues arise with the models. This can be done in a separate terminal than that which is running redis by typing `redis-cli FLUSHDB`.
 
 ### Development commands
 
@@ -70,3 +72,36 @@ The `server` is the back-end to TheHaloMod-SPA application. It provides the API,
 The entrypoint of the server is [`server/halomod_app/__init__.py`](halomod_app/__init__.py) which builds the Flask application and adds routes to it. This file is used as the main location for the top-level server functionality. The [`server/halomod_app/utils.py`](halomod_app/utils.py) houses the extra functionality or constants that have been abstracted out of the main server logic. 
 
 Besides the things mentioned here, documentation exists in each file to provide guidance on what each does. 
+
+## Manual setup
+Follow the steps below if you are unable to use [run.sh](./run.sh). Use run.sh as a reference to this section.
+
+Set up virtual env
+```sh
+python3 -m venv env
+. env/bin/activate
+```
+Dependency installation
+```sh
+pip3 install -r requirements.txt;;
+```
+Starting the server
+```sh
+export FLASK_APP=halomod_app
+export FLASK_ENV=development
+flask run;;
+```
+Testing
+```sh
+python3 -m pytest;;
+```
+Linting
+```sh
+autopep8 -a -r --in-place halomod_app # fixes autofixable lint errors
+flake8 tests halomod_app;;
+```
+
+## Common issues
+### Model issues in redis
+
+- Sometimes while developing it can be useful to clear the redis DB of data if issues arise with the models. This can be done in a separate terminal than that which is running redis by typing `redis-cli FLUSHDB`.
