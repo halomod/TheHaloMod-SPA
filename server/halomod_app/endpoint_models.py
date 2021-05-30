@@ -144,22 +144,16 @@ def clone():
     return jsonify(res)
 
 
-"""Deletes models
-DELETE /models
-
-Parameters:
-
-Returns:
-- model_names: string[]
-"""
-# This endpoint clears all models from the session
-#
-# expects: None
-# outputs: {"model_names": <list_of_model_names_in_session>}
-
-
 @endpoint_models.route('/models', methods=["DELETE"])
 def clear():
+    """Deletes all models from the session
+    DELETE /models
+
+    Parameters: None
+
+    Returns:
+    - {"model_names": <list_of_model_names_in_session>}
+    """
     session["models"] = pickle.dumps({})
     res = {"model_names": get_model_names()}
     return jsonify(res)

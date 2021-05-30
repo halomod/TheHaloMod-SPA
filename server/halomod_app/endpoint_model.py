@@ -2,12 +2,11 @@ from flask import Blueprint
 from flask import jsonify, request, session
 from . import utils
 from .utils import get_model_names
-from halomod import TracerHaloModel
 import dill as pickle
 
 endpoint_model = Blueprint('endpoint_model', __name__)
-initial_model = TracerHaloModel(rmax=150, rnum=200, transfer_params={
-                                "kmax": 1e3, 'extrapolate_with_eh': True})
+
+initial_model = utils.get_initial_model()
 
 
 @endpoint_model.route('/model', methods=["POST"])
