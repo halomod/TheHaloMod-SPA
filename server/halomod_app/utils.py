@@ -81,7 +81,7 @@ def get_initial_model() -> TracerHaloModel:
     high_def_file_path = file_directory + file_name
     if path.exists(high_def_file_path):
         print('High definition model already exists, loading from file.')
-        with open(high_def_file_path) as high_def_file:
+        with open(high_def_file_path, 'rb') as high_def_file:
             initial_model = pickle.load(high_def_file)
     else:
         print('Beginning initial model creation. This might take a bit...')
