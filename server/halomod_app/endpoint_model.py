@@ -1,12 +1,17 @@
-from flask import Blueprint
-from flask import jsonify, request, session
+from flask import jsonify, request, session, Blueprint
 from . import utils
 from .utils import get_model_names
 import dill as pickle
+import threading
+
 
 endpoint_model = Blueprint('endpoint_model', __name__)
 
 initial_model = utils.get_initial_model()
+
+# Generate a semaphore to only allow model creation one at a time across
+# requests
+sem = threading.Semaphore()
 
 
 @endpoint_model.route('/model', methods=["POST"])
@@ -25,6 +30,9 @@ def create():
     - model_names: string[]
     - example: `{"model_names": <list_of_model_names_in_session>}`
     """
+
+    print('Creating new model')
+
     params = request.get_json()["params"]
     label = request.get_json()["label"]
 
@@ -34,15 +42,24 @@ def create():
     else:
         models = {}
 
+    print('It got here 1')
+
+    # Only allow one model to be created at a time. Prevents crashes in the
+    # server from Fortran when two models are created at the same time.
+    sem.acquire()
     num_models = len(models)
     models[label] = utils.hmf_driver(
         previous=initial_model,
         **params)  # creates model from params
+    sem.release()
+
+    print('It got here 2')
     if num_models < len(models):
         session["models"] = pickle.dumps(models)  # writes updated model dict to session
     else:
         raise Exception("Model not computed.")
 
+    print('It got here 3')
     return jsonify({"model_names": get_model_names()})
 
 
