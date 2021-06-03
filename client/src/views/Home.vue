@@ -12,6 +12,9 @@
         <Download/>
       </div>
     </div>
+    <!-- DELETE ME -->
+    <button @click="doSomething">Test Button</button>
+    <!-- DELETE ME -->
   </div>
 </template>
 
@@ -32,6 +35,11 @@ export default {
     Graph,
     Navbar,
     Download,
+  },
+  methods: {
+    doSomething() {
+      this.$store.syncModels();
+    },
   },
 };
 

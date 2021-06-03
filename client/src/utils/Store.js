@@ -13,6 +13,7 @@ import { DEFAULT_THEME } from '@/constants/themeOptions';
 import PLOT_AXIS_METADATA from '@/constants/PLOT_AXIS_METADATA.json';
 import forms from '@/constants/forms';
 import * as Sentry from '@sentry/vue';
+import isEqual from 'lodash.isequal';
 
 axios.defaults.withCredentials = true;
 axiosRetry(axios, {
@@ -31,7 +32,7 @@ axiosRetry(axios, {
 });
 
 const debug = Debug('Store.js');
-debug.enabled = false;
+debug.enabled = true;
 
 /**
  * This store is initialized at the beginning of the application startup. It
@@ -100,6 +101,68 @@ export default class Store {
     this.state.modelNames = this.getModelNames();
     if (this.state.models.size !== 0) {
       this.getPlotData();
+    }
+  }
+
+  /**
+   * Syncs the models on the client with the models on the server. If the
+   * client has models the server doesn't have, those are added to the server.
+   */
+  syncModels = async () => {
+    try {
+      // Get the model names from the server. Model names are used as equality
+      // here because checking each parameter would be too cumbersome for
+      // startup.
+      const serverResponse = await axios.get(`${baseurl}/models/names`);
+      const serverModelNameData = serverResponse.data;
+      const serverModelNames = Object.values(serverModelNameData.model_names);
+      console.log(serverModelNames);
+
+      if (isEqual(serverModelNames, this.state.modelNames)) {
+        console.log('Model Names were equal');
+        return;
+      }
+
+      // TODO: Make sure that the client has a loading icon of some kind when this
+      // process starts.
+
+      // They were not equal, so delete any models on the server that are not on
+      // the client first.
+      await Promise.all(serverModelNames.map(async (modelName) => {
+        if (!this.state.modelNames.includes(modelName)) {
+          // Remove the model from the server
+          await axios.delete(`${baseurl}/model`, {
+            data: {
+              model_name: modelName,
+            },
+            timeout: 3000,
+          });
+        }
+      }));
+
+      // Now add any models that are on the client but not on the server
+      const modelsToBeAdded = [];
+      this.state.modelNames.forEach((modelName) => {
+        if (!serverModelNames.includes(modelName)) {
+          const model = this.flatten(this.state.models.get(modelName));
+          modelsToBeAdded.push({
+            params: model,
+            label: modelName,
+          });
+        }
+      });
+      await axios.post(`${baseurl}/models`, {
+        data: modelsToBeAdded,
+        timeout: 3000,
+      });
+
+      // Update the plot data because it will be different after adding the
+      // models to the server
+      this.getPlotData();
+
+      // Close out the client loading icon
+    } catch (error) {
+      this.setError(error);
     }
   }
 
@@ -423,6 +486,7 @@ export default class Store {
         timeout: 3000,
       });
       this.state.plot.plotData = data.data;
+      debug('plotdata is: ', data.data);
       this.state.error = false;
     } catch (error) {
       this.state.graphError = true;
