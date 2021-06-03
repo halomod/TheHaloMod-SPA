@@ -1,5 +1,3 @@
-import axios from 'axios';
-import axiosRetry from 'axios-retry';
 import clonedeep from 'lodash.clonedeep';
 import baseurl from '@/env';
 import Debug from 'debug';
@@ -13,26 +11,11 @@ import { DEFAULT_THEME } from '@/constants/themeOptions';
 import PLOT_AXIS_METADATA from '@/constants/PLOT_AXIS_METADATA.json';
 import forms from '@/constants/forms';
 import * as Sentry from '@sentry/vue';
+import axios from '@/utils/axiosHelper';
 import isEqual from 'lodash.isequal';
 
-axios.defaults.withCredentials = true;
-axiosRetry(axios, {
-  retries: 3,
-  shouldResetTimeout: true,
-  retryDelay: axiosRetry.exponentialDelay, // Exponential back-off retry delay between requests
-  // retryCondition: () => true, // retry no matter what
-  // If true it will retry
-  retryCondition: (error) => {
-    if (error.response) {
-      return (error.response.status !== 500 && error.response.status > 299);
-    }
-    // Always retry if no server response
-    return true;
-  },
-});
-
 const debug = Debug('Store.js');
-debug.enabled = true;
+debug.enabled = false;
 
 /**
  * This store is initialized at the beginning of the application startup. It
@@ -50,6 +33,27 @@ export default class Store {
        */
       models: new Map(),
       modelNames: [],
+
+      /**
+       * Used to keep track of syncing that may be happening when the
+       * application starts.
+       */
+      syncState: {
+        /**
+         * Keeps track of the current state of syncing of the application. This
+         * variable is held in-case a callback is added during a sync.
+         */
+        syncing: false,
+
+        /**
+         * Used to run functions before syncing has started.
+         */
+        startCallbacks: [],
+        /**
+         * Used to run functions when the syncing is finished.
+         */
+        endCallbacks: [],
+      },
       /**
        * The data for the plot in the store. Holds all info including settings
        * for different plot types.
@@ -82,6 +86,7 @@ export default class Store {
       await set('models', new Map());
     } else {
       this.state.models = await get('models');
+      this.syncModels();
     }
 
     // If the theme value does not exist, create it.
@@ -116,15 +121,16 @@ export default class Store {
       const serverResponse = await axios.get(`${baseurl}/models/names`);
       const serverModelNameData = serverResponse.data;
       const serverModelNames = Object.values(serverModelNameData.model_names);
-      console.log(serverModelNames);
 
       if (isEqual(serverModelNames, this.state.modelNames)) {
-        console.log('Model Names were equal');
         return;
       }
 
-      // TODO: Make sure that the client has a loading icon of some kind when this
-      // process starts.
+      // Run all the sync start callbacks
+      this.state.syncState.syncing = true;
+      this.state.syncState.startCallbacks.forEach((callback) => {
+        callback();
+      });
 
       // They were not equal, so delete any models on the server that are not on
       // the client first.
@@ -158,12 +164,34 @@ export default class Store {
 
       // Update the plot data because it will be different after adding the
       // models to the server
-      this.getPlotData();
+      await this.getPlotData();
 
-      // Close out the client loading icon
+      // Run all the end callbacks.
+      this.state.syncState.syncing = false;
+      this.state.syncState.endCallbacks.forEach((callback) => {
+        callback();
+      });
     } catch (error) {
       this.setError(error);
     }
+  }
+
+  /**
+   * Sets callbacks that correspond with the syncing state of the application.
+   * This also returns the current syncing status of the application in-case
+   * it has already started, the user of this function can take immediate
+   * action.
+   *
+   * @param {Function} startSyncCallback the callback to run once the models
+   * have started syncing
+   * @param {Function} endSyncCallback the callback to run once the models
+   * have finished syncing
+   * @returns {boolean} true if the models are syncing and false if not.
+   */
+  setSyncCallbacks(startSyncCallback, endSyncCallback) {
+    this.state.syncState.startCallbacks.push(startSyncCallback);
+    this.state.syncState.endCallbacks.push(endSyncCallback);
+    return this.state.syncState.syncing;
   }
 
   /**
