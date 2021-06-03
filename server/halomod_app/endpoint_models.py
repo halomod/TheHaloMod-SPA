@@ -51,8 +51,6 @@ def get_models_data_object():
 
 @endpoint_models.route('/models/toml', methods=["GET"])
 def get_models_data_toml():
-    # @app.route('/toml', methods=['GET'])
-    # def toml_route():
     """ Builds and sends a toml file for each model in the user's session in a
     zip folder. These can be used to input into the `halomod` library by
     running the following in your shell:
@@ -90,8 +88,8 @@ def get_models_data_toml():
     # Cache timeout set to 3 seconds, which seems like enough time for the user
     # to change a paremeter and try to download again, but prevents spamming.
     return send_file(buff, as_attachment=True,
-                     attachment_filename="all_plots_toml.zip",
-                     cache_timeout=3)
+                     download_name="all_plots_toml.zip",
+                     max_age=3)
 
 
 @endpoint_models.route('/models', methods=['POST'])
