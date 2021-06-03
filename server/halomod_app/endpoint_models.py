@@ -115,8 +115,10 @@ def create():
     - model_names: string[]
     - example: `{"model_names": <list_of_model_names_in_session>}`
     """
-
-    new_models = request.get_json()['data']
+    json = request.get_json()
+    if "data" not in json:
+        print('There was no "data" property on the request object')
+    new_models = json['data']
 
     models = None
     if 'models' in session:
@@ -139,6 +141,8 @@ def create():
             **params)  # creates model from params
 
     modelCreationSem.release()
+
+    print('it got here 2')
 
     if num_models < len(models):
         session["models"] = pickle.dumps(models)  # writes updated model dict to session
