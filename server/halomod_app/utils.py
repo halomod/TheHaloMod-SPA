@@ -10,8 +10,13 @@ import codecs
 import pickle
 import json
 from os import path, mkdir
+import threading
 
 logger = logging.getLogger(__name__)
+
+# Generate a semaphore to only allow model creation one at a time across
+# requests
+modelCreationSem = threading.Semaphore()
 
 
 def get_model_names():
