@@ -1,6 +1,6 @@
 from flask import Blueprint
 from flask import jsonify, request, session, send_file
-from .utils import get_model_names
+from .utils import get_model_names, modelCreationSem, get_initial_model, hmf_driver
 from hmf.helpers.cfg_utils import framework_to_dict
 import toml
 import dill as pickle
@@ -10,26 +10,14 @@ import io
 endpoint_models = Blueprint('endpoint_models', __name__)
 
 
-"""Get data in models
-    GET /models
-
-    Parameters:
-    - dataType: string
-
-    Returns:
-    - model_names: string[]
-"""
-
-
 @endpoint_models.route('/models/names', methods=["GET"])
 def get_models_data_names():
-    # This endpoint returns the names of all the models associated with the current
-    # session
-    #
-    # expects: None
-    # outputs: {"model_names": <list_of_model_names_in_session>}
-    # @app.route('/get_names', methods=["GET"])
-    # def get_names():
+    """Returns the names of all the models associated with the current session
+    GET /models
+
+    Returns:
+    - {"model_names": <list_of_model_names_in_session>}
+    """
     res = {"model_names": get_model_names()}
     return jsonify(res)  # returns list of model names
 
@@ -63,8 +51,6 @@ def get_models_data_object():
 
 @endpoint_models.route('/models/toml', methods=["GET"])
 def get_models_data_toml():
-    # @app.route('/toml', methods=['GET'])
-    # def toml_route():
     """ Builds and sends a toml file for each model in the user's session in a
     zip folder. These can be used to input into the `halomod` library by
     running the following in your shell:
@@ -102,28 +88,82 @@ def get_models_data_toml():
     # Cache timeout set to 3 seconds, which seems like enough time for the user
     # to change a paremeter and try to download again, but prevents spamming.
     return send_file(buff, as_attachment=True,
-                     attachment_filename="all_plots_toml.zip",
-                     cache_timeout=3)
+                     download_name="all_plots_toml.zip",
+                     max_age=3)
 
 
-"""Clone model
-PUT /models
+@endpoint_models.route('/models', methods=['POST'])
+def create():
+    """Creates multiple models at once and returns the resultant list of names
+    for the session
+    POST /models
 
-Parameters:
-- model_name: string
-- new_model_name: string
+    Parameters:
+    ```
+    [
+        {
+            "params": <dictionary_of_params>,
+            "label": <model_name>
+        },
+        {
+            # the same as above for another model, etc.
+        }
+    ]
+    ```
 
-Returns:
-- model_names: string[]
-"""
-# This endpoint clones a model based on name and adds the new model to the session
-#
-# expects: {"model_name": <model_name_to_clone>, "new_model_name": <name_for_new_model>}
-# outputs: {"model_names": <list_of_model_names_in_session>}
+    Returns:
+    - model_names: string[]
+    - example: `{"model_names": <list_of_model_names_in_session>}`
+    """
+    json = request.get_json()
+    if "data" not in json:
+        print('There was no "data" property on the request object')
+    new_models = json['data']
+
+    models = None
+    if 'models' in session:
+        models = pickle.loads(session.get('models'))
+    else:
+        models = {}
+
+    initial_model = get_initial_model()
+
+    # Only allow one model to be created at a time. Prevents crashes in the
+    # server from Fortran when two models are created at the same time.
+    modelCreationSem.acquire()
+
+    num_models = len(models)
+    for model_data in new_models:
+        params = model_data['params']
+        label = model_data['label']
+        models[label] = hmf_driver(
+            previous=initial_model,
+            **params)  # creates model from params
+
+    modelCreationSem.release()
+
+    if num_models < len(models):
+        session["models"] = pickle.dumps(models)  # writes updated model dict to session
+    else:
+        raise Exception("Model not computed.")
+
+    return jsonify({"model_names": get_model_names()})
 
 
 @endpoint_models.route('/models', methods=["PUT"])
 def clone():
+    """Clone model
+    PUT /models
+
+    Parameters:
+    {
+        "model_name": <model_name_to_clone>,
+        "new_model_name": <name_for_new_model>
+    }
+
+    Returns:
+    - {"model_names": <list_of_model_names_in_session>}
+    """
 
     request_json = request.get_json()
     name = request_json["model_name"]
@@ -144,22 +184,16 @@ def clone():
     return jsonify(res)
 
 
-"""Deletes models
-DELETE /models
-
-Parameters:
-
-Returns:
-- model_names: string[]
-"""
-# This endpoint clears all models from the session
-#
-# expects: None
-# outputs: {"model_names": <list_of_model_names_in_session>}
-
-
 @endpoint_models.route('/models', methods=["DELETE"])
 def clear():
+    """Deletes all models from the session
+    DELETE /models
+
+    Parameters: None
+
+    Returns:
+    - {"model_names": <list_of_model_names_in_session>}
+    """
     session["models"] = pickle.dumps({})
     res = {"model_names": get_model_names()}
     return jsonify(res)

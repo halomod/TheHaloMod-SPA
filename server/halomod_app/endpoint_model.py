@@ -1,19 +1,21 @@
-from flask import Blueprint
-from flask import jsonify, request, session
+from flask import jsonify, request, session, Blueprint
 from . import utils
 from .utils import get_model_names
-from halomod import TracerHaloModel
 import dill as pickle
 
+
 endpoint_model = Blueprint('endpoint_model', __name__)
-initial_model = TracerHaloModel(rmax=150, rnum=200, transfer_params={
-                                "kmax": 1e3, 'extrapolate_with_eh': True})
+
+initial_model = utils.get_initial_model()
 
 
 @endpoint_model.route('/model', methods=["POST"])
 def create():
     """Create a new model
     POST /model
+
+    This should only be run one at a time and not consecutively. Use /models
+    to create multiple models at once.
 
     Parameters:
     - params: dict
@@ -26,6 +28,7 @@ def create():
     - model_names: string[]
     - example: `{"model_names": <list_of_model_names_in_session>}`
     """
+
     params = request.get_json()["params"]
     label = request.get_json()["label"]
 
@@ -35,10 +38,17 @@ def create():
     else:
         models = {}
 
+    # Only allow one model to be created at a time. Prevents crashes in the
+    # server from Fortran when two models are created at the same time.
+    utils.modelCreationSem.acquire()
+
     num_models = len(models)
     models[label] = utils.hmf_driver(
         previous=initial_model,
         **params)  # creates model from params
+
+    utils.modelCreationSem.release()
+
     if num_models < len(models):
         session["models"] = pickle.dumps(models)  # writes updated model dict to session
     else:

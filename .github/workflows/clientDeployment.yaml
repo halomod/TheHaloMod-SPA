@@ -38,8 +38,8 @@ jobs:
       uses: actions/cache@v2
       with:
         path: ~/.cache/pip
-        # Makes the hashing depend on changes to requirements.txt
-        key: ${{ hashFiles('server/requirements.txt') }}
+        # Makes the hashing depend on changes to requirements.txt and python version
+        key: ${{ hashFiles('server/requirements.txt') }} py3.9.5
 
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
@@ -57,10 +57,10 @@ jobs:
         ln -s /usr/bin/gfortran-8 gfortran-symlinks/gfortran
         export PATH=$PWD/gfortran-symlinks:$PATH
 
-    - name: Set up Python 3.8
+    - name: Set up Python 3.9.5
       uses: actions/setup-python@v2
       with:
-        python-version: 3.8.8
+        python-version: 3.9.5
 
     - name: Generate constants    
       run: sh generate_client_files.sh

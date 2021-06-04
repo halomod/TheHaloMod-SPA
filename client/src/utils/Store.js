@@ -1,5 +1,3 @@
-import axios from 'axios';
-import axiosRetry from 'axios-retry';
 import clonedeep from 'lodash.clonedeep';
 import baseurl from '@/env';
 import Debug from 'debug';
@@ -13,22 +11,8 @@ import { DEFAULT_THEME } from '@/constants/themeOptions';
 import PLOT_AXIS_METADATA from '@/constants/PLOT_AXIS_METADATA.json';
 import forms from '@/constants/forms';
 import * as Sentry from '@sentry/vue';
-
-axios.defaults.withCredentials = true;
-axiosRetry(axios, {
-  retries: 3,
-  shouldResetTimeout: true,
-  retryDelay: axiosRetry.exponentialDelay, // Exponential back-off retry delay between requests
-  // retryCondition: () => true, // retry no matter what
-  // If true it will retry
-  retryCondition: (error) => {
-    if (error.response) {
-      return (error.response.status !== 500 && error.response.status > 299);
-    }
-    // Always retry if no server response
-    return true;
-  },
-});
+import axios from '@/utils/axiosHelper';
+import isEqual from 'lodash.isequal';
 
 const debug = Debug('Store.js');
 debug.enabled = false;
@@ -49,6 +33,27 @@ export default class Store {
        */
       models: new Map(),
       modelNames: [],
+
+      /**
+       * Used to keep track of syncing that may be happening when the
+       * application starts.
+       */
+      syncState: {
+        /**
+         * Keeps track of the current state of syncing of the application. This
+         * variable is held in-case a callback is added during a sync.
+         */
+        syncing: false,
+
+        /**
+         * Used to run functions before syncing has started.
+         */
+        startCallbacks: [],
+        /**
+         * Used to run functions when the syncing is finished.
+         */
+        endCallbacks: [],
+      },
       /**
        * The data for the plot in the store. Holds all info including settings
        * for different plot types.
@@ -81,6 +86,7 @@ export default class Store {
       await set('models', new Map());
     } else {
       this.state.models = await get('models');
+      this.syncModels();
     }
 
     // If the theme value does not exist, create it.
@@ -101,6 +107,91 @@ export default class Store {
     if (this.state.models.size !== 0) {
       this.getPlotData();
     }
+  }
+
+  /**
+   * Syncs the models on the client with the models on the server. If the
+   * client has models the server doesn't have, those are added to the server.
+   */
+  syncModels = async () => {
+    try {
+      // Get the model names from the server. Model names are used as equality
+      // here because checking each parameter would be too cumbersome for
+      // startup.
+      const serverResponse = await axios.get(`${baseurl}/models/names`);
+      const serverModelNameData = serverResponse.data;
+      const serverModelNames = Object.values(serverModelNameData.model_names);
+
+      if (isEqual(serverModelNames, this.state.modelNames)) {
+        return;
+      }
+
+      // Run all the sync start callbacks
+      this.state.syncState.syncing = true;
+      this.state.syncState.startCallbacks.forEach((callback) => {
+        callback();
+      });
+
+      // They were not equal, so delete any models on the server that are not on
+      // the client first.
+      await Promise.all(serverModelNames.map(async (modelName) => {
+        if (!this.state.modelNames.includes(modelName)) {
+          // Remove the model from the server
+          await axios.delete(`${baseurl}/model`, {
+            data: {
+              model_name: modelName,
+            },
+            timeout: 3000,
+          });
+        }
+      }));
+
+      // Now add any models that are on the client but not on the server
+      const modelsToBeAdded = [];
+      this.state.modelNames.forEach((modelName) => {
+        if (!serverModelNames.includes(modelName)) {
+          const model = this.flatten(this.state.models.get(modelName));
+          modelsToBeAdded.push({
+            params: model,
+            label: modelName,
+          });
+        }
+      });
+      await axios.post(`${baseurl}/models`, {
+        data: modelsToBeAdded,
+        timeout: 3000,
+      });
+
+      // Update the plot data because it will be different after adding the
+      // models to the server
+      await this.getPlotData();
+
+      // Run all the end callbacks.
+      this.state.syncState.syncing = false;
+      this.state.syncState.endCallbacks.forEach((callback) => {
+        callback();
+      });
+    } catch (error) {
+      this.setError(error);
+    }
+  }
+
+  /**
+   * Sets callbacks that correspond with the syncing state of the application.
+   * This also returns the current syncing status of the application in-case
+   * it has already started, the user of this function can take immediate
+   * action.
+   *
+   * @param {Function} startSyncCallback the callback to run once the models
+   * have started syncing
+   * @param {Function} endSyncCallback the callback to run once the models
+   * have finished syncing
+   * @returns {boolean} true if the models are syncing and false if not.
+   */
+  setSyncCallbacks(startSyncCallback, endSyncCallback) {
+    this.state.syncState.startCallbacks.push(startSyncCallback);
+    this.state.syncState.endCallbacks.push(endSyncCallback);
+    return this.state.syncState.syncing;
   }
 
   /**
@@ -423,6 +514,7 @@ export default class Store {
         timeout: 3000,
       });
       this.state.plot.plotData = data.data;
+      debug('plotdata is: ', data.data);
       this.state.error = false;
     } catch (error) {
       this.state.graphError = true;

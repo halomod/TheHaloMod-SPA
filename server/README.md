@@ -12,6 +12,7 @@
   - [Manual setup](#manual-setup)
   - [Common issues](#common-issues)
     - [Model issues in redis](#model-issues-in-redis)
+    - [Numpy or RankWarning](#numpy-or-rankwarning)
 
 ## Usage
 
@@ -105,3 +106,20 @@ flake8 tests halomod_app;;
 ### Model issues in redis
 
 - Sometimes while developing it can be useful to clear the redis DB of data if issues arise with the models. This can be done in a separate terminal than that which is running redis by typing `redis-cli FLUSHDB`.
+
+### Numpy or RankWarning
+
+If you get an error like the below while running the dev startup command:
+
+```
+RuntimeError: Polyfit sanity test emitted a warning, most likely due to using a buggy Accelerate backend. If you compiled yourself, see site.cfg.example for information. Otherwise report this to the vendor that provided NumPy.
+RankWarning: Polyfit may be poorly conditioned
+```
+
+Then it might have something to do with how [numpy](https://numpy.org/) is built. In prior testing, this happens only on a mac, but in order to fix it you can run the following command to rebuild numpy with only binary and not compile it:
+
+```
+pip3 install --upgrade --only-binary :all: numpy
+```
+
+For the thread that describes this, [see here](https://github.com/numpy/numpy/issues/15947).

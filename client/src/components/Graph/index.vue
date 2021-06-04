@@ -82,7 +82,7 @@ import Debug from 'debug';
 import Plot from './Plot.vue';
 
 const debug = Debug('Graph');
-debug.enabled = true;
+debug.enabled = false;
 
 export default {
   name: 'Graph',

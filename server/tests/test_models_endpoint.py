@@ -67,6 +67,31 @@ def test_clone(client):
     assert "TheModel" in names
     assert "NewModel" in names
 
+# POST
+
+
+def test_add_multi_models(client, create_payload):
+    payload = [
+        {
+            "params": create_payload['params'],
+            "label": "Model 1"
+        },
+        {
+            "params": create_payload['params'],
+            "label": "Model 2"
+        }
+    ]
+    response = client.post('/models', json={
+        "data": payload
+    })
+    assert response is not None
+    assert response.status_code == 200
+    assert "model_names" in response.json
+    names = response.json["model_names"]
+    assert "Model 1" in names
+    assert "Model 2" in names
+
+
 # DELETE
 
 

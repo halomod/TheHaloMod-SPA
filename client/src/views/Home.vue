@@ -12,6 +12,19 @@
         <Download/>
       </div>
     </div>
+    <md-dialog
+      :md-active.sync="syncDialogVisible"
+      :md-close-on-esc="false"
+      :md-click-outside-to-close="false"
+    >
+      <md-dialog-title>Models Syncing</md-dialog-title>
+      <md-dialog-content
+        >
+        Your models are currently syncing to the server. This shouldn't
+        take too long...
+        <md-progress-bar md-mode="indeterminate"
+      /></md-dialog-content>
+    </md-dialog>
   </div>
 </template>
 
@@ -32,6 +45,24 @@ export default {
     Graph,
     Navbar,
     Download,
+  },
+  data() {
+    return {
+      syncDialogVisible: false,
+    };
+  },
+  created() {
+    // Trigger a loading dialog if the models are syncing on startup
+    const isSyncing = this.$store.setSyncCallbacks(() => {
+      // Turn on the sync dialog if syncing starts
+      this.syncDialogVisible = true;
+    }, () => {
+      // Turn off the sync dialog when the syncing is finished
+      this.syncDialogVisible = false;
+    });
+    if (isSyncing) {
+      this.syncDialogVisible = true;
+    }
   },
 };
 

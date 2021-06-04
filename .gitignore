@@ -192,6 +192,7 @@ build/Release
 client/node_modules/
 jspm_packages/
 client/generated
+server/generated
 
 # TypeScript v1 declaration files
 typings/

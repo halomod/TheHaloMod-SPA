@@ -9,8 +9,14 @@ import re
 import codecs
 import pickle
 import json
+from os import path, mkdir
+import threading
 
 logger = logging.getLogger(__name__)
+
+# Generate a semaphore to only allow model creation one at a time across
+# requests
+modelCreationSem = threading.Semaphore()
 
 
 def get_model_names():
@@ -63,3 +69,35 @@ def deserialize_model(serialized_model):
 def load_json(file_location):
     with open(file_location) as json_file:
         return json.load(json_file)
+
+
+def get_initial_model() -> TracerHaloModel:
+    """Gets the initial high-resolution model for the application to make
+    copies off of for new models.
+
+    This makes subsequent model creation much faster.
+    """
+    # Intiialize the initial model variable
+    initial_model = None
+
+    # Check if the high-definition model has already been created previously
+    file_directory = './generated/'
+    file_name = 'high_def_model.pkl'
+    high_def_file_path = file_directory + file_name
+    if path.exists(high_def_file_path):
+        print('High definition model already exists, loading from file.')
+        with open(high_def_file_path, 'rb') as high_def_file:
+            initial_model = pickle.load(high_def_file)
+    else:
+        print('Beginning initial model creation. This might take a bit...')
+        initial_model = TracerHaloModel(rmax=150, rnum=200, transfer_params={
+                                        "kmax": 1e3, 'extrapolate_with_eh': True})
+        print('Done creating the high resolution initial model. Now saving' +
+              ' the model to ' + high_def_file_path + ' for later use.')
+
+        mkdir(file_directory)
+        with open(high_def_file_path, 'xb') as high_def_file:
+            pickle.dump(initial_model, high_def_file, pickle.HIGHEST_PROTOCOL)
+        print('Done saving the high resolution model to file.')
+
+    return initial_model
