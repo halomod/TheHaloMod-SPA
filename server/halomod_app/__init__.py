@@ -38,9 +38,6 @@ def create_app(test_config=None):
     if this_env == "development":
         app.debug = True
 
-    # TODO: Make it so that the high res model is saved as a file and pulled
-    # back on restart if it is there.
-
     # add sentry sdk
     sentry_sdk.init(
         dsn="https://27537774b9d949b7ab5dcbe3ba4496c9@o516709.ingest.sentry.io/5624184",
