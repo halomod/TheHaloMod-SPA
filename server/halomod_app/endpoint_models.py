@@ -142,8 +142,6 @@ def create():
 
     modelCreationSem.release()
 
-    print('it got here 2')
-
     if num_models < len(models):
         session["models"] = pickle.dumps(models)  # writes updated model dict to session
     else:
