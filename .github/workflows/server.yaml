@@ -47,10 +47,10 @@ jobs:
         # Makes the hashing depend on changes to requirements.txt
         key: ${{ hashFiles('server/requirements.txt') }}v2
     
-    - name: Set up Python 3.8
+    - name: Set up Python 3.9.5
       uses: actions/setup-python@v2
       with:
-        python-version: 3.8.8
+        python-version: 3.9.5
 
     - name: Install Dependencies
       run: |

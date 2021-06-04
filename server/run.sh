@@ -25,9 +25,9 @@ do
       flask run;;
     "--generate-constants" )
       echo "Generating constants from run.sh with generate_constants.py..."
-      python3 -m generate_constants.py;;
+      python3 -m generate_constants;;
     "--generate-version-file" )
       echo "Generating version file from run.sh with generate_version_file.py..."
-      python3 -m generate_version_file.py;;
+      python3 -m generate_version_file;;
   esac
 done
