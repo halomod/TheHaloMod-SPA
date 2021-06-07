@@ -9,6 +9,7 @@
             :value="localName"
             v-model="localName"/>
         </md-field>
+        <md-tooltip v-if="!editing">Click or tap to edit model name</md-tooltip>
       </div>
       <md-icon v-if="invalidName" class="md-accent">warning
         <md-tooltip :md-active.sync="invalidName">Name is already in use</md-tooltip>
