@@ -2,7 +2,7 @@
   <div>
     <md-list-item>
       <div class="md-list-item-text">
-        <md-field class="renameField">
+        <md-field :class="`renameField ${validationClass}`">
           <md-input
             @mousedown="(e) => blocked && !editing ? e.preventDefault() : null"
             @focus.native="editMode"
@@ -10,6 +10,9 @@
             v-model="localName"/>
         </md-field>
       </div>
+      <md-icon v-if="invalidName" class="md-accent">warning
+        <md-tooltip :md-active.sync="invalidName">Name is already in use</md-tooltip>
+      </md-icon>
 
       <div v-if="editing">
         <md-button

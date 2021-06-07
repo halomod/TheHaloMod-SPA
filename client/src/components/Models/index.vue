@@ -14,10 +14,6 @@
           </div>
         </div>
         <div class="md-toolbar-section-end">
-          <!-- At this moment, restarting causes some inconsistencies between
-          the state held on the server and the state in the browser.
-          <md-button @click="restart" class="md-accent">Restart</md-button>
-          -->
             <md-button @click="create" class="md-icon-button">
               <md-icon>add</md-icon>
               <md-tooltip>New Model</md-tooltip>
@@ -156,7 +152,6 @@ export default {
   width: 100%;
   margin-bottom: 16px;
   margin-top: 16px;
-  padding-top: 32px;
   height: '';
 }
 .tooltip {
