@@ -339,6 +339,9 @@ dist
 # TODO: where does this rule come from?
 docs/_book
 
+# For local testing
+client/vue.config.js
+
 # TODO: where does this rule come from?
 test/
 
