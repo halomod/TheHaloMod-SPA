@@ -10,15 +10,16 @@
   <Forms
     :initialFormState="initialFormState"
     :contextPrimary="contextPrimary"
-    :contextSecondary="contextSecondary"
+    :modelName="name"
     @onChange="(data) => currentFormState = data" v-if="initialFormState"
     @is-valid="isValid"
-    @activate-save="activateSaveDialog"/>
+    @activate-save="activateSaveDialog"
+    @name-changed="updateName"/>
   <div id="float">
     <md-button @click="showCancelDialog = true" class="md-raised">Cancel</md-button>
     <div style="display: inline-block">
       <md-button :disabled="!valid"  @click="activateSaveDialog" class="md-raised md-primary">
-        {{saveButton}}
+        {{saveButton}} (Enter)
       </md-button>
       <md-tooltip v-if="!valid" md-direction="top">
         <span class="md-body-1">
@@ -28,6 +29,8 @@
     </div>
   </div>
   <div v-if="!loading">
+
+    <!-- Confirm Edits Dialog -->
     <md-dialog :md-active.sync="showSaveDialog" v-if="edit" @keyup.enter="save">
       <md-dialog-title>Confirm Edits</md-dialog-title>
       <md-dialog-content>
@@ -38,7 +41,9 @@
         <md-button @click="showSaveDialog = false">Cancel</md-button>
       </md-dialog-actions>
     </md-dialog>
-    <md-dialog :md-active.sync="showSaveDialog" v-else  @keyup.enter="save">
+
+    <!-- Confirm New Model Dialog -->
+    <md-dialog :md-active.sync="showSaveDialog" v-else @keyup.enter="save">
       <md-dialog-title>Save Model</md-dialog-title>
       <md-dialog-content>
         <md-field :class="validationClass">
@@ -52,7 +57,10 @@
         <md-button @click="showSaveDialog = false">Cancel</md-button>
       </md-dialog-actions>
     </md-dialog>
+
   </div>
+
+  <!-- Loading Dialog -->
   <md-dialog v-else
     :md-active.sync="showSaveDialog"
     :md-close-on-esc="false"
@@ -60,6 +68,8 @@
     <md-dialog-title>{{loadingTitle}}</md-dialog-title>
     <md-dialog-content><md-progress-bar md-mode="indeterminate"/></md-dialog-content>
   </md-dialog>
+
+  <!-- Cancel Confirmation Dialog -->
   <md-dialog :md-active.sync="showCancelDialog">
     <md-dialog-title>{{cancelTitle}}</md-dialog-title>
     <md-dialog-content>
@@ -70,6 +80,7 @@
       <md-button @click="showCancelDialog = false">Cancel</md-button>
     </md-dialog-actions>
   </md-dialog>
+
 </div>
 </template>
 
@@ -112,7 +123,6 @@ export default {
       cancelTitle: 'Discard Model',
       loadingTitle: 'Creating your model...',
       contextPrimary: 'Create',
-      contextSecondary: 'New Model',
       valid: true,
       READ_ONLY: this.$store.state,
       showAlert: false,
@@ -129,7 +139,6 @@ export default {
       this.cancelTitle = 'Discard Edits';
       this.loadingTitle = 'Updating your Model';
       this.contextPrimary = 'Edit';
-      this.contextSecondary = this.name;
     } else {
       this.edit = false;
       this.name = null;
@@ -138,7 +147,6 @@ export default {
       this.cancelTitle = 'Discard Model';
       this.loadingTitle = 'Creating your model...';
       this.contextPrimary = 'Create';
-      this.contextSecondary = 'New Model';
       this.initialFormState = DEFAULT_FORM_STATE;
     }
     this.currentFormState = clonedeep(this.initialFormState);
@@ -198,8 +206,17 @@ export default {
       this.valid = valid;
       this.$forceUpdate();
     },
-    activateSaveDialog() {
+    /**
+     * Activates the save dialog or just saves if the model name is already
+     * correct. This depends on the user calling this function to provide
+     * a valid name as a string or some other data type if it is not valid.
+     */
+    async activateSaveDialog(newModelName) {
       if (!this.showSaveDialog && this.valid) {
+        if (typeof newModelName === 'string') {
+          // If the name was supplied in the form and is valid
+          this.name = newModelName;
+        }
         this.showSaveDialog = true;
         if (!this.edit) {
           setTimeout(() => { this.$refs.saveInput.$el.focus(); }, 300);
