@@ -13,8 +13,7 @@
     :modelName="name"
     @onChange="(data) => currentFormState = data" v-if="initialFormState"
     @is-valid="isValid"
-    @activate-save="activateSaveDialog"
-    @name-changed="updateName"/>
+    @activate-save="activateSaveDialog"/>
   <div id="float">
     <md-button @click="showCancelDialog = true" class="md-raised">Cancel</md-button>
     <div style="display: inline-block">
@@ -187,6 +186,12 @@ export default {
     async save() {
       if (this.edit) {
         this.loading = true;
+
+        // Check to see if the name was changed
+        if (this.name !== this.$route.params.id) {
+          await this.$store.renameModel(this.$route.params.id, this.name);
+        }
+
         await this.$store.updateModel(this.name, this.currentFormState);
       } else {
         if (this.invalidName) return;
