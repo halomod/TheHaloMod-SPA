@@ -34,6 +34,19 @@ jobs:
           ${{ runner.os }}-build-
           ${{ runner.os }}-
 
+    # Set up gfortran for camb
+    - name: Setup gfortran
+      run: |
+        sudo apt-get install gfortran-8
+        mkdir -p gfortran-symlinks
+        ln -s /usr/bin/gfortran-8 gfortran-symlinks/gfortran
+        export PATH=$PWD/gfortran-symlinks:$PATH
+
+    - name: Set up Python 3.9.5
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.9.5
+
     - name: Python Caching
       uses: actions/cache@v2
       with:
@@ -49,18 +62,7 @@ jobs:
     - name: Install dependencies
       run: cd client && npm install
     
-    # Set up gfortran for camb
-    - name: Setup gfortran
-      run: |
-        sudo apt-get install gfortran-8
-        mkdir -p gfortran-symlinks
-        ln -s /usr/bin/gfortran-8 gfortran-symlinks/gfortran
-        export PATH=$PWD/gfortran-symlinks:$PATH
-
-    - name: Set up Python 3.9.5
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.9.5
+    
 
     - name: Generate constants    
       run: sh generate_client_files.sh
