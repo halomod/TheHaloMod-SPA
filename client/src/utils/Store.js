@@ -260,8 +260,8 @@ export default class Store {
   /**
    * Updates a model.
    *
-   * @param {object} model the updated model object
    * @param {string} name the name of the model to update
+   * @param {object} model the updated model object
    */
   updateModel = async (name, model) => {
     try {

@@ -253,7 +253,6 @@ export default {
         let parameterIndex = 0;
         while (!visibleParameterFound && parameterIndex < parameterKeys.length) {
           if (this.isVisible(parameterKeys[parameterIndex])) {
-            debug('Parameter ', parameterKeys[parameterIndex], ' is visible');
             visibleParameterFound = true;
           }
           parameterIndex += 1;
@@ -288,7 +287,6 @@ export default {
      * Used to find the model name of the currently selected model.
      */
     getKeyByValue(object, value) {
-      debug('getKeyByValue ran');
       return Object.keys(object).find((key) => object[key] === value);
     },
   },

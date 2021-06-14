@@ -34,22 +34,21 @@ export default {
   data() {
     return {
       current: this.init,
+      isValid: true,
     };
   },
   computed: {
     isBetween() { return between(this.current, this.min, this.max); },
     isNumeric() { return numeric(this.current); },
     isDefined() { return defined(this.current); },
-    isValid() {
-      const valid = this.isDefined && this.isNumeric && this.isBetween;
-      this.$emit('is-valid', valid);
-      return valid;
-    },
     validationClass() { return { 'md-invalid': !this.isValid }; },
   },
   watch: {
     current() {
-      if (this.isValid) {
+      const valid = this.isDefined && this.isNumeric && this.isBetween;
+      this.$emit('is-valid', valid);
+      this.isValid = valid;
+      if (valid) {
         this.$emit('input', Number(this.current));
       }
     },
