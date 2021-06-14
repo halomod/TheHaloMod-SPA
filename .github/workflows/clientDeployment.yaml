@@ -39,7 +39,7 @@ jobs:
       with:
         path: ~/.cache/pip
         # Makes the hashing depend on changes to requirements.txt and python version
-        key: ${{ hashFiles('server/requirements.txt') }} py3.9.5
+        key: ${{ runner.os }}-${{ hashFiles('server/requirements.txt') }}-py3.9.5
 
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
