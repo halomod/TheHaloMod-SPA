@@ -12,6 +12,7 @@ on:
     # changed for everyone.
     branches:
       - main
+  workflow_dispatch:
       
 jobs:
   build:
