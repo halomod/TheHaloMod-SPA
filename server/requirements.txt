@@ -1,5 +1,5 @@
 astroid==2.4.2
-astropy==4.1
+astropy==5.0.1
 attrs==20.2.0
 autopep8==1.5.5
 blinker==1.4
@@ -52,7 +52,7 @@ premailer==3.8.0
 py==1.9.0
 pycodestyle==2.6.0
 pycparser==2.20
-pyerfa==1.7.2
+pyerfa==2.0.0.1
 pyflakes==2.2.0
 Pygments==2.7.1
 pylint==2.6.0
@@ -61,6 +61,7 @@ pyparsing==2.4.7
 pytest==6.1.1
 pytest-mock==3.3.1
 python-dateutil==2.8.1
+PyYAML==6.0
 redis==3.5.3
 requests==2.25.1
 rich==8.0.0
