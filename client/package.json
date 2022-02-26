@@ -42,8 +42,8 @@
     "vue-material": "A material design UI and CSS framework for Vue. It makes things look good 😁."
   },
   "devDependencies": {
-    "@babel/plugin-proposal-optional-chaining": "^7.12.7",
     "@babel/core": "^7.0.0",
+    "@babel/plugin-proposal-optional-chaining": "^7.12.7",
     "@types/d3": "^6.3.0",
     "@vue/cli-plugin-babel": "^4.5.9",
     "@vue/cli-plugin-eslint": "^4.5.9",
@@ -53,15 +53,15 @@
     "@vue/eslint-config-airbnb": "^5.0.2",
     "@vue/test-utils": "^1.1.1",
     "babel-eslint": "^10.1.0",
+    "core-js-bundle": "^3.6.4",
     "eslint": "^6.7.2",
     "eslint-plugin-import": "^2.20.2",
     "eslint-plugin-vue": "^6.2.2",
     "fake-indexeddb": "^3.1.2",
-    "core-js-bundle": "^3.6.4",
-    "regenerator-runtime": "^0.13.3",
     "lint-staged": "^9.5.0",
     "miragejs": "^0.1.41",
     "node-sass": "^6.0.0",
+    "regenerator-runtime": "^0.13.3",
     "sass-loader": "^10.1.1",
     "vue-jest": "^3.0.7",
     "vue-template-compiler": "^2.6.11"
