@@ -20,6 +20,9 @@ services:
       - FLASK_APP=halomod_app
       # Set so that python will output print statements when flask is running
       - PYTHONUNBUFFERED=False
+      # Set so that the HTTPS cookies will go through on the remote server. 
+      # The behavior is defined in "config.py"
+      - USE_HTTPS_SESSION=True
 
   redis:
     image: "redis"
