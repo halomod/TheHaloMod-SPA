@@ -32,6 +32,7 @@ jobs:
         username: ${{ secrets.USERNAME }}
         key: ${{ secrets.SERVERKEY }}
         port: ${{ secrets.PORT }}
+        command_timeout: 20m
         script:  |
           export FLASK_RUN_HOST=0.0.0.0
           export FLASK_RUN_PORT=8010
@@ -42,7 +43,7 @@ jobs:
           # Set so that if docker-compose takes a while, it will not cut out early
           # This is the seconds value. Default is 60.
           export COMPOSE_HTTP_TIMEOUT=200
-          
+
           cd ./TheHaloMod-SPA/server
           docker-compose down
           cd ../..
