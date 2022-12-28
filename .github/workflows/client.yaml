@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [14.x]
+        node-version: [16.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
@@ -31,10 +31,10 @@ jobs:
           ${{ runner.os }}-build-e
           ${{ runner.os }}-
 
-    - name: Set up Python 3.9.5
-      uses: actions/setup-python@v2
+    - name: Set up Python 3.9.16
+      uses: actions/setup-python@v4
       with:
-        python-version: 3.9.5
+        python-version: 3.9.16
   
     - name: Python Caching
       uses: actions/cache@v2
@@ -44,16 +44,16 @@ jobs:
         key: ${{ runner.os }}${{ env.pythonLocation }}-${{ hashFiles('server/requirements.txt') }}-py3.9.5
 
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
+      uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
     
     # gfortran setup for camb
     - name: Setup gfortran
       run: |
-        sudo apt-get install gfortran-8
+        sudo apt-get install gfortran-12
         mkdir -p gfortran-symlinks
-        ln -s /usr/bin/gfortran-8 gfortran-symlinks/gfortran
+        ln -s /usr/bin/gfortran-12 gfortran-symlinks/gfortran
         export PATH=$PWD/gfortran-symlinks:$PATH
 
     - name: Generate constants    

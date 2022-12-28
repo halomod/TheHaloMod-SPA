@@ -35,15 +35,15 @@ jobs:
     - uses: actions/checkout@v2
     - name: Setup gfortran
       run: |
-        sudo apt-get install gfortran-8
+        sudo apt-get install gfortran-12
         mkdir -p gfortran-symlinks
-        ln -s /usr/bin/gfortran-8 gfortran-symlinks/gfortran
+        ln -s /usr/bin/gfortran-12 gfortran-symlinks/gfortran
         export PATH=$PWD/gfortran-symlinks:$PATH
 
-    - name: Set up Python 3.9.5
-      uses: actions/setup-python@v2
+    - name: Set up Python 3.9.16
+      uses: actions/setup-python@v4
       with:
-        python-version: 3.9.5
+        python-version: 3.9.16
 
     - name: Python Caching
       uses: actions/cache@v2
