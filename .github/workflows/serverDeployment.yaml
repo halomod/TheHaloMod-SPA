@@ -58,4 +58,4 @@ jobs:
           git status
           cd ./server
           ls
-          docker-compose up --build --remove-orphans -d
+          docker compose up --build --remove-orphans -d
