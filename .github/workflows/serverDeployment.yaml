@@ -45,7 +45,7 @@ jobs:
           export COMPOSE_HTTP_TIMEOUT=200
 
           cd ./TheHaloMod-SPA/server
-          docker-compose down
+          docker compose down
           cd ../..
           rm -r ./TheHaloMod-SPA
           git clone https://github.com/halomod/TheHaloMod-SPA
