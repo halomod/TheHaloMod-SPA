@@ -98,9 +98,6 @@ export default {
       localNameValid: true,
     };
   },
-  updated() {
-    console.log('form got updated');
-  },
   created() {
     document.addEventListener('keyup', this.enterListener);
   },
@@ -117,20 +114,26 @@ export default {
   watch: {
     '$store.state.hmfcalcMode': {
       handler(newmode) {
-        console.log('In the mode handler for the form...');
         // this.$nextTick(() => {
         if (newmode) {
-          console.log('doing the filter');
-          this.forms = {};
+          const forms = {};
           Object.values(FORMS).forEach((key) => {
-            console.log('key', key);
             if (key.hmfcalc) {
-              this.forms[key.id] = key;
+              forms[key.id] = clonedeep(key);
+              forms[key.id].valid = this.forms[key.id].valid;
             }
           });
-          console.log('finished the filter, got', this.forms, 'from', FORMS);
+          this.forms = forms;
         } else {
-          this.forms = clonedeep(FORMS);
+          const forms = clonedeep(FORMS);
+          Object.values(forms).forEach((key) => {
+            if (key.id in this.forms) {
+              forms[key.id].valid = this.forms[key.id].valid;
+            } else {
+              forms[key.id].valid = true;
+            }
+          });
+          this.forms = forms;
         }
       //  });
       },
