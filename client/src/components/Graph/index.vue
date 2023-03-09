@@ -87,6 +87,7 @@ debug.enabled = false;
 export default {
   name: 'Graph',
   data() {
+    console.log('re-running data!');
     return {
       /**
        * Holds a reference to the state of the store for the application, so
@@ -102,6 +103,10 @@ export default {
        * changes are made.
        */
       localPlotState: this.$store.state.plot,
+      /**
+       * Store the HMFcalc mode so that we can update the plot when it changes.
+       */
+      hmfcalcMode: this.$store.state.hmfcalcMode,
       /**
        * @type {string[] | null}
        */
@@ -138,25 +143,20 @@ export default {
      * Go through each key, value pair in PLOT_AXIS_OPTIONS and add all the
      * x values as an object with their associated axis section ("m", "r", etc.)
      */
+    console.log('In created!');
     Object.entries(PLOT_AXIS_OPTIONS).forEach(([key, value]) => {
+      console.log('In created(): key: ', key, ' value: ', value);
       value.x.forEach((item) => {
-        this.xAxisChoices[item] = key;
+        console.log('In created(): item: ', item, ' key: ', key, ' hmfcalc: ', PLOT_AXIS_METADATA[item].hmfcalc, ' hmfcalcMode: ', this.$store.state.hmfcalcMode);
+        if (PLOT_AXIS_METADATA[item].hmfcalc || !this.$store.state.hmfcalcMode) {
+          this.xAxisChoices[item] = key;
+        }
       });
     });
 
-    // If xAxisChoice has not been chosen, choose the one specified by issue
-    // #110, power_auto_tracer as the y and "k_hm" as the x.
-    if (this.xAxisChoice === '' || this.xAxisChoice === undefined) {
-      const newXAxisChoice = 'k_hm';
-      const newYAxisChoice = 'power_auto_tracer';
-      this.updateXAxisChoice(newXAxisChoice, '');
-      await this.$nextTick();
-      this.yAxisChoice = newYAxisChoice;
-    }
+    console.log('In created(): got xAxisChoices: ', this.xAxisChoices);
 
-    if (this.yAxisChoice !== null) {
-      this.updateYAxisChoices(this.xAxisChoice);
-    }
+    this.setDefaultXaxisChoice();
   },
   watch: {
     localPlotState: {
@@ -170,7 +170,26 @@ export default {
         }
       },
     },
+    '$store.state.hmfcalcMode': {
+      handler(newMode, oldMode) {
+        console.log('I am in the hmfcalcMode watcher handler');
+        if (newMode !== oldMode) {
+          this.xAxisChoices = {};
+          Object.entries(PLOT_AXIS_OPTIONS).forEach(([key, value]) => {
+            value.x.forEach((item) => {
+              if (PLOT_AXIS_METADATA[item].hmfcalc || !newMode) {
+                this.xAxisChoices[item] = key;
+              }
+            });
+          });
+          console.log('Reset xAxisChoices to ', this.xAxisChoices);
+          this.setDefaultXaxisChoice();
+          this.updateYAxisChoices(this.xAxisChoice);
+        }
+      },
+    },
     xAxisChoice(newXAxisChoice, oldXAxisChoice) {
+      console.log('hmfcalcMode: ', this.hmfcalcMode);
       if (newXAxisChoice !== oldXAxisChoice) {
         this.updateXAxisChoice(newXAxisChoice, oldXAxisChoice);
       }
@@ -197,6 +216,32 @@ export default {
      * of updating the x axis choice so it can be called in a watcher and in
      * the initialization logic.
      */
+    async setDefaultXaxisChoice() {
+      // If xAxisChoice is set but doesn't exist in the choices, which can happen
+      // when we update the choices due to HMFcalc mode, then undefine it so we can
+      // set it to default.
+      console.log('setting default x-axis choice...');
+      if (!(this.xAxisChoice in this.xAxisChoices)) {
+        this.xAxisChoice = '';
+      }
+
+      if (this.xAxisChoice === '' || this.xAxisChoice === undefined) {
+        let newXAxisChoice = 'm';
+        let newYAxisChoice = 'dndlnm';
+        if (!this.hmfcalcMode) {
+          newXAxisChoice = 'k_hm';
+          newYAxisChoice = 'power_auto_tracer';
+        }
+        this.updateXAxisChoice(newXAxisChoice, '');
+        await this.$nextTick();
+        this.yAxisChoice = newYAxisChoice;
+        this.xAxisChoice = newXAxisChoice;
+      }
+
+      if (this.yAxisChoice !== null) {
+        this.updateYAxisChoices(this.xAxisChoice);
+      }
+    },
     async updateXAxisChoice(newXAxisChoice, oldXAxisChoice) {
       /*
        * If the x axis is in a different axis section then both the x and the
@@ -205,7 +250,12 @@ export default {
       const isDifferentAxisSection = this.xAxisChoices[newXAxisChoice]
         !== this.xAxisChoices[oldXAxisChoice];
       if (isDifferentAxisSection) {
-        const newYAxisChoices = PLOT_AXIS_OPTIONS[this.xAxisChoices[newXAxisChoice]].y;
+        const newYAxisChoices = [];
+        PLOT_AXIS_OPTIONS[this.xAxisChoices[newXAxisChoice]].y.forEach((choice) => {
+          if (PLOT_AXIS_METADATA[choice].hmfcalc || !this.$store.state.hmfcalcMode) {
+            newYAxisChoices.push(choice);
+          }
+        });
         let newYAxisChoice = this.yAxisChoice;
         if (!newYAxisChoices.includes(this.yAxisChoice)) {
           [newYAxisChoice] = newYAxisChoices;
@@ -255,10 +305,15 @@ export default {
      * @param {string} xAxisChoice the new xAxisChoice
      */
     async updateYAxisChoices(xAxisChoice) {
-      if (xAxisChoice) {
-        const newYAxisChoices = PLOT_AXIS_OPTIONS[this.xAxisChoices[xAxisChoice]].y;
-        this.yAxisChoices = newYAxisChoices;
-      }
+      const newYAxisChoices = [];
+      console.log('About to Reset y-axis choices. Begin with: ', this.yAxisChoices);
+      PLOT_AXIS_OPTIONS[this.xAxisChoices[xAxisChoice]].y.forEach((choice) => {
+        if (PLOT_AXIS_METADATA[choice].hmfcalc === true || !this.$store.state.hmfcalcMode) {
+          console.log('Adding choice: ', choice, ' to y-axis choices, because hmfcalc is ', this.$store.state.hmfcalcMode, ' or metadata.hmfcalc is ', PLOT_AXIS_METADATA[choice].hmfcalc);
+          newYAxisChoices.push(choice);
+        }
+      });
+      this.yAxisChoices = newYAxisChoices;
     },
     /**
      * Determines if plot data exists.

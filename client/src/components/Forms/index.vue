@@ -98,6 +98,9 @@ export default {
       localNameValid: true,
     };
   },
+  updated() {
+    console.log('form got updated');
+  },
   created() {
     document.addEventListener('keyup', this.enterListener);
   },
@@ -112,6 +115,26 @@ export default {
     document.removeEventListener('keyup', this.enterListener);
   },
   watch: {
+    '$store.state.hmfcalcMode': {
+      handler(newmode) {
+        console.log('In the mode handler for the form...');
+        // this.$nextTick(() => {
+        if (newmode) {
+          console.log('doing the filter');
+          this.forms = {};
+          Object.values(FORMS).forEach((key) => {
+            console.log('key', key);
+            if (key.hmfcalc) {
+              this.forms[key.id] = key;
+            }
+          });
+          console.log('finished the filter, got', this.forms, 'from', FORMS);
+        } else {
+          this.forms = clonedeep(FORMS);
+        }
+      //  });
+      },
+    },
     /**
      * If state is propogated up, then pass it along to this components parent.
      */
@@ -160,6 +183,7 @@ export default {
      * seen by setting up a debugging statement in a lifecycle hook for a
      * re-render in the generic form.
      */
+
     setCurrentlyVisible(id, title) {
       this.currentlyVisible = title;
       window.history.replaceState({}, '', `#${id}`);
