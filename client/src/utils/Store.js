@@ -245,6 +245,9 @@ export default class Store {
         params: this.flatten(model),
         label: name,
         timeout: 3000,
+        headers: {
+          'Access-Control-Allow-Origin': '*'
+        }
       });
       this.state.error = false;
       await Promise.all([

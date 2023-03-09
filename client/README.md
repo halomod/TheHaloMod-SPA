@@ -4,13 +4,15 @@
 
 ## Table of Contents
 
-- [Usage](#usage)
-  - [How to run the client locally](#how-to-run-the-client-locally)
-  - [How to build and run the production version of the client locally](#how-to-build-and-run-the-production-version-of-the-client-locally)
-  - [Development commands](#development-commands)
-- [Architecture](#architecture)
-  - [Styling based on theme](#styling-based-on-theme)
-- [Analytics](#analytics)
+- [TheHaloMod-SPA Client](#thehalomod-spa-client)
+  - [Table of Contents](#table-of-contents)
+  - [Usage](#usage)
+    - [How to run the client locally](#how-to-run-the-client-locally)
+    - [How to build and run the production version of the client locally](#how-to-build-and-run-the-production-version-of-the-client-locally)
+    - [Development commands](#development-commands)
+  - [Architecture](#architecture)
+    - [Styling based on theme](#styling-based-on-theme)
+  - [Analytics](#analytics)
 
 ## Usage
 
@@ -61,7 +63,14 @@ Styling based on the theme mode (dark / light) is done in [`client/src/views/the
 
 ## Analytics
 
-Analytics is done by using [plausible.io](https://plausible.io/). To start the analytics server up from scratch, the server must already have docker installed, as well as git. The assumption for the following instructions are that the server is running a Linux distro of some kind and has the `docker-compose` command available:
+> **NOTE**: The setup here is already done on the `galileo` server, so this is only needed 
+> if the analytics server needs to be started up from scratch on a new server. You may
+> just need to run the `docke compose up -d` whenever the docker server goes down.
+
+Analytics is done by using [plausible.io](https://plausible.io/). To start the analytics 
+server up from scratch, the server must already have docker installed, as well as git. 
+The assumption for the following instructions are that the server is running a Linux 
+distro of some kind and has the `docker-compose` command available:
 
 1. Follow the instructions [here](https://plausible.io/docs/self-hosting#up-and-running) up to, but not including step 3: "Start the Server"
 2. Modify the `plausible-conf.env` file so that it has the extra value on a new line: `PORT=8020`. This needs to be done because there is already a server running that has port 8000 taken, which is the default for plausible. 
