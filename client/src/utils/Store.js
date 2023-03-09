@@ -379,7 +379,7 @@ export default class Store {
           scope.setTag('ErrorCode', 'Null');
           scope.setLevel('fatal');
         } else {
-          const msg = `An unkown error occured tring to reach the server: ${error.code}`;
+          const msg = `An unkown error occured trying to reach the server: ${error.code}`;
           this.state.errorMessage = msg;
         }
         this.state.errorType = 'Server';

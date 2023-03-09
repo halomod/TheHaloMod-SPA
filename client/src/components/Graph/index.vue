@@ -142,14 +142,7 @@ export default {
      * Go through each key, value pair in PLOT_AXIS_OPTIONS and add all the
      * x values as an object with their associated axis section ("m", "r", etc.)
      */
-    Object.entries(PLOT_AXIS_OPTIONS).forEach(([key, value]) => {
-      value.x.forEach((item) => {
-        if (PLOT_AXIS_METADATA[item].hmfcalc || !this.$store.state.hmfcalcMode) {
-          this.xAxisChoices[item] = key;
-        }
-      });
-    });
-
+    this.setXaxisChoices(this.hmfcalcMode);
     this.setDefaultXaxisChoice();
   },
   watch: {
@@ -167,14 +160,7 @@ export default {
     '$store.state.hmfcalcMode': {
       handler(newMode, oldMode) {
         if (newMode !== oldMode) {
-          this.xAxisChoices = {};
-          Object.entries(PLOT_AXIS_OPTIONS).forEach(([key, value]) => {
-            value.x.forEach((item) => {
-              if (PLOT_AXIS_METADATA[item].hmfcalc || !newMode) {
-                this.xAxisChoices[item] = key;
-              }
-            });
-          });
+          this.setXaxisChoices(newMode);
           this.setDefaultXaxisChoice();
           this.updateYAxisChoices(this.xAxisChoice);
         }
@@ -207,6 +193,16 @@ export default {
      * of updating the x axis choice so it can be called in a watcher and in
      * the initialization logic.
      */
+    setXaxisChoices(hmfcalcMode) {
+      this.xAxisChoices = {};
+      Object.entries(PLOT_AXIS_OPTIONS).forEach(([key, value]) => {
+        value.x.forEach((item) => {
+          if (PLOT_AXIS_METADATA[item].hmfcalc || !hmfcalcMode) {
+            this.xAxisChoices[item] = key;
+          }
+        });
+      });
+    },
     async setDefaultXaxisChoice() {
       // If xAxisChoice is set but doesn't exist in the choices, which can happen
       // when we update the choices due to HMFcalc mode, then undefine it so we can
@@ -296,6 +292,11 @@ export default {
      */
     async updateYAxisChoices(xAxisChoice) {
       const newYAxisChoices = [];
+      if (this.xAxisChoices === undefined) {
+        // This probably should not happen, but just in case.
+        debug('xAxisChoices is undefined. Setting it to default.');
+        this.setXaxisChoices(this.hmfcalcMode);
+      }
       PLOT_AXIS_OPTIONS[this.xAxisChoices[xAxisChoice]].y.forEach((choice) => {
         if (PLOT_AXIS_METADATA[choice].hmfcalc === true || !this.$store.state.hmfcalcMode) {
           newYAxisChoices.push(choice);
