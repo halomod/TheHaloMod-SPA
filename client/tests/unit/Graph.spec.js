@@ -1,6 +1,6 @@
 import { shallowMount, createLocalVue } from '@vue/test-utils';
-import Graph from '@/components/Graph';
 import Vue from 'vue';
+import Graph from '@/components/Graph';
 import Store from '@/utils/Store.js';
 import { DEFAULT_FORM_STATE } from '@/constants/backend_constants.js';
 import makeServer from '../mockServer';

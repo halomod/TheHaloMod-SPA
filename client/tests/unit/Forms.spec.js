@@ -1,9 +1,9 @@
 import { shallowMount, createLocalVue } from '@vue/test-utils';
+import VueMaterial from 'vue-material';
+import VueObserveVisibility from 'vue-observe-visibility';
 import Forms from '@/components/Forms';
 import GenericForm from '@/components/Forms/GenericForm';
 import FORMS from '@/constants/forms.js';
-import VueMaterial from 'vue-material';
-import VueObserveVisibility from 'vue-observe-visibility';
 import { DEFAULT_FORM_STATE } from '@/constants/backend_constants.js';
 
 // Setup a fake indexedDB because `window` does not exist while testing.

@@ -7,7 +7,7 @@
           <md-icon class="tooltip">
             help
             <md-tooltip md-direction="right"
-              >Download plot SVG, vector data, and parameter values for all
+            >Download plot SVG, vector data, and parameter values for all
               models</md-tooltip
             >
           </md-icon>
@@ -43,10 +43,10 @@
     >
       <md-dialog-title>{{ loadingTitle }}</md-dialog-title>
       <md-dialog-content
-        >
+      >
         {{loadingDescription}}
         <md-progress-bar md-mode="indeterminate"
-      /></md-dialog-content>
+        /></md-dialog-content>
     </md-dialog>
     <md-dialog
       v-if="serverDownloadDialogVisible"

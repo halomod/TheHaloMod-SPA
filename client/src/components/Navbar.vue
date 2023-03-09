@@ -1,44 +1,54 @@
 <template>
-    <md-toolbar class="md-primary" md-elevation="1">
-        <router-link to="/">
-          <md-button class="title-button">
-            <div class="combined-button">
-              <md-avatar>
-                <img class="logo" src="../assets/thm_logo.svg">
-              </md-avatar>
-              <h1 class="md-title">TheHaloMod</h1>
-            </div>
-          </md-button>
-        </router-link>
-
-        <div class="right-side">
-
-          <md-button
-            href="https://github.com/halomod/TheHaloMod-SPA/issues/new"
-            target="_blank"
-          >
-            <div class="combined-button">
-              <md-icon class="svg-icon" :md-src="require('../assets/github-icon.svg')" />
-              <span>Report Issue</span>
-            </div>
-          </md-button>
-          <router-link to="/acknowledge">
-            <md-button class="md-primary">Acknowledge</md-button>
-          </router-link>
-          <router-link to="/about">
-            <md-tooltip>Using:
-              hmf v{{hmfVersion}} &
-              halomod v{{halomodVersion}}
-            </md-tooltip>
-            <md-button class="md-primary">About</md-button>
-          </router-link>
-          <md-button class="md-icon-button" @click="switchTheme">
-            <md-tooltip>{{themeTooltipText}}</md-tooltip>
-            <md-icon>{{themeIconName}}</md-icon>
-          </md-button>
-
+  <md-toolbar class="md-primary" md-elevation="1">
+    <router-link to="/">
+      <md-button class="title-button">
+        <div class="combined-button">
+          <md-avatar>
+            <img class="logo" src="../assets/thm_logo.svg">
+          </md-avatar>
+          <h1 class="md-title">TheHaloMod</h1>
         </div>
-      </md-toolbar>
+      </md-button>
+    </router-link>
+
+    <div class="right-side">
+      <md-button class="md-raised md-accent">
+        <md-switch class='md-primary' v-model="usingHMFcalcMode" value=false @change="switchHMFcalcMode">
+          <span style='color:white'>HMFcalc Mode</span>
+        </md-switch>
+      </md-button>
+      
+      <!-- <div class="combined-button" @click="switchHMFcalcMode">
+          <md-icon>{{ HMFcalcModeIcon }}</md-icon>
+          <span>HMFcalc Mode</span>
+        </div> -->
+
+      <md-button
+        href="https://github.com/halomod/TheHaloMod-SPA/issues/new"
+        target="_blank"
+      >
+        <div class="combined-button">
+          <md-icon class="svg-icon" :md-src="require('../assets/github-icon.svg')" />
+          <span>Report Issue</span>
+        </div>
+      </md-button>
+      <router-link to="/acknowledge">
+        <md-button class="md-primary">Acknowledge</md-button>
+      </router-link>
+      <router-link to="/about">
+        <md-tooltip>Using:
+          hmf v{{hmfVersion}} &
+          halomod v{{halomodVersion}}
+        </md-tooltip>
+        <md-button class="md-primary">About</md-button>
+      </router-link>
+      <md-button class="md-icon-button" @click="switchTheme">
+        <md-tooltip>{{themeTooltipText}}</md-tooltip>
+        <md-icon>{{themeIconName}}</md-icon>
+      </md-button>
+
+    </div>
+  </md-toolbar>
 </template>
 
 <script>
@@ -53,6 +63,7 @@ export default {
   data() {
     return {
       currentTheme: this.$store.state.theme,
+      usingHMFcalcMode: false,
       hmfVersion: libraryVersions.hmf,
       halomodVersion: libraryVersions.halomod,
     };
@@ -67,7 +78,12 @@ export default {
         this.$store.setTheme(DEFAULT_THEME, this);
       }
     },
+    switchHMFcalcMode() {
+      console.log("DOING THIS!");
+      this.$store.setHMFcalcMode(this.usingHMFcalcMode);
+    },
   },
+
   computed: {
     themeIconName() {
       if (this.currentTheme === DARK_THEME) {

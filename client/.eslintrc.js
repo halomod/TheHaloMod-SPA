@@ -5,10 +5,10 @@ module.exports = {
   },
   extends: [
     'plugin:vue/essential',
-    '@vue/airbnb',
+    // '@vue/airbnb',
   ],
   parserOptions: {
-    parser: 'babel-eslint',
+    parser: '@babel/eslint-parser',
   },
   rules: {
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
@@ -30,6 +30,12 @@ module.exports = {
      */
     'no-underscore-dangle': [0],
     'no-irregular-whitespace': [0],
+    'vue/no-mutating-props': 'off',  // maybe turn on later?
+    'vuejs-accessibility/label-has-for': 'off',
+    'vuejs-accessibility/anchor-has-content': 'off',
+    'import/no-unresolved': 'off',
+    'vue/multi-word-component-names': 'off',
+    'vue/require-default-prop': 'off',
   },
   overrides: [
     {

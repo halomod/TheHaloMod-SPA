@@ -5,12 +5,12 @@
         <div class="md-toolbar-section-start">
           <h3 class="md-title">Plot</h3>
           <md-icon class="tooltip">
-              help
-              <md-tooltip md-direction="right"
-                >Interactive plots for all created models.
-                  X and Y axis are configurable.</md-tooltip
-              >
-            </md-icon>
+            help
+            <md-tooltip md-direction="right"
+            >Interactive plots for all created models.
+              X and Y axis are configurable.</md-tooltip
+            >
+          </md-icon>
         </div>
       </div>
       <div class="md-layout-item md-size-100 md-layout md-gutter">
@@ -71,14 +71,14 @@
     <Error
       v-if="STORE_STATE.graphError"
       :type="STORE_STATE.errorType"
-      :message="STORE_STATE.errorMessage"/>
+      :message="STORE_STATE.errorMessage" />
   </md-toolbar>
 </template>
 
 <script>
+import Debug from 'debug';
 import Error from '@/components/Error.vue';
 import { PLOT_AXIS_METADATA, PLOT_AXIS_OPTIONS } from '@/constants/PLOT.js';
-import Debug from 'debug';
 import Plot from './Plot.vue';
 
 const debug = Debug('Graph');
@@ -140,7 +140,9 @@ export default {
      */
     Object.entries(PLOT_AXIS_OPTIONS).forEach(([key, value]) => {
       value.x.forEach((item) => {
-        this.xAxisChoices[item] = key;
+        if(PLOT_AXIS_METADATA[item].hmfcalc == this.$state.hmfcalcMode){
+          this.xAxisChoices[item] = key;
+        }
       });
     });
 
@@ -167,6 +169,22 @@ export default {
         }
         if (newPlotState.logy !== this.logy) {
           this.logy = newPlotState.logy;
+        }
+      },
+    },
+    "$store.hmfcalcMode": {
+      deep: true,
+      handler(newmode) {
+        this.xAxisChoices = {};
+        Object.entries(PLOT_AXIS_OPTIONS).forEach(([key, value]) => {
+          value.x.forEach((item) => {
+            if(PLOT_AXIS_METADATA[item].hmfcalc == newHmfcalcMode){
+              this.xAxisChoices[item] = key;
+            }
+          });
+        });
+        if (this.xAxisChoice !== null) {
+          this.updateYAxisChoices(this.xAxisChoice);
         }
       },
     },
@@ -205,7 +223,12 @@ export default {
       const isDifferentAxisSection = this.xAxisChoices[newXAxisChoice]
         !== this.xAxisChoices[oldXAxisChoice];
       if (isDifferentAxisSection) {
-        const newYAxisChoices = PLOT_AXIS_OPTIONS[this.xAxisChoices[newXAxisChoice]].y;
+        const newYAxisChoices = [];
+        for (choice of PLOT_AXIS_OPTIONS[this.xAxisChoices[newXAxisChoice]].y){
+          if (PLOT_AXIS_METADATA[choice].hmfcalc == this.$store.state.hmfcalc) {
+            newYAxisChoices.push(choice);
+          }
+        };
         let newYAxisChoice = this.yAxisChoice;
         if (!newYAxisChoices.includes(this.yAxisChoice)) {
           [newYAxisChoice] = newYAxisChoices;
@@ -256,7 +279,12 @@ export default {
      */
     async updateYAxisChoices(xAxisChoice) {
       if (xAxisChoice) {
-        const newYAxisChoices = PLOT_AXIS_OPTIONS[this.xAxisChoices[xAxisChoice]].y;
+        const newYAxisChoices = [];
+        for (choice of PLOT_AXIS_OPTIONS[this.xAxisChoices[xAxisChoice]].y){
+          if (PLOT_AXIS_METADATA[choice].hmfcalc == this.$store.state.hmfcalcMode){
+            newYAxisChoices.push(choice);
+          }
+        };
         this.yAxisChoices = newYAxisChoices;
       }
     },

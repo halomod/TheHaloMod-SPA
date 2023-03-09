@@ -4,6 +4,8 @@
 
 ## Table of Contents
 
+- [TheHaloMod-SPA Server](#thehalomod-spa-server)
+  - [Table of Contents](#table-of-contents)
   - [Usage](#usage)
     - [How to start the server locally](#how-to-start-the-server-locally)
     - [Development commands](#development-commands)
@@ -18,18 +20,29 @@
 
 Before doing any of the commands below, make sure to install the Python packages first. That can be done like so:
 
-1. Make sure you are in the `server` directory in your shell of choice
-1. Run `. ./run.sh --install`. This will install all of the dependencies in [`requirements.txt`](requirements.txt) and enter into a [virtual environment](https://docs.python.org/3/tutorial/venv.html).
+1. Make sure you are in the `server` directory in your shell of choice.
+2. Run `. ./run.sh --install`. This will install all of the dependencies in 
+   [`requirements.txt`](requirements.txt) and enter into a 
+   [virtual environment](https://docs.python.org/3/tutorial/venv.html).
 
 ### How to start the server locally
 
-1. Open a second shell window (secondary to the shell that has a working directory of `server`. See the first step above.)
-1. In the second shell window, start up a [Redis DB](https://redis.io/) by running `redis-server`, which may need to be installed first. If this isn't installed yet, [see here on how to install it](https://redis.io/topics/quickstart).
-1. If you need to have the bug reporting feature on while running the server locally, then set the username and password for the gmail account to use to send emails. This can be done by running `export MAIL_USERNAME=someemail@gmail.com` and then `export MAIL_PASSWORD=yourPassword` in the same shell that will be running the server. In production, this is handled with Github Secrets and the server deployment.
-1. In the first shell window, run `. ./run.sh --dev`
-1. The server should now be located at `localhost:5000`
+1. Open a second shell window (secondary to the shell that has a working directory of 
+   `server`. See the first step above.)
+2. In the second shell window, start up a [Redis DB](https://redis.io/) by running 
+   `redis-server`, which may need to be installed first. If this isn't installed yet, 
+   [see here on how to install it](https://redis.io/topics/quickstart).
+3. If you need to have the bug reporting feature on while running the server locally, 
+   then set the username and password for the gmail account to use to send emails. This 
+   can be done by running `export MAIL_USERNAME=someemail@gmail.com` and then 
+   `export MAIL_PASSWORD=yourPassword` in the same shell that will be running the 
+   server. In production, this is handled with Github Secrets and the server deployment.
+4. In the first shell window, run `. ./run.sh --dev`
+5. The server should now be located at `localhost:5000`
 
-If an issue comes up where it says that the port is already used, check to see if redis is running in another terminal somewhere, or in a background service. By default redis runs as a service, so it might not be necessary to run it in another terminal if it is.
+If an issue comes up where it says that the port is already used, check to see if redis 
+is running in another terminal somewhere, or in a background service. By default redis 
+runs as a service, so it might not be necessary to run it in another terminal if it is.
 
 ### Development commands
 

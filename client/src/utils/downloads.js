@@ -1,11 +1,11 @@
 import axios from 'axios';
 import JSZip from 'jszip';
 import unzip from 'lodash.unzip';
+import * as d3 from 'd3';
+import Debug from 'debug';
 import baseUrl from '@/env';
 import PLOT_AXIS_OPTIONS from '@/constants/plot_axis_options';
 import PLOT_AXIS_METADATA from '@/constants/PLOT_AXIS_METADATA.json';
-import * as d3 from 'd3';
-import Debug from 'debug';
 
 const debug = Debug('downloads.js');
 debug.enabled = false;

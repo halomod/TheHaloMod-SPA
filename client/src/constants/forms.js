@@ -1,5 +1,5 @@
-import MODEL_CHOICES from '@/constants/model_choices.js';
 import Debug from 'debug';
+import MODEL_CHOICES from '@/constants/model_choices.js';
 
 const debug = Debug('forms.js');
 debug.enabled = false;

@@ -7,7 +7,7 @@
             @mousedown="(e) => blocked && !editing ? e.preventDefault() : null"
             @focus.native="editMode"
             :value="localName"
-            v-model="localName"/>
+            v-model="localName" />
         </md-field>
         <md-tooltip v-if="!editing">Click or tap to edit model name</md-tooltip>
       </div>
@@ -75,27 +75,28 @@
           <h3>Contact Information</h3>
           <md-field>
             <label>Name</label>
-            <md-input v-model="bugDetails.bugContactName"/>
+            <md-input v-model="bugDetails.bugContactName" />
           </md-field>
           <md-field>
             <label>Email</label>
-            <md-input v-model="bugDetails.bugContactEmail"/>
+            <md-input v-model="bugDetails.bugContactEmail" />
           </md-field>
-          <md-divider/>
+          <md-divider />
           <h3>Bug Details</h3>
           <md-field>
             <label>Bug Description</label>
-            <md-textarea v-model="bugDetails.bugText"/>
+            <md-textarea v-model="bugDetails.bugText" />
           </md-field>
         </form>
       </md-dialog-content>
       <md-dialog-actions>
-          <md-button @click="
+        <md-button
+          @click="
             $emit('bug-click', bugDetails);
             showBugReportDialog = false">
-            Submit
-          </md-button>
-          <md-button @click="showBugReportDialog = false">Cancel</md-button>
+          Submit
+        </md-button>
+        <md-button @click="showBugReportDialog = false">Cancel</md-button>
       </md-dialog-actions>
     </md-dialog>
   </div>

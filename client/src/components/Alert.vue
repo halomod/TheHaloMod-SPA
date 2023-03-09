@@ -1,13 +1,13 @@
 <template>
   <div>
     <md-dialog
-    :md-active.sync="showAlert"
-    @md-closed="$emit('close')"
-    @md-clicked-outside="$emit('close')">
+      :md-active.sync="showAlert"
+      @md-closed="$emit('close')"
+      @md-clicked-outside="$emit('close')">
       <md-dialog-title>{{ title }} Error</md-dialog-title>
-      <md-divider></md-divider>
+      <md-divider />
       <md-dialog-content class="text-block">{{ message }}</md-dialog-content>
-      <md-divider></md-divider>
+      <md-divider />
 
       <md-dialog-actions>
         <md-button class="md-primary" @click="$emit('close')">Okay</md-button>
@@ -19,7 +19,7 @@
 
 <script>
 export default {
-  name: 'Alert',
+  name: 'AlertBox',
   props: ['showAlert', 'title', 'message'],
   methods: {
     tmpClose() {

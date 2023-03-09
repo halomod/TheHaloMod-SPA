@@ -1,6 +1,6 @@
+import deepFreeze from 'deep-freeze';
 import generatedBackendConstants from '@/../generated/backend_constants.json';
 import forms from '@/constants/forms.js';
-import deepFreeze from 'deep-freeze';
 
 /**
  * Defines the default state for forms when a new model is being created.

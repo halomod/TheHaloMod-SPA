@@ -1,5 +1,5 @@
 <template>
-  <div :id="plotElementId" class="plot"></div>
+  <div :id="plotElementId" class="plot" />
 </template>
 <script>
 

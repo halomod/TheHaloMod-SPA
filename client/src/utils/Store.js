@@ -1,5 +1,4 @@
 import clonedeep from 'lodash.clonedeep';
-import baseurl from '@/env';
 import Debug from 'debug';
 import {
   set,
@@ -7,12 +6,13 @@ import {
   get,
   del,
 } from 'idb-keyval';
+import * as Sentry from '@sentry/vue';
+import isEqual from 'lodash.isequal';
+import baseurl from '@/env';
 import { DEFAULT_THEME } from '@/constants/themeOptions';
 import PLOT_AXIS_METADATA from '@/constants/PLOT_AXIS_METADATA.json';
 import forms from '@/constants/forms';
-import * as Sentry from '@sentry/vue';
 import axios from '@/utils/axiosHelper';
-import isEqual from 'lodash.isequal';
 
 const debug = Debug('Store.js');
 debug.enabled = false;
@@ -31,6 +31,7 @@ export default class Store {
       /**
        * Stored as a map so that it retains insertion order.
        */
+      hmfcalcMode: false,
       models: new Map(),
       modelNames: [],
 
@@ -107,7 +108,7 @@ export default class Store {
     if (this.state.models.size !== 0) {
       this.getPlotData();
     }
-  }
+  };
 
   /**
    * Syncs the models on the client with the models on the server. If the
@@ -174,7 +175,7 @@ export default class Store {
     } catch (error) {
       this.setError(error);
     }
-  }
+  };
 
   /**
    * Sets callbacks that correspond with the syncing state of the application.
@@ -230,7 +231,7 @@ export default class Store {
     flattened.rmax = 10 ** flattened.rmax;
 
     return flattened;
-  }
+  };
 
   /**
    * Sends the model data to server to create Tracer Halo Model Object. This
@@ -247,7 +248,7 @@ export default class Store {
         timeout: 3000,
         headers: {
           'Access-Control-Allow-Origin': '*',
-        }
+        },
       });
       this.state.error = false;
       await Promise.all([
@@ -258,7 +259,7 @@ export default class Store {
     } catch (error) {
       this.setError(error);
     }
-  }
+  };
 
   /**
    * Updates a model.
@@ -278,7 +279,7 @@ export default class Store {
     } catch (error) {
       this.setError(error);
     }
-  }
+  };
 
   /**
    * Renames a model.
@@ -302,7 +303,7 @@ export default class Store {
     } catch (error) {
       this.setError(error);
     }
-  }
+  };
 
   /**
    * Clones a model.
@@ -323,7 +324,7 @@ export default class Store {
     } catch (error) {
       this.setError(error);
     }
-  }
+  };
 
   /**
    * Sets an erorr for the application. This becomes visible to the user.
@@ -397,7 +398,7 @@ export default class Store {
       this.state.errorMessage = msg;
       Sentry.captureException(e, 'fatal');
     }
-  }
+  };
 
   /** Reports a bug associated with a particular model
    *
@@ -419,7 +420,7 @@ export default class Store {
         this.state.errorType = (error.response.data.code >= 500) ? 'Server' : 'Model';
       }
     }
-  }
+  };
 
   /**
    * Gets (clones) a model with the given name. This returns a deep cloned
@@ -450,7 +451,7 @@ export default class Store {
     this.state.models.set(name, model);
     this.state.modelNames = this.getModelNames();
     await set('models', this.state.models);
-  }
+  };
 
   /**
    * Gets all of the model names.
@@ -480,7 +481,7 @@ export default class Store {
     } catch (error) {
       this.setError(error);
     }
-  }
+  };
 
   /**
    * Clears all existing models.
@@ -497,7 +498,7 @@ export default class Store {
     } catch (error) {
       this.setError(error);
     }
-  }
+  };
 
   /**
    * Retrieves plot data for all models if a plotType is specified in state.
@@ -523,7 +524,7 @@ export default class Store {
       this.state.graphError = true;
       this.setError(error);
     }
-  }
+  };
 
   /**
    * Sets the plot type for the plot, and generates a new plot if it is
@@ -553,7 +554,7 @@ export default class Store {
       await set('plot', this.state.plot);
     }
     return clonedeep(this.state.plot);
-  }
+  };
 
   /**
    * Sets the plot type for both the x and y axis, then gets new plot data. If
@@ -580,7 +581,7 @@ export default class Store {
     await this.getPlotData();
     await set('plot', this.state.plot);
     return clonedeep(this.state.plot);
-  }
+  };
 
   /**
    * Sets the scale of the chosen axis of the plot to either logarithmic
@@ -600,7 +601,7 @@ export default class Store {
     }
     await set('plot', this.state.plot);
     return clonedeep(this.state.plot);
-  }
+  };
 
   /**
    * Updates the theme for the application and saves it to the store.
@@ -616,5 +617,9 @@ export default class Store {
     vue.$theme = newTheme;
     vue.$material.theming.theme = newTheme;
     await set('theme', newTheme);
+  }
+
+  setHMFcalcMode(mode) {
+    this.state.hmfcalcMode = mode;
   }
 }

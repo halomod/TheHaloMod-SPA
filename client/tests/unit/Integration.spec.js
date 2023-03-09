@@ -1,11 +1,11 @@
 import { mount, createLocalVue } from '@vue/test-utils';
+import Vue from 'vue';
+import VueMaterial from 'vue-material';
 import FormView from '@/views/Forms.vue';
 import Forms from '@/components/Forms';
 import FORMS from '@/constants/forms';
 import GenericForm from '@/components/Forms/GenericForm';
 import Store from '@/utils/Store';
-import Vue from 'vue';
-import VueMaterial from 'vue-material';
 import makeServer from '../mockServer';
 
 const $route = {
@@ -83,12 +83,14 @@ describe('Mounted FormView', () => {
     expect(wrapper.findComponent(Forms).exists()).toBe(true);
   });
 
-  test('renders all subforms',
+  test(
+    'renders all subforms',
     () => {
       genericForms = wrapper.findAllComponents(GenericForm).wrappers;
       const formsLength = Object.keys(FORMS).length;
       expect(genericForms.length).toBe(formsLength);
-    });
+    },
+  );
 
   describe('subform tests', () => {
     test('updates composite form state whenever subform state changes', async () => {

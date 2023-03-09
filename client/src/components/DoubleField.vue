@@ -1,9 +1,9 @@
 <template>
   <md-field :class="validationClass">
-    <label v-if="html !== undefined" v-html="html"/>
+    <label v-if="html !== undefined" v-html="html" />
     <label v-else>{{plainName}}</label>
     <md-input
-      v-model="current"/>
+      v-model="current" />
     <div class="md-error" v-if="!isDefined">Value must be defined</div>
     <div class="md-error" v-else-if="!isNumeric">Value must be numeric</div>
     <div class="md-error" v-else-if="!isBetween">Value must be between {{min}} and {{max}}</div>

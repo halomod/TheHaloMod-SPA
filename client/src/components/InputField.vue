@@ -7,8 +7,7 @@
       <span class="md-helper-text">{{value}}</span>
     </div>
     <!-- no label for a checkbox -->
-    <div v-if="inputType == 'checkbox'">
-    </div>
+    <div v-if="inputType == 'checkbox'" />
     <!-- everything else gets a normal label -->
     <div v-else>
       <label>{{label}}</label>
@@ -47,7 +46,7 @@
     </div>
     <!-- everything else like regular input boxes -->
     <div v-else>
-      <div v-html="labelHtml"/>
+      <div v-html="labelHtml" />
       <md-input
         :value="inputStr"
         v-on:input="handleInput"

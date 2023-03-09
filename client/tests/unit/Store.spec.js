@@ -1,6 +1,6 @@
-import Store from '@/utils/Store.js';
 import Vue from 'vue';
 import isEqual from 'lodash.isequal';
+import Store from '@/utils/Store.js';
 import { DEFAULT_FORM_STATE } from '@/constants/backend_constants.js';
 import PLOT_AXIS_METADATA from '@/constants/PLOT_AXIS_METADATA.json';
 import makeServer from '../mockServer';

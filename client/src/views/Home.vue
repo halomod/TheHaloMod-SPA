@@ -1,15 +1,15 @@
 <template>
   <div>
-    <Navbar/>
+    <Navbar />
     <div class="md-gutter md-alignment-top-space-around home">
       <div class="models">
-        <Models/>
+        <Models />
       </div>
       <div class="graph">
-        <Graph/>
+        <Graph />
       </div>
       <div class="download">
-        <Download/>
+        <Download />
       </div>
     </div>
     <md-dialog
@@ -19,11 +19,11 @@
     >
       <md-dialog-title>Models Syncing</md-dialog-title>
       <md-dialog-content
-        >
+      >
         Your models are currently syncing to the server. This shouldn't
         take too long...
         <md-progress-bar md-mode="indeterminate"
-      /></md-dialog-content>
+        /></md-dialog-content>
     </md-dialog>
   </div>
 </template>

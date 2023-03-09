@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!isVisible(parameterKey) || localParentObj[parameterKey] === null"/>
+  <div v-if="!isVisible(parameterKey) || localParentObj[parameterKey] === null" />
   <md-checkbox
     v-else-if="typeof localParentObj[parameterKey] === 'boolean'"
     class="md-primary"
@@ -27,17 +27,17 @@
     :init="localParentObj[parameterKey]"
     v-model="localParentObj[parameterKey]"
     @is-valid="(valid) => $emit('is-valid', valid)"
-    v-bind="getDoubleFieldProps(parameterKey)"/>
+    v-bind="getDoubleFieldProps(parameterKey)" />
 </template>
 
 <script>
+import clonedeep from 'lodash.clonedeep';
+import isequal from 'lodash.isequal';
+import Debug from 'debug';
 import PARAMETER_PROPS from '@/constants/parameter_properties';
 import DoubleField from '@/components/DoubleField.vue';
 import InputSlider from '@/components/InputSlider';
 import { getHtmlFromKey } from '@/utils/stringUtils';
-import clonedeep from 'lodash.clonedeep';
-import isequal from 'lodash.isequal';
-import Debug from 'debug';
 
 const debug = Debug('Parameter.vue');
 debug.enabled = false;

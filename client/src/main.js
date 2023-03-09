@@ -36,7 +36,6 @@ if (process.env.VUE_APP_SENTRY_ON !== 'FALSE') {
   Vue.config.productionTip = false;
   Vue.prototype.$store = store;
   Vue.prototype.$theme = store.state.theme;
-  Vue.http.headers.common['Access-Control-Allow-Origin'] = '*';
   new Vue({
     router,
     render: (h) => h(App),
