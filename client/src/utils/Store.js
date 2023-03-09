@@ -246,7 +246,7 @@ export default class Store {
         label: name,
         timeout: 3000,
         headers: {
-          'Access-Control-Allow-Origin': '*'
+          'Access-Control-Allow-Origin': '*',
         }
       });
       this.state.error = false;
