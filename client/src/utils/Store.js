@@ -31,6 +31,7 @@ export default class Store {
       /**
        * Stored as a map so that it retains insertion order.
        */
+      hmfcalcMode: false,
       models: new Map(),
       modelNames: [],
 
@@ -246,8 +247,8 @@ export default class Store {
         label: name,
         timeout: 3000,
         headers: {
-          'Access-Control-Allow-Origin': '*'
-        }
+          'Access-Control-Allow-Origin': '*',
+        },
       });
       this.state.error = false;
       await Promise.all([
@@ -616,5 +617,9 @@ export default class Store {
     vue.$theme = newTheme;
     vue.$material.theming.theme = newTheme;
     await set('theme', newTheme);
+  }
+
+  setHMFcalcMode(mode) {
+    this.state.hmfcalcMode = mode;
   }
 }

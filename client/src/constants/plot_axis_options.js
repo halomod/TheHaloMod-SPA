@@ -57,12 +57,6 @@ const plotAxisOptions = {
       'lnsigma',
       'halo_bias',
       'n_eff',
-      'dndm',
-      'ngtm',
-      'dndlnm',
-      'dndlog10m',
-      'rho_gtm',
-      'rho_ltm',
     ],
     y: [
       'central_occupation',

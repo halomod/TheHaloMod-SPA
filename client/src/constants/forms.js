@@ -41,6 +41,7 @@ debug.enabled = false;
  *  coreParams: string[] | undefined,
  *  modelChoices: ModelChoices,
  *  paramsKey: string,
+  * hmfcalc: boolean
  * }}
  */
 
@@ -70,6 +71,7 @@ const FORMS = {
     coreParams: ['z', 'n', 'sigma_8'],
     modelChoices: MODEL_CHOICES.cosmo,
     paramsKey: 'cosmo_params',
+    hmfcalc: true,
   },
   mdef: {
     id: 'mdef',
@@ -77,6 +79,7 @@ const FORMS = {
     modelKey: 'mdef_model',
     modelChoices: MODEL_CHOICES.mdef,
     paramsKey: 'mdef_params',
+    hmfcalc: true,
   },
   transfer: {
     id: 'transfer',
@@ -85,6 +88,7 @@ const FORMS = {
     coreParams: ['lnk_min', 'lnk_max', 'dlnk', 'takahashi'],
     modelChoices: MODEL_CHOICES.transfer,
     paramsKey: 'transfer_params',
+    hmfcalc: true,
   },
   filter: {
     id: 'filter',
@@ -93,6 +97,7 @@ const FORMS = {
     coreParams: ['delta_c'],
     modelChoices: MODEL_CHOICES.filter,
     paramsKey: 'filter_params',
+    hmfcalc: true,
   },
   growth: {
     id: 'growth',
@@ -100,6 +105,7 @@ const FORMS = {
     modelKey: 'growth_model',
     modelChoices: MODEL_CHOICES.growth,
     paramsKey: 'growth_params',
+    hmfcalc: true,
   },
   hmf: {
     id: 'hmf',
@@ -108,6 +114,7 @@ const FORMS = {
     coreParams: ['Mmin', 'Mmax', 'dlog10m'],
     modelChoices: MODEL_CHOICES.hmf,
     paramsKey: 'hmf_params',
+    hmfcalc: true,
   },
   halo_model: {
     id: 'halo_model',
@@ -122,6 +129,7 @@ const FORMS = {
       'hc_spectrum',
       'force_1halo_turnover',
     ],
+    hmfcalc: false,
   },
   hod: {
     id: 'hod',
@@ -129,6 +137,7 @@ const FORMS = {
     modelKey: 'hod_model',
     modelChoices: MODEL_CHOICES.hod,
     paramsKey: 'hod_params',
+    hmfcalc: false,
   },
   bias: {
     id: 'bias',
@@ -136,6 +145,7 @@ const FORMS = {
     modelKey: 'bias_model',
     modelChoices: MODEL_CHOICES.bias,
     paramsKey: 'bias_params',
+    hmfcalc: false,
   },
   halo_concentration: {
     id: 'halo_concentration',
@@ -143,6 +153,7 @@ const FORMS = {
     modelKey: 'halo_concentration_model',
     modelChoices: MODEL_CHOICES.concentration,
     paramsKey: 'halo_concentration_params',
+    hmfcalc: false,
   },
   tracer_concentration: {
     id: 'tracer_concentration',
@@ -150,6 +161,7 @@ const FORMS = {
     modelKey: 'tracer_concentration_model',
     modelChoices: MODEL_CHOICES.tracer_concentration,
     paramsKey: 'tracer_concentration_params',
+    hmfcalc: false,
   },
   halo_profile: {
     id: 'halo_profile',
@@ -157,6 +169,7 @@ const FORMS = {
     modelKey: 'halo_profile_model',
     modelChoices: MODEL_CHOICES.profile,
     paramsKey: 'halo_profile_params',
+    hmfcalc: false,
   },
   tracer_profile: {
     id: 'tracer_profile',
@@ -164,6 +177,7 @@ const FORMS = {
     modelKey: 'tracer_profile_model',
     modelChoices: MODEL_CHOICES.tracer_profile,
     paramsKey: 'tracer_profile_params',
+    hmfcalc: false,
   },
   halo_exclusion: {
     id: 'halo_exclusion',
@@ -171,6 +185,7 @@ const FORMS = {
     modelKey: 'exclusion_model',
     modelChoices: MODEL_CHOICES.halo_exclusion,
     paramsKey: 'exclusion_params',
+    hmfcalc: false,
   },
 };
 

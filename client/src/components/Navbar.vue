@@ -12,6 +12,15 @@
         </router-link>
 
         <div class="right-side">
+          <md-button class="md-raised md-accent">
+            <md-switch
+             class='md-primary'
+             v-model="usingHMFcalcMode"
+             @change="switchHMFcalcMode"
+            >
+              <span style='color:white'>HMFcalc Mode</span>
+            </md-switch>
+          </md-button>
 
           <md-button
             href="https://github.com/halomod/TheHaloMod-SPA/issues/new"
@@ -53,6 +62,7 @@ export default {
   data() {
     return {
       currentTheme: this.$store.state.theme,
+      usingHMFcalcMode: this.$store.state.hmfcalcMode,
       hmfVersion: libraryVersions.hmf,
       halomodVersion: libraryVersions.halomod,
     };
@@ -66,6 +76,11 @@ export default {
         this.currentTheme = DEFAULT_THEME;
         this.$store.setTheme(DEFAULT_THEME, this);
       }
+    },
+    switchHMFcalcMode() {
+      console.log('Switching HMFcalc Mode...');
+      this.$store.setHMFcalcMode(this.usingHMFcalcMode);
+      console.log('Set it to ', this.$store.state.hmfcalcMode);
     },
   },
   computed: {
