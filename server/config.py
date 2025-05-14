@@ -18,16 +18,13 @@ class Config:
         FLASK_APP = environ.get("FLASK_APP")
 
     ''' If the flask environment is not defined then use dev '''
-    if not environ.get("FLASK_ENV"):
-        FLASK_ENV = 'dev'
-    else:
-        FLASK_ENV = environ.get("FLASK_ENV")
+    FLASK_DEBUG = int(environ.get("FLASK_ENV", "development") == "development")
 
-    ''' If the flask debug is not defined then use false '''
-    if environ.get("FLASK_DEBUG") is None:
-        FLASK_DEBUG = False
-    else:
-        FLASK_DEBUG = environ.get("FLASK_DEBUG")
+    # ''' If the flask debug is not defined then use false '''
+    # if environ.get("FLASK_DEBUG") is None:
+    #     FLASK_DEBUG = False
+    # else:
+    #     FLASK_DEBUG = environ.get("FLASK_DEBUG")
 
     ''' If the session type is not defined then use redis '''
     if not environ.get("SESSION_TYPE"):

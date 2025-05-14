@@ -32,11 +32,7 @@ def create_app(test_config=None):
     if "PYTEST_CURRENT_TEST" in os.environ:
         this_env = "testing"
     else:
-        this_env = app.env
-
-    # Setup debugging if the environment is development
-    if this_env == "development":
-        app.debug = True
+        this_env = "development" if app.debug else "production"
 
     # add sentry sdk
     sentry_sdk.init(
