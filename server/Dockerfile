@@ -11,9 +11,7 @@ ENV FLASK_APP "halomod_app"
 RUN apt-get update -y
 RUN apt-get install -qq -y build-essential gfortran redis-server
 #RUN pip install --upgrade pip
-RUN uv venv
-RUN source .venv/bin/activate
-RUN uv pip install -r requirements.txt
+RUN uv pip install --system -r requirements.txt
 
 ADD . /thehalomod-server
 
