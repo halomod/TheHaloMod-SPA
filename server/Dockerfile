@@ -1,4 +1,4 @@
-FROM python:3.12-slim-bookworm
+FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim
 
 RUN mkdir /thehalomod-server
 WORKDIR /thehalomod-server
@@ -9,9 +9,9 @@ ENV REDIS_URL "redis"
 ENV FLASK_APP "halomod_app"
 
 RUN apt-get update -y
-RUN apt-get install -qq -y build-essential gfortran python-pip python-dev redis-server
-RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
+RUN apt-get install -qq -y build-essential gfortran redis-server
+#RUN pip install --upgrade pip
+RUN uv pip install -r requirements.txt
 
 ADD . /thehalomod-server
 
