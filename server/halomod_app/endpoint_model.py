@@ -42,12 +42,13 @@ def create():
     # server from Fortran when two models are created at the same time.
     utils.modelCreationSem.acquire()
 
-    num_models = len(models)
-    models[label] = utils.hmf_driver(
-        previous=initial_model,
-        **params)  # creates model from params
-
-    utils.modelCreationSem.release()
+    try:
+        num_models = len(models)
+        models[label] = utils.hmf_driver(
+            previous=initial_model,
+            **params)  # creates model from params
+    finally:
+        utils.modelCreationSem.release()
 
     if num_models < len(models):
         session["models"] = pickle.dumps(models)  # writes updated model dict to session

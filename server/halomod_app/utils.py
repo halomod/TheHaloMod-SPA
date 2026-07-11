@@ -44,7 +44,19 @@ def hmf_driver(cls=TracerHaloModel,
         # we have to set all _params whose model has been changed to {}
         # so that they don't get carry-over parameters from other models.
         for k, v in kwargs.items():
-            if k.endswith("model") and v != getattr(this, k).__class__.__name__:
+            if not k.endswith("model"):
+                continue
+            current_model = getattr(this, k)
+            if current_model is None:
+                current_name = None
+            elif isinstance(current_model, type):
+                # Component models (e.g. transfer_model, hmf_model) are
+                # stored as the class itself.
+                current_name = current_model.__name__
+            else:
+                # cosmo_model is stored as an instantiated Cosmology object.
+                current_name = current_model.__class__.__name__
+            if v != current_name:
                 this.update(**{k.replace("model", "params"): {}})
 
         return this
