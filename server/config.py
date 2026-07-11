@@ -5,11 +5,21 @@ from os import environ
 
 
 class Config:
-    ''' If a Flask key is not defined then use a pre-defined key '''
-    if not environ.get('FLASK_KEY'):
+    ''' A missing FLASK_KEY is fine in local dev/testing (a public,
+    hardcoded key is harmless there), but must not silently happen in a
+    real deployment - that would let anyone forge session cookies using a
+    key sitting in public source control. '''
+    if environ.get('FLASK_KEY'):
+        SECRET_KEY = environ.get('FLASK_KEY')
+    elif "PYTEST_CURRENT_TEST" in environ or environ.get("FLASK_DEBUG") == "1":
         SECRET_KEY = 'g+hH\xebiv\x9f\x8e\xb8\x95\xed?]>\x81,\x1c\\\xc1\x0fm\x95\x96'
     else:
-        SECRET_KEY = environ.get('FLASK_KEY')
+        raise RuntimeError(
+            "FLASK_KEY environment variable is not set. Refusing to start "
+            "with the public, hardcoded fallback SECRET_KEY outside of "
+            "local development/testing, since that would let sessions be "
+            "forged. Set FLASK_KEY to a proper secret."
+        )
 
     ''' If the app name is not defined then use a pre-defined name '''
     if not environ.get("FLASK_APP"):
