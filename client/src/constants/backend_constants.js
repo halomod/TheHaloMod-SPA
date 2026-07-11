@@ -38,11 +38,11 @@ import deepFreeze from 'deep-freeze';
  * usable / familiar on the client side.
  */
 const mapping = {
-  growth: '_GrowthFactor_params',
-  mdef: 'MassDefinition_params',
+  growth: 'BaseGrowthFactor_params',
+  mdef: 'BaseMassDefinition_params',
   cosmo: 'cosmo_defaults',
-  filter: 'Filter_params',
-  hmf: 'FittingFunction_params',
+  filter: 'BaseFilter_params',
+  hmf: 'BaseFittingFunction_params',
   hod: 'HOD_params',
   bias: 'Bias_params',
   halo_concentration: 'CMRelation_params',
