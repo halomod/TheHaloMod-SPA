@@ -9,14 +9,14 @@
       :tooltip="{ showOn: 'Hover', isVisible: true }"
       :min="minParameterProps.min"
       :max="minParameterProps.max"
-      :step="minParameterProps.step ? minParameterProps.step: undefined"
+      :step="minParameterProps.step ? minParameterProps.step : undefined"
       :ticks="{
         placement: 'Before',
-        largeStep: minParameterProps.rangeSlider.rangeSliderTickInterval ?
-          minParameterProps.rangeSlider.rangeSliderTickInterval :
-          1,
+        largeStep: minParameterProps.rangeSlider.rangeSliderTickInterval
+          ? minParameterProps.rangeSlider.rangeSliderTickInterval
+          : 1,
         smallStep: 0.5,
-        showSmallTicks: true
+        showSmallTicks: true,
       }"
       :type="'Range'"
       v-model="sliderValue"

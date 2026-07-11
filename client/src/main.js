@@ -1,6 +1,5 @@
 import Vue from 'vue';
 import * as Sentry from '@sentry/vue';
-import { Integrations } from '@sentry/tracing';
 import App from './App.vue';
 import router from './router';
 import Store from './utils/Store';
@@ -12,7 +11,7 @@ if (process.env.VUE_APP_SENTRY_ON !== 'FALSE') {
   Sentry.init({
     Vue,
     dsn: 'https://7a99f3aaaa144241960d3857a1f4dee9@o516709.ingest.sentry.io/5623500',
-    integrations: [new Integrations.BrowserTracing()],
+    integrations: [Sentry.browserTracingIntegration()],
     tracingOptions: {
       trackComponents: true,
     },

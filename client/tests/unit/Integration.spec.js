@@ -83,12 +83,14 @@ describe('Mounted FormView', () => {
     expect(wrapper.findComponent(Forms).exists()).toBe(true);
   });
 
-  test('renders all subforms',
+  test(
+    'renders all subforms',
     () => {
       genericForms = wrapper.findAllComponents(GenericForm).wrappers;
       const formsLength = Object.keys(FORMS).length;
       expect(genericForms.length).toBe(formsLength);
-    });
+    },
+  );
 
   describe('subform tests', () => {
     test('updates composite form state whenever subform state changes', async () => {

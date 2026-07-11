@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <keep-alive include="FormView"><router-view/></keep-alive>
+    <keep-alive include="FormView"><router-view /></keep-alive>
   </div>
 </template>
 

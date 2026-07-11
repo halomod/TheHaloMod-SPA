@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Navbar/>
+    <Navbar />
     <div class="md-layout md-gutter cite">
       <h1 class="md-display-1 md-layout-item">Acknowledge</h1>
 

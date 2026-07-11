@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!isVisible(parameterKey) || localParentObj[parameterKey] === null"/>
+  <div v-if="!isVisible(parameterKey) || localParentObj[parameterKey] === null" />
   <md-checkbox
     v-else-if="typeof localParentObj[parameterKey] === 'boolean'"
     class="md-primary"
@@ -27,7 +27,7 @@
     :init="localParentObj[parameterKey]"
     v-model="localParentObj[parameterKey]"
     @is-valid="(valid) => $emit('is-valid', valid)"
-    v-bind="getDoubleFieldProps(parameterKey)"/>
+    v-bind="getDoubleFieldProps(parameterKey)" />
 </template>
 
 <script>

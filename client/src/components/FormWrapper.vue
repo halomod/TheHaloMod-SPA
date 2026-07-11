@@ -1,17 +1,18 @@
 <template>
   <div class="wrapper">
     <div>
-      <h2 class="md-title"
+      <h2
+        class="md-title"
         v-observe-visibility="{
           callback: visibilityChanged,
           intersection: {
             rootMargin: '0px 0px -85% 0px',
             threshold: '.1',
           },
-      }">
-      {{title}}
-    </h2>
-      <slot/>
+        }">
+        {{title}}
+      </h2>
+      <slot />
     </div>
   </div>
 </template>

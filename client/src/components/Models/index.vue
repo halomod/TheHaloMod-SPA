@@ -4,28 +4,28 @@
       <div class="md-toolbar-row">
         <div class="md-toolbar-section-start">
           <div class="md-layout">
-          <h3 class="md-title">Models</h3>
-          <md-icon class="tooltip">
+            <h3 class="md-title">Models</h3>
+            <md-icon class="tooltip">
               help
               <md-tooltip md-direction="right"
-                >Create, Edit, Delete, or Clone models</md-tooltip
+              >Create, Edit, Delete, or Clone models</md-tooltip
               >
             </md-icon>
           </div>
         </div>
         <div class="md-toolbar-section-end">
-            <md-button @click="create" class="md-icon-button">
-              <md-icon>add</md-icon>
-              <md-tooltip>New Model</md-tooltip>
-            </md-button>
-            <md-button
-              @click="showDeleteAllDialog = true"
-              v-if="STORE_STATE.modelNames.length > 0"
-              class="md-icon-button"
-            >
-              <md-icon>delete_forever</md-icon>
-              <md-tooltip>Delete All</md-tooltip>
-            </md-button>
+          <md-button @click="create" class="md-icon-button">
+            <md-icon>add</md-icon>
+            <md-tooltip>New Model</md-tooltip>
+          </md-button>
+          <md-button
+            @click="showDeleteAllDialog = true"
+            v-if="STORE_STATE.modelNames.length > 0"
+            class="md-icon-button"
+          >
+            <md-icon>delete_forever</md-icon>
+            <md-tooltip>Delete All</md-tooltip>
+          </md-button>
         </div>
       </div>
       <md-list v-if="STORE_STATE.modelNames.length > 0" class="model-list md-double-line">
