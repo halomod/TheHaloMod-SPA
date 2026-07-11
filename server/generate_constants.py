@@ -1,5 +1,4 @@
 from typing import Union, Dict
-import numpy as np
 import json
 # Documentation on the built-in cosmologies:
 # https://docs.astropy.org/en/stable/cosmology/index.html#built-in-cosmologies
@@ -64,7 +63,7 @@ def generate_constants() -> BackendConstants:
         if params_or_model_name.endswith('_params'):
             continue
 
-        if np.issubclass_(params_or_model_value, Component):
+        if isinstance(params_or_model_value, type) and issubclass(params_or_model_value, Component):
             # Save class names, not the classes themselves.
             backend_constants[params_or_model_name] = params_or_model_value.__name__
         elif isinstance(params_or_model_value, FlatLambdaCDM):
@@ -98,6 +97,11 @@ def generate_constants() -> BackendConstants:
         # The below options do not work with HMF at this time it seems. It
         # crashes when they process. HMF version 3.3.4
         if choice == 'Planck18' or choice == 'Planck18_arXiv_v2':
+            continue
+
+        # Astropy's list of available cosmologies can include realizations
+        # that HMF's `cosmo` module doesn't (yet, or any longer) define.
+        if not hasattr(hmf.cosmo, choice):
             continue
         cosmo_model = hmf.cosmo.Cosmology(cosmo_model=getattr(hmf.cosmo, choice))
         cosmo_defaults.setdefault(choice, {
