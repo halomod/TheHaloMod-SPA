@@ -8,6 +8,7 @@
       @focusout="closeAlertDialog"
       @change="closeAlertDialog" />
     <Forms
+      ref="formsChild"
       :initialFormState="initialFormState"
       :contextPrimary="contextPrimary"
       :modelName="name"
@@ -18,7 +19,7 @@
     <div id="float">
       <md-button @click="showCancelDialog = true" class="md-raised">Cancel</md-button>
       <div style="display: inline-block">
-        <md-button :disabled="!valid" @click="activateSaveDialog" class="md-raised md-primary">
+        <md-button :disabled="!valid" @click="clickSaveButton" class="md-raised md-primary">
           {{saveButton}} (Enter)
         </md-button>
         <md-tooltip v-if="!valid" md-direction="top">
@@ -212,6 +213,18 @@ export default {
     isValid(valid) {
       this.valid = valid;
       this.$forceUpdate();
+    },
+    /**
+     * Handles a click on the main Create/Save button. Unlike the Enter-key
+     * shortcut (which the Forms child component already forwards the typed
+     * model name for via the `activate-save` event), a plain button click
+     * event isn't a model name, so the name typed into the child's Model
+     * Name field would otherwise be lost. Read it directly off the child
+     * instead of prompting for it again in the save dialog.
+     */
+    clickSaveButton() {
+      const typedName = this.$refs.formsChild ? this.$refs.formsChild.localName : null;
+      this.activateSaveDialog(typedName);
     },
     /**
      * Activates the save dialog or just saves if the model name is already
