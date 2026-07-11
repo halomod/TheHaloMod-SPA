@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [16.x]
+        node-version: [20.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
@@ -31,17 +31,17 @@ jobs:
           ${{ runner.os }}-build-e
           ${{ runner.os }}-
 
-    - name: Set up Python 3.9.16
+    - name: Set up Python 3.12
       uses: actions/setup-python@v5
       with:
-        python-version: 3.9.16
+        python-version: 3.12
   
     - name: Python Caching
       uses: actions/cache@v4
       with:
         path: ${{ env.pythonLocation }}
         # Makes the hashing depend on changes to requirements.txt and python version
-        key: ${{ runner.os }}${{ env.pythonLocation }}-${{ hashFiles('server/requirements.txt') }}-py3.9.5
+        key: ${{ runner.os }}${{ env.pythonLocation }}-${{ hashFiles('server/requirements.txt') }}-py3.12
 
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v4
