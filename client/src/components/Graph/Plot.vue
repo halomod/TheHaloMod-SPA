@@ -31,8 +31,12 @@ export default {
     this.generatePlot();
     /* Debounce only runs the function, even after many calls, once every
     so many ms listed in the second arg. This helps speed up the UI on
-    resize. https://lodash.com/docs/4.17.15#debounce */
-    window.addEventListener('resize', debounce(this.generatePlot, 200));
+    resize. https://lodash.com/docs/4.17.15#debounce
+    The debounced function is kept on `this` so beforeDestroy() can remove
+    the *same* listener reference - debounce() returns a new function on
+    every call, so calling it again there would never actually match. */
+    this.debouncedGeneratePlot = debounce(this.generatePlot, 200);
+    window.addEventListener('resize', this.debouncedGeneratePlot);
   },
   watch: {
     plotData: {
@@ -56,7 +60,7 @@ export default {
     },
   },
   beforeDestroy() {
-    window.removeEventListener('resize', debounce(this.generatePlot, 150));
+    window.removeEventListener('resize', this.debouncedGeneratePlot);
   },
 };
 </script>
