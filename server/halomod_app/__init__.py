@@ -67,6 +67,18 @@ def create_app(test_config=None):
     # Set all warnings to trigger
     warnings.filterwarnings("error")
 
+    # halomod's concentration-mass relations (e.g. Bullock01) don't implement
+    # mass-definition conversion; when the model's mass definition doesn't
+    # match a concentration model's native one, halomod warns and proceeds
+    # anyway using the mismatched definition. That's expected, recoverable
+    # behaviour (not a bug to fail the request over), so don't let the
+    # blanket "error" filter above turn it into a 500.
+    warnings.filterwarnings(
+        "default",
+        message=r"Requested mass definition .* is not in native definitions "
+                r"for the .* CMRelation",
+    )
+
     # Register the Endpoints
     """All endpoints:
     POST /model - Creates a new model

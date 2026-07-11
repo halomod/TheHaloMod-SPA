@@ -8,7 +8,7 @@ import pickle
 
 def test_create(client, create_payload):
     with client.session_transaction() as sess:
-        sess["models"] = pickle.dumps({"TheModel": TracerHaloModel()})
+        sess["models"] = pickle.dumps({"TheModel": TracerHaloModel(transfer_params={"extrapolate_with_eh": True})})
     response = client.post('/model', json=create_payload)
     assert response is not None
     assert response.status_code == 200
@@ -22,7 +22,7 @@ def test_create(client, create_payload):
 
 def test_update(client):
     with client.session_transaction() as sess:
-        sess["models"] = pickle.dumps({"TheModel": TracerHaloModel()})
+        sess["models"] = pickle.dumps({"TheModel": TracerHaloModel(transfer_params={"extrapolate_with_eh": True})})
     response = client.put('/model',
                           json={"model_name": "TheModel", "params": {}})
     assert response is not None
@@ -36,7 +36,7 @@ def test_update(client):
 
 def test_delete(client):
     with client.session_transaction() as sess:
-        sess["models"] = pickle.dumps({"TheModel": TracerHaloModel()})
+        sess["models"] = pickle.dumps({"TheModel": TracerHaloModel(transfer_params={"extrapolate_with_eh": True})})
     response = client.delete('/model', json={"model_name": "TheModel"})
     assert response is not None
     assert response.status_code == 200
@@ -49,7 +49,7 @@ def test_delete(client):
 
 def test_rename(client):
     with client.session_transaction() as sess:
-        sess["models"] = pickle.dumps({"TheModel": TracerHaloModel()})
+        sess["models"] = pickle.dumps({"TheModel": TracerHaloModel(transfer_params={"extrapolate_with_eh": True})})
     response = client.patch('/model', json={
         "model_name": "TheModel",
         "new_model_name": "NewModel"
