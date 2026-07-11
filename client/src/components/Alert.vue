@@ -26,12 +26,6 @@ export default {
       this.$emit('input', false);
     },
   },
-  computed: {
-    withBrTags() {
-      const doc = this.item.licensedocument.legal.documentText;
-      return doc.replace(/(\\r)*\\n/g, '<br>');
-    },
-  },
 };
 </script>
 
