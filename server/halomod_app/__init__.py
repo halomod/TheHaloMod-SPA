@@ -2,6 +2,7 @@ from sentry_sdk.integrations.flask import FlaskIntegration
 import sentry_sdk
 from werkzeug.exceptions import HTTPException
 from flask_session import Session
+from flask_session.redis.redis import RedisSessionInterface
 from flask_cors import CORS
 from flask import Flask, jsonify, session, Response
 import json
@@ -11,6 +12,7 @@ import traceback
 import os
 import warnings
 
+from . import utils
 from .endpoint_model import endpoint_model
 from .endpoint_models import endpoint_models
 from .endpoint_plot import endpoint_plot
@@ -68,6 +70,16 @@ def create_app(test_config=None):
     CORS(app, origins=origins, supports_credentials=True)  # enable CORS
 
     sess.init_app(app)  # enable Sessions
+
+    # Swap in a session interface that holds a per-session lock across the
+    # whole request (see LockingRedisSessionInterface for why a lock scoped
+    # only inside a view function isn't enough to prevent two concurrent
+    # requests for the same session from racing and silently losing data).
+    # Session() already constructed a fully-configured RedisSessionInterface
+    # above; changing its class in place (rather than constructing a new
+    # instance) reuses that configuration exactly instead of re-guessing it.
+    if isinstance(app.session_interface, RedisSessionInterface):
+        app.session_interface.__class__ = utils.LockingRedisSessionInterface
 
     # Set all warnings to trigger
     warnings.filterwarnings("error")

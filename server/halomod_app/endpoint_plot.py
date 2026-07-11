@@ -1,5 +1,6 @@
 from flask import Blueprint
 from flask import jsonify, request, session, abort
+from . import utils
 import dill as pickle
 import warnings
 import sentry_sdk
@@ -29,6 +30,30 @@ Returns:
 #              ...
 #           }}
 
+# Whitelist of attributes the client is allowed to request via x/y. Without
+# this, x_param/y_param went straight into getattr(model, ...) with no
+# validation, letting a caller inspect arbitrary model internals (or trigger
+# an expensive/unintended computed property) just by naming it in the query
+# string. Keep this in sync with the keys of
+# client/src/constants/PLOT_AXIS_METADATA.json, which is the client's own
+# list of choices it will ever actually send.
+PLOTTABLE_ATTRIBUTES = frozenset({
+    'k', 'k_hm', 'r', 'm', 'central_occupation', 'cmz_relation',
+    'corr_1h_auto_matter', 'corr_1h_auto_tracer', 'corr_1h_cross_tracer_matter',
+    'corr_1h_cs_auto_tracer', 'corr_1h_ss_auto_tracer', 'corr_2h_auto_matter',
+    'corr_2h_auto_tracer', 'corr_2h_cross_tracer_matter', 'corr_auto_matter',
+    'corr_auto_tracer', 'corr_cross_tracer_matter', 'corr_linear_mm',
+    'delta_k', 'dndlnm', 'dndlog10m', 'dndm', 'fsigma', 'halo_bias',
+    'lnsigma', 'n_eff', 'ngtm', 'nonlinear_delta_k', 'nonlinear_power',
+    'power', 'power_1h_auto_matter', 'power_1h_auto_tracer',
+    'power_1h_cross_tracer_matter', 'power_1h_cs_auto_tracer',
+    'power_1h_ss_auto_tracer', 'power_2h_auto_matter', 'power_2h_auto_tracer',
+    'power_2h_cross_tracer_matter', 'power_auto_matter', 'power_auto_tracer',
+    'power_cross_tracer_matter', 'radii', 'rho_gtm', 'rho_ltm',
+    'satellite_occupation', 'sd_bias_correction', 'sigma',
+    'total_occupation', 'tracer_cmz_relation', 'transfer_function',
+})
+
 
 @endpoint_plot.route('/plot', methods=["GET"])
 def get_plot_data():
@@ -39,11 +64,10 @@ def get_plot_data():
     x_param = request.args.get("x")
     y_param = request.args.get("y")
 
-    models = None
-    if 'models' in session:
-        models = pickle.loads(session.get("models"))
-    else:
-        models = {}
+    if x_param not in PLOTTABLE_ATTRIBUTES or y_param not in PLOTTABLE_ATTRIBUTES:
+        abort(400, "x and y must each be one of the supported plot attributes.")
+
+    models = utils.get_models()
     # if model_names in json use those else use all
     names = request.args.getlist("model_names") if "model_names" in request.args else list(
         models.keys())

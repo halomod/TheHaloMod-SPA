@@ -1,9 +1,9 @@
-from flask import Blueprint, request, session, current_app
+from flask import Blueprint, request, current_app
+from . import utils
 import io
 import os
 import yagmail
 import toml
-import dill as pickle
 from hmf.helpers.cfg_utils import framework_to_dict
 
 endpoint_bugs = Blueprint('endpoint_bugs', __name__)
@@ -35,11 +35,7 @@ def report_bug():
     model_name = request.get_json()["model_name"]
     bug_details = request.get_json()["bug_details"]
 
-    models = None
-    if 'models' in session:
-        models = pickle.loads(session.get('models'))
-    else:
-        models = {}
+    models = utils.get_models()
 
     if model_name in models:
         buggy_model = models[model_name]

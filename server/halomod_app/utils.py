@@ -2,6 +2,8 @@
 
 import logging
 from flask import session
+from flask_session.redis.redis import RedisSessionInterface
+from itsdangerous import BadSignature
 from typing import Union
 from halomod import TracerHaloModel
 from halomod.wdm import HaloModelWDM
@@ -19,14 +21,87 @@ logger = logging.getLogger(__name__)
 modelCreationSem = threading.Semaphore()
 
 
+def get_models() -> dict:
+    """Loads the current session's model dict, or an empty dict if the
+    session doesn't have one yet. Centralizes a load pattern that used to be
+    duplicated in every endpoint that touches session-stored models."""
+    if 'models' in session:
+        return pickle.loads(session.get('models'))
+    return {}
+
+
 def get_model_names():
     """Helper function that abstracts logic for getting names of all models
     associated with the function"""
-    if 'models' in session:
-        models = pickle.loads(session.get('models'))
-    else:
-        models = {}
-    return list(models.keys())
+    return list(get_models().keys())
+
+
+class LockingRedisSessionInterface(RedisSessionInterface):
+    """A RedisSessionInterface that holds a per-session Redis lock for the
+    whole request lifecycle - from the session being loaded to it being
+    saved back - rather than just whatever a view function does in between.
+
+    This matters because Flask-Session loads the session once at request
+    start (`open_session`) and unconditionally overwrites it in Redis at
+    request end (`save_session`), and *both* of those happen outside any
+    view function's own code (the latter runs after the view function has
+    already returned, while Flask builds the response). A lock acquired and
+    released only inside a view function - e.g. wrapping
+    `session["models"] = ...` - doesn't cover that: a second concurrent
+    request for the same session (two open tabs, a double-click, or a
+    client retry firing while a slow request is still in flight - see
+    axios-retry in the client) can load its own copy of the session before
+    the first request's `save_session` has run, and then unconditionally
+    overwrite it with that stale copy once *its own* request finishes,
+    silently losing whatever the first request had saved.
+
+    Locking around the whole load-to-save window closes that window. This
+    is a *different* lock from `modelCreationSem` below: that one is a
+    process-global semaphore protecting concurrent halomod/CAMB calls
+    (unsafe to run in parallel at all, regardless of session); this one
+    only needs to keep one session's own data from racing with itself, so
+    it's scoped per-session rather than global.
+
+    The lock has a timeout so a crashed request can't leave it stuck
+    forever (matching the fix for the same class of bug in
+    `modelCreationSem`'s usage elsewhere in this app).
+    """
+
+    LOCK_TIMEOUT_SECONDS = 120
+
+    def open_session(self, app, request):
+        # The lock must be acquired *before* the session data is read, not
+        # after: `super().open_session()` is what actually reads the current
+        # value from Redis, so acquiring the lock on its result (as a first
+        # attempt at this did) still lets two concurrent requests both read
+        # the same stale data before either one ever waits on the lock - the
+        # lock would then only serialize the writes, not the read-modify-write
+        # as a whole. So the sid has to be recovered from the cookie here,
+        # independently, so the lock can be taken first.
+        sid = request.cookies.get(app.config["SESSION_COOKIE_NAME"])
+        if sid and self.use_signer:
+            try:
+                sid = self._unsign(app, sid)
+            except BadSignature:
+                sid = None
+
+        lock = None
+        if sid:
+            lock = self.client.lock(
+                f"halomod-session-lock:{sid}", timeout=self.LOCK_TIMEOUT_SECONDS)
+            lock.acquire()
+
+        sess = super().open_session(app, request)
+        sess.lock = lock
+        return sess
+
+    def save_session(self, app, session, response):
+        try:
+            super().save_session(app, session, response)
+        finally:
+            lock = getattr(session, 'lock', None)
+            if lock is not None:
+                lock.release()
 
 
 def hmf_driver(cls=TracerHaloModel,

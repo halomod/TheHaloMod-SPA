@@ -1,5 +1,6 @@
 from flask import Blueprint
 from flask import jsonify, request, session, send_file
+from . import utils
 from .utils import get_model_names, modelCreationSem, get_initial_model, hmf_driver
 from hmf.helpers.cfg_utils import framework_to_dict
 import toml
@@ -33,10 +34,7 @@ def get_models_data_object():
     """
     param_names = request.args.getlist("param_names[]")
 
-    if 'models' in session:
-        models = pickle.loads(session['models'])
-    else:
-        models = {}
+    models = utils.get_models()
 
     res = {}
 
@@ -63,11 +61,7 @@ def get_models_data_toml():
         content:
             application/zip:
     """
-    models = None
-    if 'models' in session:
-        models = pickle.loads(session.get("models"))
-    else:
-        models = {}
+    models = utils.get_models()
 
     # Open up file-like objects for response
     buff = io.BytesIO()
@@ -120,11 +114,7 @@ def create():
         print('There was no "data" property on the request object')
     new_models = json['data']
 
-    models = None
-    if 'models' in session:
-        models = pickle.loads(session.get('models'))
-    else:
-        models = {}
+    models = utils.get_models()
 
     initial_model = get_initial_model()
 
@@ -170,11 +160,7 @@ def clone():
     name = request_json["model_name"]
     new_name = request_json["new_model_name"]
 
-    models = None
-    if 'models' in session:
-        models = pickle.loads(session["models"])
-    else:
-        models = {}
+    models = utils.get_models()
 
     if name in models:
         models[new_name] = models[name].clone()

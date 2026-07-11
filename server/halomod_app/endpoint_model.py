@@ -32,11 +32,7 @@ def create():
     params = request.get_json()["params"]
     label = request.get_json()["label"]
 
-    models = None
-    if 'models' in session:
-        models = pickle.loads(session.get('models'))
-    else:
-        models = {}
+    models = utils.get_models()
 
     # Only allow one model to be created at a time. Prevents crashes in the
     # server from Fortran when two models are created at the same time.
@@ -78,11 +74,7 @@ def update():
     name = request_json["model_name"]
     params = request_json["params"]
 
-    models = None
-    if 'models' in session:
-        models = pickle.loads(session["models"])
-    else:
-        models = {}
+    models = utils.get_models()
 
     if name in models:
         models[name] = utils.hmf_driver(previous=models[name], **params)
@@ -109,12 +101,7 @@ def delete():
     request_json = request.get_json()
     name = request_json["model_name"]
 
-    models = None
-    if 'models' in session:
-        models = pickle.loads(session["models"])
-    else:
-        models = {}
-
+    models = utils.get_models()
     num_models = len(models)
 
     if name in models:
@@ -149,11 +136,7 @@ def rename():
     name = request_json["model_name"]
     new_name = request_json["new_model_name"]
 
-    models = None
-    if 'models' in session:
-        models = pickle.loads(session["models"])
-    else:
-        models = {}
+    models = utils.get_models()
 
     if name in models:
         models[new_name] = models[name]
