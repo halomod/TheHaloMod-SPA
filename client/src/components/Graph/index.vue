@@ -197,7 +197,7 @@ export default {
       this.xAxisChoices = {};
       Object.entries(PLOT_AXIS_OPTIONS).forEach(([key, value]) => {
         value.x.forEach((item) => {
-          if (PLOT_AXIS_METADATA[item].hmfcalc || !hmfcalcMode) {
+          if (PLOT_AXIS_METADATA[item].hmfcalc === true || !hmfcalcMode) {
             this.xAxisChoices[item] = key;
           }
         });
@@ -238,7 +238,7 @@ export default {
       if (isDifferentAxisSection) {
         const newYAxisChoices = [];
         PLOT_AXIS_OPTIONS[this.xAxisChoices[newXAxisChoice]].y.forEach((choice) => {
-          if (PLOT_AXIS_METADATA[choice].hmfcalc || !this.$store.state.hmfcalcMode) {
+          if (PLOT_AXIS_METADATA[choice].hmfcalc === true || !this.$store.state.hmfcalcMode) {
             newYAxisChoices.push(choice);
           }
         });
