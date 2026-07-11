@@ -53,11 +53,16 @@ def create_app(test_config=None):
     )
 
     # The different origins that the server will allow connections from.
-    # These are specified as RegEx.
+    # These are specified as RegEx. Anchored at both ends (flask-cors uses
+    # `Pattern.match`, which only anchors at the start) so an origin can't
+    # satisfy a pattern by merely embedding the expected domain as a
+    # substring, e.g. `https://thehalomod.app.evil.com` - important since
+    # `supports_credentials=True` below means a matching origin can make
+    # requests using the caller's session cookie.
     origins = [
-        re.compile(r'http\:\/\/localhost\:.*'),
-        re.compile(r'https:\/\/.*thehalomod\.netlify\.app.*'),
-        re.compile(r'https:\/\/.*thehalomod\.app.*'),
+        re.compile(r'^http://localhost:\d+$'),
+        re.compile(r'^https://([a-z0-9-]+--)?thehalomod\.netlify\.app$'),
+        re.compile(r'^https://([a-z0-9-]+\.)?thehalomod\.app$'),
     ]
 
     CORS(app, origins=origins, supports_credentials=True)  # enable CORS
@@ -135,11 +140,17 @@ def create_app(test_config=None):
 
         response = {}
 
+        # Only expose the full traceback (file paths, internals) to callers
+        # when running in debug mode. Sentry already has the full exception
+        # for developers regardless; a production caller just gets the
+        # human-readable summary line.
+        description = stkTrace if app.debug else [stkTrace[0]]
+
         # replace the body with JSON
         response.setdefault('data', json.dumps({
             "code": '500',
             "name": e.name if hasattr(e, 'name') else str(type(e)),
-            "description": stkTrace,
+            "description": description,
         }))
         response.setdefault('content_type', "application/json")
         return response, 500
@@ -162,7 +173,7 @@ def create_app(test_config=None):
         response.data = json.dumps({
             "code": e.code,
             "name": e.name,
-            "description": stkTrace,
+            "description": stkTrace if app.debug else [stkTrace[0]],
         })
         response.content_type = "application/json"
         return response, 400
@@ -224,11 +235,17 @@ def create_app(test_config=None):
 
         response = {}
 
+        # Only expose the full traceback (file paths, internals) to callers
+        # when running in debug mode. Sentry already has the full exception
+        # for developers regardless; a production caller just gets the
+        # human-readable summary line.
+        description = stkTrace if app.debug else [stkTrace[0]]
+
         # replace the body with JSON
         response.setdefault('data', json.dumps({
             "code": '500',
             "name": e.name if hasattr(e, 'name') else str(type(e)),
-            "description": stkTrace,
+            "description": description,
         }))
         response.setdefault('content_type', "application/json")
         return response, 500

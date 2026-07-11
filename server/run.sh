@@ -19,8 +19,12 @@ do
     "--dev" )
       export FLASK_APP=halomod_app
       export FLASK_ENV=development
+      # FLASK_ENV is a no-op since Flask 2.3; FLASK_DEBUG is what the `flask`
+      # CLI actually reads to set app.debug (which in turn gates things like
+      # full tracebacks in error responses - see halomod_app/__init__.py).
+      export FLASK_DEBUG=1
       # Doesn't run with SSL on dev so that certs do not need to be handled.
-      # To run with SSL on, the following could be run: 
+      # To run with SSL on, the following could be run:
       # `flask run --cert-adhoc`
       flask run;;
     "--generate-constants" )
