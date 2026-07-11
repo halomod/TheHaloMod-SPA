@@ -85,8 +85,21 @@ def generate_constants() -> BackendConstants:
         else:
             for name, model in models.items():
                 if hasattr(model, "_defaults"):
-                    backend_constants[component.__name__ +
-                                      "_params"][name] = model._defaults
+                    defaults = dict(model._defaults)
+
+                    # hmf leaves this `None` to mean "not explicitly chosen",
+                    # which triggers a runtime warning and defaults to True
+                    # internally. Shipping `null` as the constant means every
+                    # client submission that doesn't touch this field
+                    # explicitly sends `null`, tripping that same warning
+                    # (promoted to a hard 500 by this app's warnings-as-errors
+                    # config) on every such model creation. Ship the actual
+                    # fallback value instead.
+                    if defaults.get('extrapolate_with_eh') is None \
+                            and 'extrapolate_with_eh' in defaults:
+                        defaults['extrapolate_with_eh'] = True
+
+                    backend_constants[component.__name__ + "_params"][name] = defaults
 
     # Build the Cosmo defaults, because those are separate
     cosmo_defaults = {}
