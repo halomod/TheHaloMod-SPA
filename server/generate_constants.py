@@ -7,7 +7,7 @@ from astropy.cosmology import FlatLambdaCDM
 from contextlib import redirect_stdout
 from io import StringIO, open
 import hmf
-from astropy.cosmology.core import Cosmology
+from astropy.cosmology import Cosmology
 from hmf._internals import Component, get_base_components
 from halomod import TracerHaloModel
 
