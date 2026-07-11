@@ -26,7 +26,7 @@ def test_get_names(client):
 def test_get_object_data(client):
     params = ["m", "k", "r", "k_hm"]
     with client.session_transaction() as sess:
-        sess["models"] = pickle.dumps({"TheModel": TracerHaloModel()})
+        sess["models"] = pickle.dumps({"TheModel": TracerHaloModel(transfer_params={"extrapolate_with_eh": True})})
 
     query_data = str()
     for param in params:
@@ -43,7 +43,7 @@ def test_get_object_data(client):
 
 def test_toml(client):
     with client.session_transaction() as sess:
-        sess["models"] = pickle.dumps({"TheModel": TracerHaloModel()})
+        sess["models"] = pickle.dumps({"TheModel": TracerHaloModel(transfer_params={"extrapolate_with_eh": True})})
     response = client.get('/models/toml')
     assert response is not None
     assert response.status_code == 200
@@ -55,7 +55,7 @@ def test_toml(client):
 
 def test_clone(client):
     with client.session_transaction() as sess:
-        sess["models"] = pickle.dumps({"TheModel": TracerHaloModel()})
+        sess["models"] = pickle.dumps({"TheModel": TracerHaloModel(transfer_params={"extrapolate_with_eh": True})})
     response = client.put('/models', json={
         "model_name": "TheModel",
         "new_model_name": "NewModel"
@@ -98,9 +98,9 @@ def test_add_multi_models(client, create_payload):
 def test_clear(client):
     with client.session_transaction() as sess:
         sess["models"] = pickle.dumps({
-            "TheModel": TracerHaloModel(),
-            "AnotherModel": TracerHaloModel(),
-            "AndAnotherOne": TracerHaloModel()})
+            "TheModel": TracerHaloModel(transfer_params={"extrapolate_with_eh": True}),
+            "AnotherModel": TracerHaloModel(transfer_params={"extrapolate_with_eh": True}),
+            "AndAnotherOne": TracerHaloModel(transfer_params={"extrapolate_with_eh": True})})
     response = client.delete('/models')
     assert response is not None
     assert response.status_code == 200
