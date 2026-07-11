@@ -97,17 +97,6 @@ export default {
     Model,
   },
   methods: {
-    async restart() {
-      if (this.modelNames.length !== 0) {
-        this.loading = true;
-        this.blocked = true;
-        await Promise.all(
-          this.modelNames.map((modelName) => this.$store.deleteModel(modelName)),
-        );
-        this.blocked = false;
-        this.loading = false;
-      }
-    },
     create() {
       this.$router.push('/create');
     },
