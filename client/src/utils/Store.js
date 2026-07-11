@@ -18,6 +18,20 @@ const debug = Debug('Store.js');
 debug.enabled = false;
 
 /**
+ * Timeout for lightweight requests that don't trigger a halomod/hmf
+ * calculation on the server (renames, deletes, clones, bug reports).
+ */
+const REQUEST_TIMEOUT_MS = 10000;
+
+/**
+ * Timeout for requests that trigger a full halomod/hmf model calculation on
+ * the server (which can involve slow CAMB transfer function computation, and
+ * is serialized process-wide behind a semaphore, so it can legitimately take
+ * much longer than a typical request).
+ */
+const MODEL_COMPUTE_TIMEOUT_MS = 60000;
+
+/**
  * This store is initialized at the beginning of the application startup. It
  * should be able to be accessed with `this.$store` on any component.
  */
@@ -142,7 +156,7 @@ export default class Store {
             data: {
               model_name: modelName,
             },
-            timeout: 3000,
+            timeout: REQUEST_TIMEOUT_MS,
           });
         }
       }));
@@ -160,7 +174,8 @@ export default class Store {
       });
       await axios.post(`${baseurl}/models`, {
         data: modelsToBeAdded,
-        timeout: 3000,
+      }, {
+        timeout: MODEL_COMPUTE_TIMEOUT_MS,
       });
 
       // Update the plot data because it will be different after adding the
@@ -245,7 +260,8 @@ export default class Store {
       await axios.post(`${baseurl}/model`, {
         params: this.flatten(model),
         label: name,
-        timeout: 3000,
+      }, {
+        timeout: MODEL_COMPUTE_TIMEOUT_MS,
         headers: {
           'Access-Control-Allow-Origin': '*',
         },
@@ -272,7 +288,8 @@ export default class Store {
       await axios.put(`${baseurl}/model`, {
         params: this.flatten(model),
         model_name: name,
-        timeout: 3000,
+      }, {
+        timeout: MODEL_COMPUTE_TIMEOUT_MS,
       });
       this.state.error = false;
       await Promise.all([this.setModel(name, model), this.getPlotData()]);
@@ -292,7 +309,8 @@ export default class Store {
       await axios.patch(`${baseurl}/model`, {
         model_name: oldName,
         new_model_name: newName,
-        timeout: 3000,
+      }, {
+        timeout: REQUEST_TIMEOUT_MS,
       });
       const model = this.state.models.get(oldName);
       this.state.models.set(newName, model);
@@ -316,7 +334,8 @@ export default class Store {
       await axios.put(`${baseurl}/models`, {
         model_name: oldName,
         new_model_name: newName,
-        timeout: 3000,
+      }, {
+        timeout: REQUEST_TIMEOUT_MS,
       });
       this.state.error = false;
       const model = await this.getModel(oldName);
@@ -410,7 +429,8 @@ export default class Store {
       await axios.post(`${baseurl}/bugs`, {
         model_name: modelName,
         bug_details: bugDetails,
-        timeout: 3000,
+      }, {
+        timeout: REQUEST_TIMEOUT_MS,
       });
     } catch (error) {
       console.error(error);
@@ -471,7 +491,7 @@ export default class Store {
         data: {
           model_name: name,
         },
-        timeout: 3000,
+        timeout: REQUEST_TIMEOUT_MS,
       });
       this.state.error = false;
       this.state.models.delete(name);
@@ -489,7 +509,7 @@ export default class Store {
   clearModels = async () => {
     try {
       await axios.delete(`${baseurl}/models`, {
-        timeout: 3000,
+        timeout: REQUEST_TIMEOUT_MS,
       });
       await del('models');
       this.state.models = new Map();
@@ -515,7 +535,7 @@ export default class Store {
           x: this.state.plot.x,
           y: this.state.plot.y,
         },
-        timeout: 3000,
+        timeout: MODEL_COMPUTE_TIMEOUT_MS,
       });
       this.state.plot.plotData = data.data;
       debug('plotdata is: ', data.data);
