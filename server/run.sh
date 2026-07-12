@@ -10,7 +10,11 @@ do
       # Wheel is installed first because it is used for depenency installation.
       # It basically just speeds things up.
       pip3 install wheel
-      pip3 install -r requirements.txt;;
+      # requirements-dev.txt pulls in requirements.txt (runtime) plus the
+      # lint/test tooling --lint and --test below need. The Docker image
+      # installs requirements.txt directly instead of going through this
+      # script, so production installs stay runtime-only.
+      pip3 install -r requirements-dev.txt;;
     "--lint" )
       autopep8 -a -r --in-place halomod_app
       flake8 tests halomod_app;;
