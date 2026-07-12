@@ -11,6 +11,7 @@ import re
 import codecs
 import pickle
 import json
+import sentry_sdk
 from os import path, mkdir
 import threading
 
@@ -24,10 +25,24 @@ modelCreationSem = threading.Semaphore()
 def get_models() -> dict:
     """Loads the current session's model dict, or an empty dict if the
     session doesn't have one yet. Centralizes a load pattern that used to be
-    duplicated in every endpoint that touches session-stored models."""
-    if 'models' in session:
+    duplicated in every endpoint that touches session-stored models.
+
+    If the stored data can no longer be unpickled - e.g. a library upgrade
+    (astropy, hmf, halomod, ...) moved or renamed a class that an
+    already-pickled session's models still reference - the session is reset
+    to an empty model dict instead of crashing every subsequent request for
+    that session. The stale data is unrecoverable either way once this
+    happens, so surfacing it to Sentry and moving on is preferable to
+    permanently 500ing until the user manually clears their cookies.
+    """
+    if 'models' not in session:
+        return {}
+    try:
         return pickle.loads(session.get('models'))
-    return {}
+    except Exception as e:
+        sentry_sdk.capture_exception(e)
+        session['models'] = pickle.dumps({})
+        return {}
 
 
 def get_model_names():
