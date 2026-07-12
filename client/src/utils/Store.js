@@ -346,6 +346,39 @@ export default class Store {
   };
 
   /**
+   * Builds a Sentry scope tagged with the error code and carrying the
+   * current store state and raw error as context. Both branches of
+   * `setError` need this same scope (they only differ in what they tag/set
+   * the level to afterwards), so it's factored out here rather than
+   * duplicated.
+   *
+   * @param {Error} error the error to build a scope for
+   * @returns {Sentry.Scope}
+   */
+  buildErrorScope = (error) => {
+    const scope = new Sentry.Scope();
+    scope.setTag('ErrorCode', error.code);
+    scope.setContext('Store Model State', this.state);
+    scope.setContext('Error Object', error);
+    return scope;
+  };
+
+  /**
+   * Reports an error to Sentry under the given message, using `error.message`
+   * as the reported error's name so the original error type is still visible
+   * in Sentry even though the message is rewritten to something user-facing.
+   *
+   * @param {Sentry.Scope} scope
+   * @param {Error} error the original error
+   * @param {string} message the user-facing message to report as the error
+   */
+  captureError = (scope, error, message) => {
+    const e = new Error(message);
+    e.name = error.message;
+    Sentry.captureException(e, scope);
+  };
+
+  /**
    * Sets an erorr for the application. This becomes visible to the user.
    *
    * @param {Error} error the error to set
@@ -372,17 +405,11 @@ export default class Store {
         if (process.env.VUE_APP_SENTRY_ON !== 'FALSE') {
           console.log(stkTrace);
           // Sentry.captureMessage(simpleDescription);
-          const scope = new Sentry.Scope();
-          scope.setTag('ErrorCode', error.code);
-          scope.setContext('Store Model State', this.state);
-          scope.setContext('Error Object', error);
-          const e = new Error(simpleDescription);
-          e.name = error.message;
-          Sentry.captureException(e, scope);
+          const scope = this.buildErrorScope(error);
+          this.captureError(scope, error, simpleDescription);
         }
       } else {
-        const scope = new Sentry.Scope();
-        scope.setTag('ErrorCode', error.code);
+        const scope = this.buildErrorScope(error);
         // All the errors that do not have a response
         if (error.code === 'ECONNABORTED') {
           const msg = 'Communication with the server timed-out. Please check your internet connection.';
@@ -404,11 +431,7 @@ export default class Store {
         this.state.errorType = 'Server';
         console.log(error.message);
         console.log(`Server Error: ${this.state.errorMessage}`);
-        scope.setContext('Store Model State', this.state);
-        scope.setContext('Error Object', error);
-        const e = new Error(this.state.errorMessage);
-        e.name = error.message;
-        Sentry.captureException(e, scope);
+        this.captureError(scope, error, this.state.errorMessage);
       }
     } catch (e) {
       const msg = 'An error occured while handling an error. The server admin has been notified.';
