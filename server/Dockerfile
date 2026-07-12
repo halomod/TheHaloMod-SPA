@@ -15,10 +15,9 @@ RUN uv pip install --system -r requirements.txt
 
 ADD . /thehalomod-server
 
-# Using the "exec" form. See https://docs.docker.com/engine/reference/builder/#cmd
-# This makes it so it runs normally and not wrapped in "sh". So this allows
-# the container to be attached to and accept input.
-#
-# The "--cert=adhoc" allows SSH connections to be made to this container
-# locally.
-CMD ["flask", "run", "--cert=adhoc"]
+RUN chmod +x docker-entrypoint.sh
+
+# Replaces Flask's development server (which explicitly warns against
+# production use) with gunicorn - see docker-entrypoint.sh for the actual
+# invocation and why its flags are set the way they are.
+ENTRYPOINT ["./docker-entrypoint.sh"]

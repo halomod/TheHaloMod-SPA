@@ -8,9 +8,13 @@ services:
     links:
       - redis
     container_name: hmf-server
-    # The default stop signal for flask apps is SIGINT, while by default
-    # docker uses SIGTERM
-    stop_signal: SIGINT
+    # No stop_signal override: gunicorn (which replaced Flask's dev server)
+    # treats SIGTERM as a graceful shutdown - waiting for in-flight requests,
+    # e.g. a slow model computation, to finish - which is also Docker's own
+    # default stop signal. The previous override to SIGINT was specific to
+    # Flask's dev server; sending SIGINT to gunicorn instead triggers a
+    # *quick*, non-graceful shutdown, which would cut off in-flight requests
+    # on every deploy.
     restart: unless-stopped
     environment:
       - FLASK_RUN_PORT=${FLASK_RUN_PORT}
