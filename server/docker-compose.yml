@@ -24,9 +24,19 @@ services:
       - FLASK_APP=halomod_app
       # Set so that python will output print statements when flask is running
       - PYTHONUNBUFFERED=False
-      # Set so that the HTTPS cookies will go through on the remote server. 
+      # Set so that the HTTPS cookies will go through on the remote server.
       # The behavior is defined in "config.py"
       - USE_HTTPS_SESSION=True
+      # These were previously exported in the deploy script's SSH shell but
+      # never actually reached the container - docker compose only passes
+      # through host env vars that are explicitly listed here, so
+      # FLASK_KEY/MAIL_* were silently unset in the running app. That was
+      # harmless-looking before (config.py just fell back to a hardcoded
+      # SECRET_KEY), but now that config.py fails loudly on a missing
+      # FLASK_KEY outside of debug/test, the gap crashes the app on boot.
+      - FLASK_KEY=${FLASK_KEY}
+      - MAIL_USERNAME=${MAIL_USERNAME}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
 
   redis:
     image: "redis"
