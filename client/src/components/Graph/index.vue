@@ -218,10 +218,17 @@ export default {
           newXAxisChoice = 'k_hm';
           newYAxisChoice = 'power_auto_tracer';
         }
-        this.updateXAxisChoice(newXAxisChoice, '');
-        await this.$nextTick();
+        // Set the intended y-axis choice *before* updateXAxisChoice runs, so
+        // its own fallback (which only picks the first available y-choice
+        // when the *current* yAxisChoice isn't valid for the new x-axis
+        // section) sees it as already valid instead of overriding it. This
+        // used to be set only after awaiting (in fact, previously not even
+        // awaiting) updateXAxisChoice, which had already raced ahead with
+        // its own fallback pick, fetched plot data for that, and then been
+        // immediately overridden here - firing two separate, unnecessary
+        // plot fetches (each retried by axios-retry) on every fresh load.
         this.yAxisChoice = newYAxisChoice;
-        this.xAxisChoice = newXAxisChoice;
+        await this.updateXAxisChoice(newXAxisChoice, '');
       }
 
       if (this.yAxisChoice !== null) {
