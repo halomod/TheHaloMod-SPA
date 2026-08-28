@@ -1,7 +1,7 @@
 """Plotting and driving utilities for TheHaloMod-SPA."""
 
 import logging
-from flask import session
+from flask import abort, session
 from flask_session.redis.redis import RedisSessionInterface
 from itsdangerous import BadSignature
 from typing import Union
@@ -121,6 +121,18 @@ class LockingRedisSessionInterface(RedisSessionInterface):
 
 def hmf_driver(cls=TracerHaloModel,
                previous: Union[None, TracerHaloModel] = None, **kwargs):
+    try:
+        return _hmf_driver(cls, previous, **kwargs)
+    except ValueError as e:
+        # hmf's own get_mdl() raises ValueError with a clear message (listing
+        # the valid choices) for an unrecognized "*_model" choice - e.g.
+        # {"hmf_model": "ThisModelDoesNotExist"}. Left uncaught, that's a
+        # client input error that was surfacing as a generic 500 instead of
+        # a 400.
+        abort(400, str(e))
+
+
+def _hmf_driver(cls, previous, **kwargs):
     if previous is None:
         return cls(**kwargs)
     elif "wdm_model" in kwargs and not isinstance(previous, HaloModelWDM):

@@ -17,18 +17,18 @@ Parameters:
     - y: float
     - names: string[]
 Returns:
-- plot_details: dict
-- model_label: dict
+- plot_data: dict
 """
 # This endpoint returns plot data required for front-end plotting from session data
 #
 # expects: {"x": <choice_from_PLOT_AXIS_METADATA>, "y": <choice_from_PLOT_AXIS_METADATA>, "model_names": <array_of_model_names_to_consider> }
-# outputs: {"plot_details":
-#             {"xlab": <str_xlabel>, "ylab": <str_ylabel>, "yscale": <str_yscale>},
-#          "plot_data": {
+# outputs: {"plot_data": {
 #              <model_label>: {"xs": <array_of_xs>, "ys": <array_of_ys>},
 #              ...
 #           }}
+#
+# Axis labels/scale aren't part of this response - the client derives those
+# itself from PLOT_AXIS_METADATA.json rather than the server sending them.
 
 # Whitelist of attributes the client is allowed to request via x/y. Without
 # this, x_param/y_param went straight into getattr(model, ...) with no
@@ -77,7 +77,8 @@ def get_plot_data():
         data = {}
         try:
             stdOut = ""
-            # Sets up a temporary warnings filter that just prints the warnings to the console
+            # Sets up a temporary warnings filter that just prints the warnings to the
+            # console
             with warnings.catch_warnings():
                 warnings.filterwarnings("ignore")
                 warnings.filterwarnings("always")
@@ -109,7 +110,7 @@ def get_plot_data():
             print(f"Error encountered getting {y_param} for model {name}")
             print(str(e))
             warnings.filterwarnings("error")
-            raise(Exception(f"Error encountered getting {y_param} for model {name}"))
+            raise (Exception(f"Error encountered getting {y_param} for model {name}"))
 
         res["plot_data"][name] = data  # put data in response object
 
