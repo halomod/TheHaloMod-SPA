@@ -64,7 +64,23 @@ export async function downloadData() {
   return window.URL.createObjectURL(blob);
 }
 
+/**
+ * Thrown when a plot image is requested but no plot has been rendered (e.g.
+ * there are no models yet, or the last plot fetch failed). This is an
+ * expected user-facing condition rather than a bug.
+ */
+export class NoPlotError extends Error {
+  constructor() {
+    super('There is no plot to download yet. Create a model first, then try again.');
+    this.name = 'NoPlotError';
+  }
+}
+
 export async function downloadPlotImage() {
+  const svgNode = document.getElementById('svg-plot');
+  if (!svgNode) {
+    throw new NoPlotError();
+  }
   const svgElements = [
     { el: '.graph-line', properties: ['fill', 'stroke', 'stroke-width'] },
     {
@@ -75,7 +91,6 @@ export async function downloadPlotImage() {
     { el: '.axis-label g text', properties: ['font-size', 'font-family'] },
   ];
   addInlineCSS(svgElements);
-  const svgNode = document.getElementById('svg-plot');
   const serializer = new XMLSerializer();
   let plotString = serializer.serializeToString(svgNode);
   if (!plotString.match(/^<svg[^>]+xmlns="http:\/\/www\.w3\.org\/2000\/svg"/)) {
