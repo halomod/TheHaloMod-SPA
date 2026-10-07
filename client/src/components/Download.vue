@@ -55,11 +55,18 @@
       <md-dialog-title>{{ loadingTitle }}</md-dialog-title>
       <md-button @click="serverDownloadDialogVisible = false">Close</md-button>
     </md-dialog>
+    <Alert
+      :showAlert="errorMessage !== ''"
+      title="Download"
+      :message="errorMessage"
+      @close="errorMessage = ''" />
   </div>
 </template>
 
 <script>
+import Alert from '@/components/Alert';
 import {
+  NoPlotError,
   downloadData,
   downloadPlotImage,
   downloadParamValsJson,
@@ -101,6 +108,9 @@ const downloadOptions = {
  */
 export default {
   name: 'Download',
+  components: {
+    Alert,
+  },
   data() {
     return {
       downloadChoices: Object.values(downloadOptions),
@@ -109,6 +119,7 @@ export default {
       loadingTitle: '',
       serverDownloadDialogVisible: false,
       loadingDescription: '',
+      errorMessage: '',
     };
   },
   methods: {
@@ -134,11 +145,25 @@ export default {
       } else {
         this.loading = true;
       }
-      const href = await this[`download${name}`](this.$store);
-      downloadNode.setAttribute('href', href);
-      downloadNode.setAttribute('download', fileName);
-      downloadNode.click();
-      this.loading = false;
+      try {
+        const href = await this[`download${name}`](this.$store);
+        downloadNode.setAttribute('href', href);
+        downloadNode.setAttribute('download', fileName);
+        downloadNode.click();
+      } catch (err) {
+        if (err instanceof NoPlotError) {
+          this.errorMessage = err.message;
+          return;
+        }
+        this.errorMessage = 'Something went wrong while preparing the download. '
+          + 'Please try again.';
+        // Re-throw so unexpected failures still reach Sentry.
+        throw err;
+      } finally {
+        // The loading dialog can't be dismissed by the user, so it must be
+        // closed on every path or the page is stuck behind it.
+        this.loading = false;
+      }
     },
   },
 };
